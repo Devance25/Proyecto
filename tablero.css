@@ -1,0 +1,65 @@
+.puntajes {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 0.5rem;
+  background: linear-gradient(to bottom,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 0) 100%);
+  z-index: 2;
+}
+
+.jugadores {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  list-style: none;
+  height: 100%;
+}
+
+.jugador {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.8rem;
+  color: #fff;
+}
+
+.jugador .contenedor {
+  text-align: left;
+}
+
+.jugador .nombre {
+  display: inline-block;
+  max-width: 50px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: bold;
+}
+
+.jugador .puntos {
+  display: block;
+  font-size: 0.75rem;
+  color: #ccc;
+}
+
+.icono-mapa {
+  width: 32px;
+  height: 32px;
+}
+
+.tablero {
+  height: 100%;
+}
+
+.tablero .mapa,
+.tablero .mapa img {
+  display: block;
+  width: auto;
+  height: 100%;
+}
+
+.tablero .mapa img {
+  object-fit: cover;
+}
