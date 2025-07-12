@@ -1,73 +1,60 @@
 .pantalla-inicio {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-}
-
-
-.pantalla-inicio .fondo {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
   height: 100%;
-  object-fit: cover;
-}
-
-
-.pantalla-inicio .superposicion {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: 100%;
+  padding: 10% 5%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  color: #fff;
-  text-align: center;
-  pointer-events: none;
+  justify-content: flex-end;
+  background: url(../img/Fondo_inicial.jpg) center / cover no-repeat;
 }
 
+.pantalla-inicio .superposicion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
 
-.pantalla-inicio .logo {
-  max-width: 70%;
-  width: 300px;
+.pantalla-inicio .superposicion .logo {
+  width: 100%;
+  max-width: 400px;
   height: auto;
 }
 
 
-.pantalla-inicio .texto-cargando {
-  font-size: 1.2rem;
-  font-weight: 500;
-}
 
 
 .pantalla-inicio .barra-progreso {
-  width: 80%;
+  box-sizing: content-box;
+  width: 100%;
   max-width: 400px;
-  height: 12px;
-  background: rgba(255, 255, 255, 0.3);
+  height: 20px;
+  background: #FFF1C7;
+  border: 5px solid #fff;
   border-radius: 999px;
   overflow: hidden;
 }
 
 
+
 .pantalla-inicio .progreso {
   width: 0%;
   height: 100%;
-  background: #ff9800;
+  background-image: linear-gradient(to right, #ED7B00, #FFBB03);
   border-radius: 999px 0 0 999px;
   transition: width 0.3s ease;
 }
 
 
 @keyframes animar-carga {
-  from { width: 0; }
-  to   { width: 80%; }
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
 }
 
 .pantalla-inicio .progreso {
