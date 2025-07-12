@@ -11,7 +11,7 @@ body {
     background:
         linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
         /* Capa negra semitransparente */
-        url('img/Imagenes web draftosaurus/fondo-base.jpg');
+        url('img/fondo-base.jpg');
     background-size: cover;
     background-position: center;
     position: relative;
