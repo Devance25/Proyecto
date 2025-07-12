@@ -4,6 +4,7 @@ body {
   background-position: center;
   min-height: 100vh;
   justify-content: center;
+  padding: 5%;
 }
 
 .contenedor-centrado {
@@ -101,10 +102,11 @@ button.boton {
   border-radius: 15px;
   border: 0;
   padding: 5px 10px;
-  width: 300px;
   height: 44px;
   cursor: pointer;
   transition: background-image 0.4s ease, transform 0.2s ease;
+  max-width: 500px;
+  width: 100%;
 }
 
 .boton.verde {
@@ -145,4 +147,8 @@ button.boton {
     position: absolute;
     top: 10px;
     left: 10px;
+}
+
+.partidas .texto{
+  text-align:center;
 }
