@@ -210,26 +210,15 @@ li {
 }
 
 .barra.primero {
-    height: 43vh;
+    height: 48vh;
     background: orange;
 }
 
 .barra.segundo {
-    height: 40vh;
+    height: 45vh;
     background: sienna;
 }
 
-@media(max-width: 1023px) {
-
-    .puesto-2 {
-        top: 15em;
-    }
-
-    .puesto {
-        top: 12.5em;
-    }
-
-}
 
 .perfil {
     position: absolute;
@@ -272,7 +261,7 @@ li {
 
 .numero {
     position: absolute;
-    bottom: 100px;
+    bottom: 200px;
     left: 50%;
     transform: translateX(-50%);
     color: #fff;
