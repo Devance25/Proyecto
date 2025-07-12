@@ -175,7 +175,6 @@ li {
     display: flex;
     justify-content: center;
     gap: 2em;
-    /* NO uses position absolute ni bottom aquí */
     opacity: 0;
     transform: translateY(50px);
     transition: transform 0.8s ease, opacity 0.8s ease;
@@ -271,8 +270,6 @@ li {
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
-    /* 🔑 Clave */
-
 }
 
 .perfil .marco {
@@ -287,21 +284,16 @@ li {
 .corona {
     position: absolute;
     top: -5em;
-    /* sube la corona encima */
     width: 4.3em;
-    /* ajusta tamaño */
     left: 90%;
     transform: translateX(-50%) rotate(30deg);
-    /* Aquí inclinas */
     z-index: 2;
-    /* se asegura que esté arriba del marco */
     transition: none;
 }
 
 .numero {
     position: absolute;
     bottom: 100px;
-    /* separa del borde inferior de la barra */
     left: 50%;
     transform: translateX(-50%);
     color: #fff;
