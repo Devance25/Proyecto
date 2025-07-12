@@ -1,0 +1,307 @@
+body {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Ubuntu', sans-serif;
+    background: #000;
+    color: #fff;
+    overflow-x: hidden;
+    height: 100vh;
+    /* Asegura que ocupe toda la altura */
+    align-items: center;
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+        /* Capa negra semitransparente */
+        url('img/Imagenes web draftosaurus/fondo-base.jpg');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    margin: 0;
+
+}
+
+.boton {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+    padding-top: 0.9em;
+    padding-left: 0.9em;
+
+}
+
+.btn-flecha {
+    background: #6e340b;
+    color: white;
+    border-radius: 50%;
+    border: none;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
+h1 {
+    position: fixed;
+    margin-top: 0.8em;
+}
+
+.mover-desde-abajo {
+    position: relative;
+    transform: translateY(50px);
+    opacity: 0;
+    transition: transform 1s ease, opacity 1s ease;
+}
+
+.mostrar {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+
+.section {
+    display: flex;
+    flex-direction: column;
+    background-color: #f7f0dd;
+    border-top-left-radius: 1em;
+    border-top-right-radius: 1em;
+    padding: 0.3em;
+    width: 20em;
+    height: 18em;
+    bottom: 0;
+    position: fixed;
+    transform: translate(0%, 100%);
+}
+
+.aparece-desde-abajo {
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.8s ease, opacity 0.8s ease;
+}
+
+.mostrar-resultado {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.card {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.inner-card {
+    display: flex;
+    background-color: #fff;
+    width: 97%;
+    border-radius: 1em;
+    margin: 0.8em 0.3em 0.5em 0.3em;
+    align-items: center;
+}
+
+.inner-card-2 {
+    display: flex;
+    background-color: #fff;
+    width: 97%;
+    border-radius: 1em;
+    margin: 0 0.3em 0.3em 0.3em;
+    align-items: center;
+}
+
+ol {
+    display: flex;
+    flex-direction: column;
+    list-style-type: none;
+    padding-left: 0;
+}
+
+li {
+    color: #000000;
+}
+
+.marron {
+    color: #6e340b;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.img {
+    border-radius: 100%;
+    max-width: 3em;
+    padding: 0.5em;
+
+}
+
+.card-2 img {
+    border-radius: 100%;
+    max-width: 3em;
+    padding: 0.5em;
+
+}
+
+.card-2 {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.card-3 {
+    display: flex;
+    flex-direction: column;
+    border-radius: 1em;
+    padding: 1em;
+    margin: 1em 0.3em 0.3em 0.3em;
+    background: linear-gradient(135deg, #628107, #94cc04);
+    color: white;
+    border: none;
+}
+
+.card-4 {
+    display: flex;
+    flex-direction: column;
+    border-radius: 1em;
+    padding: 1em;
+    margin: 0.3em;
+    background: linear-gradient(135deg, #ed7b00, #ffbb03);
+    color: white;
+    border: none;
+}
+
+.ranking {
+    display: flex;
+    justify-content: center;
+    gap: 2em;
+    /* NO uses position absolute ni bottom aquí */
+    opacity: 0;
+    transform: translateY(50px);
+    transition: transform 0.8s ease, opacity 0.8s ease;
+
+
+}
+
+.mostrar-ranking {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.puesto-2 {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    top: 6em;
+}
+
+.puesto {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    top: 4.5em;
+}
+
+
+.barra {
+    position: relative;
+    width: 5em;
+}
+
+.barra.primero {
+    height: calc(100vh - 29.9em - 1em);
+    background: orange;
+}
+
+.barra.segundo {
+    height: calc(100vh - 31.4em - 1em);
+    /* 100vh - height de .section - height del perfil */
+    background: sienna;
+}
+
+@media(min-width: 1024px) {
+    .barra.primero {
+        height: calc(100vh - 38.4em - 1em);
+    }
+
+    .barra.segundo {
+        height: calc(100vh - 40.9em - 1em);
+    }
+
+    .puesto-2 {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        top: 15em;
+    }
+
+    .puesto {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        top: 12.5em;
+    }
+
+
+    .barra {
+        position: relative;
+        width: 5em;
+    }
+}
+
+.perfil {
+    position: absolute;
+    bottom: 100%;
+    transform: translateY(50%);
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+
+}
+
+.perfil .foto {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    /* 🔑 Clave */
+
+}
+
+.perfil .marco {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+}
+
+.corona {
+    position: absolute;
+    top: -5em;
+    /* sube la corona encima */
+    width: 4.3em;
+    /* ajusta tamaño */
+    left: 90%;
+    transform: translateX(-50%) rotate(30deg);
+    /* Aquí inclinas */
+    z-index: 2;
+    /* se asegura que esté arriba del marco */
+    transition: none;
+}
+
+.numero {
+    position: absolute;
+    bottom: 10px;
+    /* separa del borde inferior de la barra */
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    font-size: 2em;
+    font-weight: bold;
+}
