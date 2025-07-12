@@ -113,3 +113,16 @@ button.boton {
 .boton:hover{
     background-image: linear-gradient(to right, #3A4D03, #5A7B05);
 }
+
+.btn-flecha {
+    background: #6e340b;
+    color: white;
+    border-radius: 50%;
+    border: none;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
