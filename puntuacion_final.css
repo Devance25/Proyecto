@@ -210,38 +210,22 @@ li {
 }
 
 .barra.primero {
-    height: calc(100vh - 29.9em - 1em);
+    height: 43vh;
     background: orange;
 }
 
 .barra.segundo {
-    height: calc(100vh - 31.4em - 1em);
-    /* 100vh - height de .section - height del perfil */
+    height: 40vh;
     background: sienna;
 }
 
 @media(min-width: 1024px) {
-    .barra.primero {
-        height: calc(100vh - 38.4em - 1em);
-    }
-
-    .barra.segundo {
-        height: calc(100vh - 40.9em - 1em);
-    }
 
     .puesto-2 {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
         top: 15em;
     }
 
     .puesto {
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
         top: 12.5em;
     }
 
