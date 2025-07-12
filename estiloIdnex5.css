@@ -52,6 +52,7 @@ h1 {
     position: relative;
     transform: translateY(50px);
     opacity: 0;
+    font-family: 'Oswald', sans-serif;
     transition: transform 1s ease, opacity 1s ease;
 }
 
@@ -123,7 +124,7 @@ li {
 
 .marron {
     color: #6e340b;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-family: 'Oswald', sans-serif;
 }
 
 .img {
