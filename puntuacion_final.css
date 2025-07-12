@@ -219,7 +219,7 @@ li {
     background: sienna;
 }
 
-@media(min-width: 1024px) {
+@media(max-width: 1023px) {
 
     .puesto-2 {
         top: 15em;
@@ -229,11 +229,6 @@ li {
         top: 12.5em;
     }
 
-
-    .barra {
-        position: relative;
-        width: 5em;
-    }
 }
 
 .perfil {
