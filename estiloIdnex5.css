@@ -25,6 +25,7 @@ body {
     width: 100%;
     padding-top: 0.9em;
     padding-left: 0.9em;
+    
 
 }
 
@@ -154,8 +155,13 @@ li {
     padding: 1em;
     margin: 1em 0.3em 0.3em 0.3em;
     background: linear-gradient(135deg, #628107, #94cc04);
+    box-shadow: 0 7px 0 #628107;
     color: white;
     border: none;
+}
+
+.card-3:hover{
+    background-image: linear-gradient(to right, #3A4D03, #5A7B05);
 }
 
 .card-4 {
@@ -165,8 +171,13 @@ li {
     padding: 1em;
     margin: 0.3em;
     background: linear-gradient(135deg, #ed7b00, #ffbb03);
+    box-shadow: 0 7px 0 #ed7b00;
     color: white;
     border: none;
+}
+
+.card-4:hover{
+    background-image: linear-gradient(to right, #ed7b00, #ffbb03);
 }
 
 .ranking {
