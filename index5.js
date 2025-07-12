@@ -34,5 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Activar transición de la sección
      ranking.classList.add('mostrar-ranking');
     }, 1500);
+
+    // const btn = document.getElementById("card-3");
+    // btn.addEventListener('click', ()=>{
+    //     window.location.href = "inicioDeSesion.html";
+    // })
 });
+
+
 
