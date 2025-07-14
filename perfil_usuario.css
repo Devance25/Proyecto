@@ -1,10 +1,23 @@
-body {
-  background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(img/fondo-base.jpg);
-  background-size: cover;
-  background-position: center;
-  min-height: 100vh;
-  justify-content: center;
-  padding: 5%;
+.body {
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+        url('img/fondo-base.jpg');
+    background-size: cover;
+    background-position: center;
+    margin: 0;
+    padding: 20px;
+    color: #FFF1C7;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.perfil-usuario {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
 }
 
 .contenedor-centrado {
@@ -93,33 +106,7 @@ body {
   font-size: 1.8rem;
 }
 
-button.boton {
-  display: block;
-  margin: 40px auto 10px auto;
-  color: white;
-  font-size: 17px;
-  font-weight: 50;
-  border-radius: 15px;
-  border: 0;
-  padding: 5px 10px;
-  height: 44px;
-  cursor: pointer;
-  transition: background-image 0.4s ease, transform 0.2s ease;
-  max-width: 500px;
-  width: 100%;
-}
 
-.boton.verde {
-  background: linear-gradient(to right, #628107, #94CC04);
-  box-shadow: 0 7px 0 #628107;
-}
-
-.boton.naranja {
-  background: linear-gradient(to right, #ffb007, #d17a0b);
-  box-shadow: 0 7px 0 #7b3c05;
-  margin-top: 10px;
-
-}
 
 .verde:hover {
   background-image: linear-gradient(to right, #3A4D03, #5A7B05);

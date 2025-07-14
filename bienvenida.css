@@ -22,6 +22,11 @@
   height: auto;
 }
 
+.pantalla-inicio .superposicion .texto-cargando {
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
 
 
 
