@@ -1,11 +1,11 @@
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html,
 body {
-  margin: 0;
-  padding: 0;
   height: 100%;
   font-family: 'Ubuntu', sans-serif;
   background: #000;
@@ -20,6 +20,3 @@ body {
   text-transform: uppercase;
   font-weight: 700;
 }
-
-
-
