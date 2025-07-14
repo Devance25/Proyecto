@@ -1,23 +1,31 @@
-# Proyecto
-Repositorio compartido para proyecto ITI 2025
+# Draftosaurus Web – Proyecto Fullstack DEVANCE
 
-## Repositorio en GitHub
-🔗 [Ver repositorio](https://github.com/Devance25/Proyecto)
+## Descripción
+Aplicación web inspirada en el juego de mesa "Draftosaurus". Permite jugar partidas locales, visualizar puntajes y simular la experiencia del tablero físico de forma digital.
 
-### Prototipo de Interfaz de Usuario (Figma)
-El prototipo de las vistas principales fue desarrollado en Figma, incluyendo pantallas como inicio, login, tablero de juego y resultados.
+## Tecnologías utilizadas
+- HTML, CSS, JavaScript (Frontend)
+- PHP 8.3 (Backend)
+- MySQL (Base de datos)
+- Apache 2.4
+- Ubuntu Server 24.04 LTS
+- Git y GitHub para control de versiones
 
-🔗 [Ver prototipo en Figma](https://www.figma.com/design/qrfRMEUuCfkWCs34qGGsFb/Draftosaurus---Dise%C3%B1o-App?node-id=148-56&t=OJOrUAFYSLemw2OL-1)
+## Instalación
+1. Cloná el repositorio:
+https://github.com/Devance25/Proyecto
 
-## Convenciones de commits
-Serán utilizadas para mantener un historial de cambios ordenado, saber qué se hizo, por quién y por qué.
+2. Abrí el proyecto en Visual Studio Code.
 
-| Tipo     | Descripción                                   |
-|----------|-----------------------------------------------|
-| feat     | Nueva funcionalidad (ej. sumar jugadores)     |
-| fix      | Corrección de errores (bugs)                  |
-| docs     | Cambios en la documentación                   |
-| style    | Cambios de formato (identación, espacios, etc.) |
-| refactor | Mejora del código sin cambiar funcionalidad   |
-| test     | Agregar o modificar pruebas                   |
-| config   | Configuración de entorno o servidor           |
+3. Asegurate de tener un servidor LAMP configurado. Colocá los archivos del proyecto en `/var/www/html`.
+
+4. Importá la base de datos con el archivo `draftosaurus.sql`.
+
+5. Accedé a `http://localhost/proyecto` en tu navegador.
+
+## Integrantes
+- Pablo Domínguez – Coordinador
+- Rafaella Spagnuolo – Subcoordinadora
+- Diego Luisi – Integrante
+- Julián Grieco – Integrante
+- Osvaldo Araujo – Integrante
