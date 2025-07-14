@@ -1,3 +1,17 @@
+/* Estilos para accesibilidad */
+.titulos-accesibles {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+
 /* ----------------- MENÚ PUNTAJES ----------------- */
 .puntajes {
   position: fixed;
@@ -96,10 +110,24 @@ main.tablero {
   align-items: center;
 }
 
+
+
 .recinto .dinosaurio {
   width: 20px;
   height: auto;
   display: block;
+}
+
+
+.dinosaurio:focus,
+.recinto:focus {
+  outline: 2px solid #007acc;
+  outline-offset: 2px;
+}
+
+.dinosaurio:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
 }
 
 @media screen and (min-width: 768px) {
@@ -671,6 +699,7 @@ main.tablero {
   color: #F8C94E;
   outline: 1px dashed #F8C94E;
   opacity: 1 !important;
+  cursor: not-allowed;
 }
 
 .recinto.bloqueado::after {
@@ -679,6 +708,11 @@ main.tablero {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.recinto:hover:not(.bloqueado) {
+  background-color: rgba(0, 122, 204, 0.1);
+  transition: background-color 0.2s ease;
 }
 
 /* ------------- MENÚ INFERIOR DE PARTIDA ------------- */
@@ -762,6 +796,34 @@ main.tablero {
 .menu_partida .datos ul .item span {
   font-size: 0.75rem;
 }
+
+.menu_partida .datos ul .item .item-boton {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: inherit;
+  font: inherit;
+  display: flex;
+  flex-direction: column;
+}
+
+@media screen and (min-width: 768px) {
+  .menu_partida .datos ul .item .item-boton {
+    flex-direction: row;
+  }
+}
+
+.menu_partida .datos ul .item .item-boton:hover,
+.menu_partida .datos ul .item .item-boton:focus {
+  opacity: 0.8;
+  outline: 2px solid #007acc;
+  outline-offset: 2px;
+}
+
 
 
 #usuario img {
