@@ -6,7 +6,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  background: url(../img/Fondo_inicial.jpg) center / cover no-repeat;
+  background: url(img/Fondo_inicial.jpg) center / cover no-repeat;
 }
 
 .pantalla-inicio .superposicion {
