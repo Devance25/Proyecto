@@ -1,6 +1,6 @@
 /*-------------------- Fondo --------------------*/
 body {
-    background-image: url(Fondo_inicial.jpg);
+    background-image: url(img/Fondo_inicial.jpg);
     background-size: cover;
     background-position: center;
     min-height: 100vh;

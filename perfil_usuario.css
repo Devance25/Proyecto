@@ -117,24 +117,6 @@
 }
 
 
-.btn-flecha {
-  background: #6e340b;
-  color: white;
-  border-radius: 50%;
-  border: none;
-  width: 40px;
-  height: 40px;
-  font-size: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.boton-salir{
-    position: absolute;
-    top: 10px;
-    left: 10px;
-}
 
 .partidas .texto{
   text-align:center;

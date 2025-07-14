@@ -158,7 +158,7 @@ li {
     display: flex;
     flex-direction: column;
     align-items: center;
-    top: 9em;
+    top: 13em;
 }
 
 .puesto {
@@ -166,7 +166,18 @@ li {
     display: flex;
     flex-direction: column;
     align-items: center;
-    top: 7em;
+    top: 10em;
+}
+
+@media screen and (min-width: 600px) and (max-width: 1200px) {
+    .puesto-2 {
+        top: 35em;
+    }
+
+    .puesto {
+        top: 30em;
+    }
+    
 }
 
 
