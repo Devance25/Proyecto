@@ -1,0 +1,11 @@
+# Archivos del sistema
+.DS_Store
+**/.DS_Store
+
+# Configuración de IDE
+.vscode/
+.idea/
+
+# Dependencias PHP
+vendor/
+
