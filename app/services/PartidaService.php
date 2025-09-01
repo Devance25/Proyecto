@@ -19,7 +19,7 @@ class PartidaService
         $this->puntaje = new Puntaje();
     }
 
-    public static function getInstance(): ?PartidaRepository
+    public static function getInstance(): ?PartidaService
     {
         if (self::$instance === null) 
         {

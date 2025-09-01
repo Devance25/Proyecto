@@ -4,7 +4,7 @@ class RankingService
 {   
     private static ?RankingService $instance = null; 
 
-    private ?RankingService $partidaRepository;
+    private ?RankingRepository $partidaRepository;
 
     //DOMAIN
     private Partida $partida;
@@ -19,7 +19,7 @@ class RankingService
         $this->puntaje = new Puntaje();
     }
 
-    public static function getInstance(): ?RankingRepository
+    public static function getInstance(): ?RankingService
     {
         if (self::$instance === null) 
         {
