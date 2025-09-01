@@ -43,9 +43,12 @@ class PartidaController
                 'message' => 'ID de jugador 1 y nombre de jugador 2 son requeridos.'
             ]);
         return;
-   }
+        }
 
-        $result = $this->partidaService->crearPartidaService($jugador1_id, $jugador2_nombre);
+        $result = $this->partidaService->crearPartidaService(
+            $jugador1_id,
+            $jugador2_nombre
+        );
 
         if (!is_array($result) || !array_key_exists('success', $result)) 
         {
@@ -112,9 +115,13 @@ class PartidaController
                 'message' => 'ID de partida es requerido.'
             ]);
         return;
-   }
+        }
 
-        $result = $this->partidaService->finalizarPartidaService($id, $puntaje_jugador1, $puntaje_jugador2);
+        $result = $this->partidaService->finalizarPartidaService(
+            $id, 
+            $puntaje_jugador1, 
+            $puntaje_jugador2
+        );
 
         if (!is_array($result) || !array_key_exists('success', $result)) 
         {
@@ -169,7 +176,7 @@ class PartidaController
                 'message' => 'ID de partida es requerido.'
             ]);
         return;
-   }
+        }
 
         $result = $this->partidaService->cancelarPartidaService($id);
 
@@ -198,5 +205,177 @@ class PartidaController
 
         echo json_encode($result);
     }
+
+    public function tirarDadoController()
+    {
+        $raw = file_get_contents("php://input");
+        $data = json_decode($raw, true);
+
+        if (!is_array($data)) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'JSON inválido.'
+            ]);
+            return;
+        }
+        
+        $id = isset($data['id']) ? (int)$data['id'] : 0;
+
+        if ($id <= 0) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'ID de partida es requerido.'
+            ]);
+            return;
+        }
+
+
+        if (empty(trim($data['jugador'] ?? ''))) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'code' => 'invalid',
+                'message' => 'Falta jugador.'
+            ]);
+            return;
+        }
+
+
+        $jugador = trim((string)$data['jugador']);
+
+
+        $result = $this->partidaService->tirarDadoService(
+            $id, 
+            $jugador
+        );
+
+        if (!is_array($result) || !array_key_exists('success', $result)) 
+        {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error interno del servidor.'
+            ]);
+            return;
+        }
+
+        if ($result['success'] === true) {
+            http_response_code(200);
+        } else {
+            $code = isset($result['code']) ? $result['code'] : 'error';
+            if ($code === 'invalid') {
+                http_response_code(400); 
+            } elseif ($code === 'duplicate') {
+                http_response_code(409); 
+            } else {
+                http_response_code(500); 
+            }
+        }
+
+        echo json_encode($result);
+    }
+
+public function colocarDinosaurioController()
+{
+    try {
+        $raw = file_get_contents("php://input");
+        $data = json_decode($raw, true);
+
+        if (!is_array($data)) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'JSON inválido.'
+            ]);
+            return;
+        }
+
+        $id = isset($data['id']) ? (int)$data['id'] : 0;
+
+        if ($id <= 0) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'ID de partida es requerido.'
+            ]);
+            return;
+        }
+
+        if (empty(trim($data['jugador'] ?? ''))) {
+            echo json_encode([
+                'success' => false,
+                'code' => 'invalid',
+                'message' => 'Falta jugador.'
+            ]);
+            return;
+        }
+
+        $jugador = trim((string)$data['jugador']);
+
+        if (empty(trim($data['recinto'] ?? ''))) {
+            echo json_encode([
+                'success' => false,
+                'code' => 'invalid',
+                'message' => 'Falta recinto.'
+            ]);
+            return;
+        }
+
+        $recinto = trim((string)$data['recinto']);
+
+        if (empty(trim($data['tipo_dino'] ?? ''))) {
+            echo json_encode([
+                'success' => false,
+                'code' => 'invalid',
+                'message' => 'Falta tipo de dinosaurio.'
+            ]);
+            return;
+        }
+
+        $tipo_dino = trim((string)$data['tipo_dino']);
+
+        $result = $this->partidaService->colocarDinosaurioService(
+            $jugador,
+            $recinto,
+            $tipo_dino,
+            $id
+        );
+
+        if (!is_array($result) || !array_key_exists('success', $result)) {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error interno del servidor controller.'
+            ]);
+            return;
+        }
+
+        if ($result['success'] === true) {
+            http_response_code(200);
+        } else {
+            $code = isset($result['code']) ? $result['code'] : 'error';
+            if ($code === 'invalid') {
+                http_response_code(400);
+            } elseif ($code === 'duplicate') {
+                http_response_code(409);
+            } else {
+                http_response_code(500);
+            }
+        }
+
+        echo json_encode($result);
+
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Error interno del servidor controller: ' . $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+    }
+}
+
 
 }

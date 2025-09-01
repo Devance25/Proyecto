@@ -67,7 +67,7 @@ class PartidaService
         ];
     }
 
-    public function tirarDadoService(int $partida_id, string $jugador): array
+    public function tirarDadoService(int $id, string $jugador): array
     {
         $tirador = trim($jugador);
 
@@ -81,17 +81,17 @@ class PartidaService
 
 
         $caraDadoActual = $this->partida->tirarDado($tirador);
-        $this->partidaRepository->guardarResultadoDado($partida_id, $jugador, $caraDadoActual);
+        $this->partidaRepository->guardarResultadoDado($id, $caraDadoActual, $tirador);
 
         return [
             'success' => true,
-            'partida_id' => $partida_id,
+            'partida_id' => $id,
             'cara_dado' => $caraDadoActual,
             'tirador' => $tirador,
         ];
     }
 
-    private function colocarDinosaurioService(string $jugador, string $recinto, string $tipoDino, int $partida_id): array
+    public function colocarDinosaurioService(string $jugador, string $recinto, string $tipoDino, int $partida_id): array
     {
         $caraDadoActual = $this->partidaRepository->getCaraDadoActual($partida_id);
         $tiradorActual = $this->partidaRepository->getTiradorActual($partida_id);
@@ -119,48 +119,17 @@ class PartidaService
             $rondaActual = $this->partidaRepository->getRondaActual($partida_id);
         }
 
-        $colocacion = $this->partidaRepository->colocarDinosaurioRepository($jugador, $recinto, $tipoDino, $turnoActual, $rondaActual, $partida_id);
+   
+        $colocacion = $this->partidaRepository->colocarDinosaurioRepository($jugador, $recinto, $tipoDino, $partida_id);
+
+        $colocacion['success'] = true;
+        $colocacion['turno'] = $turnoActual;
+        $colocacion['ronda'] = $rondaActual;
+
 
         return $colocacion;
 
     }
-
-    public function calcularPuntajesService(int $partida_id): array
-    {   
-
-        $colocacionesJugador1 = $this->rankingRepository->getColocacionesRepository($partida_id, 'jugador1');
-
-        $colocacionesJugador2 = $this->rankingRepository->getColocacionesRepository($partida_id, 'jugador2');
-
-        $porRecintoJugador1 = [];
-        foreach($colocacionesJugador1 as $c)
-        {
-            $recinto = $c['recinto'];
-            $tipoDino = $c['tipo_dino'];
-            $porRecintoJugador1[$recinto][] = $tipoDino;
-        }
-
-        $porRecintoJugador2 = [];
-        foreach($colocacionesJugador2 as $c)
-        {
-            $recinto = $c['recinto'];
-            $tipoDino = $c['tipo_dino'];
-            $porRecintoJugador2[$recinto][] = $tipoDino;
-        }
-
-        
-
-        $puntajeJugador1 = $this->puntaje->calcularPuntaje('jugador1', $porRecintoJugador1);
-
-        $puntajeJugador2 = $this->puntaje->calcularPuntaje('jugador2', $porRecintoJugador2);
-
-        return [
-                'jugador1' => $puntajeJugador1,
-                'jugador2' => $puntajeJugador2
-                ];
-
-    }
-
 
     public function finalizarPartidaService(int $id, int $puntaje_jugador1, int $puntaje_jugador2) : array
     {

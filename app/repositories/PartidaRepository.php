@@ -44,10 +44,12 @@ class PartidaRepository
         return $partida_id;
     }
 
-    public function colocarDinosaurioRepository(string $jugador, string $recinto, string $tipo_dino, int $turno, int $ronda, int $partida_id): array
+    public function colocarDinosaurioRepository(string $jugador, string $recinto, string $tipo_dino, int $partida_id): array
     {
-        $query = "INSERT INTO recintos_partida (partida_id, jugador, recinto, tipo_dino, turno, ronda)
-                VALUES (?, ?, ?, ?, ?, ?)";
+        $query = "INSERT INTO recintos_partida
+                              (partida_id, jugador,
+                               recinto, tipo_dino)
+                  VALUES (?, ?, ?, ?)";
 
         $stmt = $this->conn->prepare($query);
 
@@ -55,7 +57,7 @@ class PartidaRepository
             throw new Exception("Error preparando la consulta: " . $this->conn->error);
         }
 
-        if (!$stmt->bind_param("isssii", $partida_id, $jugador, $recinto, $tipo_dino, $turno, $ronda)) {
+        if (!$stmt->bind_param("isss", $partida_id, $jugador, $recinto, $tipo_dino)) {
             throw new Exception("Error en bind_param: " . $stmt->error);
         }
 
@@ -70,19 +72,17 @@ class PartidaRepository
             'jugador' => $jugador,
             'recinto' => $recinto,
             'tipo_dino' => $tipo_dino,
-            'turno' => $turno,
-            'ronda' => $ronda
         ];
     }
 
     
     //UPDATES
 
-    public function guardarResultadoDado(int $id, string $caraDado, string $tirador): void
+    public function guardarResultadoDado(int $id, string $caraDadoActual, string $tirador): void
     {
         $query = "UPDATE partidas 
                   SET cara_dado_actual = ?, 
-                      tirador = ? 
+                      tirador_actual = ? 
                   WHERE id = ?";
 
         $stmt = $this->conn->prepare($query);
@@ -90,7 +90,7 @@ class PartidaRepository
             throw new Exception("Error preparando la consulta: " . $this->conn->error);
         }
 
-        if (!$stmt->bind_param("ssi", $caraDado, $tirador, $partida_id)) {
+        if (!$stmt->bind_param("ssi", $caraDadoActual, $tirador, $id)) {
             throw new Exception("Error en bind_param: " . $stmt->error);
         }
 
@@ -172,6 +172,8 @@ class PartidaRepository
         $stmt->close();
 
     }    
+
+    
 
 
     public function finalizarPartida(int $id, int $puntaje_jugador1, int $puntaje_jugador2) : void
