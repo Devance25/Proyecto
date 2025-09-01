@@ -68,7 +68,7 @@ class PartidaRepository
         $stmt->close();
 
         return [
-            'ok' => true,
+            'success' => true,
             'jugador' => $jugador,
             'recinto' => $recinto,
             'tipo_dino' => $tipo_dino,

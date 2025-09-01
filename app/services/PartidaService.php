@@ -122,7 +122,6 @@ class PartidaService
    
         $colocacion = $this->partidaRepository->colocarDinosaurioRepository($jugador, $recinto, $tipoDino, $partida_id);
 
-        $colocacion['success'] = true;
         $colocacion['turno'] = $turnoActual;
         $colocacion['ronda'] = $rondaActual;
 
