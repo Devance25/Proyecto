@@ -1,4 +1,4 @@
-/* ==================== CONFIGURACIÓN INICIAL ==================== */
+/* ==================== CONFIGURACIÓN Y ESTADO GLOBAL ==================== */
 const CONFIG = {
   IMAGENES_DINOSAURIOS: {
     't-rex': { disponible: 'img/dino-t-rex.png', colocado: 'img/dino-t-rex-arriba.png' },
@@ -7,65 +7,131 @@ const CONFIG = {
     'stegosaurus': { disponible: 'img/dino-stegosaurus.png', colocado: 'img/dino-stegosaurus-arriba.png' },
     'parasaurolophus': { disponible: 'img/dino-parasaurolophus.png', colocado: 'img/dino-parasaurolophus-arriba.png' }
   },
+
   PESOS_DINOSAURIOS: {
-    't-rex': 7.0, 'triceratops': 7.0, 'diplodocus': 15.0,
-    'stegosaurus': 5.0, 'parasaurolophus': 2.5
+    't-rex': 7.0, 
+    'triceratops': 7.0, 
+    'diplodocus': 15.0,
+    'stegosaurus': 5.0, 
+    'parasaurolophus': 2.5
   },
+
   TIPOS_DINOSAURIOS: ['t-rex', 'triceratops', 'diplodocus', 'stegosaurus', 'parasaurolophus'],
   DINOSAURIOS_POR_RONDA: 6,
+  MAX_DINOSAURIOS_POOL: 8,
+
   POSICIONES_DINOSAURIOS: [
-    { top: '50%', left: '50%' }, { top: '30%', left: '30%' }, { top: '30%', left: '70%' },
-    { top: '70%', left: '30%' }, { top: '70%', left: '70%' }, { top: '50%', left: '20%' },
-    { top: '20%', left: '50%' }, { top: '80%', left: '50%' }
+    { top: '50%', left: '50%' }, 
+    { top: '30%', left: '30%' },
+    { top: '30%', left: '70%' }, 
+    { top: '70%', left: '30%' },
+    { top: '70%', left: '70%' }, 
+    { top: '50%', left: '20%' },
+    { top: '20%', left: '50%' }, 
+    { top: '80%', left: '50%' }
   ],
-  POSICIONES_MINI_DINOSAURIOS: [
-    { top: '50%', left: '50%' }, { top: '25%', left: '25%' }, { top: '25%', left: '75%' },
-    { top: '75%', left: '25%' }, { top: '75%', left: '75%' }, { top: '50%', left: '15%' },
-    { top: '15%', left: '50%' }, { top: '85%', left: '50%' }
-  ]
+
+  POSICIONES_MINI: [
+    { top: '50%', left: '50%' }, 
+    { top: '25%', left: '25%' },
+    { top: '25%', left: '75%' }, 
+    { top: '75%', left: '25%' },
+    { top: '75%', left: '75%' }, 
+    { top: '50%', left: '15%' },
+    { top: '15%', left: '50%' }, 
+    { top: '85%', left: '50%' }
+  ],
+
+  RESTRICCIONES_DADO: {
+    1: { tipo: 'lugar-vacio', titulo: 'Lugar vací­o', imagen: 'dado-huella' },
+    2: { tipo: 'no-t-rex', titulo: 'Sin T-Rex', imagen: 'dado-no-trex' },
+    3: { tipo: 'lado-cafeteria', titulo: 'Lado cafeterí­a', imagen: 'dado-cafe' },
+    4: { tipo: 'bosque', titulo: 'Bosque', imagen: 'dado-bosque' },
+    5: { tipo: 'rocas', titulo: 'Rocas', imagen: 'dado-rocas' },
+    6: { tipo: 'lado-banos', titulo: 'Lado baí±os', imagen: 'dado-banos' }
+  }
 };
 
 /* ==================== REGLAS DE RECINTOS ==================== */
 const REGLAS_RECINTOS = {
   'bosque-semejanza': {
-    validar: (recinto, nuevoDino) => recinto.length === 0 || recinto.every(d => d === nuevoDino),
+    validar: (recinto, nuevoDino) => {
+      if (recinto.length === 0) return true;
+      return recinto.every(d => d === nuevoDino);
+    },
     maxDinos: 6,
     puntos: [0, 2, 4, 8, 12, 18, 24]
   },
-  'woody-trio': {
-    validar: () => true,
-    maxDinos: 3,
-    puntos: cant => cant === 3 ? 7 : 0
-  },
+  
   'pradera-amor': {
     validar: () => true,
     maxDinos: 6,
     puntos: recinto => {
       const conteos = {};
       recinto.forEach(d => conteos[d] = (conteos[d] || 0) + 1);
-      return Object.values(conteos).reduce((t, c) => t + Math.floor(c / 2) * 5, 0);
+      let parejas = 0;
+      Object.values(conteos).forEach(count => {
+        parejas += Math.floor(count / 2);
+      });
+      return parejas * 5;
     }
   },
-  'rey-jungla': {
+  
+  'woody-trio': {
     validar: () => true,
-    maxDinos: 1,
-    puntos: recinto => recinto.length === 1 ? 7 : 0
+    maxDinos: 3,
+    puntos: cant => cant === 3 ? 7 : 0
   },
+  
   'prado-diferencia': {
-    validar: (recinto, nuevoDino) => !recinto.includes(nuevoDino),
+    validar: (recinto, nuevoDino) => {
+      return !recinto.includes(nuevoDino);
+    },
     maxDinos: 6,
     puntos: [0, 1, 3, 6, 10, 15, 21]
   },
+  
+  'rey-jungla': {
+    validar: () => true,
+    maxDinos: 1,
+    puntos: (recinto, todosRecintos, jugadorActual, todosJugadores) => {
+      if (recinto.length !== 1) return 0;
+      const tipo = recinto[0];
+      
+      const miTotal = Object.values(todosRecintos)
+        .flat()
+        .filter(d => d === tipo).length;
+      
+      if (todosJugadores) {
+        for (let oponente of todosJugadores) {
+          if (oponente === jugadorActual) continue;
+          const totalOponente = Object.values(oponente.recintos)
+            .flat()
+            .filter(d => d === tipo).length;
+          
+          if (totalOponente > miTotal) return 0;
+        }
+      }
+      
+      return 7;
+    }
+  },
+  
   'isla-solitaria': {
     validar: () => true,
     maxDinos: 1,
-    puntos: (recinto, todos) => {
+    puntos: (recinto, todosRecintos) => {
       if (recinto.length !== 1) return 0;
       const tipo = recinto[0];
-      const totalTipo = Object.values(todos).flat().filter(d => d === tipo).length;
-      return totalTipo === 1 ? 7 : 0;
+      
+      const totalEnZoo = Object.values(todosRecintos)
+        .flat()
+        .filter(d => d === tipo).length;
+      
+      return totalEnZoo === 1 ? 7 : 0;
     }
   },
+  
   'rio': {
     validar: () => true,
     maxDinos: 20,
@@ -74,132 +140,227 @@ const REGLAS_RECINTOS = {
 };
 
 /* ==================== ESTADO DEL JUEGO ==================== */
-let estadoJuego = {
-  jugadores: [],
-  jugadorActual: 1,
-  primerJugador: 1,
-  rondaActual: 1,
-  turnoEnRonda: 1,
-  jugador1: {
-    nombre: '',
-    dinosauriosDisponibles: [],
-    recintos: {
-      'bosque-semejanza': [], 'woody-trio': [], 'pradera-amor': [],
-      'rey-jungla': [], 'prado-diferencia': [], 'isla-solitaria': [], 'rio': []
-    },
-    puntos: 0,
-    puntosRonda: 0
+class EstadoJuego {
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.jugadores = [];
+    this.jugadorActual = 1;
+    this.primerJugador = 1;
+    this.primerJugadorOriginal = 1;
+    this.rondaActual = 1;
+    this.turnoEnRonda = 1;
+    this.modoSeguimiento = false;
+    this.restriccionActual = null;
+    this.repartosDisponibles = [];
+    this.puedePasarTurno = false;
+    this.yaColocoEnTurno = false;
+    this.dadoNumero = null;
+    this.dinosauriosDescartados = [];
+
+    // Arrays para guardar los dinosaurios originales de la ronda
+    this.dinosauriosRondaJ1 = [];
+    this.dinosauriosRondaJ2 = [];
+    
+    // Arrays para tracking de dinosaurios descartados por jugador
+    this.descartadosJ1 = [];
+    this.descartadosJ2 = [];
+
+    this.jugador1 = this.crearJugador();
+    this.jugador2 = this.crearJugador();
+
+    this.jugador1.puntos = 0;
+    this.jugador1.puntosRonda = 0;
+    this.jugador2.puntos = 0;
+    this.jugador2.puntosRonda = 0;
+    
+    this.turnosCompletadosJ1 = 0;
+    this.turnosCompletadosJ2 = 0;
+  }
+
+  crearJugador() {
+    return {
+      nombre: '',
+      dinosauriosDisponibles: [],
+      recintos: {
+        'bosque-semejanza': [], 
+        'pradera-amor': [],
+        'woody-trio': [], 
+        'prado-diferencia': [], 
+        'rey-jungla': [], 
+        'isla-solitaria': [], 
+        'rio': []
+      },
+      puntos: 0,
+      puntosRonda: 0
+    };
+  }
+
+  getJugadorActual() {
+    return this[`jugador${this.jugadorActual}`];
+  }
+
+  getOponente() {
+    return this[`jugador${this.jugadorActual === 1 ? 2 : 1}`];
+  }
+
+  getTodosJugadores() {
+    return [this.jugador1, this.jugador2];
+  }
+
+  cambiarTurno() {
+    if (this.modoSeguimiento) {
+      if (this.jugadorActual === 1) {
+        this.turnosCompletadosJ1++;
+      } else {
+        this.turnosCompletadosJ2++;
+      }
+    }
+    
+    this.jugadorActual = this.jugadorActual === 1 ? 2 : 1;
+    this.turnoEnRonda++;
+    this.yaColocoEnTurno = false;
+    this.puedePasarTurno = false;
+    
+    const btn = document.getElementById('btn-siguiente-turno');
+    if (btn) {
+      btn.disabled = true;
+    }
+  }
+
+  esFinDeRonda() {
+    if (this.modoSeguimiento) {
+      const ambosCompletaronTresTurnos = this.turnosCompletadosJ1 >= 3 && this.turnosCompletadosJ2 >= 3;
+      
+      // En el primer turno de cualquier ronda, no es fin de ronda
+      if (this.esPrimerTurnoDeRonda()) {
+        return false;
+      }
+      
+      const sinDinosaurios = this.jugador1.dinosauriosDisponibles.length === 0 &&
+        this.jugador2.dinosauriosDisponibles.length === 0;
+      
+      return sinDinosaurios || ambosCompletaronTresTurnos;
+    }
+    
+    return this.jugador1.dinosauriosDisponibles.length === 0 &&
+      this.jugador2.dinosauriosDisponibles.length === 0;
+  }
+
+  esPrimerTurnoDeRonda() {
+    return this.turnoEnRonda === 1;
+  }
+
+  esPrimerTurnoAbsoluto() {
+    return this.turnoEnRonda === 1 && this.rondaActual === 1;
+  }
+
+  necesitaRestriccion() {
+    return !this.esPrimerTurnoDeRonda();
+  }
+}
+
+const estadoJuego = new EstadoJuego();
+
+/* ==================== UTILIDADES ==================== */
+const Utils = {
+  mezclarArray(arr) {
+    const copia = [...arr];
+    for (let i = copia.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copia[i], copia[j]] = [copia[j], copia[i]];
+    }
+    return copia;
   },
-  jugador2: {
-    nombre: '',
-    dinosauriosDisponibles: [],
-    recintos: {
-      'bosque-semejanza': [], 'woody-trio': [], 'pradera-amor': [],
-      'rey-jungla': [], 'prado-diferencia': [], 'isla-solitaria': [], 'rio': []
-    },
-    puntos: 0,
-    puntosRonda: 0
+
+  abrirPopup(popup) {
+    if (!popup) return;
+    popup.classList.remove('hidden');
+    popup.style.display = popup.classList.contains('popup-overlay') ? 'flex' : 'block';
+    document.body.style.overflow = 'hidden';
   },
-  restriccionActual: null,
-  repartosDisponibles: [],
-  puedePasarTurno: false,
-  yaColocoEnTurno: false
+
+  cerrarPopup(popup) {
+    if (!popup) return;
+    popup.classList.add('hidden');
+    popup.style.display = 'none';
+    document.body.style.overflow = '';
+  },
+
+  hayPopupAbierto() {
+    return Array.from(document.querySelectorAll('.popup-overlay'))
+      .some(p => !p.classList.contains('hidden') && p.style.display !== 'none');
+  },
+
+  limpiarElementos(selector) {
+    document.querySelectorAll(selector).forEach(el => el.remove());
+  },
+
+  crearElemento(tag, attrs = {}, styles = {}) {
+    const el = document.createElement(tag);
+
+    if (attrs.dataset) {
+      Object.keys(attrs.dataset).forEach(key => {
+        el.dataset[key] = attrs.dataset[key];
+      });
+      delete attrs.dataset;
+    }
+
+    Object.keys(attrs).forEach(key => {
+      el[key] = attrs[key];
+    });
+
+    Object.assign(el.style, styles);
+
+    return el;
+  }
 };
 
-/* === Helpers para popups === */
-function abrirCapa(popup) {
-  if (!popup) return;
-  popup.classList.remove('hidden');
-  popup.style.display = popup.classList.contains('popup-overlay') ? 'flex' : 'block';
-  document.body.style.overflow = 'hidden';
-}
-function cerrarCapa(popup) {
-  if (!popup) return;
-  popup.classList.add('hidden');
-  popup.style.display = 'none';
-  document.body.style.overflow = '';
-}
-function hayPopupAbierto() {
-  return Array.from(document.querySelectorAll('.popup-overlay'))
-    .some(p => !p.classList.contains('hidden') && p.style.display !== 'none');
-}
+/* ==================== SISTEMA DE MAPAS ==================== */
+const MapaOponente = {
+  mostrar() {
+    const oponente = estadoJuego.getOponente();
 
-let dinosaurioArrastrado = null;
+    this.actualizarTitulo(oponente.nombre);
+    this.renderizarMiniTablero(oponente.recintos);
+    this.mostrarPuntuacion(oponente.recintos);
 
-/* ==================== LÓGICA DEL JUEGO ==================== */
-const GameLogic = {
-  puedeColocarDinosaurio(recinto, tipoDino) {
-    if (estadoJuego.yaColocoEnTurno) return false;
-    const jugadorData = estadoJuego[`jugador${estadoJuego.jugadorActual}`];
-    const recintoActual = jugadorData.recintos[recinto];
-    const reglas = REGLAS_RECINTOS[recinto];
-    if (!reglas) return false;
-
-    // Límite de recinto
-    if (recintoActual.length >= reglas.maxDinos) return false;
-
-    // Restricción del dado (si existe). validarRestriccion = true => inválido
-    if (estadoJuego.restriccionActual && this.validarRestriccion(recinto, tipoDino)) return false;
-
-    return reglas.validar(recintoActual, tipoDino);
+    Utils.abrirPopup(document.getElementById('popup-mapa'));
   },
 
-  validarRestriccion(recinto, tipoDino) {
-    // Devuelve TRUE si NO se puede colocar por la restricción
-    const recintosJugador = estadoJuego[`jugador${estadoJuego.jugadorActual}`].recintos;
-    switch (estadoJuego.restriccionActual) {
-      case 'no-t-rex':
-        return tipoDino !== 't-rex' && recintosJugador[recinto].some(d => d === 't-rex');
-      case 'lugar-vacio':
-        return recintosJugador[recinto].length > 0;
-      case 'lado-cafeteria':
-        return !['bosque-semejanza', 'woody-trio', 'pradera-amor'].includes(recinto);
-      case 'bosque':
-        return !['bosque-semejanza', 'woody-trio'].includes(recinto);
-      case 'rocas':
-        return !['rey-jungla', 'isla-solitaria'].includes(recinto);
-      case 'lado-banos':
-        return !['rey-jungla', 'prado-diferencia', 'isla-solitaria'].includes(recinto);
-      default:
-        return false;
+  actualizarTitulo(nombre) {
+    const titulo = document.getElementById('titulo-mapa');
+    if (titulo) {
+      titulo.textContent = `MAPA DE ${(nombre || 'OPONENTE').toUpperCase()}`;
     }
   },
 
-  colocarDinosaurio(recinto, tipoDino, area) {
-    if (estadoJuego.yaColocoEnTurno) return;
+  renderizarMiniTablero(recintos) {
+    document.querySelectorAll('.mini-dinosaurios').forEach(cont => {
+      cont.innerHTML = '';
+    });
 
-    const jugadorData = estadoJuego[`jugador${estadoJuego.jugadorActual}`];
+    Object.entries(recintos).forEach(([recinto, dinosaurios]) => {
+      const contenedor = document.getElementById(`mapa-${recinto}`);
+      if (!contenedor || dinosaurios.length === 0) return;
 
-    // Quitar de disponibles
-    const idx = jugadorData.dinosauriosDisponibles.indexOf(tipoDino);
-    if (idx > -1) jugadorData.dinosauriosDisponibles.splice(idx, 1);
-
-    // Agregar al estado
-    jugadorData.recintos[recinto].push(tipoDino);
-
-    // Pintar en el tablero actual
-    const img = document.createElement('img');
-    img.src = CONFIG.IMAGENES_DINOSAURIOS[tipoDino].colocado;
-    img.className = 'dinosaurio-colocado';
-    img.alt = tipoDino;
-
-    const cantidad = jugadorData.recintos[recinto].length;
-    this.posicionarDinosaurio(img, cantidad);
-    area.appendChild(img);
-
-    // Flags/UI
-    estadoJuego.yaColocoEnTurno = true;
-    JuegoManager.mostrarDinosauriosDisponibles(); // se actualiza la mano
-    this.actualizarPuntos();
-    this.actualizarPesos();
-
-    // Pedir descarte
-    setTimeout(() => JuegoManager.mostrarPopupDescarte(), 350);
+      dinosaurios.forEach((tipo, index) => {
+        const img = this.crearMiniDinosaurio(tipo, index + 1);
+        contenedor.appendChild(img);
+      });
+    });
   },
 
-  posicionarDinosaurio(el, cantidad) {
-    const pos = CONFIG.POSICIONES_DINOSAURIOS[(cantidad - 1) % CONFIG.POSICIONES_DINOSAURIOS.length];
-    Object.assign(el.style, {
+  crearMiniDinosaurio(tipo, posicion) {
+    const pos = CONFIG.POSICIONES_MINI[(posicion - 1) % CONFIG.POSICIONES_MINI.length];
+
+    const img = Utils.crearElemento('img', {
+      src: CONFIG.IMAGENES_DINOSAURIOS[tipo].colocado,
+      className: 'mini-dinosaurio',
+      alt: tipo
+    }, {
       position: 'absolute',
       top: pos.top,
       left: pos.left,
@@ -207,46 +368,267 @@ const GameLogic = {
       zIndex: '15',
       pointerEvents: 'none'
     });
+
+    return img;
   },
 
-  calcularPuntos(recintos) {
+  mostrarPuntuacion(recintos) {
+    const detalles = {};
     let total = 0;
+    const oponente = estadoJuego.getOponente();
+    const todosJugadores = estadoJuego.getTodosJugadores();
 
-    Object.keys(recintos).forEach(nombre => {
-      const recinto = recintos[nombre];
+    Object.entries(recintos).forEach(([nombre, dinosaurios]) => {
       const reglas = REGLAS_RECINTOS[nombre];
       if (!reglas) return;
 
+      let puntos = 0;
+
       if (typeof reglas.puntos === 'function') {
-        if (nombre === 'isla-solitaria') total += reglas.puntos(recinto, recintos);
-        else if (nombre === 'rio' || nombre === 'woody-trio') total += reglas.puntos(recinto.length);
-        else total += reglas.puntos(recinto);
+        if (nombre === 'isla-solitaria') {
+          puntos = reglas.puntos(dinosaurios, recintos);
+        } else if (nombre === 'rey-jungla') {
+          puntos = reglas.puntos(dinosaurios, recintos, oponente, todosJugadores);
+        } else if (nombre === 'pradera-amor') {
+          puntos = reglas.puntos(dinosaurios);
+        } else {
+          puntos = reglas.puntos(dinosaurios.length);
+        }
       } else if (Array.isArray(reglas.puntos)) {
-        total += reglas.puntos[recinto.length] || 0;
+        puntos = reglas.puntos[dinosaurios.length] || 0;
+      }
+
+      detalles[nombre] = puntos;
+      total += puntos;
+    });
+
+    // Bonus T-Rex
+    Object.values(recintos).forEach(recinto => {
+      if (recinto.some(d => d === 't-rex')) {
+        total += 1;
       }
     });
 
-    // Bonus T-Rex: +1 por recinto que contenga al menos un T-Rex
-    Object.values(recintos).forEach(recinto => {
-      if (recinto.some(d => d === 't-rex')) total += 1;
+    Object.entries(detalles).forEach(([recinto, puntos]) => {
+      const elem = document.getElementById(`puntos-${recinto}`);
+      if (elem) elem.textContent = `${puntos} pts`;
     });
+
+    const totalElem = document.getElementById('puntos-total-oponente');
+    if (totalElem) {
+      totalElem.innerHTML = `<strong>${total} PUNTOS</strong>`;
+    }
+  }
+};
+
+/* ==================== SISTEMA DE POPUPS ==================== */
+const PopupManager = {
+  mostrarReglas() {
+    Utils.abrirPopup(document.getElementById('popup-reglas'));
+  },
+
+  mostrarPesos() {
+    GameLogic.actualizarPesos();
+    Utils.abrirPopup(document.getElementById('popup-pesos'));
+  },
+
+  cerrar(popupId) {
+    if (popupId) {
+      const popup = document.getElementById(popupId);
+
+      if (popupId === 'popup-descarte') {
+        if (estadoJuego.puedePasarTurno) {
+          Utils.cerrarPopup(popup);
+        } else {
+          console.log('Debe seleccionar un dinosaurio para descartar');
+          return;
+        }
+      } else {
+        Utils.cerrarPopup(popup);
+      }
+    } else {
+      document.querySelectorAll('.popup-overlay').forEach(popup => {
+        if (popup.id === 'popup-descarte' && !estadoJuego.puedePasarTurno) {
+          return;
+        }
+        Utils.cerrarPopup(popup);
+      });
+    }
+  },
+
+  setupEventListeners() {
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('popup-overlay')) {
+        const popup = e.target;
+
+        if (popup.id === 'popup-descarte' && !estadoJuego.puedePasarTurno) {
+          return;
+        }
+
+        if (popup.id === 'popup-seleccion-dinosaurios') {
+          return; // No cerrar este popup al hacer clic fuera
+        }
+
+        Utils.cerrarPopup(popup);
+      }
+    });
+
+    document.querySelectorAll('.popup-close').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const popup = btn.closest('.popup-overlay');
+
+        if (popup?.id === 'popup-descarte') {
+          if (!estadoJuego.puedePasarTurno && estadoJuego.yaColocoEnTurno) {
+            console.log('Debe seleccionar un dinosaurio para descartar');
+            return;
+          }
+        }
+
+        Utils.cerrarPopup(popup);
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const popups = document.querySelectorAll('.popup-overlay:not(.hidden)');
+        popups.forEach(popup => {
+          if (popup.style.display !== 'none') {
+            if (popup.id === 'popup-descarte' && !estadoJuego.puedePasarTurno) {
+              return;
+            }
+            if (popup.id === 'popup-seleccion-dinosaurios') {
+              return; // No cerrar este popup con Escape
+            }
+            Utils.cerrarPopup(popup);
+          }
+        });
+      }
+    });
+  }
+};
+
+/* ==================== LÓGICA DEL JUEGO ==================== */
+const GameLogic = {
+  puedeColocarDinosaurio(recinto, tipoDino) {
+    if (estadoJuego.yaColocoEnTurno) return false;
+
+    // El rí­o SIEMPRE está disponible
+    if (recinto === 'rio') return true;
+
+    const jugador = estadoJuego.getJugadorActual();
+    const recintoActual = jugador.recintos[recinto];
+    const reglas = REGLAS_RECINTOS[recinto];
+
+    if (!reglas || recintoActual.length >= reglas.maxDinos) return false;
+
+    if (estadoJuego.restriccionActual && !this.cumpleRestriccion(recinto, tipoDino)) {
+      return false;
+    }
+
+    return reglas.validar(recintoActual, tipoDino);
+  },
+
+  cumpleRestriccion(recinto, tipoDino) {
+    const recintos = estadoJuego.getJugadorActual().recintos;
+    const restricciones = {
+      'no-t-rex': () => {
+        if (tipoDino === 't-rex') {
+          return !recintos[recinto].some(d => d === 't-rex');
+        } else {
+          return !recintos[recinto].some(d => d === 't-rex');
+        }
+      },
+      'lugar-vacio': () => recintos[recinto].length === 0,
+      'lado-cafeteria': () => ['bosque-semejanza', 'pradera-amor', 'woody-trio'].includes(recinto),
+      'bosque': () => ['bosque-semejanza', 'woody-trio'].includes(recinto),
+      'rocas': () => ['rey-jungla', 'isla-solitaria'].includes(recinto),
+      'lado-banos': () => ['prado-diferencia', 'rey-jungla', 'isla-solitaria'].includes(recinto)
+    };
+    return restricciones[estadoJuego.restriccionActual]?.() ?? true;
+  },
+
+  colocarDinosaurio(recinto, tipoDino, area) {
+    if (estadoJuego.yaColocoEnTurno) return false;
+
+    const jugador = estadoJuego.getJugadorActual();
+    const idx = jugador.dinosauriosDisponibles.indexOf(tipoDino);
+    if (idx === -1) return false;
+
+    jugador.dinosauriosDisponibles.splice(idx, 1);
+    jugador.recintos[recinto].push(tipoDino);
+
+    RenderManager.agregarDinosaurioVisual(tipoDino, recinto, area);
+
+    estadoJuego.yaColocoEnTurno = true;
+    this.actualizarPuntos();
+    this.actualizarPesos();
+
+    JuegoManager.actualizarInterfaz();
+    RenderManager.actualizarDinosauriosDisponibles();
+    setTimeout(() => JuegoManager.mostrarPopupDescarte(), 350);
+
+    return true;
+  },
+
+  calcularPuntos(recintos, jugadorActual = null, todosJugadores = null) {
+    let total = 0;
+
+    Object.entries(recintos).forEach(([nombre, dinosaurios]) => {
+      const reglas = REGLAS_RECINTOS[nombre];
+      if (!reglas) return;
+
+      let puntos = 0;
+
+      if (typeof reglas.puntos === 'function') {
+        if (nombre === 'isla-solitaria') {
+          puntos = reglas.puntos(dinosaurios, recintos);
+        } else if (nombre === 'pradera-amor') {
+          puntos = reglas.puntos(dinosaurios);
+        } else if (nombre === 'rey-jungla') {
+          puntos = reglas.puntos(dinosaurios, recintos, jugadorActual, todosJugadores);
+        } else {
+          puntos = reglas.puntos(dinosaurios.length);
+        }
+      } else if (Array.isArray(reglas.puntos)) {
+        const cantidad = dinosaurios.length;
+        puntos = reglas.puntos[cantidad] || 0;
+      }
+
+      total += puntos;
+    });
+
+    // Bonus T-Rex
+    let bonusTRex = 0;
+    Object.entries(recintos).forEach(([nombre, dinosaurios]) => {
+      if (dinosaurios.some(d => d === 't-rex')) {
+        bonusTRex += 1;
+      }
+    });
+    total += bonusTRex;
 
     return total;
   },
 
   actualizarPuntos() {
-    const j = estadoJuego[`jugador${estadoJuego.jugadorActual}`];
-    j.puntosRonda = this.calcularPuntos(j.recintos);
-    JuegoManager.actualizarPuntosInterfaz();
+    const jugador1 = estadoJuego.jugador1;
+    const jugador2 = estadoJuego.jugador2;
+    const todosJugadores = estadoJuego.getTodosJugadores();
+    
+    jugador1.puntosRonda = this.calcularPuntos(jugador1.recintos, jugador1, todosJugadores);
+    jugador2.puntosRonda = this.calcularPuntos(jugador2.recintos, jugador2, todosJugadores);
+    
+    console.log(`Puntos actualizados - J1: ${jugador1.puntosRonda}, J2: ${jugador2.puntosRonda}`);
   },
 
   actualizarPesos() {
-    const j = estadoJuego[`jugador${estadoJuego.jugadorActual}`];
+    const jugador = estadoJuego.getJugadorActual();
     let pesoTotal = 0;
 
-    Object.keys(j.recintos).forEach(recinto => {
-      const dinos = j.recintos[recinto];
-      const peso = dinos.reduce((s, d) => s + CONFIG.PESOS_DINOSAURIOS[d], 0);
+    Object.entries(jugador.recintos).forEach(([recinto, dinosaurios]) => {
+      const peso = dinosaurios.reduce((sum, dino) =>
+        sum + (CONFIG.PESOS_DINOSAURIOS[dino] || 0), 0);
+
       pesoTotal += peso;
       const elem = document.getElementById(`peso-${recinto}`);
       if (elem) elem.textContent = peso.toFixed(1);
@@ -255,60 +637,252 @@ const GameLogic = {
     const elemTotal = document.getElementById('peso-total');
     if (elemTotal) elemTotal.textContent = pesoTotal.toFixed(1);
   }
-};/* ==================== SISTEMA DRAG & DROP ==================== */
-const DragDropManager = {
-  init() {
-    const dinosaurios = document.querySelectorAll('.dino');
-    const dropZones = [...document.querySelectorAll('.cuadro'), ...document.querySelectorAll('.rectangulo')];
+};
 
-    dinosaurios.forEach(dino => {
-      dino.addEventListener('dragstart', this.handleDragStart.bind(this));
-      dino.addEventListener('dragend', this.handleDragEnd.bind(this));
+/* ==================== RENDERIZADO ==================== */
+const RenderManager = {
+  renderizarTablero() {
+    estadoJuego.modoSeguimiento ?
+      this.renderizarTableroSeguimiento() :
+      this.renderizarTableroNormal();
+  },
+
+  renderizarTableroNormal() {
+    Utils.limpiarElementos('.dinosaurio-colocado');
+    const jugador = estadoJuego.getJugadorActual();
+
+    Object.entries(jugador.recintos).forEach(([recinto, dinosaurios]) => {
+      const area = document.querySelector(`[data-recinto="${recinto}"]`);
+      if (!area) return;
+
+      dinosaurios.forEach((tipo, index) => {
+        this.crearDinosaurioVisual(tipo, index + 1, area);
+      });
+    });
+    
+    DragDropManager.init();
+  },
+
+  renderizarTableroSeguimiento() {
+    Utils.limpiarElementos('.dinosaurio-colocado');
+    const jugador = estadoJuego.getJugadorActual();
+
+    Object.entries(jugador.recintos).forEach(([recinto, dinosaurios]) => {
+      const area = document.querySelector(`[data-recinto="${recinto}"]`);
+      if (!area) return;
+
+      dinosaurios.forEach((tipo, index) => {
+        const img = this.crearDinosaurioVisual(tipo, index + 1, area);
+        
+        // Habilitar drag para ronda 2 en modo seguimiento
+        if (estadoJuego.modoSeguimiento && estadoJuego.rondaActual === 2) {
+          img.draggable = true;
+          img.style.cursor = 'move';
+          img.style.pointerEvents = 'auto';
+          img.dataset.recinto = recinto;
+          img.dataset.tipo = tipo;
+          img.dataset.jugador = estadoJuego.jugadorActual;
+          // No agregar eventos aquí, se harán en DragDropManager.init()
+        }
+      });
+    });
+    
+    // Llamar a init después de que todos los elementos estén en el DOM
+    setTimeout(() => {
+      DragDropManager.init();
+    }, 50);
+  },
+
+  crearDinosaurioVisual(tipo, posicion, area) {
+    const pos = CONFIG.POSICIONES_DINOSAURIOS[(posicion - 1) % CONFIG.POSICIONES_DINOSAURIOS.length];
+    const img = Utils.crearElemento('img', {
+      src: CONFIG.IMAGENES_DINOSAURIOS[tipo].colocado,
+      className: 'dinosaurio-colocado',
+      alt: tipo
+    }, {
+      position: 'absolute',
+      top: pos.top,
+      left: pos.left,
+      transform: 'translate(-50%, -50%)',
+      zIndex: '15',
+      pointerEvents: estadoJuego.modoSeguimiento && estadoJuego.rondaActual === 2 ? 'auto' : 'none'
     });
 
-    dropZones.forEach(zone => {
-      if (zone.dataset.ddInited === '1') return;
-      zone.addEventListener('dragover', this.handleDragOver);
-      zone.addEventListener('drop', this.handleDrop.bind(this));
-      zone.addEventListener('dragenter', this.handleDragEnter.bind(this));
-      zone.addEventListener('dragleave', this.handleDragLeave);
-      zone.dataset.ddInited = '1';
+    area.appendChild(img);
+    return img;
+  },
+
+  agregarDinosaurioVisual(tipo, recinto, area) {
+    const jugador = estadoJuego.getJugadorActual();
+    const cantidad = jugador.recintos[recinto].length;
+    this.crearDinosaurioVisual(tipo, cantidad, area);
+  },
+
+  agregarEventosCorreccion(img) {
+    img.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('tipo', img.dataset.tipo);
+      e.dataTransfer.setData('recinto-origen', img.dataset.recinto);
+      e.dataTransfer.setData('correccion', 'true');
+      img.classList.add('dragging');
+    });
+
+    img.addEventListener('dragend', () => {
+      img.classList.remove('dragging');
     });
   },
 
+  actualizarDinosauriosDisponibles() {
+    const contenedor = document.querySelector('.dinosaurios-disponibles');
+    if (!contenedor) return;
+
+    contenedor.innerHTML = '';
+    const jugador = estadoJuego.getJugadorActual();
+
+    jugador.dinosauriosDisponibles.forEach((tipo, index) => {
+      const img = Utils.crearElemento('img', {
+        src: CONFIG.IMAGENES_DINOSAURIOS[tipo].disponible,
+        className: 'dino',
+        draggable: true,
+        alt: tipo,
+        dataset: { tipo: tipo, index: index.toString() }
+      });
+      contenedor.appendChild(img);
+    });
+
+    DragDropManager.init();
+  }
+};
+
+/* ==================== DRAG & DROP ==================== */
+const DragDropManager = {
+  dinosaurioArrastrado: null,
+  esCorreccion: false,
+  recintoOrigen: null,
+
+  init() {
+    this.initDinosaurios();
+    this.initDropZones();
+    
+    // Inicializar dinosaurios colocados para ronda 2 - MEJORADO
+    if (estadoJuego.modoSeguimiento && estadoJuego.rondaActual === 2) {
+      // Usar setTimeout para asegurar que el DOM esté completamente renderizado
+      setTimeout(() => {
+        this.initDinosauriosColocados();
+      }, 100);
+    }
+  },
+  
+  initDinosauriosColocados() {
+    // Limpiar event listeners previos
+    document.querySelectorAll('.dinosaurio-colocado').forEach(dino => {
+      // Clonar el elemento para eliminar todos los event listeners
+      const newDino = dino.cloneNode(true);
+      dino.parentNode.replaceChild(newDino, dino);
+    });
+    
+    // Ahora agregar los nuevos event listeners
+    document.querySelectorAll('.dinosaurio-colocado').forEach(dino => {
+      if (estadoJuego.modoSeguimiento && estadoJuego.rondaActual === 2) {
+        // SOLO habilitar drag para el jugador actual
+        const jugadorDelDino = parseInt(dino.dataset.jugador);
+        if (jugadorDelDino === estadoJuego.jugadorActual) {
+          dino.draggable = true;
+          dino.style.cursor = 'move';
+          dino.style.pointerEvents = 'auto';
+          
+          if (!dino.dataset.tipo && dino.alt) {
+            dino.dataset.tipo = dino.alt;
+          }
+          
+          const area = dino.closest('[data-recinto]');
+          if (area && area.dataset.recinto) {
+            dino.dataset.recinto = area.dataset.recinto;
+          }
+          
+          dino.addEventListener('dragstart', this.handleDragStartCorreccion.bind(this));
+          dino.addEventListener('dragend', this.handleDragEnd.bind(this));
+        }
+      }
+    });
+  },
+
+  initDinosaurios() {
+    document.querySelectorAll('.dino').forEach(dino => {
+      const newDino = dino.cloneNode(true);
+      dino.parentNode.replaceChild(newDino, dino);
+
+      newDino.addEventListener('dragstart', this.handleDragStart.bind(this));
+      newDino.addEventListener('dragend', this.handleDragEnd.bind(this));
+    });
+  },
+
+  initDropZones() {
+    const dropZones = document.querySelectorAll('.cuadro, .rectangulo');
+
+    dropZones.forEach(zone => {
+      const newZone = zone.cloneNode(true);
+      zone.parentNode.replaceChild(newZone, zone);
+      
+      ['dragover', 'drop', 'dragenter', 'dragleave'].forEach(event => {
+        newZone.addEventListener(event, this[`handle${event.charAt(0).toUpperCase() + event.slice(1)}`].bind(this));
+      });
+    });
+  },
+  
+  handleDragStartCorreccion(e) {
+    this.dinosaurioArrastrado = e.target;
+    this.esCorreccion = true;
+    this.recintoOrigen = e.target.dataset.recinto;
+    
+    e.target.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('tipo', e.target.dataset.tipo);
+    e.dataTransfer.setData('recinto-origen', this.recintoOrigen);
+    e.dataTransfer.setData('correccion', 'true');
+  },
+
   handleDragStart(e) {
-    if (hayPopupAbierto() || estadoJuego.yaColocoEnTurno) {
+    if (Utils.hayPopupAbierto() || estadoJuego.yaColocoEnTurno) {
       e.preventDefault();
       return;
     }
-    dinosaurioArrastrado = e.target;
+
+    this.dinosaurioArrastrado = e.target;
+    this.esCorreccion = false;
+    this.recintoOrigen = null;
+
     e.target.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', e.target.dataset.tipo);
   },
 
   handleDragEnd(e) {
     e.target.classList.remove('dragging');
-    document.querySelectorAll('.drop-zone-active, .drop-zone-invalid').forEach(el => {
-      el.classList.remove('drop-zone-active', 'drop-zone-invalid');
-    });
+    this.limpiarIndicadores();
+    this.dinosaurioArrastrado = null;
+    this.esCorreccion = false;
+    this.recintoOrigen = null;
   },
 
-  handleDragOver(e) {
+  handleDragover(e) {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
   },
 
-  handleDragEnter(e) {
+  handleDragenter(e) {
     e.preventDefault();
-    const recinto = e.currentTarget.dataset.recinto || e.target.closest('[data-recinto]')?.dataset.recinto;
-    if (recinto && GameLogic.puedeColocarDinosaurio(recinto, dinosaurioArrastrado?.dataset.tipo)) {
-      e.currentTarget.classList.add('drop-zone-active');
-    } else {
-      e.currentTarget.classList.add('drop-zone-invalid');
-    }
+    const zona = e.currentTarget;
+    const recinto = zona.dataset.recinto;
+
+    if (!recinto || !this.dinosaurioArrastrado) return;
+
+    const tipoDino = this.dinosaurioArrastrado.dataset.tipo;
+    const puedeColocar = this.esCorreccion || GameLogic.puedeColocarDinosaurio(recinto, tipoDino);
+
+    zona.classList.add(puedeColocar ? 'drop-zone-active' : 'drop-zone-invalid');
   },
 
-  handleDragLeave(e) {
+  handleDragleave(e) {
     if (!e.currentTarget.contains(e.relatedTarget)) {
       e.currentTarget.classList.remove('drop-zone-active', 'drop-zone-invalid');
     }
@@ -316,780 +890,997 @@ const DragDropManager = {
 
   handleDrop(e) {
     e.preventDefault();
-    const tipoDino = e.dataTransfer.getData('text/plain');
-    const area = e.target.closest('[data-recinto]') || e.currentTarget;
-    const recinto = area.dataset.recinto;
 
-    if (recinto && GameLogic.puedeColocarDinosaurio(recinto, tipoDino)) {
+    const area = e.currentTarget;
+    const recinto = area.dataset.recinto;
+    const tipoDino = e.dataTransfer.getData('text/plain') || 
+                     e.dataTransfer.getData('tipo');
+
+    if (!recinto || !tipoDino) {
+      this.limpiarIndicadores();
+      return;
+    }
+
+    if (this.esCorreccion) {
+      this.manejarCorreccion(recinto, tipoDino, area);
+    } else if (GameLogic.puedeColocarDinosaurio(recinto, tipoDino)) {
       GameLogic.colocarDinosaurio(recinto, tipoDino, area);
     }
 
-    area.classList.remove('drop-zone-active', 'drop-zone-invalid');
-  }
-};
-
-/* ==================== SISTEMA DE MAPA DEL OPONENTE ==================== */
-const MapaOponente = {
-  mostrar() {
-    const oponente = estadoJuego.jugadorActual === 1 ? estadoJuego.jugador2 : estadoJuego.jugador1;
-    this.actualizarTitulo(oponente.nombre);
-    this.mostrarDinosaurios(oponente.recintos);
-    this.calcularPuntos(oponente.recintos);
-    abrirCapa(document.getElementById('popup-mapa'));
+    this.limpiarIndicadores();
   },
 
-  actualizarTitulo(nombre) {
-    const t = document.getElementById('titulo-mapa');
-    if (t) t.textContent = `MAPA DE ${nombre?.toUpperCase() || 'OPONENTE'}`;
-  },
+  manejarCorreccion(recintoDestino, tipoDino, area) {
+    if (!this.recintoOrigen || this.recintoOrigen === recintoDestino) return;
 
-  mostrarDinosaurios(recintos) {
-    document.querySelectorAll('.mini-dinosaurios').forEach(c => c.innerHTML = '');
-    Object.entries(recintos).forEach(([recinto, dinos]) => {
-      const cont = document.getElementById(`mapa-${recinto}`);
-      if (!cont || dinos.length === 0) return;
-      dinos.forEach((tipo, i) => {
-        const el = this.crearMiniDinosaurio(tipo, i + 1);
-        cont.appendChild(el);
-      });
-    });
-  },
-
-  crearMiniDinosaurio(tipoDino, posIndex) {
-    const el = document.createElement('img');
-    el.src = CONFIG.IMAGENES_DINOSAURIOS[tipoDino].colocado;
-    el.className = 'mini-dinosaurio';
-    el.alt = tipoDino;
-    const pos = CONFIG.POSICIONES_MINI_DINOSAURIOS[(posIndex - 1) % CONFIG.POSICIONES_MINI_DINOSAURIOS.length];
-    Object.assign(el.style, {
-      position: 'absolute',
-      top: pos.top,
-      left: pos.left,
-      transform: 'translate(-50%, -50%)',
-      zIndex: '15',
-      pointerEvents: 'none'
-    });
-    return el;
-  },
-
-  calcularPuntos(recintos) {
-    const detalle = {};
-    let total = 0;
-
-    Object.keys(recintos).forEach(nombre => {
-      const recinto = recintos[nombre];
-      const reglas = REGLAS_RECINTOS[nombre];
-      let pts = 0;
-
-    if (typeof reglas.puntos === 'function') {
-        if (nombre === 'isla-solitaria') pts = reglas.puntos(recinto, recintos);
-        else if (nombre === 'rio' || nombre === 'woody-trio') pts = reglas.puntos(recinto.length);
-        else pts = reglas.puntos(recinto);
-      } else if (Array.isArray(reglas.puntos)) {
-        pts = reglas.puntos[recinto.length] || 0;
-      }detalle[nombre] = pts;
-      total += pts;
-    });
-
-    Object.values(recintos).forEach(r => {
-      if (r.some(d => d === 't-rex')) total += 1;
-    });
-
-    this.actualizarPuntosUI(detalle, total);
-  },
-
-  actualizarPuntosUI(detalle, total) {
-    Object.entries(detalle).forEach(([recinto, pts]) => {
-      const el = document.getElementById(`puntos-${recinto}`);
-      if (el) el.textContent = `${pts} pts`;
-    });
-    const totalEl = document.getElementById('puntos-total-oponente');
-    if (totalEl) totalEl.innerHTML = `<strong>${total} PUNTOS</strong>`;
-  }
-};
-
-/* ==================== POPUPS ==================== */
-const PopupManager = {
-  mostrarReglas() {
-    abrirCapa(document.getElementById('popup-reglas'));
-  },
-  mostrarPesos() {
-    GameLogic.actualizarPesos();
-    abrirCapa(document.getElementById('popup-pesos'));
-  },
-  cerrar(popupId) {
-    if (popupId) cerrarCapa(document.getElementById(popupId));
-    else document.querySelectorAll('.popup-overlay').forEach(p => cerrarCapa(p));
-  },
-  setupEventListeners() {
-    // Cerrar al click fuera
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('popup-overlay')) this.cerrar();
-    });
-    // Botones cerrar
-    document.querySelectorAll('.popup-close').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const p = btn.closest('.popup-overlay');
-        cerrarCapa(p);
-      });
-    });
-    // ESC
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') this.cerrar(); });
-
-    // Botón siguiente turno (habilitado tras descartar)
-    const btnSig = document.getElementById('btn-siguiente-turno');
-    if (btnSig && !btnSig.dataset.bound) {
-      btnSig.addEventListener('click', () => {
-        if (!estadoJuego.puedePasarTurno) {
-          alert('Primero colocá y descartá un dinosaurio.');
-          return;
-        }
-        estadoJuego.puedePasarTurno = false;
-        estadoJuego.yaColocoEnTurno = false;
-        btnSig.disabled = true;
-        JuegoManager.procesarSiguienteTurno();
-        JuegoManager.updateBotonTurnoLabel(); // por si venía como "Finalizar ronda"
-      });
-      btnSig.dataset.bound = '1';
+    const jugador = estadoJuego.getJugadorActual();
+    const reglas = REGLAS_RECINTOS[recintoDestino];
+    
+    if (reglas && reglas.maxDinos && jugador.recintos[recintoDestino].length >= reglas.maxDinos) {
+      console.log('Recinto destino lleno');
+      return;
     }
+    
+    const idxOrigen = jugador.recintos[this.recintoOrigen].indexOf(tipoDino);
+
+    if (idxOrigen !== -1) {
+      jugador.recintos[this.recintoOrigen].splice(idxOrigen, 1);
+      jugador.recintos[recintoDestino].push(tipoDino);
+
+      RenderManager.renderizarTableroSeguimiento();
+      GameLogic.actualizarPuntos();
+      GameLogic.actualizarPesos();
+    }
+  },
+
+  limpiarIndicadores() {
+    document.querySelectorAll('.drop-zone-active, .drop-zone-invalid')
+      .forEach(el => el.classList.remove('drop-zone-active', 'drop-zone-invalid'));
   }
 };
 
-/* ==================== UTILIDADES ==================== */
-const Utils = {
-  setupDragPrevention() {
-    document.addEventListener('dragstart', (e) => {
-      if (!e.target.classList.contains('dino')) e.preventDefault();
+/* ==================== MODO SEGUIMIENTO ==================== */
+const ModoSeguimiento = {
+  MAX_DINOSAURIOS: 6,
+  dinosauriosSeleccionados: [],
+  eventListeners: new Map(),
+
+  mostrarPopupSeleccionDinosaurios() {
+    const jugadorNum = estadoJuego.jugadorActual;
+    const yaSeleccionoEnRonda = (jugadorNum === 1 && estadoJuego.dinosauriosRondaJ1.length > 0) ||
+      (jugadorNum === 2 && estadoJuego.dinosauriosRondaJ2.length > 0);
+
+    console.log(`Jugador ${jugadorNum} - Ronda ${estadoJuego.rondaActual} - Ya seleccionó: ${yaSeleccionoEnRonda}`);
+
+    if (yaSeleccionoEnRonda) {
+      this.restaurarDinosauriosGuardados();
+      return;
+    }
+
+    this.resetearContadores();
+    const popup = document.getElementById('popup-seleccion-dinosaurios');
+    if (!popup) return;
+
+    const titulo = popup.querySelector('h2');
+    if (titulo) {
+      const nombre = estadoJuego.getJugadorActual().nombre || `Jugador ${estadoJuego.jugadorActual}`;
+      titulo.textContent = `${nombre.toUpperCase()} - Seleccionar dinosaurios para RONDA ${estadoJuego.rondaActual}`;
+    }
+
+    this.configurarSeleccionDinosaurios();
+    Utils.abrirPopup(popup);
+  },
+
+  restaurarDinosauriosGuardados() {
+    const jugador = estadoJuego.getJugadorActual();
+    const jugadorNum = estadoJuego.jugadorActual;
+    
+    if (jugadorNum === 1) {
+      // Restaurar los dinosaurios originales de J1
+      jugador.dinosauriosDisponibles = [...estadoJuego.dinosauriosRondaJ1];
+      
+      // Eliminar los dinosaurios ya colocados y descartados
+      const dinosauriosUsados = estadoJuego.turnosCompletadosJ1 * 2;
+      
+      // Tambií©n eliminar especí­ficamente los descartados
+      estadoJuego.descartadosJ1.forEach(descartado => {
+        const idx = jugador.dinosauriosDisponibles.indexOf(descartado);
+        if (idx !== -1) {
+          jugador.dinosauriosDisponibles.splice(idx, 1);
+        }
+      });
+      
+      // Y eliminar los que ya están en recintos
+      Object.values(jugador.recintos).flat().forEach(dinoColocado => {
+        const idx = jugador.dinosauriosDisponibles.indexOf(dinoColocado);
+        if (idx !== -1) {
+          jugador.dinosauriosDisponibles.splice(idx, 1);
+        }
+      });
+      
+      console.log(`J1: Restaurando. Disponibles: ${jugador.dinosauriosDisponibles.length}`, jugador.dinosauriosDisponibles);
+    } else {
+      // Restaurar los dinosaurios originales de J2
+      jugador.dinosauriosDisponibles = [...estadoJuego.dinosauriosRondaJ2];
+      
+      // Eliminar los dinosaurios ya colocados y descartados
+      const dinosauriosUsados = estadoJuego.turnosCompletadosJ2 * 2;
+      
+      // Tambií©n eliminar especí­ficamente los descartados
+      estadoJuego.descartadosJ2.forEach(descartado => {
+        const idx = jugador.dinosauriosDisponibles.indexOf(descartado);
+        if (idx !== -1) {
+          jugador.dinosauriosDisponibles.splice(idx, 1);
+        }
+      });
+      
+      // Y eliminar los que ya están en recintos
+      Object.values(jugador.recintos).flat().forEach(dinoColocado => {
+        const idx = jugador.dinosauriosDisponibles.indexOf(dinoColocado);
+        if (idx !== -1) {
+          jugador.dinosauriosDisponibles.splice(idx, 1);
+        }
+      });
+      
+      console.log(`J2: Restaurando. Disponibles: ${jugador.dinosauriosDisponibles.length}`, jugador.dinosauriosDisponibles);
+    }
+
+    RenderManager.actualizarDinosauriosDisponibles();
+    JuegoManager.actualizarInterfaz();
+    
+    // Renderizar tablero correctamente
+    setTimeout(() => {
+      RenderManager.renderizarTablero();
+      DragDropManager.init();
+    }, 100);
+
+    if (estadoJuego.necesitaRestriccion()) {
+      setTimeout(() => this.mostrarPopupSeleccionDado(), 200);
+    } else {
+      JuegoManager.establecerSinRestriccion();
+      if (window.app?.showScreen) {
+        window.app.showScreen('partida');
+      }
+    }
+  },
+
+  configurarSeleccionDinosaurios() {
+    const popup = document.getElementById('popup-seleccion-dinosaurios');
+    if (!popup) return;
+
+    this.eventListeners.forEach((listener, element) => {
+      element.removeEventListener('click', listener);
     });
-  },
-  setupVerMapa() {
-    const el = document.querySelector('.ver-mapa');
-    if (!el) return;
-    el.replaceWith(el.cloneNode(true));
-    const nuevo = document.querySelector('.ver-mapa');
-    if (!nuevo) return;
-    nuevo.style.cursor = 'pointer';
-    nuevo.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      MapaOponente.mostrar();
+    this.eventListeners.clear();
+
+    popup.querySelectorAll('.dino-selector').forEach(selector => {
+      const contador = selector.querySelector('.contador-valor');
+      const btnDecrease = selector.querySelector('[data-action="decrease"]');
+      const btnIncrease = selector.querySelector('[data-action="increase"]');
+
+      if (btnDecrease && contador) {
+        const decreaseHandler = () => {
+          const valor = parseInt(contador.textContent) || 0;
+          if (valor > 0) {
+            contador.textContent = valor - 1;
+            this.actualizarTotalSeleccion();
+          }
+        };
+        btnDecrease.addEventListener('click', decreaseHandler);
+        this.eventListeners.set(btnDecrease, decreaseHandler);
+      }
+
+      if (btnIncrease && contador) {
+        const increaseHandler = () => {
+          const valorActual = parseInt(contador.textContent) || 0;
+          const totalActual = this.calcularTotalSeleccionado();
+
+          if (totalActual < this.MAX_DINOSAURIOS) {
+            contador.textContent = valorActual + 1;
+            this.actualizarTotalSeleccion();
+          } else {
+            if (window.app?.showToast) {
+              window.app.showToast(`Máximo ${this.MAX_DINOSAURIOS} dinosaurios`, 'warning');
+            }
+          }
+        };
+        btnIncrease.addEventListener('click', increaseHandler);
+        this.eventListeners.set(btnIncrease, increaseHandler);
+      }
     });
+
+    const btnConfirmar = document.getElementById('btn-confirmar-seleccion');
+    if (btnConfirmar) {
+      btnConfirmar.onclick = () => this.confirmarSeleccionDinosaurios();
+    }
   },
-  mostrarPantallaPartida() {
-    document.querySelectorAll('.pantalla').forEach(p => p.style.display = 'none');
-    const part = document.getElementById('pantalla-partida');
-    if (part) part.style.display = 'block';
+
+  calcularTotalSeleccionado() {
+    return Array.from(document.querySelectorAll('.contador-valor'))
+      .reduce((total, contador) => total + (parseInt(contador.textContent) || 0), 0);
   },
-  debugEstadoJuego() {
-    console.log('=== ESTADO ACTUAL DEL JUEGO ===');
-    console.log('Ronda:', estadoJuego.rondaActual, 'Turno:', estadoJuego.turnoEnRonda);
-    console.log('Jugador actual:', estadoJuego.jugadorActual, 'Restricción:', estadoJuego.restriccionActual);
-    console.log('J1:', estadoJuego.jugador1);
-    console.log('J2:', estadoJuego.jugador2);
-    console.log('Pool restante:', estadoJuego.repartosDisponibles.length);
+
+  actualizarTotalSeleccion() {
+    const total = this.calcularTotalSeleccionado();
+    const totalElement = document.getElementById('total-dinosaurios');
+
+    if (totalElement) {
+      totalElement.textContent = total;
+      totalElement.style.color = total === this.MAX_DINOSAURIOS ? '#4CAF50' : '';
+    }
+
+    const btnConfirmar = document.getElementById('btn-confirmar-seleccion');
+    if (btnConfirmar) {
+      btnConfirmar.disabled = (total !== this.MAX_DINOSAURIOS);
+      btnConfirmar.textContent = total < this.MAX_DINOSAURIOS ?
+        `Selecciona ${this.MAX_DINOSAURIOS - total} más` : 'Confirmar selección';
+    }
+  },
+
+  confirmarSeleccionDinosaurios() {
+    const dinosaurios = [];
+
+    document.querySelectorAll('.dino-selector').forEach(selector => {
+      const tipo = selector.dataset.tipo;
+      const cantidad = parseInt(selector.querySelector('.contador-valor').textContent) || 0;
+
+      for (let i = 0; i < cantidad; i++) {
+        dinosaurios.push(tipo);
+      }
+    });
+
+    if (dinosaurios.length !== this.MAX_DINOSAURIOS) {
+      if (window.app?.showToast) {
+        window.app.showToast(`Debes seleccionar exactamente ${this.MAX_DINOSAURIOS} dinosaurios`, 'error');
+      }
+      return;
+    }
+
+    if (estadoJuego.jugadorActual === 1) {
+      estadoJuego.dinosauriosRondaJ1 = [...dinosaurios];
+      // Limpiar descartados al inicio de la ronda
+      if (estadoJuego.turnosCompletadosJ1 === 0) {
+        estadoJuego.descartadosJ1 = [];
+      }
+    } else {
+      estadoJuego.dinosauriosRondaJ2 = [...dinosaurios];
+      // Limpiar descartados al inicio de la ronda
+      if (estadoJuego.turnosCompletadosJ2 === 0) {
+        estadoJuego.descartadosJ2 = [];
+      }
+    }
+
+    estadoJuego.getJugadorActual().dinosauriosDisponibles = [...dinosaurios];
+
+    Utils.cerrarPopup(document.getElementById('popup-seleccion-dinosaurios'));
+    this.resetearContadores();
+
+    RenderManager.actualizarDinosauriosDisponibles();
+    JuegoManager.actualizarInterfaz();
+
+    if (estadoJuego.necesitaRestriccion()) {
+      setTimeout(() => this.mostrarPopupSeleccionDado(), 100);
+    } else {
+      console.log('Primer turno de la ronda - Sin restricción');
+      
+      // Resetear estado del turno para el primer turno sin restricción
+      estadoJuego.yaColocoEnTurno = false;
+      estadoJuego.puedePasarTurno = false;
+      estadoJuego.dadoNumero = null; // No hay dado en el primer turno
+      
+      JuegoManager.establecerSinRestriccion();
+      if (window.app?.showScreen) {
+        window.app.showScreen('partida');
+      }
+
+      RenderManager.actualizarDinosauriosDisponibles();
+      JuegoManager.actualizarInterfaz();
+      JuegoManager.actualizarBotonSiguiente();
+      RenderManager.renderizarTablero();
+      
+      setTimeout(() => {
+        DragDropManager.init();
+      }, 100);
+    }
+  },
+
+  resetearContadores() {
+    document.querySelectorAll('.contador-valor').forEach(contador => {
+      contador.textContent = '0';
+    });
+
+    const totalElement = document.getElementById('total-dinosaurios');
+    if (totalElement) {
+      totalElement.textContent = '0';
+      totalElement.style.color = '';
+    }
+
+    const btnConfirmar = document.getElementById('btn-confirmar-seleccion');
+    if (btnConfirmar) {
+      btnConfirmar.disabled = true;
+      btnConfirmar.textContent = `Selecciona ${this.MAX_DINOSAURIOS} dinosaurios`;
+    }
+  },
+
+  mostrarPopupSeleccionDado() {
+    document.querySelectorAll('.cara-dado-opcion').forEach(cara => {
+      cara.classList.remove('seleccionada');
+      cara.onclick = () => this.seleccionarCaraDado(cara);
+    });
+
+    Utils.abrirPopup(document.getElementById('popup-seleccion-dado'));
+  },
+
+  seleccionarCaraDado(cara) {
+    document.querySelectorAll('.cara-dado-opcion').forEach(c => {
+      c.classList.remove('seleccionada');
+    });
+    cara.classList.add('seleccionada');
+
+    const caraSeleccionada = parseInt(cara.dataset.cara);
+    estadoJuego.dadoNumero = caraSeleccionada;
+
+    setTimeout(() => {
+      this.procesarDadoSeleccionado(caraSeleccionada);
+      Utils.cerrarPopup(document.getElementById('popup-seleccion-dado'));
+    }, 300);
+  },
+
+  procesarDadoSeleccionado(numeroDado) {
+    const restriccion = CONFIG.RESTRICCIONES_DADO[numeroDado];
+
+    if (restriccion) {
+      JuegoManager.establecerRestriccion(restriccion.tipo, restriccion.titulo);
+    }
+
+    // CRíTICO: Resetear estado del turno despuí©s de seleccionar dado
+    estadoJuego.yaColocoEnTurno = false;
+    estadoJuego.puedePasarTurno = false;
+    
+    // Deshabilitar botón siguiente turno
+    const btn = document.getElementById('btn-siguiente-turno');
+    if (btn) {
+      btn.disabled = true;
+    }
+
+    if (window.app?.showScreen) {
+      window.app.showScreen('partida');
+    }
+
+    RenderManager.actualizarDinosauriosDisponibles();
+    JuegoManager.actualizarInterfaz();
+    RenderManager.renderizarTablero();
+    
+    setTimeout(() => {
+      DragDropManager.init();
+    }, 100);
   }
 };
 
-/* ==================== GESTOR PRINCIPAL DEL JUEGO ==================== */
+/* ==================== GESTOR PRINCIPAL ==================== */
 const JuegoManager = {
-  /* --- Setup / Inicio --- */
-  inicializarPartida(jugadores, jugador2Info, primerJugador) {
+  dinoSeleccionadoDescarte: null,
+  tipoSeleccionadoDescarte: null,
+  
+  inicializarPartida(jugadores, jugador2Info, primerJugador, modoSeguimiento = false) {
+    estadoJuego.reset();
+
     estadoJuego.jugadores = jugadores;
-    estadoJuego.primerJugador = primerJugador;
-    estadoJuego.jugadorActual = primerJugador;
     estadoJuego.jugador1.nombre = jugadores[0] || 'Jugador 1';
     estadoJuego.jugador2.nombre = jugadores[1] || 'Jugador 2';
+    estadoJuego.primerJugador = primerJugador;
+    estadoJuego.primerJugadorOriginal = primerJugador;
+    estadoJuego.jugadorActual = primerJugador;
+    estadoJuego.modoSeguimiento = modoSeguimiento;
 
-    // Exponer info para app.js (avatares)
-    if (window.app) window.app.jugador2Info = jugador2Info || { tipo: 'invitado' };
+    estadoJuego.turnosCompletadosJ1 = 0;
+    estadoJuego.turnosCompletadosJ2 = 0;
+    
+    // Limpiar arrays de descarte
+    estadoJuego.descartadosJ1 = [];
+    estadoJuego.descartadosJ2 = [];
 
-    this.generarPoolDinosaurios();
-    this.iniciarRonda();
+    if (window.app) {
+      window.app.jugador2Info = jugador2Info || { tipo: 'invitado' };
+    }
 
-    console.log('Partida inicializada. Empieza:', jugadores[primerJugador - 1]);
+    console.log(`Partida iniciada - Modo: ${modoSeguimiento ? 'SEGUIMIENTO' : 'NORMAL'}`);
+    console.log(`Primer jugador: ${primerJugador}`);
+
+    if (modoSeguimiento) {
+      estadoJuego.turnoEnRonda = 1;
+      estadoJuego.rondaActual = 1;
+    } else {
+      this.generarPoolDinosaurios();
+      this.iniciarRonda();
+      if (window.app?.showScreen) {
+        setTimeout(() => window.app.showScreen('partida'), 100);
+      }
+    }
   },
 
   generarPoolDinosaurios() {
     estadoJuego.repartosDisponibles = [];
     CONFIG.TIPOS_DINOSAURIOS.forEach(tipo => {
-      for (let i = 0; i < 8; i++) estadoJuego.repartosDisponibles.push(tipo); // 8 por especie p/2 jugadores
+      for (let i = 0; i < CONFIG.MAX_DINOSAURIOS_POOL; i++) {
+        estadoJuego.repartosDisponibles.push(tipo);
+      }
     });
-    this.mezclarArray(estadoJuego.repartosDisponibles);
-  },
-
-  mezclarArray(arr) {
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
+    estadoJuego.repartosDisponibles = Utils.mezclarArray(estadoJuego.repartosDisponibles);
   },
 
   iniciarRonda() {
-    console.log(`=== INICIANDO RONDA ${estadoJuego.rondaActual} ===`);
-    // limpiar visual del tablero (solo imágenes) y mantener estado
-    document.querySelectorAll('.dinosaurio-colocado').forEach(el => el.remove());
-
-    this.repartirDinosaurios();
+    if (!estadoJuego.modoSeguimiento) {
+      this.repartirDinosaurios();
+    }
     this.configurarTurnoInicial();
   },
 
-  repartirDinosaurios() {
-    estadoJuego.jugador1.dinosauriosDisponibles = this.tomarDinosauriosAleatorios(CONFIG.DINOSAURIOS_POR_RONDA);
-    estadoJuego.jugador2.dinosauriosDisponibles = this.tomarDinosauriosAleatorios(CONFIG.DINOSAURIOS_POR_RONDA);
-    console.log('Dinosaurios J1:', estadoJuego.jugador1.dinosauriosDisponibles);
-    console.log('Dinosaurios J2:', estadoJuego.jugador2.dinosauriosDisponibles);
+  limpiarTablero() {
+    Utils.limpiarElementos('.dinosaurio-colocado');
+
+    [estadoJuego.jugador1, estadoJuego.jugador2].forEach(jugador => {
+      Object.keys(jugador.recintos).forEach(recinto => {
+        jugador.recintos[recinto] = [];
+      });
+      jugador.puntosRonda = 0;
+    });
+
+    RenderManager.renderizarTablero();
+    GameLogic.actualizarPuntos();
+    GameLogic.actualizarPesos();
+    this.actualizarInterfaz();
+
+    console.log('Tablero limpiado completamente para nueva ronda');
   },
 
-  tomarDinosauriosAleatorios(cantidad) {
-    const dinos = [];
-    for (let i = 0; i < cantidad; i++) {
-      if (estadoJuego.repartosDisponibles.length > 0) {
+  repartirDinosaurios() {
+    const tomarDinos = (cantidad) => {
+      const dinos = [];
+      for (let i = 0; i < cantidad && estadoJuego.repartosDisponibles.length > 0; i++) {
         const idx = Math.floor(Math.random() * estadoJuego.repartosDisponibles.length);
         dinos.push(estadoJuego.repartosDisponibles.splice(idx, 1)[0]);
       }
-    }
-    return dinos;
+      return dinos;
+    };
+
+    estadoJuego.jugador1.dinosauriosDisponibles = tomarDinos(CONFIG.DINOSAURIOS_POR_RONDA);
+    estadoJuego.jugador2.dinosauriosDisponibles = tomarDinos(CONFIG.DINOSAURIOS_POR_RONDA);
   },
 
   configurarTurnoInicial() {
-    estadoJuego.turnoEnRonda = 1;
     estadoJuego.puedePasarTurno = false;
     estadoJuego.yaColocoEnTurno = false;
-    this.ocultarRestriccion();
-
-    this.mostrarDinosauriosDisponibles();
-    this.actualizarInterfazJugador();
-    this.renderTableroDelJugadorActual();
 
     const btn = document.getElementById('btn-siguiente-turno');
     if (btn) {
       btn.disabled = true;
-      btn.textContent = 'Siguiente turno';
     }
+
+    if (estadoJuego.esPrimerTurnoDeRonda()) {
+      this.establecerSinRestriccion();
+    } else {
+      this.ocultarRestriccion();
+    }
+
+    RenderManager.actualizarDinosauriosDisponibles();
+    this.actualizarInterfaz();
+    RenderManager.renderizarTablero();
+    this.actualizarBotonSiguiente();
   },
 
-  /* --- Render del tablero del jugador en turno --- */
-  renderTableroDelJugadorActual() {
-    // limpiar todo lo visual actual
-    document.querySelectorAll('.dinosaurio-colocado').forEach(el => el.remove());
-
-    const j = estadoJuego[`jugador${estadoJuego.jugadorActual}`];
-    Object.entries(j.recintos).forEach(([recinto, dinos]) => {
-      const area = document.querySelector(`[data-recinto="${recinto}"]`);
-      if (!area) return;
-      dinos.forEach((tipo, i) => {
-        const img = document.createElement('img');
-        img.src = CONFIG.IMAGENES_DINOSAURIOS[tipo].colocado;
-        img.className = 'dinosaurio-colocado';
-        img.alt = tipo;
-        GameLogic.posicionarDinosaurio(img, i + 1);
-        area.appendChild(img);
-      });
-    });
-
-    // actualizar pesos del jugador activo
-    GameLogic.actualizarPesos();
-  },
-
-  /* --- Interfaz / Mano --- */
-  mostrarDinosauriosDisponibles() {
-    const cont = document.querySelector('.dinosaurios-disponibles');
-    if (!cont) return;
-    cont.innerHTML = '';
-
-    const jugador = estadoJuego[`jugador${estadoJuego.jugadorActual}`];
-    jugador.dinosauriosDisponibles.forEach((tipo, index) => {
-      const img = document.createElement('img');
-      img.src = CONFIG.IMAGENES_DINOSAURIOS[tipo].disponible;
-      img.className = 'dino';
-      img.draggable = true;
-      img.dataset.tipo = tipo;
-      img.dataset.index = index;
-      img.alt = tipo;
-      cont.appendChild(img);
-    });
-
-    DragDropManager.init();
-  },
-
-  actualizarInterfazJugador() {
-    // Abajo: jugador activo
-    const activo = estadoJuego[`jugador${estadoJuego.jugadorActual}`];
-    const abajoNombre = document.querySelector('.texto-jugador'); // etiqueta inferior
-    if (abajoNombre) abajoNombre.textContent = (activo.nombre || `Jugador ${estadoJuego.jugadorActual}`).toUpperCase();
-
-    // Arriba: oponente con puntos
-    const oponenteIdx = estadoJuego.jugadorActual === 1 ? 2 : 1;
-    const oponente = estadoJuego[`jugador${oponenteIdx}`];
-    const arriba = document.querySelector('.nombre-puntos'); // etiqueta superior
-    if (arriba) arriba.textContent = `${(oponente.nombre || `Jugador ${oponenteIdx}`).toUpperCase()} - ${oponente.puntos} PUNTOS`;
-
-    // Actualizar contadores de puntos (totales)
-    this.actualizarPuntosInterfaz();
-  },
-
-  actualizarPuntosInterfaz() {
-    const p1 = document.getElementById('puntos-jugador1');
-    const p2 = document.getElementById('puntos-jugador2');
-    if (p1) p1.textContent = estadoJuego.jugador1.puntos;
-    if (p2) p2.textContent = estadoJuego.jugador2.puntos;
-  },/* --- Descarte --- */
-  mostrarPopupDescarte() {
-    const jugador = estadoJuego[`jugador${estadoJuego.jugadorActual}`];
-
-    // Si no le queda nada para descartar, pasamos de turno
-    if (jugador.dinosauriosDisponibles.length === 0) {
-      estadoJuego.puedePasarTurno = true;
-      const btn = document.getElementById('btn-siguiente-turno');
-      if (btn) {
-        btn.disabled = false;
-        this.updateBotonTurnoLabel();
+  procesarSiguienteTurno() {
+    const jugadorActual = estadoJuego.getJugadorActual();
+    const tienenDinosaurios = jugadorActual.dinosauriosDisponibles.length > 0;
+    
+    // CORRECIÓN CRíTICA: Solo validar si hay dinosaurios disponibles
+    if (tienenDinosaurios) {
+      if (!estadoJuego.yaColocoEnTurno) {
+        console.log('Debe colocar un dinosaurio');
+        if (window.app?.showToast) {
+          window.app.showToast('Debes colocar un dinosaurio primero', 'warning');
+        }
+        return;
       }
+      
+      if (!estadoJuego.puedePasarTurno) {
+        console.log('Debe descartar un dinosaurio');
+        if (window.app?.showToast) {
+          window.app.showToast('Debes descartar un dinosaurio primero', 'warning');
+        }
+        return;
+      }
+    }
+
+    if (estadoJuego.esFinDeRonda()) {
+      this.finalizarRonda();
       return;
     }
 
-    const popup = document.getElementById('popup-descarte');
-    const cont = document.getElementById('dinosaurios-descarte');
-    if (!popup || !cont) return;
+    estadoJuego.cambiarTurno();
 
-    cont.innerHTML = '';
-    this.dinoSeleccionadoDescarte = null;
-
-    jugador.dinosauriosDisponibles.forEach((tipo, index) => {
-      const img = document.createElement('img');
-      img.src = CONFIG.IMAGENES_DINOSAURIOS[tipo].disponible;
-      img.className = 'dino-descarte';
-      img.dataset.tipo = tipo;
-      img.dataset.index = index;
-      img.alt = tipo;
-      img.style.width = '64px';
-      img.style.height = '64px';
-      img.style.cursor = 'pointer';
-      img.addEventListener('click', () => this.seleccionarParaDescarte(img, index));
-      cont.appendChild(img);
-    });
-
-    const btnOk = document.getElementById('btn-confirmar-descarte') || document.getElementById('btn-cancelar-descarte');
-    if (btnOk) {
-      btnOk.disabled = true;
-      btnOk.onclick = () => this.confirmarDescarte();
-    }
-
-    abrirCapa(popup);
-  },
-
-  seleccionarParaDescarte(el, index) {
-    document.querySelectorAll('.dino-descarte').forEach(d => d.classList.remove('seleccionado'));
-    el.classList.add('seleccionado');
-    this.dinoSeleccionadoDescarte = index;
-    const btnOk = document.getElementById('btn-confirmar-descarte') || document.getElementById('btn-cancelar-descarte');
-    if (btnOk) btnOk.disabled = false;
-  },
-
-  confirmarDescarte() {
-    if (this.dinoSeleccionadoDescarte == null) return;
-
-    const jugador = estadoJuego[`jugador${estadoJuego.jugadorActual}`];
-    jugador.dinosauriosDisponibles.splice(this.dinoSeleccionadoDescarte, 1);
-
-    const popup = document.getElementById('popup-descarte');
-    if (popup) cerrarCapa(popup);
-    this.dinoSeleccionadoDescarte = null;
-
-    // Habilitar botón de siguiente turno / o finalizar ronda
-    estadoJuego.puedePasarTurno = true;
-    const btn = document.getElementById('btn-siguiente-turno');
-    if (btn) {
-      btn.disabled = false;
-      this.updateBotonTurnoLabel(); // ↑ actualiza texto: Siguiente turno / Finalizar ronda / Fin del juego
-    }
-
-    // Refrescar mano (quedarán 4 tras el primer turno del jugador)
-    this.mostrarDinosauriosDisponibles();
-  },
-
-  /* --- Botón Siguiente turno: texto dinámico --- */
-  updateBotonTurnoLabel() {
-    const btn = document.getElementById('btn-siguiente-turno');
-    if (!btn) return;
-    const finDeRonda = (estadoJuego.jugador1.dinosauriosDisponibles.length === 0 &&
-                        estadoJuego.jugador2.dinosauriosDisponibles.length === 0);
-    if (finDeRonda) {
-      btn.textContent = (estadoJuego.rondaActual === 1) ? 'Finalizar ronda' : 'Fin del juego';
+    if (estadoJuego.modoSeguimiento) {
+      this.procesarTurnoSeguimiento();
     } else {
-      btn.textContent = 'Siguiente turno';
+      this.procesarTurnoNormal();
     }
   },
 
-  /* --- Restricciones / UI --- */
-  ocultarRestriccion() {
-    const info = document.querySelector('.info-restriccion');
-    if (info) info.style.visibility = 'hidden';
-    estadoJuego.restriccionActual = null;
+  procesarTurnoSeguimiento() {
+    const jugador = estadoJuego.getJugadorActual();
+    console.log(`Procesando turno seguimiento - Jugador ${estadoJuego.jugadorActual}, Turno ${estadoJuego.turnoEnRonda}, Ronda ${estadoJuego.rondaActual}`);
+
+    const avatarSrc = estadoJuego.jugadorActual === 1 ?
+      'img/foto_usuario-1.png' :
+      (window.app?.jugador2Info?.tipo === 'invitado' ? 'img/invitado.png' : 'img/foto_usuario-2.png');
+
+    if (window.app?.mostrarTurnoJugadorConSeleccion) {
+      window.app.mostrarTurnoJugadorConSeleccion(jugador.nombre, avatarSrc);
+    }
   },
 
-  mostrarRestriccion(tipo, titulo) {
+  procesarTurnoNormal() {
+    if (window.app?.showScreen) {
+      document.getElementById('pantalla-partida')?.setAttribute('style', 'display:none');
+      window.app.showScreen('dado-animacion');
+      setTimeout(() => window.app.iniciarAnimacionDado(), 400);
+    } else {
+      this.ocultarRestriccion();
+      RenderManager.actualizarDinosauriosDisponibles();
+      this.actualizarInterfaz();
+      RenderManager.renderizarTablero();
+    }
+  },
+
+  procesarResultadoDado(numeroDado) {
+    estadoJuego.dadoNumero = numeroDado;
+    const restriccion = CONFIG.RESTRICCIONES_DADO[numeroDado || 1];
+    if (restriccion) {
+      this.establecerRestriccion(restriccion.tipo, restriccion.titulo);
+    }
+
+    const partida = document.getElementById('pantalla-partida');
+    if (partida) partida.style.display = 'block';
+
+    RenderManager.actualizarDinosauriosDisponibles();
+    this.actualizarInterfaz();
+    RenderManager.renderizarTablero();
+    this.actualizarBotonSiguiente();
+  },
+
+  establecerRestriccion(tipo, titulo) {
+    estadoJuego.restriccionActual = tipo;
+    estadoJuego.dadoNumero = estadoJuego.dadoNumero || 1;
+
     const info = document.querySelector('.info-restriccion');
     const icono = document.querySelector('.icono-restriccion-footer');
     const texto = document.querySelector('.texto-restriccion');
 
     if (info) info.style.visibility = 'visible';
-    if (icono) icono.src = `img/dado-${tipo}.png`;
-    if (texto) texto.innerHTML = `<div>Restricción</div><div>${titulo}</div>`;
-
-    estadoJuego.restriccionActual = tipo;
+    if (icono && tipo) {
+      const restriccion = Object.values(CONFIG.RESTRICCIONES_DADO)
+        .find(r => r.tipo === tipo);
+      if (restriccion) {
+        icono.src = `img/${restriccion.imagen}.png`;
+        icono.style.display = 'block';
+      }
+    }
+    if (texto) {
+      texto.innerHTML = `<div>Restricción</div><div>${titulo}</div>`;
+    }
   },
 
-  /* --- Turnos / Rondas --- */
-  procesarSiguienteTurno() {
-    // ¿terminó la ronda? (6 dinos → 3 turnos: colocar 1 y descartar 1 por turno)
-    const j1 = estadoJuego.jugador1.dinosauriosDisponibles.length;
-    const j2 = estadoJuego.jugador2.dinosauriosDisponibles.length;
-    if (j1 === 0 && j2 === 0) {
-      this.finalizarRonda();
+  establecerSinRestriccion() {
+    estadoJuego.restriccionActual = null;
+
+    const info = document.querySelector('.info-restriccion');
+    const texto = document.querySelector('.texto-restriccion');
+    const icono = document.querySelector('.icono-restriccion-footer');
+
+    if (info) info.style.visibility = 'visible';
+    if (texto) texto.innerHTML = '<div>Sin restricción</div>';
+    if (icono) icono.style.display = 'none';
+  },
+
+  ocultarRestriccion() {
+    estadoJuego.restriccionActual = null;
+    const info = document.querySelector('.info-restriccion');
+    const icono = document.querySelector('.icono-restriccion-footer');
+
+    if (info) info.style.visibility = 'hidden';
+    if (icono) icono.style.display = 'block';
+  },
+
+  mostrarPopupDescarte() {
+    const jugador = estadoJuego.getJugadorActual();
+
+    if (jugador.dinosauriosDisponibles.length === 0) {
+      estadoJuego.puedePasarTurno = true;
+      this.habilitarBotonSiguiente();
       return;
     }
 
-    // Cambiar de jugador
-    estadoJuego.jugadorActual = (estadoJuego.jugadorActual === 1) ? 2 : 1;
-    estadoJuego.turnoEnRonda++;
-    estadoJuego.yaColocoEnTurno = false;
-    estadoJuego.puedePasarTurno = false;
+    const popup = document.getElementById('popup-descarte');
+    const contenedor = document.getElementById('dinosaurios-descarte');
 
-    // Mostrar animación de dado desde app.js (del turno 2 en adelante)
-    if (window.app && typeof window.app.showScreen === 'function') {
-      document.getElementById('pantalla-partida')?.setAttribute('style', 'display:none');
-      window.app.showScreen('dado-animacion');
-      setTimeout(() => window.app.iniciarAnimacionDado(), 400);
-    } else {
-      // Fallback sin app.js
-      this.ocultarRestriccion();
-      this.mostrarDinosauriosDisponibles();
-      this.actualizarInterfazJugador();
-      this.renderTableroDelJugadorActual();
-      const btn = document.getElementById('btn-siguiente-turno');
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = 'Siguiente turno';
+    if (!popup || !contenedor) return;
+
+    contenedor.innerHTML = '';
+    this.dinoSeleccionadoDescarte = null;
+    this.tipoSeleccionadoDescarte = null;
+
+    jugador.dinosauriosDisponibles.forEach((tipo, index) => {
+      const img = Utils.crearElemento('img', {
+        src: CONFIG.IMAGENES_DINOSAURIOS[tipo].disponible,
+        className: 'dino-descarte',
+        alt: tipo,
+        dataset: { 
+          tipo: tipo, 
+          index: index.toString()
+        }
+      }, {
+        width: '64px',
+        height: '64px',
+        cursor: 'pointer'
+      });
+
+      img.onclick = () => this.seleccionarParaDescarte(img, index, tipo);
+      contenedor.appendChild(img);
+    });
+
+    const btnConfirmar = document.getElementById('btn-confirmar-descarte');
+    if (btnConfirmar) {
+      btnConfirmar.disabled = true;
+      btnConfirmar.onclick = () => this.confirmarDescarte();
+    }
+
+    Utils.abrirPopup(popup);
+  },
+
+  seleccionarParaDescarte(elemento, index, tipo) {
+    document.querySelectorAll('.dino-descarte').forEach(d => {
+      d.classList.remove('seleccionado');
+    });
+
+    elemento.classList.add('seleccionado');
+    
+    this.dinoSeleccionadoDescarte = index;
+    this.tipoSeleccionadoDescarte = tipo;
+    
+    console.log(`Seleccionado para descarte: í­ndice ${index}, tipo ${tipo}`);
+
+    const btnConfirmar = document.getElementById('btn-confirmar-descarte');
+    if (btnConfirmar) btnConfirmar.disabled = false;
+  },
+
+  confirmarDescarte() {
+    if (this.dinoSeleccionadoDescarte == null || !this.tipoSeleccionadoDescarte) {
+      console.log('No hay dinosaurio seleccionado para descartar');
+      return;
+    }
+
+    const jugador = estadoJuego.getJugadorActual();
+    
+    if (this.dinoSeleccionadoDescarte >= 0 && 
+        this.dinoSeleccionadoDescarte < jugador.dinosauriosDisponibles.length) {
+      
+      const dinoEliminado = jugador.dinosauriosDisponibles.splice(this.dinoSeleccionadoDescarte, 1)[0];
+      estadoJuego.dinosauriosDescartados.push(dinoEliminado);
+      
+      // CRíTICO: Guardar el descarte para el jugador especí­fico
+      if (estadoJuego.jugadorActual === 1) {
+        estadoJuego.descartadosJ1.push(dinoEliminado);
+      } else {
+        estadoJuego.descartadosJ2.push(dinoEliminado);
       }
+      
+      console.log(`Descartado correctamente: ${dinoEliminado} (í­ndice: ${this.dinoSeleccionadoDescarte})`);
+    }
+
+    Utils.cerrarPopup(document.getElementById('popup-descarte'));
+    this.dinoSeleccionadoDescarte = null;
+    this.tipoSeleccionadoDescarte = null;
+
+    estadoJuego.puedePasarTurno = true;
+    this.habilitarBotonSiguiente();
+    RenderManager.actualizarDinosauriosDisponibles();
+  },
+
+  habilitarBotonSiguiente() {
+    const btn = document.getElementById('btn-siguiente-turno');
+    if (btn) {
+      // Permitir el botón si no hay dinosaurios disponibles O si ya se descartó
+      const jugador = estadoJuego.getJugadorActual();
+      const sinDinosaurios = jugador.dinosauriosDisponibles.length === 0;
+      
+      btn.disabled = !sinDinosaurios && (!estadoJuego.yaColocoEnTurno || !estadoJuego.puedePasarTurno);
+      this.actualizarBotonSiguiente();
     }
   },
 
-  // Lo llama app.js al cerrar el popup del dado (btn-comenzar-juego)
-  procesarResultadoDado(dadoSeleccionado) {
-    const conf = {
-      1: { tipo: 'lugar-vacio', titulo: 'Lugar vacío' },
-      2: { tipo: 'no-t-rex', titulo: 'Sin T-Rex' },
-      3: { tipo: 'lado-cafeteria', titulo: 'Lado cafetería' },
-      4: { tipo: 'bosque', titulo: 'Bosque' },
-      5: { tipo: 'rocas', titulo: 'Rocas' },
-      6: { tipo: 'lado-banos', titulo: 'Lado baños' }
-    }[dadoSeleccionado || 1];
-
-    if (conf) this.mostrarRestriccion(conf.tipo, conf.titulo);
-
-    // Volver al tablero
-    const part = document.getElementById('pantalla-partida');
-    if (part) part.style.display = 'block';
-
-    this.mostrarDinosauriosDisponibles();
-    this.actualizarInterfazJugador();
-    this.renderTableroDelJugadorActual();
-
-    // Deshabilitar "siguiente turno" hasta que coloque+descarte
+  actualizarBotonSiguiente() {
     const btn = document.getElementById('btn-siguiente-turno');
-    if (btn) {
-      btn.disabled = true;
+    if (!btn) return;
+
+    const jugador = estadoJuego.getJugadorActual();
+    const sinDinosaurios = jugador.dinosauriosDisponibles.length === 0;
+    
+    // Habilitar si no hay dinosaurios O si ya se completó el turno
+    btn.disabled = !sinDinosaurios && (!estadoJuego.yaColocoEnTurno || !estadoJuego.puedePasarTurno);
+
+    if (estadoJuego.esFinDeRonda()) {
+      btn.textContent = estadoJuego.rondaActual === 1 ? 'Finalizar ronda' : 'Fin del juego';
+    } else {
       btn.textContent = 'Siguiente turno';
     }
   },
 
+  actualizarInterfaz() {
+    const jugador = estadoJuego.getJugadorActual();
+    const oponente = estadoJuego.getOponente();
+
+    const textoJugador = document.querySelector('.texto-jugador');
+    const nombrePuntos = document.querySelector('.nombre-puntos');
+
+    if (textoJugador) {
+      textoJugador.textContent = jugador.nombre.toUpperCase();
+    }
+
+    if (nombrePuntos) {
+      const puntosOponente = parseInt(oponente.puntosRonda) || 0;
+      nombrePuntos.textContent = `${oponente.nombre.toUpperCase()} - ${puntosOponente} PUNTOS`;
+    }
+
+    const infoJugador2 = document.querySelector('.info-jugador2');
+    const verMapa = document.querySelector('.ver-mapa');
+
+    if (estadoJuego.modoSeguimiento) {
+      if (infoJugador2) infoJugador2.style.visibility = 'visible';
+      if (verMapa) verMapa.style.display = 'none';
+    } else {
+      if (infoJugador2) infoJugador2.style.visibility = 'visible';
+      if (verMapa) verMapa.style.display = 'block';
+    }
+
+    const avatarJugador2Top = document.getElementById('avatar-jugador2-top');
+    const avatarJugador1Bottom = document.querySelector('.info-jugador .avatar-circular');
+
+    if (estadoJuego.jugadorActual === 1) {
+      if (avatarJugador1Bottom) avatarJugador1Bottom.src = 'img/foto_usuario-1.png';
+      if (avatarJugador2Top) {
+        avatarJugador2Top.src = window.app?.jugador2Info?.tipo === 'invitado' ?
+          'img/invitado.png' : 'img/foto_usuario-2.png';
+      }
+    } else {
+      if (avatarJugador1Bottom) {
+        avatarJugador1Bottom.src = window.app?.jugador2Info?.tipo === 'invitado' ?
+          'img/invitado.png' : 'img/foto_usuario-2.png';
+      }
+      if (avatarJugador2Top) avatarJugador2Top.src = 'img/foto_usuario-1.png';
+    }
+
+    const iconoRestriccion = document.querySelector('.icono-restriccion-footer');
+    if (iconoRestriccion) {
+      if (estadoJuego.dadoNumero && estadoJuego.restriccionActual) {
+        const restriccion = CONFIG.RESTRICCIONES_DADO[estadoJuego.dadoNumero];
+        if (restriccion) {
+          iconoRestriccion.src = `img/${restriccion.imagen}.png`;
+          iconoRestriccion.style.display = 'block';
+        }
+      } else {
+        iconoRestriccion.style.display = 'none';
+      }
+    }
+
+    const puntosActuales = parseInt(jugador.puntosRonda) || 0;
+
+    const puntosFooter = document.querySelector('.info-jugador .puntos-jugador span');
+    if (puntosFooter) {
+      puntosFooter.textContent = `${puntosActuales} PUNTOS`;
+    }
+
+    GameLogic.actualizarPuntos();
+  },
+
   finalizarRonda() {
-    console.log(`=== FIN DE RONDA ${estadoJuego.rondaActual} ===`);
     this.calcularPuntosRonda();
 
     if (estadoJuego.rondaActual === 1) {
-      // SIEMPRE mostrar el resumen al finalizar la primera ronda
       this.mostrarResumenRonda();
     } else {
-      // En la ronda 2, mostrar la pantalla final
       this.mostrarPantallaFinal();
     }
   },
 
   calcularPuntosRonda() {
-    estadoJuego.jugador1.puntosRonda = GameLogic.calcularPuntos(estadoJuego.jugador1.recintos);
-    estadoJuego.jugador2.puntosRonda = GameLogic.calcularPuntos(estadoJuego.jugador2.recintos);
+    const todosJugadores = estadoJuego.getTodosJugadores();
+    
+    const puntosRondaJ1 = GameLogic.calcularPuntos(
+      estadoJuego.jugador1.recintos, 
+      estadoJuego.jugador1, 
+      todosJugadores
+    );
+    const puntosRondaJ2 = GameLogic.calcularPuntos(
+      estadoJuego.jugador2.recintos, 
+      estadoJuego.jugador2, 
+      todosJugadores
+    );
 
-    estadoJuego.jugador1.puntos += estadoJuego.jugador1.puntosRonda;
-    estadoJuego.jugador2.puntos += estadoJuego.jugador2.puntosRonda;
+    estadoJuego.jugador1.puntosRonda = puntosRondaJ1;
+    estadoJuego.jugador2.puntosRonda = puntosRondaJ2;
 
-    console.log('Puntos ronda J1:', estadoJuego.jugador1.puntosRonda);
-    console.log('Puntos ronda J2:', estadoJuego.jugador2.puntosRonda);
-    console.log('Puntos totales J1:', estadoJuego.jugador1.puntos);
-    console.log('Puntos totales J2:', estadoJuego.jugador2.puntos);
+    estadoJuego.jugador1.puntos += puntosRondaJ1;
+    estadoJuego.jugador2.puntos += puntosRondaJ2;
+
+    console.log(`Ronda ${estadoJuego.rondaActual} finalizada`);
+    console.log(`J1: ${puntosRondaJ1} puntos esta ronda, total: ${estadoJuego.jugador1.puntos}`);
+    console.log(`J2: ${puntosRondaJ2} puntos esta ronda, total: ${estadoJuego.jugador2.puntos}`);
   },
 
-  /* --- Resumen de Ronda --- */
   mostrarResumenRonda() {
-    this.configurarResumenRonda();
-
-    // Mostrar la pantalla de resumen usando app.js si está disponible
-    if (window.app && typeof window.app.showScreen === 'function') {
+    if (window.app?.showScreen) {
       window.app.showScreen('resumen-ronda');
-    } else {
-      // Fallback manual
-      document.querySelectorAll('.pantalla').forEach(p => {
-        p.style.display = 'none';
-        p.classList.add('hidden');
-      });
+      this.actualizarResumenRonda();
 
-      const resumen = document.getElementById('pantalla-resumen-ronda');
-      if (resumen) {
-        resumen.classList.remove('hidden');
-        resumen.style.display = 'block';
-      }
-    }
-
-    // Configurar eventos del botón (por si el DOM se inyecta tarde)
-    setTimeout(() => {
       const btnSiguiente = document.getElementById('btn-siguiente-ronda');
-      if (btnSiguiente && !btnSiguiente.dataset.bound) {
-        btnSiguiente.addEventListener('click', () => this.iniciarSiguienteRonda());
-        btnSiguiente.dataset.bound = '1';
+      if (btnSiguiente) {
+        btnSiguiente.onclick = () => this.prepararSiguienteRonda();
       }
-    }, 100);
-  },
-
-  configurarResumenRonda() {
-    const n1 = document.getElementById('nombre-resumen-j1');
-    const n2 = document.getElementById('nombre-resumen-j2');
-    if (n1) n1.textContent = (estadoJuego.jugador1.nombre || 'JUGADOR 1').toUpperCase();
-    if (n2) n2.textContent = (estadoJuego.jugador2.nombre || 'JUGADOR 2').toUpperCase();
-
-    const p1 = document.getElementById('puntos-resumen-j1');
-    const p2 = document.getElementById('puntos-resumen-j2');
-    if (p1) p1.textContent = `${estadoJuego.jugador1.puntosRonda} puntos`;
-    if (p2) p2.textContent = `${estadoJuego.jugador2.puntosRonda} puntos`;
-
-    const a1 = document.getElementById('avatar-resumen-j1');
-    const a2 = document.getElementById('avatar-resumen-j2');
-    if (a1) a1.src = 'img/foto_usuario-1.png';
-    if (a2) {
-      const tipoJ2 = window.app?.jugador2Info?.tipo || 'invitado';
-      a2.src = (tipoJ2 === 'invitado') ? 'img/invitado.png' : 'img/foto_usuario-2.png';
     }
   },
 
-  iniciarSiguienteRonda() {
-    // Setear ronda 2 y cambiar el jugador inicial (empieza el que NO empezó la ronda 1)
+  actualizarResumenRonda() {
+    const elementos = {
+      'puntos-resumen-j1': `${estadoJuego.jugador1.puntosRonda} puntos`,
+      'puntos-resumen-j2': `${estadoJuego.jugador2.puntosRonda} puntos`,
+      'nombre-resumen-j1': estadoJuego.jugador1.nombre.toUpperCase(),
+      'nombre-resumen-j2': estadoJuego.jugador2.nombre.toUpperCase()
+    };
+
+    Object.entries(elementos).forEach(([id, valor]) => {
+      const elem = document.getElementById(id);
+      if (elem) elem.textContent = valor;
+    });
+  },
+
+  prepararSiguienteRonda() {
+    this.limpiarTablero();
+
     estadoJuego.rondaActual = 2;
-    estadoJuego.jugadorActual = (estadoJuego.primerJugador === 1) ? 2 : 1;
+
+    const quienEmpezoRonda1 = estadoJuego.primerJugadorOriginal || 1;
+    estadoJuego.primerJugador = quienEmpezoRonda1 === 1 ? 2 : 1;
+    estadoJuego.jugadorActual = estadoJuego.primerJugador;
     estadoJuego.turnoEnRonda = 1;
-    estadoJuego.puedePasarTurno = false;
-    estadoJuego.yaColocoEnTurno = false;
-    estadoJuego.restriccionActual = null;
 
-    // Transición a la pantalla de partida
-    if (window.app && typeof window.app.showScreen === 'function') {
-      window.app.showScreen('partida');
-    } else {
-      // Fallback manual
-      const resumen = document.getElementById('pantalla-resumen-ronda');
-      const partida = document.getElementById('pantalla-partida');
-      if (resumen) {
-        resumen.style.display = 'none';
-        resumen.classList.add('hidden');
+    // Reset completo para ronda 2
+    estadoJuego.turnosCompletadosJ1 = 0;
+    estadoJuego.turnosCompletadosJ2 = 0;
+    estadoJuego.descartadosJ1 = [];
+    estadoJuego.descartadosJ2 = [];
+
+    estadoJuego.dinosauriosRondaJ1 = [];
+    estadoJuego.dinosauriosRondaJ2 = [];
+    estadoJuego.jugador1.dinosauriosDisponibles = [];
+    estadoJuego.jugador2.dinosauriosDisponibles = [];
+    estadoJuego.dinosauriosDescartados = [];
+
+    console.log(`=== INICIANDO RONDA 2 ===`);
+    console.log(`Empezó Ronda 1: Jugador ${quienEmpezoRonda1}`);
+    console.log(`Empieza Ronda 2: Jugador ${estadoJuego.primerJugador}`);
+
+    if (estadoJuego.modoSeguimiento) {
+      const jugador = estadoJuego[`jugador${estadoJuego.primerJugador}`];
+      const avatarSrc = estadoJuego.primerJugador === 1 ?
+        'img/foto_usuario-1.png' :
+        (window.app?.jugador2Info?.tipo === 'invitado' ? 'img/invitado.png' : 'img/foto_usuario-2.png');
+
+      if (window.app?.mostrarTurnoJugadorConSeleccion) {
+        window.app.mostrarTurnoJugadorConSeleccion(jugador.nombre, avatarSrc);
+      } else {
+        setTimeout(() => ModoSeguimiento.mostrarPopupSeleccionDinosaurios(), 500);
       }
-      if (partida) {
-        partida.classList.remove('hidden');
-        partida.style.display = 'block';
+    } else {
+      this.iniciarRonda();
+      if (window.app?.showScreen) {
+        window.app.showScreen('partida');
       }
     }
-
-    // Arrancar la ronda 2
-    this.iniciarRonda();
-  },/* --- Pantalla Final / Ganadores --- */
-  mostrarPantallaFinal() {
-    this.configurarPantallaFinal();
-
-    if (window.app && typeof window.app.showScreen === 'function') {
-      window.app.showScreen('resultados'); // id: pantalla-resultados en app.js
-    } else {
-      document.querySelectorAll('.pantalla').forEach(p => {
-        p.style.display = 'none';
-        p.classList.add('hidden');
-      });
-      const final = document.getElementById('pantalla-resultados');
-      if (final) {
-        final.classList.remove('hidden');
-        final.style.display = 'block';
-      }
-    }
-
-    // Configurar eventos de los botones finales
-    setTimeout(() => {
-      const btnRevancha = document.getElementById('btn-revancha');
-      const btnNuevaPartida = document.getElementById('btn-nueva-partida');
-      const btnVolver = document.getElementById('btn-volver-inicio-final');
-
-      if (btnRevancha && !btnRevancha.dataset.bound) {
-        btnRevancha.addEventListener('click', () => {
-          this.reiniciarJuegoCompleto();
-          if (window.app && typeof window.app.showScreen === 'function') {
-            window.app.showScreen('partida');
-          }
-        });
-        btnRevancha.dataset.bound = '1';
-      }
-
-      if (btnNuevaPartida && !btnNuevaPartida.dataset.bound) {
-        btnNuevaPartida.addEventListener('click', () => {
-          if (window.app && typeof window.app.showScreen === 'function') {
-            window.app.showScreen('jugadores');
-          }
-        });
-        btnNuevaPartida.dataset.bound = '1';
-      }
-
-      if (btnVolver && !btnVolver.dataset.bound) {
-        btnVolver.addEventListener('click', () => {
-          if (window.app && typeof window.app.showScreen === 'function') {
-            window.app.showScreen('lobby');
-          }
-        });
-        btnVolver.dataset.bound = '1';
-      }
-    }, 100);
   },
 
-  configurarPantallaFinal() {
+  mostrarPantallaFinal() {
+    if (window.app?.showScreen) {
+      window.app.showScreen('resultados');
+      this.actualizarPantallaFinal();
+    }
+  },
+
+  actualizarPantallaFinal() {
     const j1 = estadoJuego.jugador1;
     const j2 = estadoJuego.jugador2;
-    const ganador = j1.puntos >= j2.puntos ? j1 : j2;
-    const perdedor = j1.puntos >= j2.puntos ? j2 : j1;
 
-    // Configurar avatares del podio
+    const elementos = {
+      'nombre-final-j1': j1.nombre.toUpperCase(),
+      'nombre-final-j2': j2.nombre.toUpperCase(),
+      'puntos-final-j1': `${j1.puntos} puntos`,
+      'puntos-final-j2': `${j2.puntos} puntos`
+    };
+
+    Object.entries(elementos).forEach(([id, valor]) => {
+      const elem = document.getElementById(id);
+      if (elem) elem.textContent = valor;
+    });
+
     const avatarPrimero = document.getElementById('avatar-primero');
     const avatarSegundo = document.getElementById('avatar-segundo');
-    
-    if (avatarPrimero) {
-      if (ganador === estadoJuego.jugador1) {
-        avatarPrimero.src = 'img/foto_usuario-1.png';
-      } else {
-        const tipoJ2 = window.app?.jugador2Info?.tipo || 'invitado';
-        avatarPrimero.src = (tipoJ2 === 'invitado') ? 'img/invitado.png' : 'img/foto_usuario-2.png';
-      }
-    }
-    
-    if (avatarSegundo) {
-      if (perdedor === estadoJuego.jugador1) {
-        avatarSegundo.src = 'img/foto_usuario-1.png';
-      } else {
-        const tipoJ2 = window.app?.jugador2Info?.tipo || 'invitado';
-        avatarSegundo.src = (tipoJ2 === 'invitado') ? 'img/invitado.png' : 'img/foto_usuario-2.png';
-      }
-    }
 
-    // Configurar resultados detallados
-    const nombreJ1 = document.getElementById('nombre-final-j1');
-    const nombreJ2 = document.getElementById('nombre-final-j2');
-    const avatarJ1 = document.getElementById('avatar-final-j1');
-    const avatarJ2 = document.getElementById('avatar-final-j2');
-    
-    if (nombreJ1) nombreJ1.textContent = (estadoJuego.jugador1.nombre || 'JUGADOR 1').toUpperCase();
-    if (nombreJ2) nombreJ2.textContent = (estadoJuego.jugador2.nombre || 'JUGADOR 2').toUpperCase();
-    
-    if (avatarJ1) avatarJ1.src = 'img/foto_usuario-1.png';
-    if (avatarJ2) {
-      const tipoJ2 = window.app?.jugador2Info?.tipo || 'invitado';
-      avatarJ2.src = (tipoJ2 === 'invitado') ? 'img/invitado.png' : 'img/foto_usuario-2.png';
+    if (j1.puntos >= j2.puntos) {
+      if (avatarPrimero) avatarPrimero.src = 'img/foto_usuario-1.png';
+      if (avatarSegundo) avatarSegundo.src = window.app?.jugador2Info?.tipo === 'invitado' ?
+        'img/invitado.png' : 'img/foto_usuario-2.png';
+    } else {
+      if (avatarPrimero) avatarPrimero.src = window.app?.jugador2Info?.tipo === 'invitado' ?
+        'img/invitado.png' : 'img/foto_usuario-2.png';
+      if (avatarSegundo) avatarSegundo.src = 'img/foto_usuario-1.png';
     }
-
-    const puntosJ1 = document.getElementById('puntos-final-j1');
-    const puntosJ2 = document.getElementById('puntos-final-j2');
-    if (puntosJ1) puntosJ1.textContent = `${estadoJuego.jugador1.puntos} puntos`;
-    if (puntosJ2) puntosJ2.textContent = `${estadoJuego.jugador2.puntos} puntos`;
   },
 
-  /* --- Reset total (revancha) --- */
   reiniciarJuegoCompleto() {
-    // Resetear estado del juego
-    estadoJuego.rondaActual = 1;
-    estadoJuego.turnoEnRonda = 1;
-    estadoJuego.jugadorActual = estadoJuego.primerJugador;
-    estadoJuego.restriccionActual = null;
-    estadoJuego.puedePasarTurno = false;
-    estadoJuego.yaColocoEnTurno = false;
-
-    // Resetear puntos
-    estadoJuego.jugador1.puntos = 0;
-    estadoJuego.jugador1.puntosRonda = 0;
-    estadoJuego.jugador2.puntos = 0;
-    estadoJuego.jugador2.puntosRonda = 0;
-
-    // Limpiar recintos
-    Object.keys(estadoJuego.jugador1.recintos).forEach(recinto => {
-      estadoJuego.jugador1.recintos[recinto] = [];
-    });
-    Object.keys(estadoJuego.jugador2.recintos).forEach(recinto => {
-      estadoJuego.jugador2.recintos[recinto] = [];
-    });
-
-    // Limpiar visual del tablero
-    document.querySelectorAll('.dinosaurio-colocado').forEach(el => el.remove());
-
-    // Regenerar pool y comenzar
+    estadoJuego.reset();
     this.generarPoolDinosaurios();
-    this.iniciarRonda();
-
-    console.log('Revancha iniciada - Juego reiniciado completamente');
   }
 };
 
-/* ==================== INICIALIZACIÓN DEL JUEGO ==================== */
-const GameInitializer = {
-  init() {
-    console.log('Draftosaurus Tablero iniciado');
 
-    DragDropManager.init();
-    PopupManager.setupEventListeners();
-    Utils.setupDragPrevention();
-    Utils.setupVerMapa();
-    this.setupEventListeners();   // bind de botones de resumen
-
-    // Hacer accesible globalmente
-    window.JuegoManager = JuegoManager;
-
-    // Estado inicial de UI (puntos/pesos)
-    GameLogic.actualizarPuntos();
-    GameLogic.actualizarPesos();
-  },
-
-  setupEventListeners() {
-    // Botón de la pantalla de resumen para iniciar ronda 2 (IDs alternativos)
-    ['btn-empezar-siguiente-ronda', 'btn-siguiente-ronda'].forEach(id => {
-      const b = document.getElementById(id);
-      if (b && !b.dataset.bound) {
-        b.addEventListener('click', () => JuegoManager.iniciarSiguienteRonda());
-        b.dataset.bound = '1';
-      }
-    });
-
-    // Comando debug
-    window.debugGame = () => Utils.debugEstadoJuego();
-    console.log('Tip: Usa debugGame() en la consola para ver el estado del juego');
-  }
-};
-
-/* ==================== FUNCIONES GLOBALES (para HTML onclick) ==================== */
-function mostrarReglas() { PopupManager.mostrarReglas(); }
-function mostrarPesos() { PopupManager.mostrarPesos(); }
-function mostrarMapa() { MapaOponente.mostrar(); }
-function cerrarPopup(popupId) { PopupManager.cerrar(popupId); }
-
-/* ==================== INICIALIZACIÓN AUTOMÁTICA ==================== */
+/* ==================== INICIALIZACIÓN ==================== */
 document.addEventListener('DOMContentLoaded', () => {
-  GameInitializer.init();
+  const btnSiguiente = document.getElementById('btn-siguiente-turno');
+  if (btnSiguiente) {
+    btnSiguiente.addEventListener('click', () => {
+      JuegoManager.procesarSiguienteTurno();
+    });
+  }
+
+  PopupManager.setupEventListeners();
+
+  const verMapa = document.querySelector('.ver-mapa');
+  if (verMapa) {
+    verMapa.addEventListener('click', (e) => {
+      e.preventDefault();
+      MapaOponente.mostrar();
+    });
+  }
+
+  // Exponer funciones globales
+  window.JuegoManager = JuegoManager;
+  window.estadoJuego = estadoJuego;
+  window.ModoSeguimiento = ModoSeguimiento;
+  window.RenderManager = RenderManager;
+
+  window.mostrarReglas = () => PopupManager.mostrarReglas();
+  window.mostrarPesos = () => PopupManager.mostrarPesos();
+  window.mostrarMapa = () => MapaOponente.mostrar();
+  window.cerrarPopup = (id) => PopupManager.cerrar(id);
+
+  if (window.app) {
+    window.app.empezarTurnoSeguimiento = function () {
+      window.app.showScreen('partida');
+
+      const jugadorNum = estadoJuego.jugadorActual;
+      const yaSeleccionoEnRonda = (jugadorNum === 1 && estadoJuego.dinosauriosRondaJ1.length > 0) ||
+        (jugadorNum === 2 && estadoJuego.dinosauriosRondaJ2.length > 0);
+
+      console.log(`empezarTurnoSeguimiento - Jugador ${jugadorNum}, Ya seleccionó: ${yaSeleccionoEnRonda}`);
+
+      setTimeout(() => {
+        if (!yaSeleccionoEnRonda) {
+          console.log(`Mostrando selección para jugador ${jugadorNum}`);
+          ModoSeguimiento.mostrarPopupSeleccionDinosaurios();
+        } else {
+          console.log(`Restaurando dinosaurios para jugador ${jugadorNum}`);
+          ModoSeguimiento.restaurarDinosauriosGuardados();
+        }
+      }, 100);
+    };
+  }
 });
