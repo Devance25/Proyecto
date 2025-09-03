@@ -1,794 +1,1269 @@
-// ==================== SISTEMA DE MANEJO DE ESTADOS ==================== 
+// ==================== CONFIGURACIÓN GLOBAL ====================
 class AppState {
-    constructor() {
-        this.currentScreen = 'carga';
-        this.user = null;
-        this.loading = false;
-        this.players = [];
-        this.jugador2Info = null;
-        this.dadoSeleccionado = null;
-        this.init();
-    }
+  constructor() {
+    this.currentScreen = 'carga';
+    this.user = null;
+    this.loading = false;
+    this.players = [];
+    this.jugador2Info = null;
+    this.dadoSeleccionado = null;
+    this.tempNombres = null;
+    this.tempJugador2Info = null;
+    this.modoSeguimiento = false;
+    
+    this.validationConfig = {
+      username: { min: 3, max: 15 },
+      playerName: { min: 2, max: 12 },
+      password: { min: 6, max: 50 },
+      minAge: 8
+    };
+    
+    this.init();
+  }
 
-    init() {
-        this.bindEvents();
-        this.setupFormValidation();
-        this.setupAccessibility();
-        this.setupBirthdateField();
-        this.setupFormClickHandlers();
+  init() {
+    this.bindEvents();
+    this.setupFormValidation();
+    this.setupAccessibility();
+    this.setupBirthdateField();
+    this.setupFormClickHandlers();
+    this.setupRealTimeValidation();
+    
+    // Pantalla de carga inicial
+    setTimeout(() => this.showScreen('login'), 1000);
+  }
 
-        // Simular carga inicial y luego ir a login
-        setTimeout(() => this.showScreen('login'), 1000);
-    }
-
-    // ==================== EVENT BINDING ==================== 
-    bindEvents() {
-        document.addEventListener('click', this.handleClick.bind(this));
-        document.addEventListener('submit', this.handleSubmit.bind(this));
-        document.addEventListener('keydown', this.handleKeydown.bind(this));
-    }
-
-    handleClick(e) {
-        const target = e.target.closest('[id]');
-        if (!target) return;
-
-        const actions = {
-            'link-registro': () => {
-                e.preventDefault();
-                this.showScreen('registro');
-            },
-            'link-login': () => {
-                e.preventDefault();
-                this.showScreen('login');
-            },
-            'btn-logout': () => this.logout(),
-            'btn-jugar-app': () => this.showScreen('jugadores'),
-            'btn-agregar-jugador': () => this.showToast('Solo se permiten 2 jugadores', 'info'),
-            'btn-volver-jugadores': () => this.showScreen('lobby'),
-            'btn-modo-asistente': () => this.showToast('Modo asistente activado', 'info'),
-            'btn-comenzar-juego': () => {
-                // Aplica la restricción del dado al volver al tablero
-                if (window.JuegoManager?.procesarResultadoDado) {
-                    window.JuegoManager.procesarResultadoDado(this.dadoSeleccionado || 1);
-                } else {
-                    this.showScreen('partida');
-                }
-            },
-            'btn-siguiente-ronda': () => {
-                if (window.JuegoManager?.iniciarSiguienteRonda) {
-                    window.JuegoManager.iniciarSiguienteRonda();
-                }
-            },
-            'btn-revancha': () => {
-                if (window.JuegoManager?.reiniciarJuegoCompleto) {
-                    window.JuegoManager.reiniciarJuegoCompleto();
-                    this.showScreen('partida');
-                }
-            },
-            'btn-nueva-partida': () => this.showScreen('jugadores'),
-            'btn-volver-inicio-final': () => this.showScreen('lobby'),
-            'btn-seleccionar-j1': () => this.iniciarPartidaConJugador(1),
-            'btn-seleccionar-j2': () => this.iniciarPartidaConJugador(2),
-            'btn-seleccion-aleatoria': () => this.iniciarPartidaConJugador(Math.random() < 0.5 ? 1 : 2)
-        };
-
-        if (actions[target.id]) {
-            actions[target.id]();
+  // ==================== EVENTOS ====================
+  bindEvents() {
+    document.addEventListener('click', this.handleClick.bind(this));
+    document.addEventListener('submit', this.handleSubmit.bind(this));
+    document.addEventListener('keydown', this.handleKeydown.bind(this));
+    
+    // Prevenir submit con Enter si el form no es válido
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && e.target.matches('input:not([type="submit"])')) {
+        const form = e.target.closest('form');
+        if (form && !this.isFormValid(form)) {
+          e.preventDefault();
         }
-    }
+      }
+    });
+  }
 
-    handleSubmit(e) {
+  handleClick(e) {
+    const target = e.target.closest('[id]');
+    if (!target) return;
+    
+    const actions = {
+      'link-registro': () => {
         e.preventDefault();
-        const form = e.target;
-
-        const formActions = {
-            'login-form': () => this.handleLogin(form),
-            'register-form': () => this.handleRegister(form),
-            'form-jugadores': () => this.handleJugadoresSubmit(form)
-        };
-
-        if (formActions[form.id]) {
-            formActions[form.id]();
-        }
-    }
-
-    handleKeydown(e) {
-        if (e.key === 'Escape') {
-            this.hideToasts();
-        }
-    }
-
-    // ==================== MANEJO DE LOGIN ==================== 
-    async handleLogin(form) {
-        const username = form.querySelector('#login-username').value.trim();
-        const password = form.querySelector('#login-password').value.trim();
-
-        // Limpiar errores visuales previos
-        this.clearFormErrors(form);
-
-        // Validaciones
-        if (!this.validateLoginForm(username, password, form)) {
-            return;
-        }
-
-        this.setLoading(true);
-
-        try {
-            await this.delay(800);
-            this.user = { username, name: username.toUpperCase() };
-            this.showScreen('lobby');
-            this.showToast('¡Bienvenido de vuelta!', 'success');
-        } catch (error) {
-            this.showToast('Error al iniciar sesión', 'error');
-        } finally {
-            this.setLoading(false);
-        }
-    }
-
-    validateLoginForm(username, password, form) {
-        if (!username) {
-            this.showFieldError(form, '#login-username', 'Por favor ingresa tu usuario');
-            return false;
-        }
-
-        if (username.length < 3 || username.length > 20) {
-            this.showFieldError(form, '#login-username', 'El usuario debe tener entre 3 y 20 caracteres');
-            return false;
-        }
-
-        if (!password) {
-            this.showFieldError(form, '#login-password', 'Por favor ingresa tu contraseña');
-            return false;
-        }
-
-        return true;
-    }
-
-    // ==================== MANEJO DE REGISTRO ==================== 
-    async handleRegister(form) {
-        const formData = this.getRegisterFormData(form);
-
-        // Limpiar errores visuales previos
-        this.clearFormErrors(form);
-
-        // Validaciones
-        if (!this.validateRegisterForm(formData, form)) {
-            return;
-        }
-
-        this.setLoading(true);
-
-        try {
-            await this.delay(2000);
-            this.user = {
-                username: formData.username,
-                name: formData.username.toUpperCase(),
-                email: formData.email,
-                birthdate: formData.birthdate
-            };
-            this.showScreen('lobby');
-            this.showToast('¡Cuenta creada exitosamente!', 'success');
-        } catch (error) {
-            this.showToast('Error al crear la cuenta', 'error');
-        } finally {
-            this.setLoading(false);
-        }
-    }
-
-    getRegisterFormData(form) {
-        return {
-            username: form.querySelector('#register-username').value.trim(),
-            email: form.querySelector('#register-email').value.trim(),
-            birthdate: form.querySelector('#register-fecha')?.value || '',
-            password: form.querySelector('#register-password').value.trim(),
-            passwordConfirm: form.querySelector('#register-password-confirm').value.trim()
-        };
-    }
-
-    validateRegisterForm(data, form) {
-        const validations = [
-            { condition: !data.username, field: '#register-username', message: 'Por favor ingresa tu nombre de usuario' },
-            { condition: data.username.length < 3 || data.username.length > 20, field: '#register-username', message: 'El nombre debe tener entre 3 y 20 caracteres' },
-            { condition: !data.email, field: '#register-email', message: 'Por favor ingresa tu email' },
-            { condition: !this.validateEmail(data.email), field: '#register-email', message: 'Ingresa un email válido' },
-            { condition: !data.birthdate, field: '#register-fecha', message: 'Por favor ingresá tu fecha de nacimiento' },
-            { condition: this.isFutureDate(data.birthdate), field: '#register-fecha', message: 'La fecha de nacimiento no puede ser futura' },
-            { condition: this.isUnderAge(data.birthdate, 8), field: '#register-fecha', message: 'Debes tener al menos 8 años para registrarte' },
-            { condition: !data.password, field: '#register-password', message: 'Por favor ingresa tu contraseña' },
-            { condition: data.password.length < 6, field: '#register-password', message: 'La contraseña debe tener al menos 6 caracteres' },
-            { condition: !data.passwordConfirm, field: '#register-password-confirm', message: 'Por favor confirma tu contraseña' },
-            { condition: data.password !== data.passwordConfirm, field: '#register-password-confirm', message: 'Las contraseñas no coinciden' }
-        ];
-
-        for (const validation of validations) {
-            if (validation.condition) {
-                this.showFieldError(form, validation.field, validation.message);
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    // ==================== NAVEGACIÓN DE PANTALLAS ==================== 
-    showScreen(screenName) {
-        // Ocultar todas las pantallas
-        document.querySelectorAll('.pantalla, .pantalla-inicio').forEach(screen => {
-            screen.style.display = 'none';
-        });
-
-        // Mostrar la pantalla solicitada
-        const screen = document.getElementById(`pantalla-${screenName}`);
-        if (screen) {
-            screen.style.display = screenName === 'carga' ? 'flex' : 'block';
-            this.animateScreenElements(screen);
-        }
-
-        this.currentScreen = screenName;
-
-        // Configuraciones específicas por pantalla
-        this.handleScreenSpecificSetup(screenName, screen);
-    }
-
-    animateScreenElements(screen) {
-        const animatedElements = screen.querySelectorAll('.fade-in, .fade-in-up');
-        animatedElements.forEach((el, index) => {
-            setTimeout(() => {
-                el.style.animationDelay = `${index * 100}ms`;
-                el.classList.add('animated');
-            }, 100);
-        });
-    }
-
-
-handleScreenSpecificSetup(screenName, screen) {
-        if (screenName === 'jugadores') {
-            this.setupPantallaJugadores();
-        }
-
-        if (screenName === 'seleccion-inicial') {
-            // Configurar eventos de hover para la selección
-            this.setupSeleccionInicialEvents();
-        }
-
-        if (screenName === 'lobby' && this.user) {
-            const nameElement = screen.querySelector('.titulo--lg');
-            if (nameElement) {
-                nameElement.textContent = this.user.name;
-            }
-        }
-    }
-
-    setupSeleccionInicialEvents() {
-        // Efectos hover para las opciones de jugador
-        document.querySelectorAll('.jugador-opcion').forEach(opcion => {
-            opcion.addEventListener('mouseenter', () => {
-                opcion.style.transform = 'translateY(-5px)';
-                opcion.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.3)';
-            });
-            
-            opcion.addEventListener('mouseleave', () => {
-                if (!opcion.classList.contains('seleccionado')) {
-                    opcion.style.transform = '';
-                    opcion.style.boxShadow = '';
-                }
-            });
-
-            opcion.addEventListener('click', () => {
-                // Remover selección previa
-                document.querySelectorAll('.jugador-opcion').forEach(opt => {
-                    opt.classList.remove('seleccionado');
-                    opt.style.transform = '';
-                    opt.style.boxShadow = '';
-                });
-                
-                // Aplicar selección actual
-                opcion.classList.add('seleccionado');
-                opcion.style.transform = 'translateY(-5px)';
-                opcion.style.boxShadow = '0 0 20px rgba(98, 129, 7, 0.4)';
-            });
-        });
-    }
-    // ==================== CONFIGURACIÓN DE JUGADORES ==================== 
-    setupPantallaJugadores() {
-        const cont = document.getElementById('lista-jugadores');
-        if (!cont) return;
-
-        // Cargar nombre del usuario logueado
-        this.loadUserData();
-
-        // Configurar controles
-        this.setupGameControls();
-
-        // Configurar eventos de radio buttons
-        this.setupTipoJugadorChange();
-
-        // Validación inicial
-        this.actualizarBotonComenzar();
-    }
-
-    loadUserData() {
-        const input1 = document.getElementById('jugador-1');
-        if (input1 && this.user?.username) {
-            input1.value = this.user.username;
-        }
-    }
-
-    setupGameControls() {
-        const btn = document.getElementById('btn-comenzar-partida');
-        if (btn) btn.disabled = true;
-
-        const cont = document.getElementById('lista-jugadores');
-        if (cont) {
-            cont.addEventListener('input', () => this.actualizarBotonComenzar());
-        }
-    }
-
-    setupTipoJugadorChange() {
-        const radioInvitado = document.getElementById('radio-invitado');
-        const radioUsuario = document.getElementById('radio-usuario');
-
-        // Event listeners para cambios
-        [radioInvitado, radioUsuario].forEach(radio => {
-            if (radio) {
-                radio.addEventListener('change', () => {
-                    if (radio.checked) {
-                        this.updatePlayerType(radio.value);
-                    }
-                });
-            }
-        });
-
-        // Event listeners para clicks en labels
-        document.querySelectorAll('.radio-option').forEach(label => {
-            label.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const input = label.querySelector('input[type="radio"]');
-                if (input) {
-                    input.checked = true;
-                    this.updatePlayerType(input.value);
-                    input.dispatchEvent(new Event('change', { bubbles: true }));
-                }
-            });
-        });
-    }
-
-    updatePlayerType(tipo) {
-        const avatarImg = document.getElementById('avatar-jugador-2');
-        const nombreInput = document.getElementById('jugador-2');
-
-        if (tipo === 'invitado') {
-            if (avatarImg) avatarImg.src = 'img/invitado.png';
-            if (nombreInput) {
-                nombreInput.placeholder = 'Ingrese nombre de jugador #2';
-                nombreInput.value = '';
-            }
-        } else if (tipo === 'usuario') {
-            if (avatarImg) avatarImg.src = 'img/foto_usuario-2.png';
-            if (nombreInput) {
-                nombreInput.placeholder = 'Nombre de usuario existente';
-                nombreInput.value = '';
-            }
-        }
-
-        this.actualizarBotonComenzar();
-    }
-
-    actualizarBotonComenzar() {
-        const j2 = document.getElementById('jugador-2');
-        const btn = document.getElementById('btn-comenzar-partida');
-
-        if (!j2 || !btn) return;
-
-        btn.disabled = j2.value.trim() === '';
-    }
-
-    // ==================== MANEJO DE JUGADORES ==================== 
-    handleJugadoresSubmit(form) {
-        const j1 = form.querySelector('#jugador-1');
-        const j2 = form.querySelector('#jugador-2');
-        const tipoJugador = form.querySelector('input[name="tipo-jugador-2"]:checked');
-
-        // Validar datos
-        if (!this.validatePlayersForm(j1, j2)) {
-            return;
-        }
-
-        // Preparar datos de jugadores
-        const nombres = [j1.value.trim(), j2.value.trim()];
-        const jugador2Info = {
-            nombre: j2.value.trim(),
-            tipo: tipoJugador ? tipoJugador.value : 'invitado'
-        };
-
-        // Mostrar selector de quién empieza
-        this.mostrarSelectorQuienEmpieza(nombres, jugador2Info);
-    }
-
-    validatePlayersForm(j1, j2) {
-        if (!j2 || !j2.value.trim()) {
-            this.showFieldError(document.getElementById('form-jugadores'), '#jugador-2', 'Ingresa el nombre del segundo jugador');
-            return false;
-        }
-        return true;
-    }
-
-    // ==================== QUIÉN EMPIEZA ====================
-    mostrarSelectorQuienEmpieza(nombres, jugador2Info) {
-        // Creamos un modal simple sin depender de HTML existente
-        let modal = document.getElementById('popup-quien-empieza');
-        if (!modal) {
-            modal = document.createElement('div');
-            modal.id = 'popup-quien-empieza';
-            modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:9999;';
-            modal.innerHTML = `
-                <div style="background:#fff;border-radius:12px;max-width:520px;width:92%;padding:24px;font-family:inherit;box-shadow:0 20px 60px rgba(0,0,0,.35)">
-                    <h3 style="margin:0 0 12px 0;font-size:22px;">¿Quién empieza?</h3>
-                    <p style="margin:0 0 16px 0;color:#444">Elegí el jugador que comienza la ronda 1.</p>
-                    <div style="display:flex;gap:12px;flex-wrap:wrap">
-                        <button id="btn-empieza-j1" class="btn" style="flex:1;padding:12px 14px;border-radius:10px;border:none;background:#2e7d32;color:#fff;cursor:pointer">${nombres[0] || 'Jugador 1'}</button>
-                        <button id="btn-empieza-j2" class="btn" style="flex:1;padding:12px 14px;border-radius:10px;border:none;background:#1565c0;color:#fff;cursor:pointer">${nombres[1] || 'Jugador 2'}</button>
-                    </div>
-                    <div style="display:flex;justify-content:flex-end;margin-top:10px">
-                        <button id="btn-empieza-aleatorio" class="btn" style="padding:8px 12px;border-radius:8px;border:1px solid #ccc;background:#fafafa;cursor:pointer">Aleatorio</button>
-                    </div>
-                </div>`;
-            document.body.appendChild(modal);
-        } else {
-            modal.querySelector('#btn-empieza-j1').textContent = nombres[0] || 'Jugador 1';
-            modal.querySelector('#btn-empieza-j2').textContent = nombres[1] || 'Jugador 2';
-        }
-
-        const iniciar = (primerJugador) => {
-            modal.remove();
-            this.iniciarPartida(nombres, jugador2Info, primerJugador);
-        };
-
-        modal.querySelector('#btn-empieza-j1').onclick = () => iniciar(1);
-        modal.querySelector('#btn-empieza-j2').onclick = () => iniciar(2);
-        modal.querySelector('#btn-empieza-aleatorio').onclick = () => iniciar(Math.random() < 0.5 ? 1 : 2);
-    }
-
-    iniciarPartida(nombres, jugador2Info, primerJugador) {
-        this.players = nombres.slice(0, 2);
-        this.jugador2Info = jugador2Info;
-
-        // Mostrar el tablero
-        this.showScreen('partida');
-
-        // Inicializar la lógica del juego (definida en tablero.js)
-        const elegido = primerJugador || (Math.random() < 0.5 ? 1 : 2);
-        if (window.JuegoManager && typeof window.JuegoManager.inicializarPartida === 'function') {
-            window.JuegoManager.inicializarPartida(nombres, jugador2Info, elegido);
-        } else {
-            console.error('JuegoManager no disponible');
-        }
-    }
-
-    // ==================== LÓGICA DEL DADO ==================== 
-    iniciarAnimacionDado() {
-        const dadoImg = document.getElementById('dado-imagen');
-        const dadoContainer = document.getElementById('dado-animado');
-        const dadoTexto = document.querySelector('.dado-texto');
-
-        if (!dadoImg || !dadoContainer) return;
-
-        const dados = [
-            'img/dado-baños.png', 'img/dado-bosque.png', 'img/dado-cafe.png',
-            'img/dado-huella.png', 'img/dado-no-trex.png', 'img/dado-rocas.png'
-        ];
-
-        let contador = 0;
-        const maxCambios = 15;
-        const intervaloInicial = 150;
-
-        dadoContainer.classList.add('spinning');
-
-        const intervalo = setInterval(() => {
-            const indiceAleatorio = Math.floor(Math.random() * dados.length);
-            dadoImg.src = dados[indiceAleatorio];
-            contador++;
-
-            if (contador > maxCambios * 0.7) {
-                clearInterval(intervalo);
-                this.ralentizarAnimacionDado(dados, contador, maxCambios);
-            }
-        }, intervaloInicial);
-    }
-
-    ralentizarAnimacionDado(dados, contadorInicial, maxCambios) {
-        const dadoImg = document.getElementById('dado-imagen');
-        let contador = contadorInicial;
-        let intervaloActual = 200;
-
-        const intervaloLento = setInterval(() => {
-            const indiceAleatorio = Math.floor(Math.random() * dados.length);
-            dadoImg.src = dados[indiceAleatorio];
-
-            contador++;
-            intervaloActual += 50;
-
-            if (contador >= maxCambios) {
-                clearInterval(intervaloLento);
-                this.finalizarAnimacionDado(dados);
-            }
-        }, intervaloActual);
-    }
-
-    finalizarAnimacionDado(dados) {
-        const dadoImg = document.getElementById('dado-imagen');
-        const dadoContainer = document.getElementById('dado-animado');
-        const dadoTexto = document.querySelector('.dado-texto');
-
-        // Seleccionar dado final
-        const dadoFinal = Math.floor(Math.random() * dados.length) + 1;
-        this.dadoSeleccionado = dadoFinal;
-
-        // Mostrar dado final
-        dadoImg.src = dados[dadoFinal - 1];
-        dadoContainer.classList.remove('spinning');
-        dadoContainer.classList.add('final');
-
-        if (dadoTexto) {
-            dadoTexto.textContent = '¡Dado lanzado!';
-        }
-
-        setTimeout(() => {
-            this.mostrarResultadoDado(dadoFinal);
-        }, 800);
-    }
-
-    mostrarResultadoDado(dadoNumero) {
-        const configuracionDados = {
-            1: { titulo: "Lugar vacío", descripcion: "Poné el dinosaurio en un lugar donde no haya ningún otro. Si no podés cumplir la consigna, poné el dinosaurio en el río.", imagen: "img/dado-huella.png" },
-            2: { titulo: "Sin T-Rex", descripcion: "Poné el dinosaurio en un lugar donde no esté el T-Rex. Si no podés cumplir la consigna, poné el dinosaurio en el río.", imagen: "img/dado-no-trex.png" },
-3: { titulo: "Lado cafetería (izquierda)", descripcion: "Poné el dinosaurio en el lado izquierdo del tablero, donde está la cafetería. Si no podés cumplir la consigna, poné el dinosaurio en el río.", imagen: "img/dado-cafe.png" },
-            4: { titulo: "Bosque", descripcion: "Poné el dinosaurio en un lugar del bosque. Si no podés cumplir la consigna, poné el dinosaurio en el río.", imagen: "img/dado-bosque.png" },
-            5: { titulo: "Rocas", descripcion: "Poné el dinosaurio en un lugar de rocas. Si no podés cumplir la consigna, poné el dinosaurio en el río.", imagen: "img/dado-rocas.png" },
-            6: { titulo: "Lado baños (derecha)", descripcion: "Poné el dinosaurio en el lado derecho del tablero, donde están los baños. Si no podés cumplir la consigna, poné el dinosaurio en el río.", imagen: "img/dado-baños.png" }
-        };
-
-        const config = configuracionDados[dadoNumero];
-
-        // Actualizar elementos del popup
-        this.updatePopupContent(config);
-
-        // Mostrar pantalla de resultado
-        this.showScreen('dado-resultado');
-
-        // Botón para continuar (si existe). Si no, fallback automático.
-        const btn = document.getElementById('btn-dado-continuar');
-        const continuar = () => {
-            this.showScreen('partida');
-            if (window.JuegoManager && typeof window.JuegoManager.procesarResultadoDado === 'function') {
-                window.JuegoManager.procesarResultadoDado(this.dadoSeleccionado);
-            }
-        };
-        if (btn) {
-            btn.onclick = continuar;
-        } else {
-            setTimeout(continuar, 1200);
-        }
-    }
-
-    updatePopupContent(config) {
-        const dadoResultadoImg = document.getElementById('dado-resultado-img');
-        const tituloDado = document.getElementById('titulo-dado');
-        const descripcionDado = document.getElementById('descripcion-dado');
-
-        if (dadoResultadoImg) dadoResultadoImg.src = config.imagen;
-        if (tituloDado) tituloDado.textContent = config.titulo;
-        if (descripcionDado) descripcionDado.textContent = config.descripcion;
-    }
-
-    // ==================== SISTEMA DE FORMULARIOS ==================== 
-    setupFormValidation() {
-        const inputs = document.querySelectorAll('.form-input');
-        inputs.forEach(input => {
-            input.addEventListener('input', () => {
-                if (input.classList.contains('error')) {
-                    this.clearFieldError(input);
-                }
-            });
-        });
-    }
-
-    setupFormClickHandlers() {
-        document.querySelectorAll('.form-group').forEach(group => {
-            const input = group.querySelector('.form-input');
-            const tipoJugadorSelector = group.querySelector('.tipo-jugador-selector');
-
-            // Solo agregar funcionalidad de click si NO contiene radio buttons
-            if (input && !input.hasAttribute('readonly') && !tipoJugadorSelector) {
-                group.addEventListener('click', function (e) {
-                    if (e.target !== input) {
-                        input.focus();
-                    }
-                });
-            }
-        });
-
-        // Manejar clicks en radio buttons específicamente
-        document.querySelectorAll('.radio-option').forEach(option => {
-            option.addEventListener('click', function (e) {
-                e.stopPropagation();
-                const radio = this.querySelector('input[type="radio"]');
-                if (radio) {
-                    radio.checked = true;
-                    radio.dispatchEvent(new Event('change', { bubbles: true }));
-                }
-            });
-        });
-    }
-
-    setupAccessibility() {
-        // Focus states mejorados
-        document.addEventListener('focusin', (e) => {
-            if (e.target.matches('.btn, .form-input, .btn-icon')) {
-                e.target.classList.add('focus-visible');
-            }
-        });
-
-        document.addEventListener('focusout', (e) => {
-            e.target.classList.remove('focus-visible');
-        });
-
-        // Soporte para motion reducido
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            document.documentElement.style.setProperty('--transition-base', '0ms');
-            document.documentElement.style.setProperty('--transition-fast', '0ms');
-        }
-    }
-
-    setupBirthdateField() {
-        const fechaInput = document.querySelector('#register-fecha');
-        if (!fechaInput) return;
-
-        const hoy = new Date();
-        const yyyy = hoy.getFullYear();
-        const mm = String(hoy.getMonth() + 1).padStart(2, '0');
-        const dd = String(hoy.getDate()).padStart(2, '0');
-
-        fechaInput.max = `${yyyy}-${mm}-${dd}`;
-
-        // Fecha mínima (100 años atrás)
-        const fechaMinima = new Date();
-        fechaMinima.setFullYear(fechaMinima.getFullYear() - 100);
-        const yyyyMin = fechaMinima.getFullYear();
-        const mmMin = String(fechaMinima.getMonth() + 1).padStart(2, '0');
-        const ddMin = String(fechaMinima.getDate()).padStart(2, '0');
-
-        fechaInput.min = `${yyyyMin}-${mmMin}-${ddMin}`;
-    }
-
-    // ==================== MANEJO DE ERRORES ==================== 
-    clearFormErrors(form) {
-        form.querySelectorAll('.form-input').forEach(input => {
-            this.clearFieldError(input);
-        });
-    }
-
-    clearFieldError(input) {
-        input.classList.remove('error');
-        input.setAttribute('aria-invalid', 'false');
-    }
-
-    showFieldError(form, selector, message) {
-        const field = form.querySelector(selector);
-        if (field) {
-            field.classList.add('error');
-            field.setAttribute('aria-invalid', 'true');
-            field.focus();
-        }
-        this.showToast(message, 'error');
-    }
-
-    // ==================== SISTEMA DE LOADING ==================== 
-    setLoading(isLoading) {
-        this.loading = isLoading;
-        const buttons = document.querySelectorAll('.btn');
-
-        buttons.forEach(btn => {
-            if (isLoading) {
-                btn.classList.add('btn--loading');
-                btn.disabled = true;
-            } else {
-                btn.classList.remove('btn--loading');
-                btn.disabled = false;
-            }
-        });
-    }
-
-    // ==================== SISTEMA DE TOASTS ==================== 
-    showToast(message, type = 'info') {
-        const container = document.getElementById('toast-container');
-        if (!container) return;
-
-        const toast = this.createToastElement(message, type);
-        container.appendChild(toast);
-
-        // Auto-hide después de 5 segundos
-        setTimeout(() => {
-            if (toast.parentNode) {
-                this.removeToast(toast);
-            }
-        }, 5000);
-    }
-
-    createToastElement(message, type) {
-        const toast = document.createElement('div');
-        toast.className = `toast toast--${type} fade-in`;
-        toast.innerHTML = `
-            <div class="toast__content">
-                <span class="toast__message">${message}</span>
-                <button class="toast__close" aria-label="Cerrar notificación">&times;</button>
-            </div>
-        `;
-
-        // Event listener para cerrar
-        toast.querySelector('.toast__close').addEventListener('click', () => {
-            this.removeToast(toast);
-        });
-
-        return toast;
-    }
-
-    removeToast(toast) {
-        toast.classList.add('fade-out');
-        setTimeout(() => {
-            if (toast.parentNode) {
-                toast.remove();
-            }
-        }, 300);
-    }
-
-    hideToasts() {
-        document.querySelectorAll('.toast').forEach(toast => {
-            this.removeToast(toast);
-        });
-    }
-
-    // ==================== UTILIDADES ==================== 
-    logout() {
-        this.user = null;
+        this.showScreen('registro');
+      },
+      'link-login': () => {
+        e.preventDefault();
         this.showScreen('login');
-        this.showToast('Sesión cerrada', 'info');
+      },
+      'btn-logout': () => this.logout(),
+      'btn-jugar-app': () => {
+        this.modoSeguimiento = false;
+        this.showScreen('jugadores');
+      },
+      'btn-modo-asistente': () => this.iniciarModoSeguimiento(),
+      'btn-volver-jugadores': () => this.showScreen('lobby'),
+      'btn-volver-seleccion': () => this.showScreen('jugadores'),
+      'btn-seleccionar-j1': () => this.iniciarPartidaConJugador(1),
+      'btn-seleccionar-j2': () => this.iniciarPartidaConJugador(2),
+      'btn-seleccion-aleatoria': () => this.seleccionAleatoria(),
+      'btn-empezar-turno': () => this.empezarTurnoSeguimiento(),
+      'btn-comenzar-juego': () => this.comenzarJuego(),
+      'btn-siguiente-ronda': () => this.siguienteRonda(),
+      'btn-revancha': () => this.revancha(),
+      'btn-nueva-partida': () => this.nuevaPartida(),
+      'btn-volver-inicio-final': () => this.showScreen('lobby')
+    };
+    
+    if (actions[target.id]) {
+      actions[target.id]();
     }
+  }
 
-    validateEmail(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  handleSubmit(e) {
+    e.preventDefault();
+    const formActions = {
+      'login-form': () => this.handleLogin(e.target),
+      'register-form': () => this.handleRegister(e.target),
+      'form-jugadores': () => this.handleJugadoresSubmit(e.target)
+    };
+    
+    if (formActions[e.target.id]) {
+      formActions[e.target.id]();
     }
+  }
 
-    isFutureDate(dateString) {
-        if (!dateString) return false;
-        const hoy = new Date();
-        const fechaNac = new Date(dateString);
-        return fechaNac > new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+  handleKeydown(e) {
+    if (e.key === 'Escape') {
+      this.hideToasts();
     }
+  }
 
-    isUnderAge(dateString, minAge) {
-        if (!dateString) return false;
-        const fechaMinima = new Date();
-        fechaMinima.setFullYear(fechaMinima.getFullYear() - minAge);
-        const fechaNac = new Date(dateString);
-        return fechaNac > fechaMinima;
-    }
+  // ==================== VALIDACIÓN EN TIEMPO REAL ====================
+  setupRealTimeValidation() {
+    document.addEventListener('input', e => {
+      if (e.target.matches('#jugador-1, #jugador-2')) {
+        this.validatePlayerNameRealTime(e.target);
+      }
+      if (e.target.matches('#register-username')) {
+        this.validateUsernameRealTime(e.target);
+      }
+    });
+  }
 
-    delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+  validatePlayerNameRealTime(input) {
+    const value = input.value;
+    const { max, min } = this.validationConfig.playerName;
+    
+    this.updateCharacterCounter(input, value.length, max);
+    
+    // Limitar longitud
+    if (value.length > max) {
+      input.value = value.substring(0, max);
+      this.showToast(`Nombre máximo ${max} caracteres`, 'warning');
     }
+    
+    // Solo letras y espacios
+    if (!/^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]*$/.test(value)) {
+      input.value = value.replace(/[^a-zA-ZÀ-ÿ\u00f1\u00d1\s]/g, '');
+      this.showToast('Solo se permiten letras y espacios', 'warning');
+    }
+    
+    // Evitar espacios múltiples
+    if (/\s{2,}/.test(value)) {
+      input.value = value.replace(/\s+/g, ' ');
+    }
+    
+    this.actualizarBotonComenzar();
+    
+    // Clear error si es válido
+    if (value.length >= min && value.length <= max && value.trim() !== '') {
+      this.clearFieldError(input);
+    }
+  }
+
+  validateUsernameRealTime(input) {
+    const value = input.value;
+    const max = this.validationConfig.username.max;
+    
+    this.updateCharacterCounter(input, value.length, max);
+    
+    if (value.length > max) {
+      input.value = value.substring(0, max);
+      this.showToast(`Usuario máximo ${max} caracteres`, 'warning');
+    }
+    
+    if (!/^[a-zA-Z0-9_]*$/.test(value)) {
+      input.value = value.replace(/[^a-zA-Z0-9_]/g, '');
+      this.showToast('Solo letras, números y guión bajo', 'warning');
+    }
+  }
+
+  updateCharacterCounter(input, currentLength, maxLength) {
+    let counter = input.parentElement.querySelector('.character-counter');
+    
+    if (!counter) {
+      counter = document.createElement('div');
+      counter.className = 'character-counter';
+      input.parentElement.appendChild(counter);
+    }
+    
+    counter.textContent = `${currentLength}/${maxLength}`;
+    
+    if (maxLength - currentLength < 3) {
+      counter.className = 'character-counter character-counter--warning';
+    } else if (maxLength - currentLength < 6) {
+      counter.className = 'character-counter character-counter--attention';
+    } else {
+      counter.className = 'character-counter';
+    }
+  }
+
+  // ==================== ACTUALIZACIÓN BOTÓN COMENZAR ====================
+  actualizarBotonComenzar() {
+    const j1 = document.getElementById('jugador-1');
+    const j2 = document.getElementById('jugador-2');
+    const btn = document.getElementById('btn-comenzar-partida');
+    
+    if (!j1 || !j2 || !btn) return;
+    
+    const j1Valid = j1.value.trim().length >= this.validationConfig.playerName.min;
+    const j2Valid = j2.value.trim().length >= this.validationConfig.playerName.min && 
+                   j2.value.trim().length <= this.validationConfig.playerName.max;
+    const namesAreDifferent = j1.value.trim().toLowerCase() !== j2.value.trim().toLowerCase();
+    
+    btn.disabled = !(j1Valid && j2Valid && namesAreDifferent);
+    
+    // Actualizar texto del botón según el modo
+    const btnText = btn.querySelector('.btn-text');
+    if (btnText) {
+      btnText.textContent = this.modoSeguimiento ? 'Modo seguimiento' : 'Jugar en la app';
+    }
+    
+    // Visual feedback
+    if (j2.value.trim() && !j2Valid) {
+      j2.classList.add('error');
+    } else if (j2Valid && namesAreDifferent) {
+      j2.classList.remove('error');
+    }
+  }
+
+  // ==================== VALIDACIÓN DE FORMULARIOS ====================
+  validateLoginForm(username, password, form) {
+    const validations = [
+      [!username, '#login-username', 'Por favor ingresa tu usuario'],
+      [!password, '#login-password', 'Por favor ingresa tu contraseña']
+    ];
+    
+    for (const [condition, field, message] of validations) {
+      if (condition) {
+        this.showFieldError(form, field, message);
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  validateRegisterForm(data, form) {
+    const { username: { min: userMin, max: userMax }, password: { min: passMin } } = this.validationConfig;
+    
+    const validations = [
+      [!data.username, '#register-username', 'Por favor ingresa tu nombre de usuario'],
+      [data.username.length < userMin || data.username.length > userMax, 
+       '#register-username', `El usuario debe tener entre ${userMin} y ${userMax} caracteres`],
+      [!/^[a-zA-Z0-9_]+$/.test(data.username), 
+       '#register-username', 'El usuario solo puede contener letras, números y guión bajo'],
+      [!data.email, '#register-email', 'Por favor ingresa tu email'],
+      [!this.validateEmail(data.email), '#register-email', 'Ingresa un email válido'],
+      [!data.birthdate, '#register-fecha', 'Por favor ingresa tu fecha de nacimiento'],
+      [this.isFutureDate(data.birthdate), '#register-fecha', 'La fecha de nacimiento no puede ser futura'],
+      [this.isUnderAge(data.birthdate, this.validationConfig.minAge), 
+       '#register-fecha', `Debes tener al menos ${this.validationConfig.minAge} años para registrarte`],
+      [!data.password, '#register-password', 'Por favor ingresa tu contraseña'],
+      [data.password.length < passMin, 
+       '#register-password', `La contraseña debe tener al menos ${passMin} caracteres`],
+      [!/^(?=.*[A-Za-z])(?=.*\d)/.test(data.password), 
+       '#register-password', 'La contraseña debe contener al menos una letra y un número'],
+      [!data.passwordConfirm, '#register-password-confirm', 'Por favor confirma tu contraseña'],
+      [data.password !== data.passwordConfirm, 
+       '#register-password-confirm', 'Las contraseñas no coinciden']
+    ];
+    
+    for (const [condition, field, message] of validations) {
+      if (condition) {
+        this.showFieldError(form, field, message);
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  validatePlayersForm(j1, j2) {
+    const { min, max } = this.validationConfig.playerName;
+    const j2Name = j2.value.trim();
+    const j1Name = j1.value.trim();
+    
+    const validations = [
+      [!j2 || !j2Name, '#jugador-2', 'Ingresa el nombre del segundo jugador'],
+      [j2Name.length < min, '#jugador-2', `El nombre debe tener al menos ${min} caracteres`],
+      [j2Name.length > max, '#jugador-2', `El nombre no puede exceder ${max} caracteres`],
+      [!/^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]+$/.test(j2Name), 
+       '#jugador-2', 'El nombre solo puede contener letras y espacios'],
+      [j1Name.toLowerCase() === j2Name.toLowerCase(), 
+       '#jugador-2', 'Los jugadores deben tener nombres diferentes']
+    ];
+    
+    for (const [condition, field, message] of validations) {
+      if (condition) {
+        this.showFieldError(document.getElementById('form-jugadores'), field, message);
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  // ==================== UTILIDADES DE VALIDACIÓN ====================
+  isFormValid(form) {
+    const fields = form.querySelectorAll('input[required], input.form-input');
+    return Array.from(fields).every(field => {
+      return field.value.trim() !== '' && !field.classList.contains('error');
+    });
+  }
+
+  sanitizePlayerName(name) {
+    return name.trim().replace(/\s+/g, ' ').substring(0, this.validationConfig.playerName.max);
+  }
+
+  validateEmail(email) {
+    const re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    return re.test(email) && email.length <= 254;
+  }
+
+  isFutureDate(dateString) {
+    if (!dateString) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const inputDate = new Date(dateString);
+    return inputDate > today;
+  }
+
+  isUnderAge(dateString, minAge) {
+    if (!dateString) return false;
+    const today = new Date();
+    const birthDate = new Date(dateString);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    return age < minAge;
+  }
+
+  // ==================== MANEJO DE PANTALLAS ====================
+  showScreen(screenName) {
+    // Ocultar todas las pantallas
+    document.querySelectorAll('.pantalla, .pantalla-inicio').forEach(s => {
+      s.style.display = 'none';
+    });
+    
+    // Mostrar la pantalla solicitada
+    const screen = document.getElementById(`pantalla-${screenName}`);
+    if (screen) {
+      screen.style.display = screenName === 'carga' ? 'flex' : 'block';
+      this.animateScreenElements(screen);
+    }
+    
+    this.currentScreen = screenName;
+    this.handleScreenSpecificSetup(screenName, screen);
+  }
+
+  animateScreenElements(screen) {
+    const elements = screen.querySelectorAll('.fade-in, .fade-in-up');
+    elements.forEach((el, index) => {
+      setTimeout(() => {
+        el.style.animationDelay = `${index * 100}ms`;
+        el.classList.add('animated');
+      }, 100);
+    });
+  }
+
+  handleScreenSpecificSetup(screenName, screen) {
+    switch(screenName) {
+      case 'jugadores':
+        this.setupPantallaJugadores();
+        break;
+      case 'seleccion-inicial':
+        this.setupSeleccionInicialEvents();
+        break;
+      case 'lobby':
+        if (this.user && screen) {
+          const titulo = screen.querySelector('.titulo--lg');
+          if (titulo) titulo.textContent = this.user.name;
+        }
+        break;
+      case 'partida':
+        // Asegurar que el tablero está visible
+        const pantallaPartida = document.getElementById('pantalla-partida');
+        if (pantallaPartida) {
+          pantallaPartida.style.display = 'block';
+        }
+        break;
+    }
+  }
+
+  setupPantallaJugadores() {
+    if (!document.getElementById('lista-jugadores')) return;
+    
+    this.loadUserData();
+    this.setupGameControls();
+    this.setupTipoJugadorChange();
+    this.actualizarBotonComenzar();
+  }
+
+  loadUserData() {
+    const input = document.getElementById('jugador-1');
+    if (input && this.user?.username) {
+      input.value = this.user.username;
+    }
+  }
+
+  setupGameControls() {
+    const btn = document.getElementById('btn-comenzar-partida');
+    if (btn) btn.disabled = true;
+    
+    const container = document.getElementById('lista-jugadores');
+    if (container) {
+      container.addEventListener('input', () => this.actualizarBotonComenzar());
+    }
+  }
+
+  setupTipoJugadorChange() {
+    const radioInvitado = document.getElementById('radio-invitado');
+    const radioUsuario = document.getElementById('radio-usuario');
+    
+    [radioInvitado, radioUsuario].forEach(radio => {
+      if (radio) {
+        radio.addEventListener('change', () => {
+          if (radio.checked) {
+            this.updatePlayerType(radio.value);
+          }
+        });
+      }
+    });
+    
+    // Click en los labels
+    document.querySelectorAll('.radio-option').forEach(label => {
+      label.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const input = label.querySelector('input[type="radio"]');
+        if (input) {
+          input.checked = true;
+          this.updatePlayerType(input.value);
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      });
+    });
+  }
+
+  updatePlayerType(tipo) {
+    const avatar = document.getElementById('avatar-jugador-2');
+    const nombre = document.getElementById('jugador-2');
+    
+    if (avatar) {
+      avatar.src = tipo === 'invitado' ? 'img/invitado.png' : 'img/foto_usuario-2.png';
+    }
+    
+    if (nombre) {
+      nombre.placeholder = tipo === 'invitado' ? 
+        'Ingrese nombre de jugador #2' : 
+        'Nombre de usuario existente';
+      nombre.value = '';
+    }
+    
+    this.actualizarBotonComenzar();
+  }
+
+  setupSeleccionInicialEvents() {
+    // Limpiar eventos anteriores
+    document.querySelectorAll('.jugador-opcion').forEach(opcion => {
+      const newOpcion = opcion.cloneNode(true);
+      opcion.parentNode.replaceChild(newOpcion, opcion);
+    });
+    
+    // Configurar nuevos eventos
+    document.querySelectorAll('.jugador-opcion').forEach(opcion => {
+      opcion.addEventListener('mouseenter', () => {
+        opcion.style.transform = 'translateY(-5px)';
+        opcion.style.boxShadow = '0 10px 25px rgba(0,0,0,0.3)';
+      });
+      
+      opcion.addEventListener('mouseleave', () => {
+        if (!opcion.classList.contains('seleccionado')) {
+          opcion.style.transform = '';
+          opcion.style.boxShadow = '';
+        }
+      });
+      
+      opcion.addEventListener('click', () => {
+        // Deseleccionar todas
+        document.querySelectorAll('.jugador-opcion').forEach(opt => {
+          opt.classList.remove('seleccionado');
+          opt.style.transform = '';
+          opt.style.boxShadow = '';
+        });
+        
+        // Seleccionar actual
+        opcion.classList.add('seleccionado');
+        opcion.style.transform = 'translateY(-5px)';
+        opcion.style.boxShadow = '0 0 20px rgba(98,129,7,0.4)';
+        
+        // Iniciar partida
+        const jugadorNum = opcion.id === 'opcion-jugador-2' ? 2 : 1;
+        setTimeout(() => this.iniciarPartidaConJugador(jugadorNum), 250);
+      });
+    });
+  }
+
+  // ==================== MODO SEGUIMIENTO ====================
+  iniciarModoSeguimiento() {
+    this.modoSeguimiento = true;
+    this.showScreen('jugadores');
+    this.showToast('Modo seguimiento activado', 'success');
+  }
+
+  mostrarTurnoJugadorConSeleccion(nombreJugador, avatarSrc) {
+    const nombreElement = document.getElementById('nombre-turno-jugador');
+    const avatarElement = document.getElementById('avatar-turno-actual');
+    
+    if (nombreElement) nombreElement.textContent = nombreJugador.toUpperCase();
+    if (avatarElement) avatarElement.src = avatarSrc;
+    
+    this.showScreen('turno-jugador');
+  }
+
+  empezarTurnoSeguimiento() {
+    this.showScreen('partida');
+    setTimeout(() => {
+      if (window.ModoSeguimiento) {
+        window.ModoSeguimiento.mostrarPopupSeleccionDinosaurios();
+      }
+    }, 100);
+  }
+
+  // ==================== MANEJO DE JUGADORES ====================
+  handleJugadoresSubmit(form) {
+    const j1 = form.querySelector('#jugador-1');
+    const j2 = form.querySelector('#jugador-2');
+    const tipoJugador = form.querySelector('input[name="tipo-jugador-2"]:checked');
+    
+    // Sanitizar nombres
+    if (j1) j1.value = this.sanitizePlayerName(j1.value);
+    if (j2) j2.value = this.sanitizePlayerName(j2.value);
+    
+    if (!this.validatePlayersForm(j1, j2)) return;
+    
+    const nombres = [j1.value.trim(), j2.value.trim()];
+    const jugador2Info = {
+      nombre: j2.value.trim(),
+      tipo: tipoJugador ? tipoJugador.value : 'invitado'
+    };
+    
+    this.mostrarSelectorQuienEmpieza(nombres, jugador2Info);
+  }
+
+  mostrarSelectorQuienEmpieza(nombres, jugador2Info) {
+    this.tempNombres = nombres;
+    this.tempJugador2Info = jugador2Info;
+    
+    // Actualizar nombres en la pantalla
+    const n1 = document.querySelector('.nombre-jugador-1');
+    const n2 = document.querySelector('.nombre-jugador-2');
+    
+    if (n1) n1.textContent = nombres[0].toUpperCase();
+    if (n2) n2.textContent = nombres[1].toUpperCase();
+    
+    // Actualizar avatar jugador 2
+    const avatar = document.getElementById('avatar-seleccion-j2');
+    if (avatar && jugador2Info) {
+      avatar.src = jugador2Info.tipo === 'invitado' ? 
+        'img/invitado.png' : 'img/foto_usuario-2.png';
+    }
+    
+    this.showScreen('seleccion-inicial');
+  }
+
+  seleccionAleatoria() {
+    const elegido = Math.random() < 0.5 ? 1 : 2;
+    const card = document.getElementById(`opcion-jugador-${elegido}`);
+    
+    if (card) {
+      card.classList.add('seleccionado');
+      card.style.transform = 'translateY(-5px)';
+      card.style.boxShadow = '0 0 20px rgba(98,129,7,0.4)';
+    }
+    
+    setTimeout(() => this.iniciarPartidaConJugador(elegido), 300);
+  }
+
+  iniciarPartidaConJugador(primerJugador) {
+    // Verificar datos temporales
+    if (!this.tempNombres || !this.tempJugador2Info) {
+      const j1 = document.getElementById('jugador-1')?.value?.trim() || 'Jugador 1';
+      const j2 = document.getElementById('jugador-2')?.value?.trim() || 'Jugador 2';
+      
+      this.tempNombres = [j1, j2];
+      this.tempJugador2Info = {
+        nombre: j2,
+        tipo: document.querySelector('input[name="tipo-jugador-2"]:checked')?.value || 'invitado'
+      };
+    }
+    
+    this.iniciarPartida(this.tempNombres, this.tempJugador2Info, primerJugador);
+    
+    // Limpiar datos temporales
+    this.tempNombres = null;
+    this.tempJugador2Info = null;
+  }
+
+  iniciarPartida(nombres, jugador2Info, primerJugador) {
+    this.players = nombres.slice(0, 2);
+    this.jugador2Info = jugador2Info;
+    
+    // Inicializar el juego
+    if (window.JuegoManager?.inicializarPartida) {
+      window.JuegoManager.inicializarPartida(nombres, jugador2Info, primerJugador, this.modoSeguimiento);
+    } else {
+      console.error('JuegoManager no disponible');
+    }
+    
+    if (this.modoSeguimiento) {
+      // Modo seguimiento: mostrar pantalla de turno
+      const nombreJugador = nombres[primerJugador - 1];
+      const avatarSrc = primerJugador === 1 ? 
+        'img/foto_usuario-1.png' : 
+        (jugador2Info.tipo === 'invitado' ? 'img/invitado.png' : 'img/foto_usuario-2.png');
+      
+      this.mostrarTurnoJugadorConSeleccion(nombreJugador, avatarSrc);
+    } else {
+      // Modo normal: verificar restricción del primer turno
+      if (window.estadoJuego?.turnoEnRonda === 1 && window.estadoJuego?.rondaActual === 1) {
+        // Primer turno de la primera ronda: sin restricción
+        this.mostrarPantallaSinRestriccion();
+      } else {
+        // Otros turnos: lanzar dado
+        this.showScreen('dado-animacion');
+        setTimeout(() => this.iniciarAnimacionDado(), 400);
+      }
+    }
+  }
+
+  mostrarPantallaSinRestriccion() {
+    // Ir directo a la pantalla de partida sin dado
+    this.showScreen('partida');
+    
+    // Establecer "Sin restricción" en el footer
+    const infoRestriccion = document.querySelector('.info-restriccion');
+    const textoRestriccion = document.querySelector('.texto-restriccion');
+    
+    if (infoRestriccion) {
+      infoRestriccion.style.visibility = 'visible';
+    }
+    
+    if (textoRestriccion) {
+      textoRestriccion.innerHTML = '<div>Sin restricción</div>';
+    }
+    
+    // Actualizar interfaz
+    if (window.JuegoManager) {
+      window.JuegoManager.actualizarInterfaz();
+      window.RenderManager?.actualizarDinosauriosDisponibles();
+    }
+  }
+
+  comenzarJuego() {
+    // Verificar si es el primer turno
+    if (window.estadoJuego?.turnoEnRonda === 1 && window.estadoJuego?.rondaActual === 1) {
+      this.mostrarPantallaSinRestriccion();
+    } else {
+      this.showScreen('partida');
+      if (window.JuegoManager?.procesarResultadoDado) {
+        window.JuegoManager.procesarResultadoDado(this.dadoSeleccionado || 1);
+      }
+    }
+  }
+
+  // ==================== ANIMACIÓN DE DADOS ====================
+  iniciarAnimacionDado() {
+    const img = document.getElementById('dado-imagen');
+    const cont = document.getElementById('dado-animado');
+    
+    if (!img || !cont) return;
+    
+    const dados = [
+      'img/dado-banos.png',
+      'img/dado-bosque.png',
+      'img/dado-cafe.png',
+      'img/dado-huella.png',
+      'img/dado-no-trex.png',
+      'img/dado-rocas.png'
+    ];
+    
+    let contador = 0;
+    cont.classList.add('spinning');
+    
+    const intervalo = setInterval(() => {
+      img.src = dados[Math.floor(Math.random() * dados.length)];
+      contador++;
+      
+      if (contador > 10) {
+        clearInterval(intervalo);
+        this.ralentizarAnimacionDado(dados, contador, 15);
+      }
+    }, 150);
+  }
+
+  ralentizarAnimacionDado(dados, contadorInicial, maxCambios) {
+    const img = document.getElementById('dado-imagen');
+    let contador = contadorInicial;
+    let intervaloActual = 200;
+    
+    const intervaloLento = setInterval(() => {
+      img.src = dados[Math.floor(Math.random() * dados.length)];
+      contador++;
+      
+      if (contador >= maxCambios) {
+        clearInterval(intervaloLento);
+        this.finalizarAnimacionDado(dados);
+      }
+      
+      intervaloActual += 50;
+    }, intervaloActual);
+  }
+
+  finalizarAnimacionDado(dados) {
+    const img = document.getElementById('dado-imagen');
+    const cont = document.getElementById('dado-animado');
+    const texto = document.querySelector('.dado-texto');
+    
+    this.dadoSeleccionado = Math.floor(Math.random() * dados.length) + 1;
+    img.src = dados[this.dadoSeleccionado - 1];
+    
+    cont.classList.remove('spinning');
+    cont.classList.add('final');
+    
+    if (texto) texto.textContent = '¡Dado lanzado!';
+    
+    setTimeout(() => this.mostrarResultadoDado(this.dadoSeleccionado), 800);
+  }
+
+  mostrarResultadoDado(dadoNumero) {
+    const config = {
+      1: {
+        titulo: 'Lugar vacío',
+        descripcion: 'Poné el dinosaurio en un lugar donde no haya ningún otro. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
+        imagen: 'img/dado-huella.png'
+      },
+      2: {
+        titulo: 'Sin T-Rex',
+        descripcion: 'Poné el dinosaurio en un lugar donde no esté el T-Rex. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
+        imagen: 'img/dado-no-trex.png'
+      },
+      3: {
+        titulo: 'Lado cafetería (izquierda)',
+        descripcion: 'Poné el dinosaurio en el lado izquierdo del tablero, donde está la cafetería. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
+        imagen: 'img/dado-cafe.png'
+      },
+      4: {
+        titulo: 'Bosque',
+        descripcion: 'Poné el dinosaurio en un lugar del bosque. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
+        imagen: 'img/dado-bosque.png'
+      },
+      5: {
+        titulo: 'Rocas',
+        descripcion: 'Poné el dinosaurio en un lugar de rocas. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
+        imagen: 'img/dado-rocas.png'
+      },
+      6: {
+        titulo: 'Lado baños (derecha)',
+        descripcion: 'Poné el dinosaurio en el lado derecho del tablero, donde están los baños. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
+        imagen: 'img/dado-banos.png'
+      }
+    };
+    
+    this.updatePopupContent(config[dadoNumero]);
+    this.showScreen('dado-resultado');
+    
+    const btn = document.getElementById('btn-comenzar-juego');
+    if (btn) {
+      btn.textContent = 'Continuar';
+      btn.onclick = () => this.comenzarJuego();
+    }
+  }
+
+  updatePopupContent(config) {
+    const img = document.getElementById('dado-resultado-img');
+    const titulo = document.getElementById('titulo-dado');
+    const desc = document.getElementById('descripcion-dado');
+    
+    if (img) img.src = config.imagen;
+    if (titulo) titulo.textContent = config.titulo;
+    if (desc) desc.textContent = config.descripcion;
+  }
+
+  // ==================== MANEJO DE FORMULARIOS ====================
+  async handleLogin(form) {
+    const username = form.querySelector('#login-username').value.trim();
+    const password = form.querySelector('#login-password').value.trim();
+    
+    this.clearFormErrors(form);
+    
+    if (!this.validateLoginForm(username, password, form)) return;
+    
+    this.setLoading(true);
+    
+    try {
+      await this.delay(800);
+      
+      this.user = {
+        username: username,
+        name: username.toUpperCase()
+      };
+      
+      this.showScreen('lobby');
+      this.showToast('¡Bienvenido de vuelta!', 'success');
+    } catch (error) {
+      this.showToast('Error al iniciar sesión', 'error');
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
+  async handleRegister(form) {
+    const formData = this.getRegisterFormData(form);
+    
+    this.clearFormErrors(form);
+    
+    if (!this.validateRegisterForm(formData, form)) return;
+    
+    this.setLoading(true);
+    
+    try {
+      await this.delay(2000);
+      
+      this.user = {
+        username: formData.username,
+        name: formData.username.toUpperCase(),
+        email: formData.email,
+        birthdate: formData.birthdate
+      };
+      
+      this.showScreen('lobby');
+      this.showToast('¡Cuenta creada exitosamente!', 'success');
+    } catch (error) {
+      this.showToast('Error al crear la cuenta', 'error');
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
+  getRegisterFormData(form) {
+    return {
+      username: form.querySelector('#register-username')?.value?.trim() || '',
+      email: form.querySelector('#register-email')?.value?.trim() || '',
+      birthdate: form.querySelector('#register-fecha')?.value?.trim() || '',
+      password: form.querySelector('#register-password')?.value?.trim() || '',
+      passwordConfirm: form.querySelector('#register-password-confirm')?.value?.trim() || ''
+    };
+  }
+
+  // ==================== CONFIGURACIÓN DE FORMULARIOS ====================
+  setupFormValidation() {
+    document.querySelectorAll('.form-input').forEach(input => {
+      input.addEventListener('input', () => {
+        if (input.classList.contains('error')) {
+          this.clearFieldError(input);
+        }
+      });
+      
+      // Validación de fuerza de contraseña
+      if (input.type === 'password' && input.closest('#register-form')) {
+        input.addEventListener('input', () => {
+          this.validatePasswordStrength(input);
+        });
+      }
+    });
+  }
+
+  validatePasswordStrength(passwordInput) {
+    const password = passwordInput.value;
+    let indicator = passwordInput.parentElement.querySelector('.password-strength');
+    
+    if (!indicator) {
+      indicator = this.createPasswordStrengthIndicator(passwordInput);
+    }
+    
+    const strength = this.calculatePasswordStrength(password);
+    
+    indicator.className = 'password-strength';
+    
+    if (password.length === 0) {
+      indicator.textContent = '';
+    } else if (strength < 2) {
+      indicator.classList.add('weak');
+      indicator.textContent = 'Débil';
+    } else if (strength < 4) {
+      indicator.classList.add('medium');
+      indicator.textContent = 'Media';
+    } else {
+      indicator.classList.add('strong');
+      indicator.textContent = 'Fuerte';
+    }
+  }
+
+  calculatePasswordStrength(password) {
+    let strength = 0;
+    
+    if (password.length >= 6) strength++;
+    if (/[a-z]/.test(password)) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/\d/.test(password)) strength++;
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
+    
+    return strength;
+  }
+
+  createPasswordStrengthIndicator(passwordInput) {
+    const indicator = document.createElement('div');
+    indicator.className = 'password-strength';
+    passwordInput.parentElement.appendChild(indicator);
+    return indicator;
+  }
+
+  setupFormClickHandlers() {
+    document.querySelectorAll('.form-group').forEach(group => {
+      const input = group.querySelector('.form-input');
+      const tipoJugadorSelector = group.querySelector('.tipo-jugador-selector');
+      
+      if (input && !input.hasAttribute('readonly') && !tipoJugadorSelector) {
+        group.addEventListener('click', e => {
+          if (e.target !== input) {
+            input.focus();
+          }
+        });
+      }
+    });
+    
+    // Radio buttons
+    document.querySelectorAll('.radio-option').forEach(option => {
+      option.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const radio = this.querySelector('input[type="radio"]');
+        if (radio) {
+          radio.checked = true;
+          radio.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      });
+    });
+  }
+
+  setupAccessibility() {
+    // Focus visible
+    document.addEventListener('focusin', e => {
+      if (e.target.matches('.btn, .form-input, .btn-icon')) {
+        e.target.classList.add('focus-visible');
+      }
+    });
+    
+    document.addEventListener('focusout', e => {
+      e.target.classList.remove('focus-visible');
+    });
+    
+    // Reduced motion
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.style.setProperty('--transition-base', '0ms');
+      document.documentElement.style.setProperty('--transition-fast', '0ms');
+    }
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Tab') {
+        document.body.classList.add('keyboard-nav');
+      }
+    });
+    
+    document.addEventListener('mousedown', () => {
+      document.body.classList.remove('keyboard-nav');
+    });
+  }
+
+  setupBirthdateField() {
+    const fechaInput = document.querySelector('#register-fecha');
+    if (!fechaInput) return;
+    
+    // Establecer fecha máxima (hoy)
+    const hoy = new Date();
+    const yyyy = hoy.getFullYear();
+    const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+    const dd = String(hoy.getDate()).padStart(2, '0');
+    fechaInput.max = `${yyyy}-${mm}-${dd}`;
+    
+    // Establecer fecha mínima (100 años atrás)
+    const fechaMinima = new Date();
+    fechaMinima.setFullYear(fechaMinima.getFullYear() - 100);
+    fechaInput.min = `${fechaMinima.getFullYear()}-${String(fechaMinima.getMonth() + 1).padStart(2, '0')}-${String(fechaMinima.getDate()).padStart(2, '0')}`;
+    
+    // Validar edad al cambiar
+    fechaInput.addEventListener('change', () => {
+      const birthDate = new Date(fechaInput.value);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      
+      if (age < this.validationConfig.minAge) {
+        this.showToast(`Debes tener al menos ${this.validationConfig.minAge} años`, 'warning');
+        fechaInput.classList.add('error');
+      } else {
+        fechaInput.classList.remove('error');
+      }
+    });
+  }
+
+  // ==================== SISTEMA DE TOASTS ====================
+  showToast(message, type = 'info', duration = 5000) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    
+    // Evitar duplicados
+    const existingToasts = Array.from(container.querySelectorAll('.toast'));
+    const isDuplicate = existingToasts.some(toast => {
+      const msgElement = toast.querySelector('.toast__message');
+      return msgElement && msgElement.textContent === message;
+    });
+    
+    if (isDuplicate) return;
+    
+    const toast = this.createToastElement(message, type);
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+      if (toast.parentNode) {
+        this.removeToast(toast);
+      }
+    }, duration);
+  }
+
+  createToastElement(message, type) {
+    const toast = document.createElement('div');
+    toast.className = `toast toast--${type} fade-in`;
+    
+    const icons = {
+      success: '✓',
+      error: '✗',
+      warning: '⚠',
+      info: 'ℹ'
+    };
+    
+    toast.innerHTML = `
+      <div class="toast__content">
+        <span class="toast__icon">${icons[type] || icons.info}</span>
+        <span class="toast__message">${message}</span>
+        <button class="toast__close" aria-label="Cerrar notificación">&times;</button>
+      </div>
+    `;
+    
+    // Eventos
+    const closeBtn = toast.querySelector('.toast__close');
+    closeBtn.addEventListener('click', () => this.removeToast(toast));
+    
+    toast.addEventListener('click', e => {
+      if (!e.target.matches('.toast__close')) {
+        this.removeToast(toast);
+      }
+    });
+    
+    return toast;
+  }
+
+  removeToast(toast) {
+    toast.classList.add('fade-out');
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.remove();
+      }
+    }, 300);
+  }
+
+  hideToasts() {
+    document.querySelectorAll('.toast').forEach(toast => {
+      this.removeToast(toast);
+    });
+  }
+
+  // ==================== UTILIDADES ====================
+  showFieldError(form, selector, message) {
+    const field = form.querySelector(selector);
+    if (field) {
+      field.classList.add('error');
+      field.setAttribute('aria-invalid', 'true');
+      field.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+      setTimeout(() => field.focus(), 300);
+    }
+    this.showToast(message, 'error');
+  }
+
+  clearFormErrors(form) {
+    form.querySelectorAll('.form-input').forEach(input => {
+      this.clearFieldError(input);
+    });
+    
+    form.querySelectorAll('.character-counter--warning, .character-counter--attention')
+      .forEach(counter => {
+        counter.className = 'character-counter';
+      });
+  }
+
+  clearFieldError(input) {
+    input.classList.remove('error');
+    input.setAttribute('aria-invalid', 'false');
+    
+    const counter = input.parentElement.querySelector('.character-counter');
+    if (counter) {
+      counter.classList.remove('character-counter--warning', 'character-counter--attention');
+    }
+  }
+
+  setLoading(isLoading) {
+    this.loading = isLoading;
+    
+    document.querySelectorAll('.btn').forEach(btn => {
+      if (isLoading) {
+        btn.classList.add('btn--loading');
+        btn.disabled = true;
+        
+        if (!btn.dataset.originalText) {
+          btn.dataset.originalText = btn.textContent;
+        }
+        btn.textContent = 'Cargando...';
+      } else {
+        btn.classList.remove('btn--loading');
+        btn.disabled = false;
+        
+        if (btn.dataset.originalText) {
+          btn.textContent = btn.dataset.originalText;
+          delete btn.dataset.originalText;
+        }
+      }
+    });
+  }
+
+  // ==================== ACCIONES DE JUEGO ====================
+  siguienteRonda() {
+    if (window.JuegoManager?.prepararSiguienteRonda) {
+      window.JuegoManager.prepararSiguienteRonda();
+    }
+  }
+
+  revancha() {
+    if (window.JuegoManager?.reiniciarJuegoCompleto) {
+      window.JuegoManager.reiniciarJuegoCompleto();
+    }
+    this.showScreen('seleccion-inicial');
+  }
+
+  nuevaPartida() {
+    this.modoSeguimiento = false;
+    this.showScreen('jugadores');
+    
+    // Limpiar campos
+    const j2 = document.getElementById('jugador-2');
+    if (j2) j2.value = '';
+    
+    const radioInvitado = document.getElementById('radio-invitado');
+    if (radioInvitado) radioInvitado.checked = true;
+    
+    this.updatePlayerType('invitado');
+  }
+
+  logout() {
+    const confirmLogout = this.currentScreen === 'partida' ? 
+      confirm('¿Estás seguro de que quieres cerrar sesión? Se perderá el progreso de la partida actual.') : 
+      true;
+    
+    if (!confirmLogout) return;
+    
+    // Limpiar estado
+    this.user = null;
+    this.players = [];
+    this.jugador2Info = null;
+    this.dadoSeleccionado = null;
+    this.tempNombres = null;
+    this.tempJugador2Info = null;
+    this.modoSeguimiento = false;
+    
+    // Limpiar formularios
+    document.querySelectorAll('form').forEach(form => form.reset());
+    
+    this.showScreen('login');
+    this.showToast('Sesión cerrada', 'info');
+  }
+
+  // ==================== UTILIDADES AUXILIARES ====================
+  delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  getDebugInfo() {
+    return {
+      currentScreen: this.currentScreen,
+      user: this.user,
+      players: this.players,
+      loading: this.loading,
+      modoSeguimiento: this.modoSeguimiento,
+      tempData: {
+        nombres: this.tempNombres,
+        jugador2Info: this.tempJugador2Info
+      },
+      validationConfig: this.validationConfig
+    };
+  }
+
+  resetAppState() {
+    this.currentScreen = 'login';
+    this.user = null;
+    this.loading = false;
+    this.players = [];
+    this.jugador2Info = null;
+    this.dadoSeleccionado = null;
+    this.tempNombres = null;
+    this.tempJugador2Info = null;
+    this.modoSeguimiento = false;
+    
+    this.hideToasts();
+    
+    document.querySelectorAll('form').forEach(form => {
+      form.reset();
+      this.clearFormErrors(form);
+    });
+  }
+
+  validateDOMIntegrity() {
+    const required = [
+      'pantalla-login',
+      'pantalla-registro',
+      'pantalla-lobby',
+      'pantalla-jugadores',
+      'pantalla-seleccion-inicial',
+      'pantalla-partida',
+      'toast-container'
+    ];
+    
+    const missing = required.filter(id => !document.getElementById(id));
+    
+    if (missing.length > 0) {
+      console.error('Elementos DOM faltantes:', missing);
+      return false;
+    }
+    
+    return true;
+  }
 }
 
-// ==================== INICIALIZACIÓN ==================== 
-document.addEventListener('DOMContentLoaded', () => {
-    window.app = new AppState();
+// ==================== INICIALIZACIÓN ====================
+if (!window.app) {
+  document.addEventListener('DOMContentLoaded', () => {
+    const tempApp = new AppState();
+    
+    if (tempApp.validateDOMIntegrity()) {
+      window.app = tempApp;
+      console.log('App inicializada correctamente');
+    } else {
+      console.error('Error: DOM incompleto, no se puede inicializar la aplicación');
+    }
+  });
+}
+
+// ==================== MANEJO DE ERRORES GLOBALES ====================
+window.addEventListener('error', e => {
+  console.error('Error global capturado:', e.error);
+  if (window.app) {
+    window.app.showToast('Ha ocurrido un error inesperado', 'error');
+  }
 });
 
-// ==================== PWA FEATURES ==================== 
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(registration => console.log('SW registered'))
-            .catch(error => console.log('SW registration failed'));
-    });
-}
+window.addEventListener('unhandledrejection', e => {
+  console.error('Promesa rechazada sin manejar:', e.reason);
+  if (window.app) {
+    window.app.showToast('Error en operación asíncrona', 'error');
+  }
+});
