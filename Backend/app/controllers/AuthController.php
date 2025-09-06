@@ -37,7 +37,10 @@ class AuthController
         // Si no es un objeto/array JSON válido, respondemos 400
         if (!is_array($data)) {
             http_response_code(400);
-            echo json_encode(['success' => false, 'message' => 'JSON inválido.']);
+            echo json_encode([
+                'success' => false,
+                'message' => 'JSON inválido.'
+            ]);
             return;
         }
 

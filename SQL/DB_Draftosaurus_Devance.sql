@@ -29,6 +29,14 @@ CREATE TABLE partidas (
     'izquierda',
     'derecha'
 ) DEFAULT NULL,
+  bolsa_dinos ENUM(
+    'bosque',
+    'pradera',
+    'rio',
+    'cafeteria',
+    'izquierda',
+    'derecha'
+) DEFAULT NULL,
   tirador_actual VARCHAR(10) DEFAULT NULL,
   turno TINYINT UNSIGNED NOT NULL DEFAULT 1,
   ronda TINYINT UNSIGNED NOT NULL DEFAULT 1,
@@ -72,6 +80,8 @@ CREATE TABLE recintos_partida (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
+-- cambios
+
 ALTER TABLE partidas
 ADD COLUMN cara_dado_actual ENUM(
     'bosque',
@@ -110,17 +120,24 @@ CREATE INDEX idx_partida_jugador
 CREATE INDEX idx_partida_recinto
   ON recintos_partida(partida_id, recinto);
   
-ALTER TABLE partidas DROP CHECK chk_tirador_valido;
-ALTER TABLE partidas RENAME COLUMN tirador TO tirador_actual;
+-- ALTER TABLE partidas DROP CHECK chk_tirador_valido;
+-- ALTER TABLE partidas RENAME COLUMN tirador TO tirador_actual;
 ALTER TABLE partidas
 ADD CONSTRAINT chk_tirador_actual_valido
 CHECK (tirador_actual IN ('jugador1', 'jugador2'));
 
-ALTER TABLE partidas ADD ronda TINYINT UNSIGNED NOT NULL DEFAULT 1;
+ALTER TABLE partidas ADD bolsa_dinos ENUM(
+    'bosque',
+    'pradera',
+    'rio',
+    'cafeteria',
+    'izquierda',
+    'derecha'
+) DEFAULT NULL;
 
 
 
-
+select * from users;
 
 DROP DATABASE DB_Draftosaurus_Devance;
 

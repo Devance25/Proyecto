@@ -4,9 +4,11 @@ class RankingService
 {   
     private static ?RankingService $instance = null; 
 
-    private ?RankingService $partidaRepository;
+    private ?RankingRepository $rankingRepository;
 
     //DOMAIN
+    private Partida $partida;
+    private Reglas $reglas;
     private Puntaje $puntaje;
 
     private function __construct()
@@ -26,7 +28,7 @@ class RankingService
         return self::$instance;
     }
 
-    public function calcularPuntajesService(int $partida_id): array
+     public function calcularPuntajesService(int $partida_id): array
     {   
 
         $colocacionesJugador1 = $this->rankingRepository->getColocacionesRepository($partida_id, 'jugador1');

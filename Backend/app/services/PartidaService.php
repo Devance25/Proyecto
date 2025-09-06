@@ -19,7 +19,7 @@ class PartidaService
         $this->puntaje = new Puntaje();
     }
 
-    public static function getInstance(): ?PartidaSerivce
+    public static function getInstance(): ?PartidaService
     {
         if (self::$instance === null) 
         {
@@ -67,7 +67,31 @@ class PartidaService
         ];
     }
 
-    public function tirarDadoService(int $partida_id, string $jugador): array
+    public function crearBolsaService(int $id, string $jugador1, string $jugador2): array
+    {
+
+        if ($id <= 0) {
+            throw new Exception("ID de partida inválido");
+        }
+
+        if (empty(trim($jugador1)) || empty(trim($jugador2))) {
+            throw new Exception("Los nombres de los jugadores no pueden estar vacíos");
+        }
+
+        if ($jugador1 === $jugador2) {
+            throw new Exception("Los jugadores deben ser distintos");
+        }
+
+        $bolsaJugador1 = $this->partida->crearBolsa($jugador1);
+        $bolsaJugador2 = $this->partida->crearBolsa($jugador2);
+
+        return [
+            'bolsaJugador1' => $bolsaJugador1,
+            'bosalJugador2' => $bolsaJugador2
+        ];
+    }
+
+    public function tirarDadoService(int $id, string $jugador): array
     {
         $tirador = trim($jugador);
 
@@ -81,17 +105,17 @@ class PartidaService
 
 
         $caraDadoActual = $this->partida->tirarDado($tirador);
-        $this->partidaRepository->guardarResultadoDado($partida_id, $jugador, $caraDadoActual);
+        $this->partidaRepository->guardarResultadoDado($id, $caraDadoActual, $tirador);
 
         return [
             'success' => true,
-            'partida_id' => $partida_id,
+            'partida_id' => $id,
             'cara_dado' => $caraDadoActual,
             'tirador' => $tirador,
         ];
     }
 
-    private function colocarDinosaurioService(string $jugador, string $recinto, string $tipoDino, int $partida_id): array
+    public function colocarDinosaurioService(string $jugador, string $recinto, string $tipoDino, int $partida_id): array
     {
         $caraDadoActual = $this->partidaRepository->getCaraDadoActual($partida_id);
         $tiradorActual = $this->partidaRepository->getTiradorActual($partida_id);
@@ -119,14 +143,16 @@ class PartidaService
             $rondaActual = $this->partidaRepository->getRondaActual($partida_id);
         }
 
-        $colocacion = $this->partidaRepository->colocarDinosaurioRepository($jugador, $recinto, $tipoDino, $turnoActual, $rondaActual, $partida_id);
+   
+        $colocacion = $this->partidaRepository->colocarDinosaurioRepository($jugador, $recinto, $tipoDino, $partida_id);
+
+        $colocacion['turno'] = $turnoActual;
+        $colocacion['ronda'] = $rondaActual;
+
 
         return $colocacion;
 
     }
-
-    
-
 
     public function finalizarPartidaService(int $id, int $puntaje_jugador1, int $puntaje_jugador2) : array
     {

@@ -94,6 +94,15 @@ try {
             echo json_encode(['success' => false, 'message' => 'Método no permitido.']);
             break;
 
+        case 'colocarDinosaurio':
+            if ($method === 'POST') {
+                $partidaController->colocarDinosaurioController();
+                break;
+            }            
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Método no permitido.']);
+            break;
+
         case 'health':
 
             $status = 'OK';
@@ -137,10 +146,10 @@ try {
             break;
     }
 } catch (Exception $e) {
-
     http_response_code(500);
     echo json_encode([
         'success' => false,
-        'message' => 'Error interno del servidor.',
+        'message' => 'Error interno del servidor index: ' . $e->getMessage(),
+        'trace' => $e->getTraceAsString()
     ]);
 }
