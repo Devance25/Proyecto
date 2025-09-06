@@ -14,4 +14,18 @@ class Partida {
 
         return $this->caraDadoActual;
     }
+
+    public function crearBolsa($jugador): array
+    {
+        $bolsaDinos = [];
+        
+        $dino = ['T-rex', 'Triceratops', 'Stegosaurus', 'Parasaurolophus', 'Diplodocus', 'Pterodáctilo'];
+
+        for($i = 0; $i < 6; $i++)
+        {
+            $bolsaDinos = $dino[array_rand($dino)];
+        }
+
+        return $bolsaDinos;
+    }
 }
