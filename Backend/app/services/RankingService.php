@@ -4,7 +4,7 @@ class RankingService
 {   
     private static ?RankingService $instance = null; 
 
-    private ?RankingRepository $partidaRepository;
+    private ?RankingRepository $partidaRepo;
 
     //DOMAIN
     private Partida $partida;
@@ -13,7 +13,7 @@ class RankingService
 
     private function __construct()
     {
-        $this->rankingRepository = RankingRepository::getInstance();
+        $this->rankingRepo = RankingRepository::getInstance();
         $this->partida = new Partida();
         $this->reglas = new Reglas();
         $this->puntaje = new Puntaje();
@@ -31,9 +31,11 @@ class RankingService
      public function calcularPuntajesService(int $partida_id): array
     {   
 
-        $colocacionesJugador1 = $this->rankingRepository->getColocacionesRepository($partida_id, 'jugador1');
 
-        $colocacionesJugador2 = $this->rankingRepository->getColocacionesRepository($partida_id, 'jugador2');
+        $colocacionesJugador1 = $this->rankingRepo->getColocacionesRepo($partida_id, 'jugador1');
+
+        $colocacionesJugador2 = $this->rankingRepo->getColocacionesRepo($partida_id, 'jugador2');
+
 
         $porRecintoJugador1 = [];
         foreach($colocacionesJugador1 as $c)
@@ -51,16 +53,25 @@ class RankingService
             $porRecintoJugador2[$recinto][] = $tipoDino;
         }
 
-        
 
         $puntajeJugador1 = $this->puntaje->calcularPuntaje('jugador1', $porRecintoJugador1);
 
         $puntajeJugador2 = $this->puntaje->calcularPuntaje('jugador2', $porRecintoJugador2);
 
+        if($puntajeJugador1 > $puntajeJugador2)
+        {
+            $ganador = $this->RankingRepo->sumarPartidaGanada($usuario_id);
+        }else{
+            $ganador = "jugador 2 ha ganado la partida";
+        }
+
         return [
+                'success' => true,
                 'jugador1' => $puntajeJugador1,
-                'jugador2' => $puntajeJugador2
+                'jugador2' => $puntajeJugador2,
+                'ganador' => $ganador
                 ];
 
     }
+
 }
