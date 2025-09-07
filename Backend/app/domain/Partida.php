@@ -15,7 +15,7 @@ class Partida {
         return $this->caraDadoActual;
     }
 
-    public function crearBolsa($jugador): array
+    public function crearBolsa(): array
     {
         $bolsaDinos = [];
         
@@ -23,7 +23,7 @@ class Partida {
 
         for($i = 0; $i < 6; $i++)
         {
-            $bolsaDinos = $dino[array_rand($dino)];
+            $bolsaDinos[] = $dino[array_rand($dino)];
         }
 
         return $bolsaDinos;

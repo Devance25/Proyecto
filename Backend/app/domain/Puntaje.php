@@ -7,14 +7,13 @@ require_once 'Reglas.php';
 
         public function calcularPuntaje(string $jugador, array $porRecinto): int
         {
-            // $porRecitos =[
-            //             'bosque' => ['t-rex',        'triceratops', 't-rex'],
-
-            //             'rio' => ['brontosaurio', 'brontosaurio'],
-
-            //             'cafeteria' => ['t-rex']
-
-            //             ]
+            // $porRecitos =['bosque' => ['t-rex',
+            //                            'triceratops',
+            //                            't-rex'],
+            //               'rio' => ['brontosaurio',
+            //                         'brontosaurio'],
+            //               'cafeteria' => ['t-rex']
+            //              ]
 
             $reglas = new Reglas();
 

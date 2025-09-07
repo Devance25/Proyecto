@@ -20,7 +20,7 @@ class PartidaRepository
     }
 
     //INSERTS
-    public function crearPartida(int $jugador1_id, string $jugador2_nombre) : int
+    public function crearPartidaRepo(int $jugador1_id, string $jugador2_nombre) : int
     {
         $query = "INSERT INTO partidas (jugador1_id, jugador2_nombre, estado) 
               VALUES (?, ?, 'activa')";
@@ -44,7 +44,44 @@ class PartidaRepository
         return $partida_id;
     }
 
-    public function colocarDinosaurioRepository(string $jugador, string $recinto, string $tipo_dino, int $partida_id): array
+    public function crearBolsaRepo(int $partida_id, string $jugador, array $bolsaDinos): array
+    {
+        foreach ($bolsaDinos as $dino) {
+
+            $query = "INSERT INTO bolsas
+                                (partida_id,
+                                 jugador,
+                                 dino
+                                 )
+                      VALUES (?, ?, ?)";
+
+            $stmt = $this->conn->prepare($query);
+
+            if (!$stmt) {
+                throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            }
+
+            if (!$stmt->bind_param("iss", $partida_id, $jugador, $dino)) {
+                throw new Exception("Error en bind_param: " . $stmt->error);
+            }
+
+            if (!$stmt->execute()) {
+                throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            }
+
+            $stmt->close();
+
+        }   
+
+        return [
+            'success' => true,
+            'jugador' => $jugador,
+            'bolsaDinos' => $bolsaDinos,
+        ];
+
+    }
+
+    public function colocarDinosaurioRepo(string $jugador, string $recinto, string $tipo_dino, int $partida_id): array
     {
         $query = "INSERT INTO recintos_partida
                               (partida_id, jugador,
@@ -76,9 +113,12 @@ class PartidaRepository
     }
 
     
+
+
+
     //UPDATES
 
-    public function guardarResultadoDado(int $id, string $caraDadoActual, string $tirador): void
+    public function tirarDadoRepo(int $id, string $caraDadoActual, string $tirador): void
     {
         $query = "UPDATE partidas 
                   SET cara_dado_actual = ?, 
@@ -101,7 +141,9 @@ class PartidaRepository
         $stmt->close();
     }
 
-    public function sumarTurnoRepository(int $id): void
+
+
+    public function sumarTurnoRepo(int $id): void
     {
         $query = "UPDATE partidas
                   SET turno = turno + 1
@@ -125,7 +167,7 @@ class PartidaRepository
 
     }    
 
-    public function sumarRondaRepository(int $id): void
+    public function sumarRondaRepo(int $id): void
     {
         $query = "UPDATE partidas
                   SET ronda = ronda + 1
@@ -149,7 +191,7 @@ class PartidaRepository
 
     }    
 
-    public function resetTurnosRepository(int $id): void
+    public function resetTurnosRepo(int $id): void
     {
         $query = "UPDATE partidas
                   SET turno = 1
@@ -176,7 +218,7 @@ class PartidaRepository
     
 
 
-    public function finalizarPartida(int $id, int $puntaje_jugador1, int $puntaje_jugador2) : void
+    public function finalizarPartidaRepo(int $id, int $puntaje_jugador1, int $puntaje_jugador2) : void
     {
         $query = "UPDATE partidas 
                   SET puntaje_jugador1 = ?,
@@ -205,7 +247,7 @@ class PartidaRepository
 
     }
 
-        public function cancelarPartida(int $id) : void
+        public function cancelarPartidaRepo(int $id) : void
     {
         $query = "UPDATE partidas 
                   SET estado = 'cancelada'
@@ -238,7 +280,7 @@ class PartidaRepository
 
     //GETS
 
-    public function getCaraDadoActual(int $id): string
+    public function getCaraDadoActualRepo(int $id): string
     {
         $query = "SELECT cara_dado_actual 
                   FROM partidas 
@@ -253,7 +295,7 @@ class PartidaRepository
         return $cara;
     }
 
-    public function getTiradorActual(int $id): string
+    public function getTiradorActualRepo(int $id): string
     {
         $query = "SELECT tirador_actual 
                   FROM partidas 
@@ -268,7 +310,7 @@ class PartidaRepository
         return $tirador;
     }
 
-    public function getTurnoActual(int $id): int
+    public function getTurnoActualRepo(int $id): int
     {
         $query = "SELECT turno 
                   FROM partidas 
@@ -299,7 +341,7 @@ class PartidaRepository
         return $turno;
     }
 
-    public function getRondaActual(int $id): int
+    public function getRondaActualRepo(int $id): int
     {
         $query = "SELECT ronda 
                   FROM partidas 
@@ -329,5 +371,78 @@ class PartidaRepository
 
         return $ronda;
     }
+
+    public function partidaExisteRepo(int $id): bool
+    {
+        $query = "SELECT 1 
+                  FROM partidas 
+                  WHERE id = ? 
+                  LIMIT 1
+                  ";
+
+        $stmt = $this->conn->prepare($query);
+
+        if (!$stmt) {
+           throw new Exception("Error preparando verificación de partida: " . $this->conn->error);
+        }
+
+        $stmt->bind_param("i", $id);
+
+        $stmt->execute();
+
+        $stmt->store_result();
+
+        $existe = $stmt->num_rows > 0;
+
+        $stmt->close();
+
+
+        return $existe;
+    }
+
+
+
+
+
+    //DELETS
+    public function descartarDinoRepo(int $partida_id, string $jugador, string $dino): array
+    {
+        $query = "DELETE FROM bolsas 
+                  WHERE partida_id = ?
+                  AND   dino = ?
+                  AND   jugador = ?
+                  ";
+
+        $stmt = $this->conn->prepare($query);
+
+        if (!$stmt) {
+            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+        }
+
+        if (!$stmt->bind_param("iss", $partida_id, $dino, $jugador)) {
+            throw new Exception("Error en bind_param: " . $stmt->error);
+        }
+
+        if (!$stmt->execute()) {
+            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+        }
+
+        $filasEliminadas = $stmt->affected_rows;
+
+        $stmt->close();
+
+        if ($filasEliminadas === 0) {
+            return [
+                'success' => false,
+                'message' => "No se encontró el dino '$dino' en la bolsa de $jugador"
+            ];
+        }
+
+        return [
+            'success' => true,
+            'dino_descartado' => $dino,
+            ];
+    }
+
 
 }
