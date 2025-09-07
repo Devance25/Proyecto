@@ -114,7 +114,17 @@ CREATE TABLE bolsas (
 ) ENGINE=InnoDB;
 
 
+DELIMITER $$
 
+CREATE TRIGGER trg_users_after_insert
+AFTER INSERT ON users
+FOR EACH ROW
+BEGIN
+    INSERT INTO ranking_usuarios (usuario_id, partidas_jugadas, partidas_ganadas, puntaje_total)
+    VALUES (NEW.id, 0, 0, 0);
+END$$
+
+DELIMITER ;
 
 
 
@@ -143,17 +153,7 @@ ADD COLUMN bolsa_dinos ENUM(
  'Pterodáctilo'
  ) DEFAULT NULL;
  
-DELIMITER $$
 
-CREATE TRIGGER trg_users_after_insert
-AFTER INSERT ON users
-FOR EACH ROW
-BEGIN
-    INSERT INTO ranking_usuarios (usuario_id, partidas_jugadas, partidas_ganadas, puntaje_total)
-    VALUES (NEW.id, 0, 0, 0);
-END$$
-
-DELIMITER ;
 
 -- Para obtener rápidamente todas las jugadas de una partida ordenadas
 CREATE INDEX idx_recintos_partida_id_turno
