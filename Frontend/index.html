@@ -196,14 +196,14 @@
     </div>
 
     <!-- ==================== PANTALLA ADMINISTRADOR ==================== -->
-    <div id="pantalla-admin" class="pantalla pantalla-admin fade-in hidden">
-        <div class="contenedor-centrado">
-            <div class="perfil-admin">
-                <div class="info-turno">
-                    <img src="img/foto_usuario-1.png" alt="Avatar del administrador" class="jugador-foto" loading="lazy">
+    <div id="pantalla-admin" class="pantalla admin-screen fade-in hidden">
+        <div class="admin-content-container">
+            <div class="admin-profile-card">
+                <div class="admin-avatar-container">
+                    <img src="img/foto_administrador.png" alt="Avatar del administrador" class="admin-avatar-image" loading="lazy">
                 </div>
-                <h2 class="titulo titulo--lg titulo--beige" id="admin-username">ADMIN</h2>
-                <p class="texto texto--blanco admin-role">ADMINISTRADOR</p>
+                <h2 class="admin-title-main" id="admin-username">ADMIN</h2>
+                <p class="admin-role-label">ADMINISTRADOR</p>
             </div>
 
             <div class="admin-buttons">
@@ -213,7 +213,7 @@
                 <button type="button" id="btn-nuevo-usuario" class="btn btn--verde">
                     Nuevo usuario
                 </button>
-                <button type="button" id="btn-salir-admin" class="btn btn--blanco">
+                <button type="button" id="btn-salir-admin" class="btn btn--blanco admin-exit-button">
                     Salir del modo administrador
                 </button>
             </div>
@@ -228,10 +228,7 @@
 
         <div class="contenedor-centrado">
             <div class="perfil-lobby">
-                <div class="avatar">
-                    <img src="img/marco_usuario.png" alt="Marco del avatar" class="avatar__marco" loading="lazy">
-                    <img src="img/foto_usuario-1.png" alt="Avatar del usuario" class="avatar__imagen" loading="lazy">
-                </div>
+                <div class="avatar" style="background-image: url('img/foto_usuario-1.png')"></div>
                 <h2 class="titulo titulo--lg titulo--beige">PEPEKING</h2>
             </div>
 
@@ -266,31 +263,31 @@
     </div>
 
     <!-- ==================== PANTALLA LISTADO USUARIOS (ADMIN) ==================== -->
-    <div id="pantalla-listado-usuarios" class="pantalla pantalla-admin fade-in hidden">
+    <div id="pantalla-listado-usuarios" class="pantalla admin-screen admin-screen-with-header fade-in hidden">
         <div class="admin-header">
             <button type="button" id="btn-volver-admin" class="btn-icon">
                 <img src="img/siguiente.svg" alt="Volver" loading="lazy">
             </button>
             <div class="admin-info">
-                <img src="img/foto_usuario-1.png" alt="Avatar administrador" class="admin-avatar">
+                <img src="img/foto_administrador.png" alt="Avatar administrador" class="admin-avatar">
                 <span class="admin-name" id="admin-header-name">ADMIN</span>
                 <span class="admin-title">ADMINISTRADOR</span>
             </div>
         </div>
 
-        <div class="contenedor-centrado fade-in-up">
-            <div class="contenedor-titulo">
-                <h1 class="titulo titulo--lg titulo--beige admin-page-title">📋 GESTIÓN DE USUARIOS</h1>
+        <div class="admin-content-container">
+            <div class="admin-title-container">
+                <h1 class="titulo titulo--lg titulo--beige admin-page-title">GESTIÓN DE USUARIOS</h1>
             </div>
 
             <div class="search-container">
-                <input type="text" id="buscar-usuario" class="form-input" placeholder="Buscar usuario..." autocomplete="off">
-                <button type="button" class="btn-search">
+                <input type="text" id="buscar-usuario" class="admin-form-input" placeholder="Buscar usuario..." autocomplete="off">
+                <div class="btn-search">
                     <img src="img/lupa.svg" alt="Buscar">
-                </button>
+                </div>
             </div>
 
-            <div class="usuarios-list" id="lista-usuarios-admin">
+            <div class="usuarios-list admin-users-list-container" id="lista-usuarios-admin">
                 <div class="titulo-seccion">Usuarios registrados</div>
                 <!-- Lista dinámica de usuarios -->
             </div>
@@ -298,42 +295,42 @@
     </div>
 
     <!-- ==================== PANTALLA EDITAR USUARIO (ADMIN) ==================== -->
-    <div id="pantalla-editar-usuario" class="pantalla pantalla-admin fade-in hidden">
+    <div id="pantalla-editar-usuario" class="pantalla admin-screen admin-screen-with-header fade-in hidden">
         <div class="admin-header">
             <button type="button" id="btn-volver-listado" class="btn-icon">
                 <img src="img/siguiente.svg" alt="Volver" loading="lazy">
             </button>
             <div class="admin-info">
-                <img src="img/foto_usuario-1.png" alt="Avatar administrador" class="admin-avatar">
+                <img src="img/foto_administrador.png" alt="Avatar administrador" class="admin-avatar">
                 <span class="admin-name" id="admin-header-name-edit">ADMIN</span>
                 <span class="admin-title">ADMINISTRADOR</span>
             </div>
         </div>
 
-        <div class="contenedor-centrado fade-in-up">
-            <div class="contenedor-titulo">
-                <h1 class="titulo titulo--lg titulo--beige admin-page-title">✏️ EDITAR USUARIO</h1>
+        <div class="admin-content-container">
+            <div class="admin-title-container">
+                <h1 class="titulo titulo--lg titulo--beige admin-page-title">EDITAR USUARIO</h1>
             </div>
 
-            <form id="form-editar-usuario" novalidate>
-                <div class="form-group">
-                    <label for="edit-username" class="form-label">Nombre de usuario</label>
-                    <input type="text" id="edit-username" class="form-input" required>
+            <form id="form-editar-usuario" class="admin-form-container" novalidate>
+                <div class="admin-form-group">
+                    <label for="edit-username" class="admin-form-label">Nombre de usuario</label>
+                    <input type="text" id="edit-username" class="admin-form-input" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="edit-email" class="form-label">Correo electrónico</label>
-                    <input type="email" id="edit-email" class="form-input" required>
+                <div class="admin-form-group">
+                    <label for="edit-email" class="admin-form-label">Correo electrónico</label>
+                    <input type="email" id="edit-email" class="admin-form-input" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="edit-birthdate" class="form-label">Fecha de nacimiento</label>
-                    <input type="date" id="edit-birthdate" class="form-input" required>
+                <div class="admin-form-group">
+                    <label for="edit-birthdate" class="admin-form-label">Fecha de nacimiento</label>
+                    <input type="date" id="edit-birthdate" class="admin-form-input" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="edit-password" class="form-label">Nueva contraseña</label>
-                    <input type="password" id="edit-password" class="form-input" placeholder="Dejar vacío para mantener actual">
+                <div class="admin-form-group">
+                    <label for="edit-password" class="admin-form-label">Nueva contraseña</label>
+                    <input type="password" id="edit-password" class="admin-form-input" placeholder="Dejar vacío para mantener actual">
                 </div>
 
                 <button type="submit" class="btn btn--verde">Confirmar</button>
@@ -342,7 +339,7 @@
     </div>
 
     <!-- ==================== PANTALLA NUEVO USUARIO (ADMIN) ==================== -->
-    <div id="pantalla-nuevo-usuario" class="pantalla pantalla-admin fade-in hidden">
+    <div id="pantalla-nuevo-usuario" class="pantalla admin-screen admin-screen-with-header fade-in hidden">
         <div class="admin-header">
             <button type="button" id="btn-volver-admin-nuevo" class="btn-icon">
                 <img src="img/siguiente.svg" alt="Volver" loading="lazy">
@@ -354,30 +351,30 @@
             </div>
         </div>
 
-        <div class="contenedor-centrado fade-in-up">
-            <div class="contenedor-titulo">
-                <h1 class="titulo titulo--lg titulo--beige admin-page-title">➕ NUEVO USUARIO</h1>
+        <div class="admin-content-container">
+            <div class="admin-title-container">
+                <h1 class="titulo titulo--lg titulo--beige admin-page-title">NUEVO USUARIO</h1>
             </div>
 
-            <form id="form-nuevo-usuario" novalidate>
-                <div class="form-group">
-                    <label for="new-username" class="form-label">Nombre de usuario</label>
-                    <input type="text" id="new-username" class="form-input" required>
+            <form id="form-nuevo-usuario" class="admin-form-container" novalidate>
+                <div class="admin-form-group">
+                    <label for="new-username" class="admin-form-label">Nombre de usuario</label>
+                    <input type="text" id="new-username" class="admin-form-input" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="new-email" class="form-label">Correo electrónico</label>
-                    <input type="email" id="new-email" class="form-input" required>
+                <div class="admin-form-group">
+                    <label for="new-email" class="admin-form-label">Correo electrónico</label>
+                    <input type="email" id="new-email" class="admin-form-input" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="new-birthdate" class="form-label">Fecha de nacimiento</label>
-                    <input type="date" id="new-birthdate" class="form-input" required>
+                <div class="admin-form-group">
+                    <label for="new-birthdate" class="admin-form-label">Fecha de nacimiento</label>
+                    <input type="date" id="new-birthdate" class="admin-form-input" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="new-password" class="form-label">Contraseña</label>
-                    <input type="password" id="new-password" class="form-input" required>
+                <div class="admin-form-group">
+                    <label for="new-password" class="admin-form-label">Contraseña</label>
+                    <input type="password" id="new-password" class="admin-form-input" required>
                 </div>
 
                 <button type="submit" class="btn btn--verde">Confirmar</button>
@@ -386,10 +383,10 @@
     </div>
 
     <!-- ==================== POPUP ELIMINAR USUARIO ==================== -->
-    <div id="popup-eliminar-usuario" class="popup-overlay hidden">
-        <div class="popup">
-            <h2 class="popup-title">¿Desea eliminar el usuario <span id="usuario-a-eliminar"></span>?</h2>
-            <div class="popup-buttons">
+    <div id="popup-eliminar-usuario" class="admin-popup-overlay hidden">
+        <div class="admin-popup-content">
+            <h2 class="admin-popup-title">¿Desea eliminar el usuario <span id="usuario-a-eliminar"></span>?</h2>
+            <div class="admin-popup-buttons">
                 <button type="button" id="btn-confirmar-eliminar" class="btn btn--verde">Sí</button>
                 <button type="button" id="btn-cancelar-eliminar" class="btn btn--naranja">No</button>
             </div>
@@ -402,7 +399,7 @@
             <img src="img/siguiente.svg" alt="Volver" loading="lazy">
         </button>
 
-        <div class="contenedor-centrado fade-in-up">
+        <div class="contenedor-centrado">
             <div class="contenedor-titulo">
                 <h1 class="titulo titulo--sm titulo-contenedor">Listado jugadores</h1>
                 <p class="texto texto--blanco subtitulo-contenedor">2 jugadores</p>
@@ -412,9 +409,7 @@
                 <div id="lista-jugadores">
                     <!-- Jugador 1: usuario logueado (readonly) -->
                     <div class="form-group form-group--jugador">
-                        <div class="jugador-avatar">
-                            <img src="img/foto_usuario-1.png" alt="Avatar Jugador 1" class="jugador-foto">
-                        </div>
+                        <img src="img/foto_usuario-1.png" alt="Avatar Jugador 1" class="jugador-avatar">
                         <div class="form-campo">
                             <label for="jugador-1" class="form-label">Jugador #1 (tú)</label>
                             <input type="text" id="jugador-1" class="form-input" value="" readonly aria-readonly="true">
@@ -443,10 +438,8 @@
 
                     <!-- Jugador 2: datos -->
                     <div class="form-group form-group--jugador">
-                        <div class="jugador-avatar">
-                            <img src="img/invitado.png" id="avatar-jugador-2" alt="Avatar Jugador 2"
-                                class="jugador-foto">
-                        </div>
+                        <img src="img/invitado.png" id="avatar-jugador-2" alt="Avatar Jugador 2"
+                            class="jugador-avatar">
                         <div class="form-campo">
                             <label for="jugador-2" class="form-label">Jugador #2</label>
                             <input type="text" id="jugador-2" class="form-input"
@@ -456,9 +449,7 @@
 
                     <!-- Campo de contraseña para usuario existente (oculto por defecto) -->
                     <div class="form-group form-group--jugador hidden" id="grupo-password-jugador2">
-                        <div class="jugador-avatar">
-                            <img src="img/icono_contrasena.png" alt="Contraseña" class="jugador-foto">
-                        </div>
+                        <img src="img/icono_contrasena.png" alt="Contraseña" class="jugador-avatar">
                         <div class="form-campo">
                             <label for="password-jugador-2" class="form-label">Contraseña</label>
                             <input type="password" id="password-jugador-2" class="form-input"
@@ -489,9 +480,7 @@
             <div class="seleccion-jugadores">
                 <!-- Opción Jugador 1 -->
                 <div id="opcion-jugador-1" class="jugador-opcion">
-                    <div class="jugador-avatar">
-                        <img src="img/foto_usuario-1.png" alt="Avatar Jugador 1" class="jugador-foto">
-                    </div>
+                    <img src="img/foto_usuario-1.png" alt="Avatar Jugador 1" class="jugador-avatar">
                     <div class="jugador-info">
                         <h3 class="nombre-jugador nombre-jugador-1">JUGADOR 1</h3>
                         <p class="texto texto--xs">Empieza primero</p>
@@ -503,10 +492,8 @@
 
                 <!-- Opción Jugador 2 -->
                 <div id="opcion-jugador-2" class="jugador-opcion">
-                    <div class="jugador-avatar">
-                        <img src="img/invitado.png" id="avatar-seleccion-j2" alt="Avatar Jugador 2"
-                            class="jugador-foto">
-                    </div>
+                    <img src="img/invitado.png" id="avatar-seleccion-j2" alt="Avatar Jugador 2"
+                        class="jugador-avatar">
                     <div class="jugador-info">
                         <h3 class="nombre-jugador nombre-jugador-2">JUGADOR 2</h3>
                         <p class="texto texto--xs">Empieza primero</p>
@@ -530,10 +517,7 @@
     <div id="pantalla-turno-jugador" class="pantalla fondo-interfaz fade-in hidden">
         <div class="contenedor-turno-jugador">
             <div class="info-turno">
-                <div class="avatar-turno">
-                    <img src="img/foto_usuario-1.png" id="avatar-turno-actual" alt="Avatar jugador"
-                        class="avatar-turno-img">
-                </div>
+                <div id="avatar-turno-actual" class="avatar-turno" style="background-image: url('img/foto_usuario-1.png')"></div>
                 <h1 id="texto-turno" class="titulo titulo--xl titulo--blanco">Sigue</h1>
                 <h2 id="nombre-turno-jugador" class="titulo titulo--lg titulo--beige">ANA</h2>
             </div>
@@ -672,14 +656,14 @@
             <!-- Resultados de jugadores -->
             <div class="resultados-ronda">
                 <div class="resultado-jugador-ronda">
-                    <img src="img/foto_usuario-1.png" id="avatar-resumen-j1" alt="Jugador 1" class="avatar-resumen">
+                    <div id="avatar-resumen-j1" class="avatar-resumen" style="background-image: url('img/foto_usuario-1.png')"></div>
                     <div class="info-resultado">
                         <h3 id="nombre-resumen-j1" class="nombre-resultado-ronda">PEPEKING</h3>
                         <p id="puntos-resumen-j1" class="puntos-resultado-ronda">20 puntos</p>
                     </div>
                 </div>
                 <div class="resultado-jugador-ronda">
-                    <img src="img/invitado.png" id="avatar-resumen-j2" alt="Jugador 2" class="avatar-resumen">
+                    <div id="avatar-resumen-j2" class="avatar-resumen" style="background-image: url('img/invitado.png')"></div>
                     <div class="info-resultado">
                         <h3 id="nombre-resumen-j2" class="nombre-resultado-ronda">ANITA</h3>
                         <p id="puntos-resumen-j2" class="puntos-resultado-ronda">13 puntos</p>
@@ -722,7 +706,7 @@
                         <img src="img/corona.png" alt="" class="corona">
                     </div>
                     <div class="posicion-podio">
-                        <img src="img/foto_usuario-2.png" id="avatar-segundo" alt="Segundo lugar" class="avatar-podio">
+                        <div id="avatar-segundo" class="avatar-podio" style="background-image: url('img/foto_usuario-2.png')"></div>
                         <div class="numero-posicion">2</div>
                     </div>
                     <div class="base-podio base-segundo"></div>
@@ -732,7 +716,7 @@
                         <img src="img/corona.png" alt="Ganador" class="corona">
                     </div>
                     <div class="posicion-podio primero">
-                        <img id="avatar-primero" alt="" class="avatar-podio">
+                        <div id="avatar-primero" class="avatar-podio" style="background-image: url('img/foto_usuario-1.png')"></div>
                         <div class="numero-posicion">1</div>
                     </div>
                     <div class="base-podio base-primero"></div>
@@ -742,15 +726,14 @@
             <!-- Resultados detallados -->
             <div class="resultados-detallados">
                 <div class="resultado-detalle">
-                    <img src="img/foto_usuario-1.png" id="avatar-final-j1" alt="Jugador 1"
-                        class="avatar-resultado-final">
+                    <div id="avatar-final-j1" class="avatar-resultado-final" style="background-image: url('img/foto_usuario-1.png')"></div>
                     <div class="info-resultado-final">
                         <h3 id="nombre-final-j1" class="nombre-resultado-final">PEPEKING</h3>
                         <p id="puntos-final-j1" class="puntos-resultado-final">250 puntos</p>
                     </div>
                 </div>
                 <div class="resultado-detalle">
-                    <img src="img/invitado.png" id="avatar-final-j2" alt="Jugador 2" class="avatar-resultado-final">
+                    <div id="avatar-final-j2" class="avatar-resultado-final" style="background-image: url('img/invitado.png')"></div>
                     <div class="info-resultado-final">
                         <h3 id="nombre-final-j2" class="nombre-resultado-final">ANITA</h3>
                         <p id="puntos-final-j2" class="puntos-resultado-final">202 puntos</p>

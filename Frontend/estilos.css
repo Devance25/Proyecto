@@ -101,7 +101,7 @@
   --avatar-size-sm: 32px;
   --avatar-size-md: 40px;
   --avatar-size-lg: 50px;
-  --avatar-size-xl: 60px;
+  --avatar-size-xl: 100px;
   --icon-size-sm: 20px;
   --icon-size-md: 24px;
   --icon-size-lg: 32px;
@@ -236,8 +236,14 @@ body {
   width: 100%;
   max-width: 300px;
   height: auto;
-  margin: 0 auto var(--space-2xl);
+  margin: 0 auto;
   display: block;
+}
+
+/* Logo específico para la pantalla de carga */
+#pantalla-carga .logo {
+  max-width: 280px;
+  margin: 0 auto;
 }
 
 /* ==================== CONTENEDORES ==================== */
@@ -290,12 +296,19 @@ body {
 /* ==================== PANTALLA DE CARGA ==================== */
 #pantalla-carga {
   display: flex;
+  flex-direction: column;
   justify-content: flex-end;
+  align-items: center;
   padding: var(--space-3xl) var(--container-padding);
+  padding-bottom: 80px;
 }
 
 #pantalla-carga .superposicion {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: var(--space-xl);
 }
 
 .loader-container {
@@ -305,7 +318,6 @@ body {
   gap: var(--space-lg);
   width: 100%;
   max-width: 400px;
-  margin-bottom: var(--space-3xl);
 }
 
 .texto-carga {
@@ -499,30 +511,39 @@ body {
   margin: var(--space-xl) 0 var(--space-2xl);
 }
 
-.avatar {
-  position: relative;
+.perfil-lobby .avatar {
   width: var(--avatar-size-xl);
   height: var(--avatar-size-xl);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.avatar__marco {
+.avatar {
+  position: relative;
+  width: var(--avatar-size-sm);
+  height: var(--avatar-size-sm);
+  border-radius: var(--border-radius-circle);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: block;
+  z-index: 1;
+}
+
+.avatar::after {
+  content: '';
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  background-image: url('img/marco_usuario.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
   z-index: 20;
   pointer-events: none;
 }
 
-.avatar__imagen {
-  width: calc(var(--avatar-size-xl) * 0.75);
-  height: calc(var(--avatar-size-xl) * 0.75);
-  border-radius: var(--border-radius-circle);
-  object-fit: cover;
-  z-index: 10;
-}
+
 
 .stats {
   display: flex;
@@ -698,17 +719,27 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   flex-shrink: 0;
   pointer-events: none;
   position: relative;
-}
-
-.jugador-avatar img {
-  width: var(--avatar-size-md);
-  height: var(--avatar-size-md);
+  width: var(--avatar-size-sm);
+  height: var(--avatar-size-sm);
   border-radius: var(--border-radius-circle);
   object-fit: cover;
-  position: relative;
-  z-index: 10;
-  border: none;
-  box-shadow: none;
+  display: block;
+  z-index: 1;
+}
+
+.jugador-avatar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('img/marco_usuario.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 20;
+  pointer-events: none;
 }
 
 
@@ -901,24 +932,21 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   width: 120px;
   height: 120px;
   border-radius: var(--border-radius-circle);
-  border: none;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   position: relative;
-  z-index: 10;
-}
-.avatar-turno-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: var(--border-radius-circle);
+  display: block;
+  z-index: 1;
 }
 
 .avatar-turno::after {
   content: '';
   position: absolute;
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  right: 0px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-image: url('img/marco_usuario.png');
   background-size: contain;
   background-repeat: no-repeat;
@@ -991,10 +1019,12 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   width: 80px;
   height: 80px;
   border-radius: var(--border-radius-circle);
-  border: none;
-  box-shadow: none;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   position: relative;
-  z-index: 2;
+  display: block;
+  z-index: 1;
 }
 
 .resultado-jugador-ronda {
@@ -1005,16 +1035,15 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   position: relative;
 }
 
-.resultado-jugador-ronda::after {
+.avatar-resumen::after {
   content: '';
   position: absolute;
-  top: -15px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: calc(100px * 1.35);
-  height: calc(100px * 1.35);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-image: url('img/marco_usuario.png');
-  background-size: contain;
+  background-size: 100%;
   background-repeat: no-repeat;
   background-position: center;
   z-index: 20;
@@ -1163,10 +1192,12 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   width: 80px;
   height: 80px;
   border-radius: var(--border-radius-circle);
-  border: 4px solid var(--color-dorado);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, .4);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   position: relative;
-  z-index: 10;
+  display: block;
+  z-index: 1;
 }
 
 .primer-lugar .avatar-podio {
@@ -1185,11 +1216,10 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
 .podio-jugador .posicion-podio::after {
   content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: calc(80px * 1.5);
-  height: calc(80px * 1.5);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-image: url('img/marco_usuario.png');
   background-size: contain;
   background-repeat: no-repeat;
@@ -1198,17 +1228,7 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   pointer-events: none;
 }
 
-/* Ajustar tamaño del marco para primer lugar */
-.primer-lugar .posicion-podio::after {
-  width: calc(100px * 1.4);
-  height: calc(100px * 1.4);
-}
 
-/* Ajustar tamaño del marco para segundo lugar */
-.segundo-lugar .posicion-podio::after {
-  width: calc(70px * 1.5);
-  height: calc(70px * 1.5);
-}
 
 /* Bases del podio */
 .base-podio {
@@ -1262,30 +1282,16 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   width: 60px;
   height: 60px;
   border-radius: var(--border-radius-circle);
-  border: 3px solid var(--color-marron);
-  background: var(--color-blanco);
-  padding: 2px;
-  flex-shrink: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   position: relative;
-  z-index: 10;
+  display: block;
+  z-index: 1;
 }
 
 /* Marco de imagen para avatares de resultados detallados */
-.resultado-detalle::after {
-  content: '';
-  position: absolute;
-  left: 30px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: calc(60px * 1.5);
-  height: calc(60px * 1.5);
-  background-image: url('img/marco_usuario.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-  z-index: 20;
-  pointer-events: none;
-}
+
 
 .info-resultado-final {
   flex: 1;
@@ -1501,6 +1507,28 @@ body .hidden {
 
 /* ==================== RESPONSIVE DESIGN ==================== */
 @media (max-width: 768px) {
+  /* === Pantalla de carga mobile === */
+  #pantalla-carga {
+    padding-bottom: 60px;
+  }
+  
+  #pantalla-carga .logo {
+    max-width: 220px;
+  }
+  
+  .loader-container {
+    max-width: 320px;
+  }
+  
+  .progress {
+    max-width: 280px;
+  }
+
+  .texto-carga {
+    font-size: var(--font-size-sm);
+  }
+
+  /* === Otros estilos responsive === */
   .jugadores-seleccion {
     flex-direction: column;
     gap: var(--space-xl);
@@ -1546,10 +1574,6 @@ body .hidden {
   }
 
 
-  .jugador-avatar img {
-    width: 55px;
-    height: 55px;
-  }
 
   .radio-option {
     padding: var(--space-md);
@@ -1570,31 +1594,6 @@ body .hidden {
   }
 
 
-  .dado-container {
-    width: 350px;
-    height: 350px;
-  }
-
-  .dado-animado {
-    width: var(--dado-size-md);
-    height: var(--dado-size-md);
-  }
-
-  .popup-dado {
-    width: 95%;
-    max-width: 360px;
-  }
-
-  .dado-resultado {
-    width: var(--dado-size-sm);
-    height: var(--dado-size-sm);
-  }
-
-  .popup-descripcion {
-    font-size: var(--font-size-xs);
-    line-height: 1.5;
-    padding: 0 var(--space-sm);
-  }
 
   .contenedor-resumen,
   .contenedor-final {
@@ -1613,6 +1612,34 @@ body .hidden {
     flex-direction: column;
     text-align: center;
     gap: var(--space-md);
+  }
+}
+
+/* === Extra small devices (480px and down) === */
+@media (max-width: 480px) {
+  /* === Pantalla de carga extra small === */
+  #pantalla-carga {
+    padding-bottom: 40px;
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+  
+  #pantalla-carga .logo {
+    max-width: 180px;
+  }
+  
+  .loader-container {
+    max-width: 280px;
+    gap: var(--space-md);
+  }
+  
+  .progress {
+    max-width: 240px;
+    height: var(--font-size-sm);
+  }
+
+  .texto-carga {
+    font-size: var(--font-size-xs);
   }
 }
 
@@ -1664,11 +1691,7 @@ body .hidden {
     font-size: var(--font-size-base);
     padding: var(--space-sm) var(--space-lg);
   }
-  
-  
-  .pantalla {
-    padding: var(--space-lg);
-  }
+
 }
 
 /* === Large Laptops and Desktops (1024px+) === */

@@ -1319,6 +1319,15 @@ class AdminManager {
   init() {
     this.setupAdminEvents();
     this.loadMockUsers(); // Cargar usuarios simulados
+    this.asegurarPopupOculto(); // Asegurar que el popup esté oculto al inicio
+  }
+
+  asegurarPopupOculto() {
+    const popup = document.getElementById('popup-eliminar-usuario');
+    if (popup) {
+      popup.classList.add('hidden');
+      popup.style.display = 'none';
+    }
   }
 
   setupAdminEvents() {
@@ -1456,16 +1465,43 @@ class AdminManager {
         <div class="usuario-item">
           <span class="usuario-nombre">${user.username}</span>
           <div class="usuario-acciones">
-            <button class="btn-accion btn-editar" onclick="window.adminManager.mostrarEditarUsuario(${JSON.stringify(user).replace(/"/g, '&quot;')})">
+            <button class="btn-accion btn-editar" data-user-id="${user.id}" data-action="editar">
               <img src="img/lapiz.svg" alt="Editar">
             </button>
-            <button class="btn-accion btn-eliminar" onclick="window.adminManager.mostrarPopupEliminar('${user.username}', ${user.id})">
-              <img src="img/cruz.svg" alt="Eliminar">
+            <button class="btn-accion btn-eliminar" data-user-id="${user.id}" data-username="${user.username}" data-action="eliminar">
+              <img src="img/Cruz.svg" alt="Eliminar">
             </button>
           </div>
         </div>
       `).join('')}
     `;
+
+    // Agregar event listeners
+    this.setupUserActionListeners();
+  }
+
+  setupUserActionListeners() {
+    const container = document.getElementById('lista-usuarios-admin');
+    if (!container) return;
+
+    // Usar delegación de eventos
+    container.addEventListener('click', (e) => {
+      const button = e.target.closest('[data-action]');
+      if (!button) return;
+
+      const action = button.dataset.action;
+      const userId = parseInt(button.dataset.userId);
+      const username = button.dataset.username;
+
+      if (action === 'eliminar') {
+        this.mostrarPopupEliminar(username, userId);
+      } else if (action === 'editar') {
+        const user = this.usuariosData.find(u => u.id === userId);
+        if (user) {
+          this.mostrarEditarUsuario(user);
+        }
+      }
+    });
   }
 
   filtrarUsuarios(filtro) {
@@ -1476,14 +1512,23 @@ class AdminManager {
     const popup = document.getElementById('popup-eliminar-usuario');
     const usernameSpan = document.getElementById('usuario-a-eliminar');
     
+    if (!popup) {
+      alert(`¿Desea eliminar el usuario ${username}?`); // Fallback
+      return;
+    }
+    
     if (usernameSpan) {
       usernameSpan.textContent = username;
     }
     
-    if (popup) {
-      popup.classList.remove('hidden');
-      popup.dataset.userId = userId;
-    }
+    // Asegurar que el popup esté visible
+    popup.classList.remove('hidden');
+    popup.style.display = 'flex';
+    popup.style.zIndex = '10000';
+    popup.dataset.userId = userId;
+    
+    // Forzar reflow
+    popup.offsetHeight;
   }
 
   confirmarEliminarUsuario() {
@@ -1507,6 +1552,7 @@ class AdminManager {
     const popup = document.getElementById('popup-eliminar-usuario');
     if (popup) {
       popup.classList.add('hidden');
+      popup.style.display = 'none';
     }
   }
 
@@ -1586,5 +1632,8 @@ class AdminManager {
       pantalla.classList.remove('hidden');
       pantalla.style.display = 'flex';
     }
+
+    // Asegurar que el popup esté oculto al cambiar de pantalla
+    this.asegurarPopupOculto();
   }
 }

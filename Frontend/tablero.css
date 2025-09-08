@@ -1,57 +1,28 @@
 @import url("estilos.css");
 
-/* ==================== CUSTOM PROPERTIES - TABLERO ==================== */
-:root {
-  /* === Variables específicas del tablero === */
-  --tablero-bg: url('img/bosque.jpg') center / cover no-repeat;
-
-  /* === Variables del dado === */
-  --dado-size-sm: 100px;
-  --dado-size-md: 200px;
-  --dado-size-mobile: 150px;
-
-  /* === Tamaños Mobile First === */
-  --board-size-mobile: min(88vw, calc(100vh - 180px));
-  --board-max-size-mobile: 320px;
-  --dino-size-mobile: 22px;
-  --dino-available-size-mobile: 28px;
-  --dino-container-height-mobile: 70px;
-
-  /* === Colores específicos === */
-  --player1-color: #FFD700;
-  --player1-bg: rgba(255, 215, 0, 0.1);
-  --player2-color: #87CEEB;
-  --player2-bg: rgba(135, 206, 235, 0.1);
-  --blocked-color: #FF5722;
-  --blocked-bg: rgba(255, 87, 34, 0.4);
-  --invalid-color: #dc3545;
-  --invalid-bg: rgba(220, 53, 69, 0.3);
-
-  /* === Z-indexes === */
-  --z-dropzone: 10;
-  --z-dino-placed: 20;
-  --z-dino-available: 90;
-  --z-ui: 100;
-  --z-popup: 2000;
-
-  /* === Efectos === */
-  --blur-backdrop: blur(4px);
-  --overlay-dark: rgba(0, 0, 0, 0.9);
-  --overlay-medium: rgba(0, 0, 0, 0.6);
-  --hover-overlay: rgba(255, 255, 255, 0.1);
-
-  /* === Nuevas variables para eliminar duplicaciones === */
-  --alerta-padding: var(--space-md);
-  --alerta-border-radius: var(--border-radius-md);
-  --alerta-icon-size: 24px;
-  --alerta-margin: var(--space-md);
+/* ==================== UTILIDADES CSS ==================== */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
 
 /* ==================== TABLERO BASE ==================== */
 .tablero {
-  background: var(--tablero-bg);
+  background: url('img/bosque.jpg') center / cover no-repeat;
   width: 100%;
-  min-height: 100vh;
   min-height: 100dvh;
   display: flex;
   align-items: center;
@@ -65,10 +36,10 @@
 .rejilla-partida {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  width: var(--board-size-mobile);
-  height: var(--board-size-mobile);
-  max-width: var(--board-max-size-mobile);
-  max-height: var(--board-max-size-mobile);
+  width: min(75vw, calc(100vh - 100px));
+  height: min(75vw, calc(100vh - 100px));
+  max-width: 600px;
+  max-height: 600px;
   aspect-ratio: 1;
   margin: 0 auto;
   position: absolute;
@@ -112,14 +83,14 @@
   content: '';
   position: absolute;
   inset: 0;
-  z-index: var(--z-dropzone);
+  z-index: 10;
   pointer-events: auto;
   transition: var(--transition-fast);
 }
 
 .cuadro:hover::after,
 .rectangulo:hover::after {
-  background: var(--hover-overlay);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .drop-zone-active::after {
@@ -129,15 +100,15 @@
 }
 
 .drop-zone-invalid::after {
-  background: var(--invalid-bg);
-  border: 3px solid var(--invalid-color);
-  box-shadow: 0 0 15px var(--invalid-bg);
+  background: rgba(220, 53, 69, 0.3);
+  border: 3px solid #dc3545;
+  box-shadow: 0 0 15px rgba(220, 53, 69, 0.3);
 }
 
 .drop-zone-blocked::after {
-  background: var(--blocked-bg);
-  border: 3px solid var(--blocked-color);
-  box-shadow: 0 0 15px var(--blocked-bg);
+  background: rgba(255, 87, 34, 0.4);
+  border: 3px solid #FF5722;
+  box-shadow: 0 0 15px rgba(255, 87, 34, 0.4);
   animation: pulse-blocked 1s infinite alternate;
 }
 
@@ -156,10 +127,10 @@
 /* === Dinosaurios Colocados === */
 .dinosaurio-colocado {
   position: absolute !important;
-  width: var(--dino-size-mobile) !important;
-  min-width: var(--dino-size-mobile) !important;
+  width: 25px !important;
+  min-width: 25px !important;
   height: auto !important;
-  z-index: var(--z-dino-placed) !important;
+  z-index: 20 !important;
   pointer-events: none;
   transition: var(--transition-base);
   animation: colocarDino 0.3s ease-out;
@@ -200,7 +171,7 @@
   bottom: calc(env(safe-area-inset-bottom, 0px) + var(--space-lg));
   left: 50%;
   transform: translateX(-50%);
-  background: var(--overlay-dark);
+  background: rgba(0, 0, 0, 0.9);
   border: 2px solid var(--color-superficie);
   border-radius: var(--border-radius-md);
   padding: var(--space-sm);
@@ -208,19 +179,19 @@
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(2, 1fr);
   gap: var(--space-sm);
-  z-index: var(--z-dino-available);
+  z-index: 90;
   align-items: center;
   justify-items: center;
-  backdrop-filter: var(--blur-backdrop);
+  backdrop-filter: blur(4px);
   width: max-content;
-  max-width: calc(100vw - var(--space-lg) * 2);
-  min-height: var(--dino-container-height-mobile);
+  overflow: hidden;
 }
 
+/* === Dinosaurios Base === */
 .dino {
   width: auto;
-  height: var(--dino-available-size-mobile);
-  min-height: var(--dino-available-size-mobile);
+  height: 35px;
+  min-height: 35px;
   cursor: grab;
   border-radius: var(--border-radius-sm);
   transition: var(--transition-base);
@@ -230,38 +201,29 @@
   touch-action: manipulation;
   user-select: none;
   -webkit-user-select: none;
+  position: relative;
+  z-index: 1;
+  display: block;
 }
 
-.dino:hover {
-  transform: scale(1.1);
-}
-
-.dino.dragging {
-  cursor: grabbing;
-  opacity: 0.7;
-  transform: scale(1.2);
-  z-index: 1000;
-}
-
-.dino.usado {
-  opacity: 0.3;
-  filter: grayscale(100%);
-  pointer-events: none;
-}
+.dino:hover { transform: scale(1.1); }
+.dino.dragging { cursor: grabbing; opacity: 0.7; transform: scale(1.2); z-index: 1000; }
+.dino.usado { opacity: 0.3; filter: grayscale(100%); pointer-events: none; }
+.dino.eliminado { display: none !important; visibility: hidden !important; opacity: 0 !important; transform: scale(0) !important; transition: all 0.2s ease-out; }
 
 /* ==================== MARCADORES DE JUGADOR ==================== */
 .dinosaurio-j1 {
-  border: 2px solid var(--player1-color);
-  border-radius: var(--border-radius-circle);
+  border: 2px solid #FFD700;
+  border-radius: 50%;
   padding: 2px;
-  background: var(--player1-bg);
+  background: rgba(255, 215, 0, 0.1);
 }
 
 .dinosaurio-j2 {
-  border: 2px solid var(--player2-color);
-  border-radius: var(--border-radius-circle);
+  border: 2px solid #87CEEB;
+  border-radius: 50%;
   padding: 2px;
-  background: var(--player2-bg);
+  background: rgba(135, 206, 235, 0.1);
 }
 
 /* === Estados de Dinosaurios === */
@@ -282,7 +244,7 @@
   top: -20px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--overlay-dark);
+  background: rgba(0, 0, 0, 0.9);
   color: var(--color-blanco);
   padding: 2px 6px;
   border-radius: var(--border-radius-sm);
@@ -297,34 +259,35 @@
 }
 
 /* === Indicadores de Turno === */
-.info-jugador.turno-activo {
-  box-shadow: 0 0 20px var(--player1-color);
-  border-color: var(--player1-color) !important;
+.info-jugador-base.turno-activo,
+.info-jugador.turno-activo,
+.info-jugador2.turno-activo {
+  box-shadow: 0 0 20px #FFD700;
+  border-color: #FFD700 !important;
   border-width: 3px !important;
 }
 
+/* Jugador 2 activo con color específico */
 .info-jugador2.turno-activo {
-  box-shadow: 0 0 20px var(--player2-color);
-  border-color: var(--player2-color) !important;
-  border-width: 3px !important;
-  width: 100%;
+  box-shadow: 0 0 20px #87CEEB;
+  border-color: #87CEEB !important;
 }
 
 /* ==================== INTERFAZ DE USUARIO ==================== */
 
 /* === Header Superior === */
 .header-superior {
-  position: absolute;
-  top: calc(env(safe-area-inset-top, 0px) + 2px);
-  left: 2px;
-  right: 2px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 2px;
-  z-index: var(--z-ui);
-  gap: 2px;
+  justify-content: space-around;
+  padding: var(--space-sm);
+  z-index: 100;
+  gap: var(--space-sm);
   flex-wrap: wrap;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
 }
 
 /* === Información de Jugadores === */
@@ -338,16 +301,11 @@
   background: var(--color-primario);
   border: 2px solid var(--color-primario-dark);
   border-radius: var(--border-radius-md);
-  padding: var(--space-xs);
-  color: var(--color-blanco);
-  min-width: 0;
-  font-size: var(--font-size-xs);
-  backdrop-filter: var(--blur-backdrop);
-  flex-shrink: 1;
-}
-
-.info-jugador {
   padding: var(--space-sm) var(--space-lg);
+  color: var(--color-blanco);
+  font-size: var(--font-size-xs);
+  backdrop-filter: blur(4px);
+  flex-shrink: 1;
 }
 
 .avatar-circular {
@@ -360,6 +318,20 @@
 
 .info-texto {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* En tablet y mobile, hacer el texto horizontal */
+@media (max-width: 1024px) {
+  .info-texto {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
 }
 
 .nombre-puntos {
@@ -396,7 +368,7 @@
   font-size: var(--font-size-xs);
   color: var(--color-blanco);
   padding: var(--space-xs) var(--space-sm);
-  background: var(--hover-overlay);
+  background: rgba(255, 255, 255, 0.1);
   border: 1px solid var(--color-blanco);
   white-space: nowrap;
 }
@@ -404,6 +376,11 @@
 .ver-mapa:hover {
   background: rgba(255, 255, 255, 0.2);
   color: var(--color-blanco);
+}
+
+/* Ocultar Ver Mapa en el footer para que ambos elementos se vean iguales */
+.footer-juego .ver-mapa {
+  display: none;
 }
 
 /* === Botones de Información === */
@@ -414,6 +391,7 @@
   gap: var(--space-xs);
 }
 
+/* === Botones de Información === */
 .btn-como-jugar,
 .btn-datos-fisicos {
   display: flex;
@@ -421,11 +399,10 @@
   justify-content: center;
   cursor: pointer;
   transition: var(--transition-base);
-  border: none;
+  border: 2px solid var(--color-dorado);
   border-radius: var(--border-radius-md);
   font-weight: var(--font-weight-semibold);
   background: var(--color-dorado);
-  border: 2px solid var(--color-dorado);
   padding: var(--space-xs) var(--space-sm);
   color: var(--color-marron);
   white-space: nowrap;
@@ -434,10 +411,7 @@
 }
 
 .btn-como-jugar:hover,
-.btn-datos-fisicos:hover {
-  background: var(--color-dorado);
-  filter: brightness(1.1);
-}
+.btn-datos-fisicos:hover { background: var(--color-dorado); filter: brightness(1.1); }
 
 .icono-btn {
   width: 20px;
@@ -449,20 +423,18 @@
 
 /* === Footer del Juego === */
 .footer-juego {
-  position: absolute;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 2px);
-  left: 2px;
-  right: 2px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   padding: var(--space-xs);
-  z-index: var(--z-ui);
-  gap: var(--space-xs);
-  background: linear-gradient(to top, var(--overlay-dark) 0%, var(--overlay-medium) 100%);
-  backdrop-filter: var(--blur-backdrop);
-  min-height: 50px;
-  border-radius: var(--border-radius-sm);
+  z-index: 100;
+  gap: var(--space-sm);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+  flex-wrap: wrap;
 }
 
 /* === Restricciones === */
@@ -531,9 +503,9 @@
   }
 
   50% {
-    box-shadow: 0 0 40px 8px rgba(255, 165, 0, 0.8), 
-                0 0 80px 16px rgba(255, 165, 0, 0.4),
-                0 0 120px 24px rgba(255, 165, 0, 0.2);
+    box-shadow: 0 0 40px 8px rgba(255, 165, 0, 0.8),
+      0 0 80px 16px rgba(255, 165, 0, 0.4),
+      0 0 120px 24px rgba(255, 165, 0, 0.2);
   }
 
   100% {
@@ -547,11 +519,11 @@
 .popup-overlay {
   position: fixed;
   inset: 0;
-  background: var(--overlay-medium);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: var(--z-popup);
+  z-index: 2000;
   backdrop-filter: blur(5px);
   padding: var(--space-lg);
   box-sizing: border-box;
@@ -777,7 +749,7 @@
 .mini-dinosaurios {
   position: absolute;
   inset: 0;
-  z-index: var(--z-dropzone);
+  z-index: 10;
   pointer-events: none;
 }
 
@@ -826,7 +798,7 @@
 
 .dino-descarte {
   width: auto;
-  height: 64px;
+  height: 45px;
   cursor: pointer;
   transition: transform .15s ease, filter .15s ease, outline-color .15s ease;
 }
@@ -856,7 +828,7 @@
   justify-content: center;
   gap: var(--space-sm);
   padding: var(--space-md);
-  background: var(--hover-overlay);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: var(--border-radius-md);
 }
 
@@ -923,10 +895,10 @@
 .info-item-base {
   display: flex;
   align-items: flex-start;
-  border-radius: var(--alerta-border-radius);
-  padding: var(--alerta-padding);
+  border-radius: var(--border-radius-md);
+  padding: var(--space-md);
   transition: var(--transition-base);
-  margin-bottom: var(--alerta-margin);
+  margin-bottom: var(--space-md);
   font-size: var(--font-size-base);
   line-height: 1.4;
   color: var(--color-negro);
@@ -938,8 +910,8 @@
 }
 
 .info-icon-base {
-  width: var(--alerta-icon-size);
-  height: var(--alerta-icon-size);
+  width: 24px;
+  height: 24px;
   margin-right: var(--space-md);
   flex-shrink: 0;
   object-fit: contain;
@@ -962,10 +934,10 @@
 .recinto-item {
   display: flex;
   align-items: flex-start;
-  border-radius: var(--alerta-border-radius);
-  padding: var(--alerta-padding);
+  border-radius: var(--border-radius-md);
+  padding: var(--space-md);
   transition: var(--transition-base);
-  margin-bottom: var(--alerta-margin);
+  margin-bottom: var(--space-md);
   font-size: var(--font-size-base);
   line-height: 1.4;
   color: var(--color-negro);
@@ -1008,10 +980,10 @@
 .consejo-item {
   display: flex;
   align-items: flex-start;
-  border-radius: var(--alerta-border-radius);
-  padding: var(--alerta-padding);
+  border-radius: var(--border-radius-md);
+  padding: var(--space-md);
   transition: var(--transition-base);
-  margin-bottom: var(--alerta-margin);
+  margin-bottom: var(--space-md);
   font-size: var(--font-size-base);
   line-height: 1.4;
   color: var(--color-negro);
@@ -1033,8 +1005,8 @@
 }
 
 .consejo-icono {
-  width: var(--alerta-icon-size);
-  height: var(--alerta-icon-size);
+  width: 24px;
+  height: 24px;
   margin-right: var(--space-md);
   flex-shrink: 0;
   object-fit: contain;
@@ -1072,16 +1044,16 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
-  margin: var(--alerta-margin) 0;
+  margin: var(--space-md) 0;
 }
 
 .alerta-item {
   display: flex;
   align-items: flex-start;
-  border-radius: var(--alerta-border-radius);
-  padding: var(--alerta-padding);
+  border-radius: var(--border-radius-md);
+  padding: var(--space-md);
   transition: var(--transition-base);
-  margin-bottom: var(--alerta-margin);
+  margin-bottom: var(--space-md);
   font-size: var(--font-size-base);
   line-height: 1.4;
   color: var(--color-negro);
@@ -1114,8 +1086,8 @@
 }
 
 .alerta-icono {
-  width: var(--alerta-icon-size);
-  height: var(--alerta-icon-size);
+  width: 24px;
+  height: 24px;
   margin-right: var(--space-md);
   flex-shrink: 0;
   object-fit: contain;
@@ -1153,6 +1125,7 @@
   overflow-y: auto;
   color: var(--color-texto-principal);
   line-height: 1.5;
+  padding: var(--space-xl);
 }
 
 .popup-reglas h3 {
@@ -1208,10 +1181,10 @@
 .regla-item {
   display: flex;
   align-items: flex-start;
-  border-radius: var(--alerta-border-radius);
-  padding: var(--alerta-padding);
+  border-radius: var(--border-radius-md);
+  padding: var(--space-md);
   transition: var(--transition-base);
-  margin-bottom: var(--alerta-margin);
+  margin-bottom: var(--space-md);
   font-size: var(--font-size-base);
   line-height: 1.4;
   color: var(--color-negro);
@@ -1226,8 +1199,8 @@
 }
 
 .regla-icono {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   margin-right: var(--space-md);
   flex-shrink: 0;
   object-fit: contain;
@@ -1414,8 +1387,8 @@
 }
 
 .dado-animado {
-  width: var(--dado-size-md);
-  height: var(--dado-size-md);
+  width: 150px;
+  height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1482,8 +1455,8 @@
 }
 
 .dado-resultado {
-  width: var(--dado-size-sm);
-  height: var(--dado-size-sm);
+  width: 100px;
+  height: 100px;
   object-fit: contain;
   filter: drop-shadow(0 8px 16px var(--color-negro));
   animation: dadoFinal .8s ease-out;
@@ -1673,55 +1646,14 @@
   margin-top: var(--space-xl);
 }
 
-/* === Responsive para Selección de Dados === */
-@media (max-width: 768px) {
-  .caras-dado-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-sm);
-    padding: var(--space-sm);
-  }
 
-  .cara-dado-opcion {
-    padding: var(--space-sm);
-    gap: var(--space-xs);
-  }
-
-  .cara-dado-img {
-    width: 50px;
-    height: 50px;
-  }
-
-  .cara-dado-texto {
-    font-size: var(--font-size-xs);
-  }
-}
-
-@media (max-width: 480px) {
-  .caras-dado-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-xs);
-  }
-
-  .cara-dado-opcion {
-    padding: var(--space-xs);
-  }
-
-  .cara-dado-img {
-    width: 40px;
-    height: 40px;
-  }
-
-  .cara-dado-texto {
-    font-size: var(--font-size-xxs);
-  }
-}
 
 .cara-dado {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--alerta-border-radius);
-  padding: var(--alerta-padding);
+  border-radius: var(--border-radius-md);
+  padding: var(--space-md);
   transition: var(--transition-base);
   background: var(--color-gris);
   border: 1px solid var(--color-gris-dark);
@@ -1813,23 +1745,20 @@
   animation: dadoFinal 1s ease-out forwards;
 }
 
-/* ==================== MEDIA QUERIES - PROGRESSIVE ENHANCEMENT ==================== */
+/* ==================== MEDIA QUERIES - DESKTOP ==================== */
 
-/* === Tablets (768px+) === */
-@media (min-width: 768px) {
-  :root {
-    --board-size-mobile: min(75vw, 75vh);
-    --board-max-size-mobile: 550px;
-    --dino-size-mobile: 28px;
-    --dino-available-size-mobile: 35px;
-  }
+/* === Desktop (1024px+) === */
+@media (min-width: 1024px) {
+  .tablero { padding: 0; }
 
-  .tablero {
-    padding: 0;
+  .rejilla-partida {
+    width: min(70vw, calc(100vh - 100px));
+    height: min(70vw, calc(100vh - 100px));
+    max-width: 700px;
+    max-height: 700px;
   }
 
   .dinosaurios-disponibles {
-    position: absolute;
     left: var(--space-3xl);
     top: 50%;
     transform: translateY(-50%);
@@ -1838,130 +1767,105 @@
     grid-template-rows: repeat(3, 1fr);
     padding: var(--space-lg);
     gap: var(--space-md);
-    background: var(--overlay-dark);
-    max-width: none;
-    width: auto;
-    min-height: auto;
   }
 
-  .dino {
-    padding: 0;
-    margin: 0;
-  }
+  .dino { padding: 0; margin: 0; height: 40px; min-height: 40px; }
 
-  .header-superior {
-    top: var(--space-lg);
-    padding: 0 var(--space-3xl);
-    gap: var(--space-md);
-    background: none;
-    backdrop-filter: none;
+  /* === Dinosaurios Colocados en Desktop === */
+  .dinosaurio-colocado {
+    width: 35px !important;
   }
 
   .info-jugador-base,
   .info-jugador,
   .info-jugador2 {
-    padding: var(--space-sm) var(--space-md);
+    padding: var(--space-md);
     font-size: var(--font-size-base);
     backdrop-filter: none;
   }
 
-  .avatar-circular {
-    width: 40px;
-    height: 40px;
+  .avatar-circular { width: 40px; height: 40px; }
+
+  /* === Jugador Activo en Desktop === */
+  .info-jugador-base.turno-activo,
+  .info-jugador.turno-activo,
+  .info-jugador2.turno-activo {
+    padding: var(--space-md);
+    font-size: var(--font-size-lg);
+  }
+
+  .info-jugador-base.turno-activo .avatar-circular,
+  .info-jugador.turno-activo .avatar-circular,
+  .info-jugador2.turno-activo .avatar-circular {
+    width: 60px;
+    height: 60px;
+  }
+
+  .info-jugador-base.turno-activo .nombre-puntos,
+  .info-jugador.turno-activo .nombre-puntos,
+  .info-jugador2.turno-activo .nombre-puntos {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
   }
 
   .footer-juego {
-    bottom: var(--space-lg);
-    padding: 0 var(--space-3xl);
-    gap: var(--space-md);
-    background: none;
-    backdrop-filter: none;
-    min-height: auto;
-  }
-}
-
-/* === Large Laptops (1024px+) === */
-@media (min-width: 1024px) {
-  :root {
-    --board-size-mobile: min(80vh, 80vw);
-    --board-max-size-mobile: none;
-    --dino-size-mobile: 30px;
-  }
-
-  .dinosaurios-disponibles {
-    padding: var(--space-lg);
-    gap: var(--space-md);
-  }
-}
-
-/* === Extra Large Screens (1440px+) === */
-@media (min-width: 1440px) {
-  :root {
-    --board-size-mobile: min(85vh, 85vw);
-    --dino-size-mobile: 32px;
-    --dino-available-size-mobile: 40px;
+    padding: var(--space-md);
   }
 }
 
 /* ==================== RESPONSIVE MOBILE ==================== */
 
-/* === Tablet Portrait (max-width: 1024px) === */
+/* === Mobile (max-width: 1024px) === */
 @media (max-width: 1024px) {
-  .header-superior {
-    flex-direction: column;
-    top: 0;
-    padding: var(--space-sm);
-    background: var(--gradiente-stats);
-    gap: var(--space-sm);
-    align-items: stretch;
+  .info-jugador-base {
+    width: 100%;
+    padding: var(--space-xs);
   }
 
-  .info-jugador2 {
-    align-self: center;
-    border: 2px solid var(--color-primario-dark);
-    padding: var(--space-sm) var(--space-md);
+  .info-jugador-base .avatar-circular {
+    width: 50px;
+    height: 50px;
   }
 
-  .info-jugador2 .avatar-circular {
-    width: 45px;
-    height: 45px;
+  .info-jugador-base.info-jugador2 .avatar-circular {
+    width: 35px;
+    height: 35px;
   }
 
   .info-jugador2 .info-texto {
-    display: flex;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
     gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .botones-info {
+    width: 100%;
   }
 
   .btn-como-jugar,
   .btn-datos-fisicos {
     flex: 1;
-    justify-content: center;
     padding: var(--space-md) var(--space-lg);
     font-size: var(--font-size-base);
   }
 
   .rejilla-partida {
-    margin-bottom: 90px;
-    width: min(65vh, 80vw);
-    height: min(65vh, 80vw);
+    width: 95vw;
+    height: 95vw;
+    top: 40%;
   }
 
   .dinosaurios-disponibles {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 90px;
+    left: 5%;
+    right: 5%;
+    bottom: 140px;
     top: auto;
     transform: none;
-    border-radius: 0;
-    border: none;
-    background: var(--overlay-dark);
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: 1fr;
-    padding: var(--space-sm);
-    justify-items: center;
+    width: 90%;
+    border-radius: 60px;
   }
 
   .dino {
@@ -1970,296 +1874,69 @@
     object-fit: contain;
   }
 
-  .footer-juego {
-    flex-direction: row;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: var(--space-xs);
-    gap: var(--space-xs);
-    display: flex;
-    height: auto;
-    min-height: 80px;
-    background: var(--overlay-dark);
-    align-items: center;
-  }
-
-  .info-jugador {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    border: 2px solid var(--color-primario-dark);
-    border-radius: var(--border-radius-md);
-    padding: var(--space-xs);
-    background: rgba(0, 0, 0, 0.3);
-    min-width: 0;
-  }
-
-  .info-jugador .avatar-circular {
-    width: 30px;
-    height: 30px;
-    margin-right: var(--space-xs);
-    flex-shrink: 0;
-  }
-
-  .info-jugador .info-texto {
-    min-width: 0;
-    flex: 1;
-  }
-
-  .info-jugador .nombre-puntos {
-    font-size: var(--font-size-xs);
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .info-jugador .puntos-jugador {
-    font-size: var(--font-size-xs);
-    line-height: 1;
-  }
-
-  .info-jugador.turno-activo {
-    box-shadow: 0 0 15px var(--player1-color);
-    border-color: var(--player1-color) !important;
-    border-width: 2px !important;
-  }
 
   .info-restriccion {
     flex: 1;
-    min-width: 0;
     padding: var(--space-xs);
     font-size: var(--font-size-xs);
+    text-align: center;
+    height: 50px;
   }
 
   .icono-restriccion-footer {
-    width: 25px;
-    height: 25px;
-    margin-right: var(--space-xs);
-  }
-
-  .texto-restriccion {
-    font-size: var(--font-size-xs);
-    line-height: 1.2;
-  }
-
-  .boton-siguiente {
-    flex: 0 0 auto;
-    padding: var(--space-sm) var(--space-md);
-    font-size: var(--font-size-sm);
-    min-width: 100px;
-    height: auto;
-  }
-
-  .btn-como-jugar,
-  .btn-datos-fisicos {
-    padding: var(--space-xs) var(--space-sm);
-    font-size: var(--font-size-xs);
-    min-width: 0;
-    flex: 1;
-  }
-
-  .ver-mapa {
-    padding: var(--space-xs) var(--space-sm);
-    font-size: var(--font-size-xs);
-  }
-}
-
-/* === Mobile Landscape (orientation: landscape y max-height: 600px) === */
-@media (orientation: landscape) and (max-height: 600px) {
-  .header-superior {
-    flex-direction: row;
-    top: 0;
-    padding: var(--space-xs) var(--space-sm);
-    background: var(--overlay-dark);
-  }
-
-  .info-jugador2 {
-    flex: 0 0 auto;
-    min-width: 180px;
-  }
-
-  .info-jugador2 .avatar-circular {
-    width: 35px;
-    height: 35px;
-  }
-
-  .info-jugador2 .nombre-puntos,
-  .info-jugador2 .ver-mapa {
-    font-size: var(--font-size-xs);
-  }
-
-  .ver-mapa {
-    padding: var(--space-sm);
-}
-
-  .btn-como-jugar,
-  .btn-datos-fisicos {
-    flex: 1;
-    font-size: var(--font-size-xs);
-    padding: var(--space-xs) var(--space-sm);
-  }
-
-  .icono-btn {
-    width: var(--icon-size-md);
-    height: var(--icon-size-md);
-  }
-
-  .rejilla-partida {
-    width: min(50vh, 60vw);
-    height: min(50vh, 60vw);
-    margin-bottom: 80px;
-  }
-
-  .dinosaurios-disponibles {
-    left: var(--space-sm);
-    right: auto;
-    top: 50%;
-    bottom: auto;
-    transform: translateY(-50%);
-    width: 90px;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    padding: var(--space-sm);
-  }
-
-  .dino {
-    width: 35px;
-    height: 35px;
-  }
-
-  .footer-juego {
-    flex-direction: row;
-    bottom: 0;
-    min-height: 70px;
-    padding: var(--space-xs) var(--space-sm);
-    background: var(--overlay-dark);
-    justify-content: space-between;
-    gap: var(--space-sm);
-  }
-
-  .info-jugador {
-    flex: 0 0 auto;
-    width: auto;
-    min-width: 140px;
-    padding: var(--space-xs) var(--space-sm);
-  }
-
-  .info-jugador .avatar-circular {
-    width: 35px;
-    height: 35px;
-  }
-
-  .texto-jugador {
-    font-size: var(--font-size-base);
-    margin-right: var(--space-sm);
-  }
-
-  .puntos-jugador {
-    font-size: var(--font-size-xs);
-  }
-
-  .info-restriccion {
-    flex: 1;
-    padding: var(--space-xs) var(--space-sm);
-  }
-
-  .icono-restriccion-footer {
-    width: 25px;
-    height: 25px;
-  }
-
-  .texto-restriccion {
-    font-size: var(--font-size-xs);
-  }
-
-  .boton-siguiente {
-    flex: 0 0 auto;
-    padding: var(--space-sm) var(--space-md);
-    font-size: var(--font-size-base);
-    width: 100%;
-  }
-}
-
-/* === Mobile (max-width: 768px) === */
-@media (max-width: 768px) {
-  .popup {
-    margin: var(--space-sm);
-    padding: var(--space-lg);
-    max-height: 85vh;
-  }
-
-  .popup h2 {
-    font-size: var(--font-size-lg);
-  }
-
-  .popup-mapa {
-    width: 95vw;
-    padding: var(--space-md);
-    max-height: 90vh;
-  }
-
-  .mini-dinosaurio {
-    width: 10px;
-    height: 10px;
-  }
-
-  .punto-item {
-    font-size: var(--font-size-xs);
-    padding: var(--space-xs);
-  }
-
-  .popup-reglas {
-    max-height: 90vh;
-    padding: var(--space-md);
-  }
-
-  .info-item-base {
-    padding: var(--space-sm);
-    margin-bottom: var(--space-sm);
-  }
-
-  .trex-imagen {
     width: 40px;
     height: 40px;
-    margin-right: var(--space-md);
+    margin-right: var(--space-xs);
   }
 
-  .regla-icono {
-    width: var(--alerta-icon-size);
-    height: var(--alerta-icon-size);
-    margin-right: var(--space-sm);
+  .texto-restriccion {
+    font-size: var(--font-size-xs);
+    line-height: 1.2;
+    text-align: left;
   }
 
-  .info-icon-base {
-    width: 20px;
-    height: 20px;
-    margin-right: var(--space-sm);
-  }
-
-  .popup-reglas h3 {
-    font-size: var(--font-size-base);
-    margin: var(--space-lg) 0 var(--space-sm) 0;
-  }
-
-  .trex-texto,
-  .alerta-texto,
-  .regla-texto,
-  .consejo-texto,
-  .info-text-base {
+  .boton-siguiente {
+    flex: 1;
+    padding: var(--space-sm) var(--space-md);
     font-size: var(--font-size-sm);
+    height: 50px;
   }
 
-  .dado-container {
-    width: 200px;
-    height: 200px;
+  .btn-como-jugar,
+  .btn-datos-fisicos {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-xs);
+    min-width: 0;
+    flex: 1;
   }
 
-  .popup-dado {
-    width: 95%;
-    max-width: 360px;
+  .ver-mapa {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-xs);
   }
+}
+
+
+/* === Mobile Small (max-width: 768px) === */
+@media (max-width: 768px) {
+  .popup { margin: var(--space-sm); padding: var(--space-lg); max-height: 85vh; }
+  .popup h2 { font-size: var(--font-size-lg); }
+  .popup-mapa { width: 95vw; padding: var(--space-md); max-height: 90vh; }
+  .mini-dinosaurio { width: 10px; height: 10px; }
+  .punto-item { font-size: var(--font-size-xs); padding: var(--space-xs); }
+  .popup-reglas { max-height: 90vh; padding: var(--space-md); }
+  .info-item-base { padding: var(--space-sm); margin-bottom: var(--space-sm); }
+  .trex-imagen { width: 40px; height: 40px; margin-right: var(--space-md); }
+  .regla-icono { width: 20px; height: 20px; margin-right: var(--space-sm); }
+  .info-icon-base { width: 20px; height: 20px; margin-right: var(--space-sm); }
+  .popup-reglas h3 { font-size: var(--font-size-base); margin: var(--space-lg) 0 var(--space-sm) 0; }
+  .trex-texto, .alerta-texto, .regla-texto, .consejo-texto, .info-text-base { font-size: var(--font-size-sm); }
+  .dado-container { width: 200px; height: 200px; }
+  .popup-dado { width: 95%; max-width: 360px; }
+  .caras-dado-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-sm); padding: var(--space-sm); }
+  .cara-dado-opcion { padding: var(--space-sm); gap: var(--space-xs); }
+  .cara-dado-img { width: 50px; height: 50px; }
+  .cara-dado-texto { font-size: var(--font-size-xs); }
 }
 
 /* ==================== OPTIMIZACIONES Y UTILIDADES ==================== */
@@ -2307,7 +1984,8 @@
   }
 
   .dino {
-    touch-action: none; /* Evita scroll durante drag */
+    touch-action: none;
+    /* Evita scroll durante drag */
     user-select: none;
     -webkit-user-select: none;
   }
@@ -2318,7 +1996,8 @@
     transition: none;
   }
 
-  .cuadro, .rectangulo {
+  .cuadro,
+  .rectangulo {
     transition: background-color 0.2s ease;
   }
 
@@ -2342,8 +2021,4 @@
     min-width: 44px;
   }
 
-  .ver-mapa {
-    min-height: 44px;
-    min-width: 44px;
-  }
 }

@@ -339,16 +339,23 @@ const GameLogic = {
     // Capturar puntos antes de colocar el dinosaurio
     const puntosAntes = jugador.puntosRonda || 0;
 
+    // Eliminar el dinosaurio del array de disponibles
     jugador.dinosauriosDisponibles.splice(idx, 1);
     jugador.recintos[recinto].push(tipoDino);
 
+    // Agregar visualmente al tablero
     RenderManager.agregarDinosaurioVisual(tipoDino, recinto, area);
     estadoJuego.yaColocoEnTurno = true;
 
+    // Actualizar interfaz inmediatamente
     this.actualizarPuntos();
     this.actualizarPesos();
     JuegoManager.actualizarInterfaz();
-    RenderManager.actualizarDinosauriosDisponibles();
+    
+    // Forzar actualización visual de dinosaurios disponibles
+    setTimeout(() => {
+      RenderManager.actualizarDinosauriosDisponibles();
+    }, 50);
     
     // Capturar puntos después de colocar el dinosaurio y mostrar alerta
     const puntosDesues = jugador.puntosRonda || 0;
@@ -500,18 +507,26 @@ const RenderManager = {
     const contenedor = document.querySelector('.dinosaurios-disponibles');
     if (!contenedor) return;
 
+    // Limpiar completamente el contenedor
     contenedor.innerHTML = '';
+    
     const jugador = estadoJuego.getJugadorActual();
 
+    // Solo crear dinosaurios que realmente están disponibles
     jugador.dinosauriosDisponibles.forEach((tipo, index) => {
       const img = Utils.crearElemento('img', {
         src: CONFIG.IMAGENES_DINOSAURIOS[tipo].disponible,
-        className: 'dino', draggable: true, alt: tipo,
+        className: 'dino', 
+        draggable: true, 
+        alt: tipo,
         dataset: { tipo, index: index.toString() }
       });
+      
+      // Asegurar que el elemento se agregue correctamente
       contenedor.appendChild(img);
     });
 
+    // Reinicializar el sistema de drag & drop
     DragDropManager.init();
   }
 };
