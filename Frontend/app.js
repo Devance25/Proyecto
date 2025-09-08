@@ -731,34 +731,34 @@ class AppState {
   mostrarResultadoDado(dadoNumero) {
     const config = {
       1: {
-        titulo: 'Lugar vacío',
-        descripcion: 'Poné el dinosaurio en un lugar donde no haya ningún otro. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
+        titulo: 'Huella (libre)',
+        descripcion: '¡Tablero completamente libre! Podés colocar el dinosaurio en cualquier recinto sin restricciones. Es la cara más flexible del dado.',
         imagen: 'img/dado-huella.png'
       },
       2: {
-        titulo: 'Sin T-Rex',
-        descripcion: 'Poné el dinosaurio en un lugar donde no esté el T-Rex. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
+        titulo: 'No T-Rex',
+        descripcion: 'El Rey de la Jungla está bloqueado. Podés colocar en cualquier otro recinto: Bosque de la Semejanza, Prado de la Diferencia, Pradera del Amor, Trío Frondoso, Isla Solitaria o el Río.',
         imagen: 'img/dado-no-trex.png'
       },
       3: {
-        titulo: 'Lado cafetería (izquierda)',
-        descripcion: 'Poné el dinosaurio en el lado izquierdo del tablero, donde está la cafetería. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
+        titulo: 'Lado Cafetería',
+        descripcion: 'Recintos disponibles: Bosque de la Semejanza, Trío Frondoso, Pradera del Amor. Los recintos del lado izquierdo del tablero están abiertos. Si no podés cumplir, poné el dinosaurio en el río.',
         imagen: 'img/dado-cafe.png'
       },
       4: {
-        titulo: 'Bosque',
-        descripcion: 'Poné el dinosaurio en un lugar del bosque. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
-        imagen: 'img/dado-bosque.png'
+        titulo: 'Lado Baños',
+        descripcion: 'Recintos disponibles: Rey de la Jungla, Prado de la Diferencia, Isla Solitaria. Los recintos del lado derecho del tablero están abiertos. Si no podés cumplir, poné el dinosaurio en el río.',
+        imagen: 'img/dado-banos.png'
       },
       5: {
-        titulo: 'Rocas',
-        descripcion: 'Poné el dinosaurio en un lugar de rocas. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
-        imagen: 'img/dado-rocas.png'
+        titulo: 'Bosque',
+        descripcion: 'Recintos disponibles: Trío Frondoso, Bosque de la Semejanza, Rey de la Jungla. Los recintos con temática de bosque están abiertos. Si no podés cumplir, poné el dinosaurio en el río.',
+        imagen: 'img/dado-bosque.png'
       },
       6: {
-        titulo: 'Lado baños (derecha)',
-        descripcion: 'Poné el dinosaurio en el lado derecho del tablero, donde están los baños. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
-        imagen: 'img/dado-banos.png'
+        titulo: 'Rocas / Pradera',
+        descripcion: 'Recintos disponibles: Prado de la Diferencia, Isla Solitaria, Pradera del Amor. Los recintos con temática de pradera y rocas están abiertos. Si no podés cumplir, poné el dinosaurio en el río.',
+        imagen: 'img/dado-rocas.png'
       }
     };
     
@@ -1091,7 +1091,8 @@ class AppState {
       .forEach(counter => {
         counter.className = 'character-counter';
       });
-  }
+  } 
+
 
   clearFieldError(input) {
     input.classList.remove('error');
@@ -1167,6 +1168,8 @@ class AppState {
     this.players = [];
     this.jugador2Info = null;
     this.dadoSeleccionado = null;
+
+    
     this.tempNombres = null;
     this.tempJugador2Info = null;
     this.modoSeguimiento = false;
