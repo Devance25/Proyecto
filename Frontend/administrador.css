@@ -436,6 +436,68 @@
   color: var(--color-blanco);
 }
 
+/* === Desktop centering for admin content === */
+@media (min-width: 1024px) {
+  .admin-content-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: calc(100vh - 80px) !important;
+    padding: var(--space-xl) !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+  }
+
+  .admin-profile-card {
+    max-width: 500px !important;
+    width: 100% !important;
+  }
+
+  .admin-form-container {
+    max-width: 600px !important;
+    width: 100% !important;
+  }
+
+  .usuarios-list {
+    max-width: 800px !important;
+    width: 100% !important;
+  }
+
+  /* === Botón de volver con estética oscura === */
+  .btn-icon {
+    background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%) !important;
+    border: 2px solid #444 !important;
+    border-radius: var(--border-radius-md) !important;
+    color: #ffffff !important;
+    transition: all var(--transition-base) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(10px) !important;
+  }
+
+  .btn-icon:hover {
+    background: linear-gradient(135deg, #3d3d3d 0%, #2a2a2a 100%) !important;
+    border-color: var(--color-secundario) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 20px rgba(148, 204, 4, 0.2) !important;
+  }
+
+  .btn-icon:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .btn-icon img {
+    filter: brightness(0) invert(1) !important;
+    opacity: 0.9 !important;
+  }
+
+  .btn-icon:hover img {
+    opacity: 1 !important;
+    filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(148, 204, 4, 0.5)) !important;
+  }
+}
+
 /* === Responsive Design === */
 @media (max-width: 768px) {
 
