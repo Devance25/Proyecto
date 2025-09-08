@@ -15,7 +15,7 @@ class AuthService
     private static ?AuthService $instance = null; // instancia única
 
     /** Repositorio encargado del acceso a datos. */
-    private ?UserRepository $userRepository;
+    private ?UsuarioRepository $usuarioRepo;
 
     /**
      * Constructor privado: se inicializa el repositorio a utilizar.
@@ -24,7 +24,7 @@ class AuthService
     private function __construct()
     {
         // Inyectamos/obtenemos la dependencia del repositorio mediante su Singleton
-        $this->userRepository = UserRepository::getInstance();
+        $this->usuarioRepo = UsuarioRepository::getInstance();
     }
 
     /**
@@ -47,68 +47,107 @@ class AuthService
      *  4) Delegar la creación al repositorio.
      * Devuelve un array con success, message y datos del usuario creado (sin contraseña).
      */
-    public function registrarUsuarioService(string $username, string $email, string $nacimiento,string $password, string $passwordConfirm): array
+    public function registrarUsuarioService(string $nombreUsuario, string $email, string $nacimiento,string $password, string $passwordConfirm): array
     {
-        $username = trim($username);
+        $nombreUsuario = trim($nombreUsuario);
         $email = trim($email);
         $nacimiento = trim($nacimiento);
         $password = (string)$password;
         $passwordConfirm = (string)$passwordConfirm;
 
         // Validación de presencia
-        if ($username === '' || $email === '' || $nacimiento === '' || $password === '' || $passwordConfirm === '') {
-            return ['success' => false, 'code' => 'invalid', 'message' => 'Username, email y contraseña son requeridos.'];
+        if ($nombreUsuario === '' || $email === '' || $nacimiento === '' || $password === '' || $passwordConfirm === '') {
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'Username, email y contraseña son requeridos.'
+                ];
         }
 
         // Validación de formato de email
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return ['success' => false, 'code' => 'invalid', 'message' => 'Email inválido.'];
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'Email inválido.'
+                ];
         }
 
         // Validaciones simples adicionales (puedes endurecerlas según tu caso real)
-        if (strlen($username) < 3) {
-            return ['success' => false, 'code' => 'invalid', 'message' => 'El username debe tener al menos 3 caracteres.'];
+        if (strlen($nombreUsuario) < 3) {
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'El username debe tener al menos 3 caracteres.'
+                ];
         }
 
         if (strlen($password) < 6) {
-            return ['success' => false, 'code' => 'invalid', 'message' => 'La contraseña debe tener al menos 6 caracteres.'];
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'La contraseña debe tener al menos 6 caracteres.'
+                ];
         }
 
         if ($password !== $passwordConfirm){
-            return ['success' => false, 'code' => 'invalid', 'message' => 'Las contrasenias no coinciden.'];
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'Las contrasenias no coinciden.'
+                ];
         }
 
         // Verificar duplicados por username
-        $existingUsername = $this->userRepository->findByUsername($username);
-        if ($existingUsername) {
-            return ['success' => false, 'code' => 'duplicate', 'message' => 'El username ya está registrado.'];
+        $usuarioExiste = $this->usuarioRepo->buscarPorNombreUsuario($nombreUsuario);
+        if ($usuarioExiste) {
+            return [
+                'success' => false, 
+                'code' => 'duplicate', 
+                'message' => 'El username ya está registrado.'
+            ];
         }
 
         // Verificar duplicados por email
-        $existingEmail = $this->userRepository->findByEmail($email);
-        if ($existingEmail) {
-            return ['success' => false, 'code' => 'duplicate', 'message' => 'El email ya está registrado.'];
+        $emailExiste = $this->usuarioRepo>buscarPorEmail($email);
+
+        if ($emailExiste) {
+            return [
+                'success' => false, 
+                'code' => 'duplicate', 
+                'message' => 'El email ya está registrado.'
+                ];
         }
 
         // Hashear contraseña (PASSWORD_DEFAULT elige el algoritmo recomendado por PHP en tu versión)
         $hash = password_hash($password, PASSWORD_DEFAULT);
+
         if ($hash === false) {
-            return ['success' => false, 'code' => 'error', 'message' => 'No se pudo procesar la contraseña.'];
+            return [
+                'success' => false, 
+                'code' => 'error', 
+                'message' => 'No se pudo procesar la contraseña.'
+                ];
         }
 
         // Crear el usuario
-        $created = $this->userRepository->registrarUsuario($username, $email, $nacimiento, $hash);
+        $created = $this->usuarioRepo->registrarUsuario($nombreUsuario, $email, $nacimiento, $hash);
+
         if ($created === false) {
             // Podría fallar por restricciones únicas u otros motivos
-            return ['success' => false, 'code' => 'error', 'message' => 'No se pudo crear el usuario.'];
+            return [
+                'success' => false, 
+                'code' => 'error', 
+                'message' => 'No se pudo crear el usuario.'
+                ];
         }
 
         return [
             'success' => true,
             'message' => 'Usuario creado exitosamente.',
-            'user' => [
+            'usuario' => [
                 'id' => (int)$created['id'],
-                'username' => $created['username'],
+                'nombreUsuario' => $created['nombreUsuario'],
                 'email' => $created['email'],
             ],
         ];
@@ -118,37 +157,39 @@ class AuthService
      * Verifica credenciales (usuario puede identificarse con username o email).
      * Retorna false si no coincide, o un arreglo con datos no sensibles si es correcto.
      */
-    private function verifyCredentials(string $identifier, string $plainPassword)
+    private function verificarCredenciales(string $identificador, string $plainPassword)
     {
         // Busca el usuario por username o email
-        $user = $this->userRepository->findByUsernameOrEmail($identifier);
+        $usuario = $this->usuarioRepo->buscarPorEmailONombre($identificador);
 
         // Validación de existencia y estructura mínima
-        if (!$user || !isset($user['password']) || !is_string($user['password'])) {
+        if (!$usuario || !isset($usuario['password']) || !is_string($usuario['password'])) {
             return false;
         }
 
         // Compara contraseña en texto plano con el hash almacenado
-        if (!password_verify($plainPassword, $user['password'])) {
+        if (!password_verify($plainPassword, $usuario['password'])) {
             return false;
         }
 
         // Datos mínimos para identificar la sesión/usuario (sin password)
         return [
-            'id' => (int)$user['id'],
-            'username' => $user['username'] ?? null,
-            'email' => $user['email'],
+            'id' => (int)$usuario['id'],
+            'nombreUsuario' => $usuario['nombreUsuario'] ?? null,
+            'email' => $usuario['email'],
         ];
     }
 
     /**
      * Autenticación (login) usando email o username como identificador.
      */
-    public function login(string $identifier, string $password): array
+    public function login(string $identificador, string $password): array
     {
-        $basicUser = $this->verifyCredentials($identifier, $password);
+        $basicUser = $this->verificarCredenciales($identificador, $password);
         if ($basicUser === false) {
-            return ['success' => false, 'message' => 'Credenciales incorrectas.'];
+            return [
+                'success' => false, 
+                'message' => 'Credenciales incorrectas.'];
         }
 
         return [
@@ -157,7 +198,7 @@ class AuthService
             'user' => [
                 'id' => $basicUser['id'],
                 'email' => $basicUser['email'],
-                'username' => $basicUser['username'],
+                'nombreUsuario' => $basicUser['nombreUsuario'],
             ],
         ];
     }

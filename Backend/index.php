@@ -1,15 +1,19 @@
 <?php
 
 require_once 'app/config/Database.php';
-require_once 'app/repositories/UserRepository.php';
+
+require_once 'app/repositories/UsuarioRepository.php';
 require_once 'app/repositories/PartidaRepository.php';
 require_once 'app/repositories/RankingRepository.php';
+
 require_once 'app/services/AuthService.php';
 require_once 'app/services/PartidaService.php';
 require_once 'app/services/RankingService.php';
+
 require_once 'app/controllers/AuthController.php';
 require_once 'app/controllers/PartidaController.php';
 require_once 'app/controllers/RankingController.php';
+
 require_once 'app/domain/Partida.php';
 require_once 'app/domain/Puntaje.php';
 require_once 'app/domain/Reglas.php';
@@ -54,9 +58,9 @@ try {
             break;
 
 
-        case 'register':
+        case 'registro':
             if ($method === 'POST') {
-                $authController->register();
+                $authController->registro();
                 break;
             }
             http_response_code(405);

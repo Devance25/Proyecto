@@ -28,7 +28,7 @@ class AuthController
      *  - 409 Conflict si ya existe el username o email.
      *  - 500 Internal Server Error para errores inesperados.
      */
-    public function register()
+    public function registro()
     {
         // Lee el cuerpo crudo de la petición y lo intenta parsear como JSON
         $raw = file_get_contents("php://input");
@@ -46,10 +46,10 @@ class AuthController
 
         // Sanitiza/normaliza datos (trim para quitar espacios a los extremos)
         
-        if (isset($data['username'])) {
-        $username = trim((string)$data['username']);
+        if (isset($data['nombreUsuario'])) {
+        $nombreUsuario = trim((string)$data['nombreUsuario']);
         } else {  
-        $username = '';
+        $nombreUsuario = '';
         }
 
         if (isset($data['email'])){
@@ -77,14 +77,17 @@ class AuthController
         }
 
         // Validación mínima de presencia de campos
-        if ($username === '' || $email === '' || $nacimiento === '' || $password === '' || $passwordConfirm === '') {
+        if ($nombreUsuario === '' || $email === '' || $nacimiento === '' || $password === '' || $passwordConfirm === '') {
             http_response_code(400);
-            echo json_encode(['success' => false, 'message' => 'Todos los campos son requeridos.']);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Todos los campos son requeridos.'
+                ]);
             return;
         }
 
         // Delegamos la creación al servicio
-        $result = $this->authService->registrarUsuarioService($username, $email, $nacimiento, $password, $passwordConfirm);
+        $result = $this->authService->registrarUsuarioService($nombreUsuario, $email, $nacimiento, $password, $passwordConfirm);
 
         // Si el servicio no retornó un array válido, lo consideramos error interno
         if (!is_array($result) || !array_key_exists('success', $result)) {
@@ -126,42 +129,48 @@ class AuthController
 
         if (!is_array($data)) {
             http_response_code(400);
-            echo json_encode(['success' => false, 'message' => 'JSON inválido.']);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'JSON inválido.'
+                ]);
             return;
         }
 
         // Puede venir como "identifier" o por separado "email" / "username"
-        $identifier = $data['identifier'] ?? ($data['email'] ?? ($data['username'] ?? null));
+        $identificador = $data['identificador'] ?? ($data['email'] ?? ($data['nombreUsuario'] ?? null));
         $password = $data['password'] ?? null;
 
-        if (!$identifier || !$password) {
+        if (!$identificador || !$password) {
             http_response_code(400);
             echo json_encode([
                 'success' => false,
                 'message' => 'Identificador (email o username) y contraseña son requeridos.'
-            ]);
+                ]);
             return;
         }
 
         // Normalizamos tipos y removemos espacios laterales
-        $identifier = trim((string)$identifier);
+        $identificador = trim((string)$identificador);
         $password = (string)$password;
 
-        if ($identifier === '' || $password === '') {
+        if ($identificador === '' || $password === '') {
             http_response_code(400);
             echo json_encode([
                 'success' => false,
                 'message' => 'Identificador y contraseña no pueden estar vacíos.'
-            ]);
+                ]);
             return;
         }
 
         // Delegamos autenticación al servicio
-        $result = $this->authService->login($identifier, $password);
+        $result = $this->authService->login($identificador, $password);
 
         if (!is_array($result) || !array_key_exists('success', $result)) {
             http_response_code(500);
-            echo json_encode(['success' => false, 'message' => 'Error interno del servidor.']);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Error interno del servidor.'
+                ]);
             return;
         }
 

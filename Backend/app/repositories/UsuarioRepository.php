@@ -8,10 +8,10 @@
  *  - Singleton: comparte la misma conexión (mysqli) provista por Database.
  */
 
-class UserRepository
+class UsuarioRepository
 {
     /** Instancia única del repositorio. */
-    private static ?UserRepository $instance = null; // instancia única
+    private static ?UsuarioRepository $instance = null; // instancia única
 
     /** Conexión activa a MySQL (mysqli). */
     private mysqli $conn;
@@ -28,7 +28,7 @@ class UserRepository
     /**
      * Acceso global a la instancia única del repositorio.
      */
-    public static function getInstance(): ?UserRepository
+    public static function getInstance(): ?UsuarioRepository
     {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -40,103 +40,148 @@ class UserRepository
      * Busca un usuario por email.
      * Retorna un array asociativo con las columnas solicitadas o null si no existe.
      */
-    public function findByEmail(string $email)
+    public function buscarPorEmail(string $email)
     {
-        $query = "SELECT id, username, email, nacimiento, password FROM users WHERE email = ?";
+        $query = "SELECT id,
+                         nombre_usuario, 
+                         email, 
+                         nacimiento, 
+                         password 
+                    FROM usuarios 
+                    WHERE email = ?"
+                    ;
+
         $stmt = $this->conn->prepare($query);
+
         if (!$stmt) {
             return null; // si falla la preparación, devolvemos null (no revelamos detalles de DB)
         }
 
         $stmt->bind_param("s", $email); // "s" indica string
+
         $stmt->execute();
 
         $result = $stmt->get_result();
-        $user = $result ? $result->fetch_assoc() : null; // fetch_assoc devuelve array asociativo
+
+        $usuario = $result ? $result->fetch_assoc() : null; // fetch_assoc devuelve array asociativo
 
         if ($result) {
             $result->free();
         }
         $stmt->close();
 
-        return $user ?: null;
+        return $usuario ?: null;
     }
 
     /**
      * Busca un usuario por username.
      */
-    public function findByUsername(string $username)
+    public function buscarPorNombreUsuario(string $nombreUsuario)
     {
-        $query = "SELECT id, username, email, nacimiento, password FROM users WHERE username = ?";
+        $query = "SELECT id,
+                         nombre_usuario, 
+                         email, 
+                         nacimiento, 
+                         password 
+                    FROM usuarios 
+                    WHERE nombre_usuario = ?"
+                    ;
+
         $stmt = $this->conn->prepare($query);
+
         if (!$stmt) {
             return null;
         }
 
-        $stmt->bind_param("s", $username);
+        $stmt->bind_param("s", $nombreUsuario);
+
         $stmt->execute();
 
         $result = $stmt->get_result();
-        $user = $result ? $result->fetch_assoc() : null;
+
+        $usuario = $result ? $result->fetch_assoc() : null;
 
         if ($result) {
             $result->free();
         }
+
         $stmt->close();
 
-        return $user ?: null;
+        return $usuario ?: null;
     }
 
     /**
      * Busca un usuario por username o email (cualquiera que coincida).
      */
-    public function findByUsernameOrEmail(string $identifier)
+    public function buscarPorEmailONombre(string $identificador)
     {
-        $query = "SELECT id, username, email, nacimiento, password FROM users WHERE username = ? OR email = ?";
+        $query = "SELECT id, 
+                         nombre_usuario, 
+                         email, 
+                         nacimiento, 
+                         password 
+                    FROM usuarios 
+                    WHERE nombre_usuario = ? 
+                    OR email = ?";
+
         $stmt = $this->conn->prepare($query);
+
         if (!$stmt) {
             return null;
         }
 
-        $stmt->bind_param("ss", $identifier, $identifier);
+        $stmt->bind_param("ss", $identificador, $identificador);
+
         $stmt->execute();
 
         $result = $stmt->get_result();
-        $user = $result ? $result->fetch_assoc() : null;
+
+        $usuario = $result ? $result->fetch_assoc() : null;
 
         if ($result) {
             $result->free();
         }
+
         $stmt->close();
 
-        return $user ?: null;
+        return $usuario ?: null;
     }
 
     /**
      * Crea un nuevo usuario y devuelve datos básicos del registro insertado.
      * Importante: la contraseña debe llegar ya hasheada a este método.
      */
-    public function registrarUsuario(string $username, string $email, string $nacimiento, string $hashedPassword)
+    public function registrarUsuario(string $nombreUsuario, string $email, string $nacimiento, string $hashedPassword)
     {
-        $query = "INSERT INTO users (username, email, nacimiento, password) VALUES (?, ?, ?, ?)";
+        $query = "INSERT INTO usuarios 
+                            (nombre_usuario,
+                             email, 
+                             nacimiento, 
+                             password) 
+                        VALUES (?, ?, ?, ?)";
+
         $stmt = $this->conn->prepare($query);
+
         if (!$stmt) {
             return false; // si no se pudo preparar, devolvemos false (fallo genérico)
         }
 
-        $stmt->bind_param("ssss", $username, $email, $nacimiento, $hashedPassword);
+        $stmt->bind_param("ssss", $nombreUsuario, $email, $nacimiento, $hashedPassword);
+
         $ok = $stmt->execute();
+
         if (!$ok) {
             $stmt->close();
             return false;
         }
 
         $insertId = $stmt->insert_id; // id autoincrement generado
+
         $stmt->close();
 
         return [
             'id' => (int)$insertId,
-            'username' => $username,
+            'nombreUsuario' => $nombreUsuario,
             'email' => $email,
         ];
     }
