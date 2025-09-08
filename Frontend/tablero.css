@@ -4,7 +4,6 @@
 :root {
   /* === Variables específicas del tablero === */
   --tablero-bg: url('img/bosque.jpg') center / cover no-repeat;
-  --mini-tablero-bg: url('img/bosque.jpg') center / cover no-repeat;
 
   /* === Variables del dado === */
   --dado-size-sm: 100px;
@@ -40,20 +39,13 @@
   --overlay-dark: rgba(0, 0, 0, 0.9);
   --overlay-medium: rgba(0, 0, 0, 0.6);
   --hover-overlay: rgba(255, 255, 255, 0.1);
-  --hover-overlay-strong: rgba(255, 255, 255, 0.2);
 
   /* === Nuevas variables para eliminar duplicaciones === */
   --alerta-padding: var(--space-md);
   --alerta-border-radius: var(--border-radius-md);
   --alerta-icon-size: 24px;
   --alerta-margin: var(--space-md);
-  --btn-icon-size: var(--icon-size-sm);
-  --popup-close-size: 30px;
-  --mini-dino-size: 14px;
-  --cara-dado-size: 40px;
 }
-
-/* ==================== MIXINS SIMULADOS CON VARIABLES ==================== */
 
 /* ==================== TABLERO BASE ==================== */
 .tablero {
@@ -410,7 +402,7 @@
 }
 
 .ver-mapa:hover {
-  background: var(--hover-overlay-strong);
+  background: rgba(255, 255, 255, 0.2);
   color: var(--color-blanco);
 }
 
@@ -448,8 +440,8 @@
 }
 
 .icono-btn {
-  width: var(--btn-icon-size);
-  height: var(--btn-icon-size);
+  width: 20px;
+  height: 20px;
   margin-right: var(--space-xs);
   flex-shrink: 0;
   object-fit: contain;
@@ -619,8 +611,8 @@
   color: var(--color-blanco);
   border: none;
   border-radius: var(--border-radius-md);
-  width: var(--popup-close-size);
-  height: var(--popup-close-size);
+  width: 30px;
+  height: 30px;
   cursor: pointer;
   font-size: var(--font-size-md);
   display: flex;
@@ -750,7 +742,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--mini-tablero-bg);
+  background: url('img/bosque.jpg') center / cover no-repeat;
   border-radius: var(--border-radius-lg);
   padding: var(--space-sm);
 }
@@ -791,8 +783,8 @@
 
 .mini-dinosaurio {
   position: absolute;
-  width: var(--mini-dino-size);
-  height: var(--mini-dino-size);
+  width: 14px;
+  height: 14px;
   z-index: 15;
   pointer-events: none;
 }
@@ -1741,8 +1733,8 @@
 }
 
 .caras-dado .dado-imagen {
-  width: var(--cara-dado-size);
-  height: var(--cara-dado-size);
+  width: 40px;
+  height: 40px;
   margin-right: 12px;
   flex-shrink: 0;
   object-fit: contain;

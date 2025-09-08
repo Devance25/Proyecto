@@ -1302,6 +1302,13 @@ const JuegoManager = {
   },
 
   _repartirDinosaurios() {
+    // Verificar si hay suficientes dinosaurios en el pool
+    const dinosauriosNecesarios = CONFIG.DINOSAURIOS_POR_RONDA * 2; // 6 por cada jugador
+    if (estadoJuego.repartosDisponibles.length < dinosauriosNecesarios) {
+      console.log('Regenerando pool de dinosaurios - Pool insuficiente');
+      this._generarPoolDinosaurios();
+    }
+
     const tomarDinos = (cantidad) => {
       const dinos = [];
       for (let i = 0; i < cantidad && estadoJuego.repartosDisponibles.length > 0; i++) {
@@ -1313,6 +1320,11 @@ const JuegoManager = {
 
     estadoJuego.jugador1.dinosauriosDisponibles = tomarDinos(CONFIG.DINOSAURIOS_POR_RONDA);
     estadoJuego.jugador2.dinosauriosDisponibles = tomarDinos(CONFIG.DINOSAURIOS_POR_RONDA);
+    
+    console.log(`Ronda ${estadoJuego.rondaActual}: Dinosaurios repartidos`);
+    console.log('J1:', estadoJuego.jugador1.dinosauriosDisponibles);
+    console.log('J2:', estadoJuego.jugador2.dinosauriosDisponibles);
+    console.log('Pool restante:', estadoJuego.repartosDisponibles.length);
   },
 
   _configurarTurnoInicial() {
@@ -1563,7 +1575,7 @@ const JuegoManager = {
     btn.disabled = !sinDinosaurios && (!estadoJuego.yaColocoEnTurno || !estadoJuego.puedePasarTurno);
 
     if (estadoJuego.esFinDeRonda()) {
-      btn.textContent = estadoJuego.rondaActual === 1 ? 'Finalizar ronda' : 'Fin del juego';
+      btn.textContent = estadoJuego.rondaActual < CONFIG.TOTAL_RONDAS ? 'Finalizar ronda' : 'Fin del juego';
     } else {
       btn.textContent = 'Siguiente turno';
     }
@@ -1742,6 +1754,10 @@ const JuegoManager = {
     estadoJuego.jugador1.dinosauriosDisponibles = [];
     estadoJuego.jugador2.dinosauriosDisponibles = [];
 
+    console.log(`=== INICIANDO RONDA ${estadoJuego.rondaActual} ===`);
+    console.log(`Modo seguimiento: ${estadoJuego.modoSeguimiento}`);
+    console.log(`Jugador que empieza: ${estadoJuego.primerJugador}`);
+
     if (estadoJuego.modoSeguimiento) {
       const jugador = estadoJuego[`jugador${estadoJuego.primerJugador}`];
       const avatarSrc = estadoJuego.primerJugador === 1 ?
@@ -1850,6 +1866,10 @@ const JuegoManager = {
   reiniciarJuegoCompleto() {
     estadoJuego.reset();
     this._generarPoolDinosaurios();
+  },
+
+  prepararSiguienteRonda() {
+    return this._prepararSiguienteRonda();
   }
 };
 

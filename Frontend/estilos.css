@@ -5,7 +5,7 @@
   --color-primario-dark: #85b803;
   --color-secundario: #94cc04;
   --color-naranja: #ed7b00;
-  --color-naranja-dark: #9b7202;
+  --color-naranja-dark: #cc6a00;
   --color-naranja-light: #ffbb03;
   --color-marron: #6e340b;
   --color-marron-dark: #5a2c09;
@@ -27,16 +27,11 @@
   --color-amarillo: #f39c12;
   --color-rojo: #e74c3c;
 
-  /* === Colores de Texto === */
-  --color-texto-principal: #333;
-  --color-texto-secundario: #666;
 
   /* === Colores con Opacidad === */
   --color-primario-suave: rgba(98, 129, 7, 0.7);
   --color-naranja-suave: rgba(237, 123, 0, 0.7);
   --color-marron-suave: rgba(110, 52, 11, 0.7);
-  --color-beige-suave: rgba(255, 241, 199, 0.8);
-  --color-dorado-suave: rgba(202, 149, 51, 0.7);
 
   /* === Gradientes === */
   --gradiente-verde: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
@@ -48,9 +43,6 @@
   --gradiente-overlay: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3));
   --gradiente-progreso: linear-gradient(to right, var(--color-naranja), var(--color-naranja-light));
   
-  /* === Gradientes Suaves === */
-  --gradiente-naranja-suave: linear-gradient(135deg, var(--color-naranja-suave), rgba(255, 187, 3, 0.7));
-  --gradiente-primario-suave: linear-gradient(135deg, var(--color-primario-suave), rgba(148, 204, 4, 0.7));
 
   /* === Espaciado Mobile-First === */
   --space-xs: 4px;
@@ -88,7 +80,6 @@
   --shadow-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12);
   --shadow-elevation-2: 0 3px 6px rgba(0, 0, 0, 0.16);
   --shadow-elevation-3: 0 10px 20px rgba(0, 0, 0, 0.19);
-  --shadow-error: 0 0 0 3px rgba(220, 53, 69, 0.35);
 
   /* === Bordes y Transiciones === */
   --border-radius-sm: 6px;
@@ -115,6 +106,12 @@
   --icon-size-md: 24px;
   --icon-size-lg: 32px;
 
+  /* === Efectos y Overlays === */
+  --overlay-dark: rgba(0, 0, 0, 0.9);
+
+  /* === Z-indexes === */
+  --z-ui: 100;
+  --z-popup: 2000;
 }
 
 /* ==================== RESET GLOBAL ==================== */
@@ -193,7 +190,6 @@ body {
 /* ==================== TIPOGRAFÍA ==================== */
 .texto {
   font-family: var(--font-primary);
-  text-align: center;
   margin: 0;
   line-height: 1.4;
 }
@@ -202,13 +198,7 @@ body {
 /* Las clases utilitarias de tamaño se eliminaron - usar variables CSS directamente */
 
 .texto--blanco { color: var(--color-blanco); }
-.texto--marron { color: var(--color-marron); }
 .texto--beige { color: var(--color-beige); }
-
-.texto--weight-normal { font-weight: var(--font-weight-normal); }
-.texto--weight-medium { font-weight: var(--font-weight-medium); }
-.texto--weight-semibold { font-weight: var(--font-weight-semibold); }
-.texto--weight-bold { font-weight: var(--font-weight-bold); }
 
 /* === Títulos === */
 .titulo {
@@ -227,6 +217,7 @@ body {
 .titulo--xl { font-size: var(--font-size-3xl); }
 
 .titulo--beige { color: var(--color-beige); }
+.titulo--blanco { color: var(--color-blanco); }
 .titulo--marron { color: var(--color-marron); }
 
 .titulo-contenedor {
@@ -357,6 +348,7 @@ body {
   animation: animar-carga 2s forwards;
 }
 
+
 /* ==================== SISTEMA DE BOTONES ==================== */
 .btn {
   display: flex;
@@ -387,7 +379,6 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--gradiente-verde-hover);
   opacity: 0;
   transition: opacity var(--transition-base);
   z-index: -1;
@@ -415,20 +406,13 @@ body {
 }
 
 /* === Variantes de Botón === */
+/* Botones simplificados */
 .btn--naranja {
   background: var(--gradiente-naranja);
 }
 
 .btn--naranja::before {
   background: var(--gradiente-naranja-hover);
-}
-
-.btn--marron {
-  background: var(--gradiente-marron);
-}
-
-.btn--marron::before {
-  background: linear-gradient(135deg, var(--color-marron-dark), var(--color-marron-light));
 }
 
 .btn--verde {
@@ -439,85 +423,11 @@ body {
   background: var(--gradiente-verde-hover);
 }
 
-.btn--blanco {
-  background: var(--color-blanco);
-  color: var(--color-marron);
-  box-shadow: var(--shadow-button);
-}
-
-.btn--blanco::before {
-  background: var(--color-gris);
-}
-
-.btn--blanco:disabled {
-  opacity: .5;
-  background: var(--color-gris);
-  color: var(--color-gris-claro);
-  cursor: not-allowed;
-}
-
-/* === Tamaños de Botón === */
-.btn--lg {
-  height: var(--button-height-lg);
-  padding: var(--space-lg) var(--space-2xl);
-  font-size: var(--font-size-md);
-}
-
-.btn--loading {
-  position: relative;
-  pointer-events: none;
-}
-
-.btn--loading::after {
-  content: '';
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  margin: auto;
-  border: 2px solid transparent;
-  border-top-color: currentColor;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  top: 0;
-  bottom: 0;
-  right: 0.5rem;
-}
 
 .btn + .btn {
   margin-top: var(--space-lg);
 }
 
-/* === Botones Circulares === */
-.btn-circular {
-  background: var(--color-marron);
-  color: var(--color-blanco);
-  border-radius: var(--border-radius-circle);
-  border: none;
-  width: var(--icon-size-lg);
-  height: var(--icon-size-lg);
-  font-size: var(--font-size-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all var(--transition-base);
-  will-change: transform;
-}
-
-.btn-circular:hover {
-  background: var(--color-marron-light);
-  transform: scale(1.1);
-}
-
-.btn-circular:active {
-  transform: scale(.95);
-}
-
-.btn-circular img {
-  width: var(--space-xl);
-  height: var(--space-xl);
-  object-fit: contain;
-}
 
 /* === Botones de Idioma === */
 .btn-idioma {
@@ -541,26 +451,24 @@ body {
 
 /* === Botones de Iconos === */
 .btn-icon {
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-md);
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: var(--border-radius-circle);
-  background: rgba(0, 0, 0, 0.6);
-  color: var(--color-blanco);
   cursor: pointer;
   transition: var(--transition-base);
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
   width: 40px;
   height: 40px;
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: var(--color-marron);
+  border-radius: var(--border-radius-circle);
 }
 
 .btn-icon:hover {
-  background: rgba(0, 0, 0, 0.8);
-  border-color: rgba(255, 255, 255, 0.4);
+  background: var(--color-marron-dark);
   transform: scale(1.05);
 }
 
@@ -568,36 +476,20 @@ body {
   transform: scale(0.95);
 }
 
-.btn-icon--lg {
-  width: 50px;
-  height: 50px;
-  font-size: var(--font-size-3xl);
-}
 
 .btn-icon img {
   width: 20px;
   height: 20px;
   object-fit: contain;
-  filter: brightness(0) invert(1);
 }
 
-.btn-icon--lg img {
-  width: 24px;
-  height: 24px;
-}
 
 .btn-icon:focus-visible {
   outline: 2px solid var(--color-primario);
   outline-offset: 2px;
 }
 
-/* === Botón Salir === */
-.boton-salir {
-  position: absolute;
-  top: var(--space-md);
-  left: var(--space-md);
-  z-index: 100;
-}
+
 
 /* ==================== PERFIL Y ESTADÍSTICAS ==================== */
 .perfil-lobby {
@@ -610,20 +502,26 @@ body {
 .avatar {
   position: relative;
   width: var(--avatar-size-xl);
-  height: auto;
+  height: var(--avatar-size-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .avatar__marco {
+  position: absolute;
   width: 100%;
-  height: auto;
+  height: 100%;
+  z-index: 20;
+  pointer-events: none;
 }
 
 .avatar__imagen {
-  position: absolute;
-  top: var(--space-md);
-  left: var(--space-md);
-  width: var(--avatar-size-lg);
-  height: auto;
+  width: calc(var(--avatar-size-xl) * 0.75);
+  height: calc(var(--avatar-size-xl) * 0.75);
+  border-radius: var(--border-radius-circle);
+  object-fit: cover;
+  z-index: 10;
 }
 
 .stats {
@@ -778,7 +676,7 @@ body {
 }
 
 .form-input.error {
-  box-shadow: var(--shadow-error);
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.35);
   background-color: var(--color-gris);
 }
 
@@ -799,6 +697,7 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
 .jugador-avatar {
   flex-shrink: 0;
   pointer-events: none;
+  position: relative;
 }
 
 .jugador-avatar img {
@@ -806,7 +705,12 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   height: var(--avatar-size-md);
   border-radius: var(--border-radius-circle);
   object-fit: cover;
+  position: relative;
+  z-index: 10;
+  border: none;
+  box-shadow: none;
 }
+
 
 /* ==================== RADIO BUTTONS ==================== */
 .tipo-jugador-selector {
@@ -896,13 +800,8 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   transition: color var(--transition-fast);
 }
 
-.character-counter--attention {
-  color: var(--color-amarillo);
-}
-
 .character-counter--warning {
   color: var(--color-rojo);
-  font-weight: bold;
 }
 
 .password-strength {
@@ -995,25 +894,40 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   flex-direction: column;
   align-items: center;
   gap: var(--space-lg);
+  position: relative;
 }
 
 .avatar-turno {
   width: 120px;
   height: 120px;
   border-radius: var(--border-radius-circle);
-  overflow: hidden;
-  border: 4px solid var(--color-dorado);
-  background: var(--color-blanco);
-  padding: 4px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  border: none;
+  position: relative;
+  z-index: 10;
 }
-
 .avatar-turno-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: var(--border-radius-circle);
 }
+
+.avatar-turno::after {
+  content: '';
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  bottom: 0px;
+  right: 0px;
+  background-image: url('img/marco_usuario.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 20;
+  pointer-events: none;
+}
+
+
 
 #texto-turno {
   font-size: var(--font-size-3xl);
@@ -1077,10 +991,34 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   width: 80px;
   height: 80px;
   border-radius: var(--border-radius-circle);
-  border: 4px solid var(--color-blanco);
-  background: var(--color-blanco);
-  padding: 4px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, .3);
+  border: none;
+  box-shadow: none;
+  position: relative;
+  z-index: 2;
+}
+
+.resultado-jugador-ronda {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  position: relative;
+}
+
+.resultado-jugador-ronda::after {
+  content: '';
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100px * 1.35);
+  height: calc(100px * 1.35);
+  background-image: url('img/marco_usuario.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 20;
+  pointer-events: none;
 }
 
 .info-resultado {
@@ -1120,18 +1058,15 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
 .icono-reparticion {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  justify-content: center;
   position: relative;
+  flex-shrink: 0;
 }
 
-.dino-reparticion {
-  width: 40px;
-  height: 40px;
+.icono-intercambio {
+  width: 80px;
+  height: 80px;
   object-fit: contain;
-}
-
-.dino-animado {
-  animation: rebote 2s ease-in-out infinite;
 }
 
 .texto-reparticion {
@@ -1157,35 +1092,43 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: var(--space-xl);
+  gap: var(--space-lg);
   margin-bottom: var(--space-xl);
   position: relative;
+  height: 200px;
 }
 
 .podio-jugador {
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
 }
 
 .primer-lugar {
-  order: 1;
-  margin-bottom: var(--space-lg);
+  order: 2;
+  z-index: 3;
 }
 
 .segundo-lugar {
-  order: 2;
+  order: 1;
+  z-index: 2;
 }
 
 .corona-ganador {
   position: relative;
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-sm);
   animation: brillar 2s ease-in-out infinite alternate;
 }
 
+.corona-ganador.invisible {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .corona {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   filter: drop-shadow(0 4px 15px rgba(255, 215, 0, .6));
 }
 
@@ -1194,6 +1137,7 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   display: flex;
   flex-direction: column;
   align-items: center;
+  z-index: 10;
 }
 
 .numero-posicion {
@@ -1201,34 +1145,93 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   bottom: -15px;
   background: var(--color-dorado);
   color: var(--color-marron);
-  width: 35px;
-  height: 35px;
+  width: 30px;
+  height: 30px;
   border-radius: var(--border-radius-circle);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-display);
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-base);
   font-weight: var(--font-weight-bold);
-  border: 3px solid var(--color-blanco);
-  z-index: 10;
+  border: 2px solid var(--color-blanco);
+  z-index: 15;
   box-shadow: 0 4px 15px rgba(0, 0, 0, .3);
 }
 
 .avatar-podio {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   border-radius: var(--border-radius-circle);
-  border: 6px solid var(--color-dorado);
-  background: var(--color-blanco);
-  padding: 4px;
+  border: 4px solid var(--color-dorado);
   box-shadow: 0 8px 25px rgba(0, 0, 0, .4);
+  position: relative;
+  z-index: 10;
+}
+
+.primer-lugar .avatar-podio {
+  width: 90px;
+  height: 90px;
+  border-width: 5px;
 }
 
 .segundo-lugar .avatar-podio {
-  width: 80px;
+  width: 70px;
+  height: 70px;
+  border-width: 3px;
+}
+
+/* Marco de imagen para avatares del podio */
+.podio-jugador .posicion-podio::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(80px * 1.5);
+  height: calc(80px * 1.5);
+  background-image: url('img/marco_usuario.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* Ajustar tamaño del marco para primer lugar */
+.primer-lugar .posicion-podio::after {
+  width: calc(100px * 1.4);
+  height: calc(100px * 1.4);
+}
+
+/* Ajustar tamaño del marco para segundo lugar */
+.segundo-lugar .posicion-podio::after {
+  width: calc(70px * 1.5);
+  height: calc(70px * 1.5);
+}
+
+/* Bases del podio */
+.base-podio {
+  position: absolute;
+  bottom: 0;
+  width: 100px;
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+  z-index: 1;
+  border-top: 4px solid rgba(255, 255, 255, 0.3);
+}
+
+.base-primero {
   height: 80px;
-  border-width: 4px;
+  background: linear-gradient(135deg, #d4901a, #b8751b);
+  border: 2px solid #8b5a2b;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, .3);
+}
+
+.base-segundo {
+  height: 50px;
+  background: linear-gradient(135deg, #8b4513, #654321);
+  border: 2px solid #5d2f1e;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .3);
 }
 
 /* === Resultados Detallados === */
@@ -1247,6 +1250,7 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   gap: var(--space-lg);
   padding: var(--space-md) 0;
   border-bottom: 2px solid rgba(139, 69, 19, .2);
+  position: relative;
 }
 
 .resultado-detalle:last-child {
@@ -1262,6 +1266,25 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   background: var(--color-blanco);
   padding: 2px;
   flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+
+/* Marco de imagen para avatares de resultados detallados */
+.resultado-detalle::after {
+  content: '';
+  position: absolute;
+  left: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: calc(60px * 1.5);
+  height: calc(60px * 1.5);
+  background-image: url('img/marco_usuario.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 20;
+  pointer-events: none;
 }
 
 .info-resultado-final {
@@ -1323,10 +1346,7 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   opacity: 0;
 }
 
-.toast--success { border-left-color: var(--color-verde-claro); }
 .toast--error { border-left-color: var(--color-rojo); }
-.toast--warning { border-left-color: var(--color-amarillo); }
-.toast--info { border-left-color: var(--color-azul); }
 
 .toast__content {
   display: flex;
@@ -1341,10 +1361,7 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   flex-shrink: 0;
 }
 
-.toast--success .toast__icon { color: var(--color-verde-claro); }
 .toast--error .toast__icon { color: var(--color-rojo); }
-.toast--warning .toast__icon { color: var(--color-amarillo); }
-.toast--info .toast__icon { color: var(--color-azul); }
 
 .toast__message {
   color: var(--color-negro);
@@ -1528,9 +1545,6 @@ body .hidden {
     min-height: 64px;
   }
 
-  .form-group--jugador {
-    min-height: 68px;
-  }
 
   .jugador-avatar img {
     width: 55px;
@@ -1555,11 +1569,6 @@ body .hidden {
     font-size: var(--font-size-xl);
   }
 
-  .btn-icon--lg {
-    width: 54px;
-    height: 54px;
-    font-size: var(--font-size-2xl);
-  }
 
   .dado-container {
     width: 350px;
@@ -1656,10 +1665,6 @@ body .hidden {
     padding: var(--space-sm) var(--space-lg);
   }
   
-  .btn--lg {
-    min-height: var(--button-height-lg);
-    font-size: var(--font-size-md);
-  }
   
   .pantalla {
     padding: var(--space-lg);
@@ -1690,10 +1695,6 @@ body .hidden {
     padding: var(--space-sm) var(--space-lg);
   }
   
-  .btn--lg {
-    min-height: var(--button-height-lg);
-    font-size: var(--font-size-md);
-  }
 }
 
 /* === Extra Large Screens (1440px+) === */
