@@ -147,7 +147,7 @@ class AuthService
             'message' => 'Usuario creado exitosamente.',
             'usuario' => [
                 'id' => (int)$created['id'],
-                'nombreUsuario' => $created['nombre_usuario'],
+                'nombreUsuario' => $created['nombreUsuario'],
                 'email' => $created['email'],
             ],
         ];
