@@ -99,7 +99,7 @@ class AuthService
         }
 
         // Verificar duplicados por username
-        $usuarioExiste = $this->usuarioRepo->buscarPorNombreUsuario($nombreUsuario);
+        $usuarioExiste = $this->usuarioRepo->buscarPorNombreUsuarioRepo($nombreUsuario);
         if ($usuarioExiste) {
             return [
                 'success' => false, 
@@ -109,7 +109,7 @@ class AuthService
         }
 
         // Verificar duplicados por email
-        $emailExiste = $this->usuarioRepo>buscarPorEmail($email);
+        $emailExiste = $this->usuarioRepo->buscarPorEmailRepo($email);
 
         if ($emailExiste) {
             return [
@@ -131,7 +131,7 @@ class AuthService
         }
 
         // Crear el usuario
-        $created = $this->usuarioRepo->registrarUsuario($nombreUsuario, $email, $nacimiento, $hash);
+        $created = $this->usuarioRepo->registrarUsuarioRepo($nombreUsuario, $email, $nacimiento, $hash);
 
         if ($created === false) {
             // Podría fallar por restricciones únicas u otros motivos
@@ -147,7 +147,7 @@ class AuthService
             'message' => 'Usuario creado exitosamente.',
             'usuario' => [
                 'id' => (int)$created['id'],
-                'nombreUsuario' => $created['nombreUsuario'],
+                'nombreUsuario' => $created['nombre_usuario'],
                 'email' => $created['email'],
             ],
         ];
@@ -160,7 +160,7 @@ class AuthService
     private function verificarCredenciales(string $identificador, string $plainPassword)
     {
         // Busca el usuario por username o email
-        $usuario = $this->usuarioRepo->buscarPorEmailONombre($identificador);
+        $usuario = $this->usuarioRepo->buscarPorEmailONombreRepo($identificador);
 
         // Validación de existencia y estructura mínima
         if (!$usuario || !isset($usuario['password']) || !is_string($usuario['password'])) {
@@ -175,7 +175,7 @@ class AuthService
         // Datos mínimos para identificar la sesión/usuario (sin password)
         return [
             'id' => (int)$usuario['id'],
-            'nombreUsuario' => $usuario['nombreUsuario'] ?? null,
+            'nombreUsuario' => $usuario['nombre_usuario'] ?? null,
             'email' => $usuario['email'],
         ];
     }

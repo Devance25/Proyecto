@@ -5,7 +5,7 @@ require_once 'Reglas.php';
 
     class Puntaje{
 
-        public function calcularPuntaje(string $jugador, array $porRecinto): int
+        public function calcularPuntaje(array $porRecinto): int
         {
             // $porRecitos =['bosque' => ['t-rex',
             //                            'triceratops',

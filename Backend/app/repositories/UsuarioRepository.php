@@ -40,7 +40,7 @@ class UsuarioRepository
      * Busca un usuario por email.
      * Retorna un array asociativo con las columnas solicitadas o null si no existe.
      */
-    public function buscarPorEmail(string $email)
+    public function buscarPorEmailRepo(string $email)
     {
         $query = "SELECT id,
                          nombre_usuario, 
@@ -76,7 +76,7 @@ class UsuarioRepository
     /**
      * Busca un usuario por username.
      */
-    public function buscarPorNombreUsuario(string $nombreUsuario)
+    public function buscarPorNombreUsuarioRepo(string $nombreUsuario)
     {
         $query = "SELECT id,
                          nombre_usuario, 
@@ -113,7 +113,7 @@ class UsuarioRepository
     /**
      * Busca un usuario por username o email (cualquiera que coincida).
      */
-    public function buscarPorEmailONombre(string $identificador)
+    public function buscarPorEmailONombreRepo(string $identificador)
     {
         $query = "SELECT id, 
                          nombre_usuario, 
@@ -151,7 +151,7 @@ class UsuarioRepository
      * Crea un nuevo usuario y devuelve datos básicos del registro insertado.
      * Importante: la contraseña debe llegar ya hasheada a este método.
      */
-    public function registrarUsuario(string $nombreUsuario, string $email, string $nacimiento, string $hashedPassword)
+    public function registrarUsuarioRepo(string $nombreUsuario, string $email, string $nacimiento, string $hashedPassword)
     {
         $query = "INSERT INTO usuarios 
                             (nombre_usuario,
