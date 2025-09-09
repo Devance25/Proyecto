@@ -4,7 +4,8 @@ class PartidaService
 {   
     private static ?PartidaService $instance = null; 
 
-    private ?PartidaRepository $partidaRepository;
+    private ?PartidaRepository $partidaRepo;
+
 
     //DOMAIN
     private Partida $partida;
@@ -13,7 +14,7 @@ class PartidaService
 
     private function __construct()
     {
-        $this->partidaRepository = PartidaRepository::getInstance();
+        $this->partidaRepo = PartidaRepository::getInstance();
         $this->partida = new Partida();
         $this->reglas = new Reglas();
         $this->puntaje = new Puntaje();
@@ -28,29 +29,27 @@ class PartidaService
         return self::$instance;
     }
 
-    public function crearPartidaService(int $jugador1_id, string $jugador2_nombre): array
-    {
-        $jugador2_nombre = trim($jugador2_nombre);
 
-        // Validación de presencia
-        if ($jugador1_id <= 0 || $jugador2_nombre === '') {
+
+    //Crea partida y bolsas
+    public function crearPartidaService(int $jugador1_id, int $jugador2_id): array
+    {
+
+        if ($jugador1_id <= 0 || $jugador2_id <= 0) {
             return [
                 'success' => false, 
                 'code' => 'invalid', 
-                'message' => 'El nombre del jugador 1 debe tener al menos 3 caracteres.'
+                'message' => 'Id de jugador invalida.'
                 ];
         }
 
-        if (strlen($jugador2_nombre) < 3) {
-            return [
-                'success' => false,
-                'code' => 'invalid',
-                'message' => 'El nombre del jugador 2 debe tener al menos 3 caracteres.'];
+        if ($jugador1_id === $jugador2_id) {
+            throw new Exception("Los jugadores deben ser distintos");
         }
 
-        $created = $this->partidaRepository->crearPartida($jugador1_id, $jugador2_nombre);
-        if ($created === false) {
-            // Podría fallar por restricciones únicas u otros motivos
+        $partida_id = $this->partidaRepo->crearPartidaRepo($jugador1_id, $jugador2_id);
+
+        if ($partida_id === false) {
             return [
                 'success' => false,
                 'code' => 'error',
@@ -58,105 +57,159 @@ class PartidaService
                 ];
         }
 
+        $nombreJugador1 = $this->partidaRepo->getNombreJugadorRepo($jugador1_id);
+        $nombreJugador2 = $this->partidaRepo->getNombreJugadorRepo($jugador2_id);
+
+        $bolsa1 = $this->partida->crearBolsa();
+        $bolsa2 = $this->partida->crearBolsa();
+
+        $bolsaJugador1 = $this->partidaRepo->crearBolsaRepo($partida_id, $jugador1_id, $bolsa1);
+        $bolsaJugador2 = $this->partidaRepo->crearBolsaRepo($partida_id, $jugador2_id, $bolsa2);
+
         return [
             'success' => true,
             'message' => 'Partida creada exitosamente.',
             'partida' => [
-                'id' => $created,
-                 ],
+                          'id' => $partida_id,
+                          ],
+            'jugadores' => [
+                     [
+                      'nombre' => $nombreJugador1,
+                       'bolsa' => $bolsaJugador1
+                       ],
+                     [
+                      'nombre' => $nombreJugador2,
+                       'bolsa' => $bolsaJugador2
+                      ]
+                    ]   
         ];
     }
 
-    public function crearBolsaService(int $id, string $jugador1, string $jugador2): array
+
+    
+    //Coloca y descarta dinosaurios, tira dado. Actualiza turnos y rondas
+    public function turnoService(int $jugador_id, string $recinto, string $tipoDino, string $tipoDinoDescarte, int $partida_id): array
     {
 
-        if ($id <= 0) {
+        if (!$partida_id || $partida_id <= 0) {
             throw new Exception("ID de partida inválido");
         }
 
-        if (empty(trim($jugador1)) || empty(trim($jugador2))) {
-            throw new Exception("Los nombres de los jugadores no pueden estar vacíos");
+        if (!$jugador_id ||$jugador_id <= 0)  {
+            throw new Exception("Jugador inválido");
         }
 
-        if ($jugador1 === $jugador2) {
-            throw new Exception("Los jugadores deben ser distintos");
+        if ($recinto === '' || $tipoDino === '' || $tipoDinoDescarte === '') {
+            return [
+                'success' => false, 
+                'code'    => 'invalid', 
+                'message' => 'Recinto y tipo de dinosaurio son requeridos.'
+                ];
         }
 
-        $bolsaJugador1 = $this->partida->crearBolsa($jugador1);
-        $bolsaJugador2 = $this->partida->crearBolsa($jugador2);
-
-        return [
-            'bolsaJugador1' => $bolsaJugador1,
-            'bosalJugador2' => $bolsaJugador2
-        ];
-    }
-
-    public function tirarDadoService(int $id, string $jugador): array
-    {
-        $tirador = trim($jugador);
-
-        if (!in_array($tirador, ['jugador1', 'jugador2'])) {
-        return [
-            'success' => false,
-            'code' => 'invalid',
-            'message' => 'Tirador no válido.'
-        ];
-    }
-
-
-        $caraDadoActual = $this->partida->tirarDado($tirador);
-        $this->partidaRepository->guardarResultadoDado($id, $caraDadoActual, $tirador);
-
-        return [
-            'success' => true,
-            'partida_id' => $id,
-            'cara_dado' => $caraDadoActual,
-            'tirador' => $tirador,
-        ];
-    }
-
-    public function colocarDinosaurioService(string $jugador, string $recinto, string $tipoDino, int $partida_id): array
-    {
-        $caraDadoActual = $this->partidaRepository->getCaraDadoActual($partida_id);
-        $tiradorActual = $this->partidaRepository->getTiradorActual($partida_id);
-        $turnoActual = $this->partidaRepository->getTurnoActual($partida_id);
-        $rondaActual = $this->partidaRepository->getRondaActual($partida_id);
-
-        if ($jugador !== $tiradorActual && $recinto === $caraDadoActual)
-        {
-            throw new Exception ('el jugador no puede colocar un dinosaurio en ese recinto');
+        if (!$this->partidaRepo->getPartidaRepo($partida_id)) {
+            throw new Exception("La partida con ID $partida_id no existe.");
         }
 
-        //3 turnos por ronda. Un turno, ambos jugadores colocan
-        if ($jugador !== $tiradorActual) 
-        {
-            $this->partidaRepository->sumarTurnoRepository($partida_id);
-            $turnoActual = $this->partidaRepository->getTurnoActual($partida_id);
+
+        $caraDadoActual = $this->partidaRepo->getCaraDadoActualRepo($partida_id);
+        $restricciones = $this->reglas->restriccionDado($caraDadoActual);
+        $tiradorActual = $this->partidaRepo->getTiradorActualRepo($partida_id);
+        $turnoActual = $this->partidaRepo->getTurnoActualRepo($partida_id);
+        $rondaActual = $this->partidaRepo->getRondaActualRepo($partida_id);
+        $jugador1_id = $this->partidaRepo->getJugador1IdRepo($partida_id);
+        $jugador2_id = $this->partidaRepo->getJugador2IdRepo($partida_id);
+
+
+        if ($turnoActual === 7 && $rondaActual === 2){
+            $partidaFinalizada = $this->finalizarPartidaService($partida_id);
+            return $partidaFinalizada;
         }
 
-        //cuando el segundo jugador coloca si dino en la 
-        if ($turnoActual > 3){
+        if($turnoActual === 1 && $rondaActual === 1 && $jugador_id !== $jugador1_id){
+            throw new Exception("el jugador que comienza la partida debe ser el jugador1.");
+        }
+
+        if($turnoActual === 1 && $rondaActual === 2 && $jugador_id !== $jugador2_id){
+            throw new Exception("el jugador que comienza la partida debe ser el jugador2.");
+        }
+
+
+        if ($turnoActual > 1 && $jugador_id !== $tiradorActual) {
+            if (in_array($recinto, $restricciones, true)) {
+                throw new Exception("el jugador no puede colocar un dinosaurio en el $recinto (restringido por el dado).");
+            }
+        }
+
+        $bolsa = $this->partidaRepo->getBolsa($partida_id, $jugador_id);
+
+        if(!in_array($tipoDino, $bolsa, true)){
+                throw new Exception("el jugador no tiene en su bolsa el dinosaurio $tipoDino para colocar en $recinto.");
+        }
             
-            $this->partidaRepository->sumarRondaRepository($partida_id);
-            $this->partidaRepository->resetTurnosRepository($partida_id);
-            $turnoActual = $this->partidaRepository->getTurnoActual($partida_id);
-            $rondaActual = $this->partidaRepository->getRondaActual($partida_id);
+        //Coloca
+        $colocacion = $this->partidaRepo->colocarDinosaurioRepo($jugador_id, $recinto, $tipoDino, $partida_id);
+
+        $this->partidaRepo->descartarDinoRepo($partida_id, $jugador_id, $tipoDino);
+
+
+        if(!in_array($tipoDinoDescarte, $bolsa, true)){
+            throw new Exception("el jugador no tiene en su bolsa el dinosaurio $tipoDinoDescarte para descartar.");
         }
 
-   
-        $colocacion = $this->partidaRepository->colocarDinosaurioRepository($jugador, $recinto, $tipoDino, $partida_id);
+        //Descarta
+        $descarte = $this->partidaRepo->descartarDinoRepo($partida_id, $jugador_id, $tipoDinoDescarte);
+
+        $this->partidaRepo->sumarTurnoRepo($partida_id);
+
+        $turnoActual = $this->partidaRepo->getTurnoActualRepo($partida_id);
+
+
+        //Si el turno es del 1 al 5 Tira dado
+        if($turnoActual < 6){
+
+            $nombreTirador = $this->partidaRepo->getNombreJugadorRepo($jugador_id);
+
+            $caraDadoActual = $this->partida->tirarDado();
+
+            $this->partidaRepo->tirarDadoRepo($partida_id, $caraDadoActual, $jugador_id);
+
+        }
+
+        //Si esta corriendo el turno 6 y el jugador ya coloco, descarto (no tira dado porque es el turno 6) setea 'ronda = 2' y resetea los turnos ('turno = 6' => 'tunro = 1'). Actualiza variables $turnoActual y $rondaActual para mandarlo al front end.
+        if ($turnoActual === 6 && $rondaActual === 1){
+            
+            $puntajes = $this->calcularPuntajesService($partida_id);
+            $this->partidaRepo->sumarRondaRepo($partida_id);
+            $this->partidaRepo->resetTurnosRepo($partida_id);
+            $turnoActual = $this->partidaRepo->getTurnoActualRepo($partida_id);
+            $rondaActual = $this->partidaRepo->getRondaActualRepo($partida_id);
+        }
+
 
         $colocacion['turno'] = $turnoActual;
         $colocacion['ronda'] = $rondaActual;
+        $colocacion['dinoDescartado'] = $descarte;
+        $colocacion['nombreTirador'] = $nombreTirador;
+        $colocacion['caraDado'] = $caraDadoActual;
+
+        if (isset($puntajes)) {
+            $colocacion['puntajes'] = $puntajes;
+        }
 
 
         return $colocacion;
 
     }
 
-    public function finalizarPartidaService(int $id, int $puntaje_jugador1, int $puntaje_jugador2) : array
+
+
+
+
+    //Finaliza la partida
+    public function finalizarPartidaService(int $partida_id): array
     {
-        if($id <= 0){
+        if ($partida_id <= 0) {
             return [
                 'success' => false,
                 'code' => 'invalid',
@@ -164,57 +217,106 @@ class PartidaService
             ];
         }
 
-        try {
-            $this->partidaRepository->finalizarPartida($id, $puntaje_jugador1, $puntaje_jugador2);
-            
-            return [
-                'success' => true,
-                'message' => 'Partida finalizada exitosamente.',
-                'partida' => [
-                    'id' => $id,
-                    'puntaje_jugador1' => $puntaje_jugador1,
-                    'puntaje_jugador2' => $puntaje_jugador2,
-                ],
-            ];
-        } catch (Exception $e) {
-            return [
-                'success' => false,
-                'code' => 'error',
-                'message' => 'No se pudo finalizar la partida: ' . $e->getMessage()
-            ];
+        $jugador1_id = $this->partidaRepo->getJugador1IdRepo($partida_id);
+        $jugador2_id = $this->partidaRepo->getJugador2IdRepo($partida_id);
+
+        $this->partidaRepo->sumarPartidaJugadaRepo($jugador1_id);
+        $this->partidaRepo->sumarPartidaJugadaRepo($jugador2_id);
+
+        $puntajesRaw = $this->calcularPuntajesService($partida_id);
+
+        $jugadores = $puntajesRaw['jugadores'];
+
+        $puntaje1 = $jugadores[0]['puntaje'];
+        $puntaje2 = $jugadores[1]['puntaje'];
+
+        $ganador_id = null;
+        
+        $empate = false;
+
+        if ($puntaje1 > $puntaje2) {
+            $ganador_id = $jugador1_id;
+            $this->partidaRepo->sumarPartidaGanadaRepo($jugador1_id);
+        } elseif ($puntaje2 > $puntaje1) {
+            $ganador_id = $jugador2_id;
+            $this->partidaRepo->sumarPartidaGanadaRepo($jugador2_id);
+        } else {
+            $empate = true;
         }
+
+        $this->partidaRepo->finalizarPartidaRepo($partida_id, $puntaje1, $puntaje2, $ganador_id);
+
+        return [
+            'success'      => true,
+            'message'      => 'Partida finalizada exitosamente.',
+            'partida_id'   => $partida_id,
+            'ganador_id'   => $ganador_id,
+            'empate'       => $empate,
+            'puntajes'     => [
+                'jugador1' => $puntaje1,
+                'jugador2' => $puntaje2
+            ],
+            'detalle'      => $puntajesRaw
+        ];
     }
 
 
-    public function cancelarPartidaService(int $id) : array
-    {
-        if($id <= 0){
-            return [
-                'success' => false,
-                'code' => 'invalid',
-                'message' => 'ID de partida inválido.'
-            ];
+
+
+
+
+    //Calcula puntaje de ambos jugadores
+    public function calcularPuntajesService(int $partida_id): array
+    {   
+
+        $jugador1_id = $this->partidaRepo->getJugador1IdRepo($partida_id);
+        $jugador2_id = $this->partidaRepo->getJugador2IdRepo($partida_id);
+
+        $nombreJugador1 = $this->partidaRepo->getNombreJugadorRepo($jugador1_id);
+        $nombreJugador2 = $this->partidaRepo->getNombreJugadorRepo($jugador2_id);
+
+        $colocacionesJugador1 = $this->partidaRepo->getColocacionesRepo($partida_id, $jugador1_id);
+
+        $colocacionesJugador2 = $this->partidaRepo->getColocacionesRepo($partida_id, $jugador2_id);
+
+
+        $porRecintoJugador1 = [];
+        foreach($colocacionesJugador1 as $c)
+        {
+            $recinto = $c['recinto'];
+            $tipoDino = $c['tipo_dino'];
+            $porRecintoJugador1[$recinto][] = $tipoDino;
         }
 
-        try {
-            $this->partidaRepository->cancelarPartida($id);
-            
-            return [
-                'success' => true,
-                'message' => 'Partida cancelada exitosamente.',
-                'partida' => [
-                    'id' => $id,
+        $porRecintoJugador2 = [];
+        foreach($colocacionesJugador2 as $c)
+        {
+            $recinto = $c['recinto'];
+            $tipoDino = $c['tipo_dino'];
+            $porRecintoJugador2[$recinto][] = $tipoDino;
+        }
+
+
+        $puntajeJugador1 = $this->puntaje->calcularPuntaje($porRecintoJugador1);
+        $puntajeJugador2 = $this->puntaje->calcularPuntaje($porRecintoJugador2);
+
+        return [
+            'partida_id' => $partida_id,
+             'jugadores' => [
+                [   
+                         'id' => $jugador1_id,
+                     'nombre' => $nombreJugador1,
+                    'puntaje' => $puntajeJugador1
                 ],
-            ];
-        } catch (Exception $e) {
-            return [
-                'success' => false,
-                'code' => 'error',
-                'message' => 'No se pudo cancelar la partida: ' . $e->getMessage()
-            ];
-        }
+                [
+                         'id' => $jugador2_id,
+                     'nombre' => $nombreJugador2,
+                    'puntaje' => $puntajeJugador2
+                ]
+            ]
+        ];
+
+
     }
-
-
 
 }

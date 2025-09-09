@@ -1,15 +1,16 @@
 <?php
 
 require_once 'app/config/Database.php';
-require_once 'app/repositories/UserRepository.php';
+
+require_once 'app/repositories/UsuarioRepository.php';
 require_once 'app/repositories/PartidaRepository.php';
-require_once 'app/repositories/RankingRepository.php';
+
 require_once 'app/services/AuthService.php';
 require_once 'app/services/PartidaService.php';
-require_once 'app/services/RankingService.php';
+
 require_once 'app/controllers/AuthController.php';
 require_once 'app/controllers/PartidaController.php';
-require_once 'app/controllers/RankingController.php';
+
 require_once 'app/domain/Partida.php';
 require_once 'app/domain/Puntaje.php';
 require_once 'app/domain/Reglas.php';
@@ -40,68 +41,80 @@ try {
 
     switch ($resource) { 
 
+        //AuthController
         case 'login':
             if ($method === 'POST') {
                 $authController->login();
                 break;
             }
             http_response_code(405);
-            echo json_encode(['success' => false, 'message' => 'Método no permitido.']);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
             break;
 
-        case 'register':
+
+        case 'registro':
             if ($method === 'POST') {
-                $authController->register();
+                $authController->registro();
                 break;
             }
             http_response_code(405);
-            echo json_encode(['success' => false, 'message' => 'Método no permitido.']);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
             break;
 
+
+
+
+        //PartidaController
         case 'crearPartida':
             if ($method === 'POST') {
                 $partidaController->crearPartidaController();
                 break;
             }
             http_response_code(405);
-            echo json_encode(['success' => false, 'message' => 'Método no permitido.']);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
             break;
 
+
+        case 'turno':
+            if ($method === 'POST') {
+                $partidaController->turnoController();
+                break;
+            }            
+            http_response_code(405);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+                ]);
+            break;  
+
+        
         case 'finalizarPartida':
             if ($method === 'POST') {
                 $partidaController->finalizarPartidaController();
                 break;
             }
             http_response_code(405);
-            echo json_encode(['success' => false, 'message' => 'Método no permitido.']);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
             break;
 
-        case 'cancelarPartida':
-            if ($method === 'POST') {
-                $partidaController->cancelarPartidaController();
-                break;
-            }
-            http_response_code(405);
-            echo json_encode(['success' => false, 'message' => 'Método no permitido.']);
-            break;
-            
-        case 'tirarDado':
-            if ($method === 'POST') {
-                $partidaController->tirarDadoController();
-                break;
-            }            
-            http_response_code(405);
-            echo json_encode(['success' => false, 'message' => 'Método no permitido.']);
-            break;
 
-        case 'colocarDinosaurio':
-            if ($method === 'POST') {
-                $partidaController->colocarDinosaurioController();
-                break;
-            }            
-            http_response_code(405);
-            echo json_encode(['success' => false, 'message' => 'Método no permitido.']);
-            break;
+
+
+
+
+
 
         case 'health':
 
@@ -125,8 +138,11 @@ try {
 
             $endpoints = [
                 ['method' => 'GET', 'path' => '/health', 'description' => 'Estado de la aplicación y servicios'],
-                ['method' => 'POST', 'path' => '/login', 'description' => 'Login con email o username'],
-                ['method' => 'POST', 'path' => '/register', 'description' => 'Crear nuevo usuario'],
+                ['method' => 'POST', 'path' => '/login', 'description' => 'Login con email o o nombre de usuario.'],
+                ['method' => 'POST', 'path' => '/register', 'description' => 'Crear nuevo usuario.'],
+                ['method' => 'POST', 'path' => '/crearPartida', 'description' => 'Crear nueva partida.'],
+                ['method' => 'POST', 'path' => '/turno', 'description' => 'Colocar y descartar dinosaurio, tirar dado. Maneja el flujo de la partida.'],
+                ['method' => 'POST', 'path' => '/finalizarPartida', 'description' => 'Finaliza una partida.'],
                 // Agrega aquí nuevas rutas futuras...
             ];
 
@@ -145,6 +161,8 @@ try {
             echo json_encode(['success' => false, 'message' => 'No existe el recurso.']);
             break;
     }
+
+
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode([

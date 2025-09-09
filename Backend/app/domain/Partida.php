@@ -2,20 +2,24 @@
 
 class Partida {
 
-    private string $caraDadoActual;
-    private string $tiradorActual;
+    private string $caraDado;
 
-    public function tirarDado(string $tirador): string
+
+
+
+    public function tirarDado(): string
     {
-        $caras = ['bosque', 'pradera', 'rio', 'cafeteria', 'izquierda', 'derecha'];
+        $caras = ['bosque', 'roca', 'baño', 'cafeteria', 'no-trex', 'vacio'];
 
-        $this->tiradorActual = $tirador;
-        $this->caraDadoActual = $caras[array_rand($caras)];
+        $this->caraDado = $caras[array_rand($caras)];
 
-        return $this->caraDadoActual;
+        return $this->caraDado;
     }
 
-    public function crearBolsa($jugador): array
+
+
+
+    public function crearBolsa(): array
     {
         $bolsaDinos = [];
         
@@ -23,7 +27,7 @@ class Partida {
 
         for($i = 0; $i < 6; $i++)
         {
-            $bolsaDinos = $dino[array_rand($dino)];
+            $bolsaDinos[] = $dino[array_rand($dino)];
         }
 
         return $bolsaDinos;
