@@ -1010,7 +1010,10 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
 .titulo-final {
   text-align: center;
   text-shadow: 0 2px 4px rgba(0, 0, 0, .5);
-  margin-top: 180px;
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 
@@ -1197,7 +1200,6 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: var(--space-md);
   margin-top: var(--space-xl);
 }
 
@@ -1568,6 +1570,23 @@ body .hidden {
   border-top-color: rgba(0, 0, 0, 0.9);
 }
 
+/* Tooltips para recintos superiores - aparecen abajo */
+[data-recinto="bosque-semejanza"] .tooltip-click,
+[data-recinto="rio"] .tooltip-click,
+[data-recinto="rey-jungla"] .tooltip-click {
+  bottom: auto;
+  top: calc(100% + 10px);
+}
+
+[data-recinto="bosque-semejanza"] .tooltip-click::after,
+[data-recinto="rio"] .tooltip-click::after,
+[data-recinto="rey-jungla"] .tooltip-click::after {
+  top: auto;
+  bottom: 100%;
+  border-top-color: transparent;
+  border-bottom-color: rgba(0, 0, 0, 0.9);
+}
+
 /* RESPONSIVE DESIGN - MOBILE FIRST */
 
 /* Small devices (landscape phones, 480px and up) */
@@ -1755,11 +1774,11 @@ body .hidden {
   }
 
   .barra-ganador {
-    height: 160px;
+    height: 120px;
   }
 
   .barra-perdedor {
-    height: 120px;
+    height: 90px;
   }
 
 

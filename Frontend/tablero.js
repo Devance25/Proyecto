@@ -16,7 +16,7 @@ const CONFIG = {
   TIPOS_DINOSAURIOS: ['t-rex', 'triceratops', 'diplodocus', 'stegosaurus', 'parasaurolophus'],
   DINOSAURIOS_POR_RONDA: 6,
   MAX_DINOSAURIOS_POOL: 8,
-  TOTAL_RONDAS: 4,
+  TOTAL_RONDAS: 5,
 
   // Posiciones
   POSICIONES_DINOSAURIOS: [
@@ -1666,7 +1666,7 @@ const JuegoManager = {
       const jugador = estadoJuego.getJugadorActual();
       const sinDinosaurios = jugador.dinosauriosDisponibles.length === 0;
       
-      btn.disabled = !sinDinosaurios && (!estadoJuego.yaColocoEnTurno || !estadoJuego.puedePasarTurno);
+      btn.disabled = !(sinDinosaurios || (estadoJuego.yaColocoEnTurno && estadoJuego.puedePasarTurno));
       this.actualizarBotonSiguiente();
     }
   },
@@ -1678,7 +1678,7 @@ const JuegoManager = {
     const jugador = estadoJuego.getJugadorActual();
     const sinDinosaurios = jugador.dinosauriosDisponibles.length === 0;
     
-    btn.disabled = !sinDinosaurios && (!estadoJuego.yaColocoEnTurno || !estadoJuego.puedePasarTurno);
+    btn.disabled = !(sinDinosaurios || (estadoJuego.yaColocoEnTurno && estadoJuego.puedePasarTurno));
 
     if (estadoJuego.esFinDeRonda()) {
       btn.textContent = estadoJuego.rondaActual < CONFIG.TOTAL_RONDAS ? 'Finalizar ronda' : 'Fin del juego';
@@ -1879,29 +1879,63 @@ const JuegoManager = {
     const j1 = estadoJuego.jugador1;
     const j2 = estadoJuego.jugador2;
 
-    const elementos = {
-      'nombre-final-j1': j1.nombre.toUpperCase(),
-      'nombre-final-j2': j2.nombre.toUpperCase(),
-      'puntos-final-j1': `${j1.puntos} puntos`,
-      'puntos-final-j2': `${j2.puntos} puntos`
-    };
+    // Determinar quién es el ganador (mayor puntaje)
+    const esJ1Ganador = j1.puntos >= j2.puntos;
+    const ganador = esJ1Ganador ? j1 : j2;
+    const perdedor = esJ1Ganador ? j2 : j1;
 
-    Object.entries(elementos).forEach(([id, valor]) => {
-      const elem = document.getElementById(id);
-      if (elem) elem.textContent = valor;
-    });
+    // Actualizar elementos del ganador (primera posición)
+    const nombreGanador = document.getElementById('nombre-final-j1');
+    const puntosGanador = document.getElementById('puntos-final-j1');
+    const avatarGanador = document.getElementById('avatar-final-j1');
 
+    if (nombreGanador) nombreGanador.textContent = ganador.nombre.toUpperCase();
+    if (puntosGanador) puntosGanador.textContent = `${ganador.puntos} puntos`;
+    if (avatarGanador) {
+      if (ganador === j1) {
+        avatarGanador.style.backgroundImage = 'url("img/foto_usuario-1.png")';
+      } else {
+        avatarGanador.style.backgroundImage = window.app?.jugador2Info?.tipo === 'invitado' ?
+          'url("img/invitado.png")' : 'url("img/foto_usuario-2.png")';
+      }
+    }
+
+    // Actualizar elementos del perdedor (segunda posición)
+    const nombrePerdedor = document.getElementById('nombre-final-j2');
+    const puntosPerdedor = document.getElementById('puntos-final-j2');
+    const avatarPerdedor = document.getElementById('avatar-final-j2');
+
+    if (nombrePerdedor) nombrePerdedor.textContent = perdedor.nombre.toUpperCase();
+    if (puntosPerdedor) puntosPerdedor.textContent = `${perdedor.puntos} puntos`;
+    if (avatarPerdedor) {
+      if (perdedor === j1) {
+        avatarPerdedor.style.backgroundImage = 'url("img/foto_usuario-1.png")';
+      } else {
+        avatarPerdedor.style.backgroundImage = window.app?.jugador2Info?.tipo === 'invitado' ?
+          'url("img/invitado.png")' : 'url("img/foto_usuario-2.png")';
+      }
+    }
+
+    // Actualizar podio
     const avatarPrimero = document.getElementById('avatar-primero');
     const avatarSegundo = document.getElementById('avatar-segundo');
 
-    if (j1.puntos >= j2.puntos) {
-      if (avatarPrimero) avatarPrimero.style.backgroundImage = 'url("img/foto_usuario-1.png")';
-      if (avatarSegundo) avatarSegundo.style.backgroundImage = window.app?.jugador2Info?.tipo === 'invitado' ?
-        'url("img/invitado.png")' : 'url("img/foto_usuario-2.png")';
-    } else {
-      if (avatarPrimero) avatarPrimero.style.backgroundImage = window.app?.jugador2Info?.tipo === 'invitado' ?
-        'url("img/invitado.png")' : 'url("img/foto_usuario-2.png")';
-      if (avatarSegundo) avatarSegundo.style.backgroundImage = 'url("img/foto_usuario-1.png")';
+    if (avatarPrimero) {
+      if (ganador === j1) {
+        avatarPrimero.style.backgroundImage = 'url("img/foto_usuario-1.png")';
+      } else {
+        avatarPrimero.style.backgroundImage = window.app?.jugador2Info?.tipo === 'invitado' ?
+          'url("img/invitado.png")' : 'url("img/foto_usuario-2.png")';
+      }
+    }
+
+    if (avatarSegundo) {
+      if (perdedor === j1) {
+        avatarSegundo.style.backgroundImage = 'url("img/foto_usuario-1.png")';
+      } else {
+        avatarSegundo.style.backgroundImage = window.app?.jugador2Info?.tipo === 'invitado' ?
+          'url("img/invitado.png")' : 'url("img/foto_usuario-2.png")';
+      }
     }
   },
 
