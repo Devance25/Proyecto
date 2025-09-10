@@ -7,8 +7,6 @@ class AppState {
     this.players = [];
     this.jugador2Info = null;
     this.dadoSeleccionado = null;
-    this.tempNombres = null;
-    this.tempJugador2Info = null;
     this.modoSeguimiento = false;
     
     this.validationConfig = {
@@ -577,8 +575,6 @@ class AppState {
   }
 
   mostrarSelectorQuienEmpieza(nombres, jugador2Info) {
-    this.tempNombres = nombres;
-    this.tempJugador2Info = jugador2Info;
     
     const n1 = document.querySelector('.nombre-jugador-1');
     const n2 = document.querySelector('.nombre-jugador-2');
@@ -609,21 +605,17 @@ class AppState {
   }
 
   iniciarPartidaConJugador(primerJugador) {
-    if (!this.tempNombres || !this.tempJugador2Info) {
-      const j1 = document.getElementById('jugador-1')?.value?.trim() || 'Jugador 1';
-      const j2 = document.getElementById('jugador-2')?.value?.trim() || 'Jugador 2';
-      
-      this.tempNombres = [j1, j2];
-      this.tempJugador2Info = {
-        nombre: j2,
-        tipo: document.querySelector('input[name="tipo-jugador-2"]:checked')?.value || 'invitado'
-      };
-    }
+    const j1 = document.getElementById('jugador-1')?.value?.trim() || 'Jugador 1';
+    const j2 = document.getElementById('jugador-2')?.value?.trim() || 'Jugador 2';
     
-    this.iniciarPartida(this.tempNombres, this.tempJugador2Info, primerJugador);
+    const nombres = [j1, j2];
+    const jugador2Info = {
+      nombre: j2,
+      tipo: document.querySelector('input[name="tipo-jugador-2"]:checked')?.value || 'invitado'
+    };
     
-    this.tempNombres = null;
-    this.tempJugador2Info = null;
+    this.iniciarPartida(nombres, jugador2Info, primerJugador);
+    
     
     setTimeout(() => {
       this.seleccionEnCurso = false;
@@ -820,7 +812,7 @@ class AppState {
     this.setLoading(true);
     
     try {
-      await this.delay(800);
+      await new Promise(resolve => setTimeout(resolve, 800));
       
       // Detectar si es administrador
       const usernameCheck = username.toLowerCase();
@@ -833,16 +825,13 @@ class AppState {
       };
       
       if (isAdmin) {
-        console.log('Usuario detectado como administrador:', username);
         if (window.adminManager) {
-          console.log('AdminManager encontrado, mostrando perfil admin');
           window.adminManager.mostrarPerfilAdmin(this.user);
         } else {
           console.error('AdminManager no encontrado');
         }
         this.showToast('¡Bienvenido, Administrador!', 'success');
       } else {
-        console.log('Usuario normal:', username);
         // Usuario normal va al lobby
         this.showScreen('lobby');
         this.showToast('¡Bienvenido de vuelta!', 'success');
@@ -864,7 +853,7 @@ class AppState {
     this.setLoading(true);
     
     try {
-      await this.delay(2000);
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       this.user = {
         username: formData.username,
@@ -1207,8 +1196,6 @@ class AppState {
     this.dadoSeleccionado = null;
 
     
-    this.tempNombres = null;
-    this.tempJugador2Info = null;
     this.modoSeguimiento = false;
     
     document.querySelectorAll('form').forEach(form => form.reset());
@@ -1217,25 +1204,7 @@ class AppState {
     this.showToast('Sesión cerrada', 'info');
   }
 
-  // UTILIDADES AUXILIARES
-  delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
 
-  getDebugInfo() {
-    return {
-      currentScreen: this.currentScreen,
-      user: this.user,
-      players: this.players,
-      loading: this.loading,
-      modoSeguimiento: this.modoSeguimiento,
-      tempData: {
-        nombres: this.tempNombres,
-        jugador2Info: this.tempJugador2Info
-      },
-      validationConfig: this.validationConfig
-    };
-  }
 
   resetAppState() {
     this.currentScreen = 'login';
@@ -1244,8 +1213,6 @@ class AppState {
     this.players = [];
     this.jugador2Info = null;
     this.dadoSeleccionado = null;
-    this.tempNombres = null;
-    this.tempJugador2Info = null;
     this.modoSeguimiento = false;
     
     this.hideToasts();
@@ -1256,26 +1223,6 @@ class AppState {
     });
   }
 
-  validateDOMIntegrity() {
-    const required = [
-      'pantalla-login',
-      'pantalla-registro',
-      'pantalla-lobby',
-      'pantalla-jugadores',
-      'pantalla-seleccion-inicial',
-      'pantalla-partida',
-      'toast-container'
-    ];
-    
-    const missing = required.filter(id => !document.getElementById(id));
-    
-    if (missing.length > 0) {
-      console.error('Elementos DOM faltantes:', missing);
-      return false;
-    }
-    
-    return true;
-  }
 }
 
 // INICIALIZACIÓN
@@ -1283,13 +1230,8 @@ if (!window.app) {
   document.addEventListener('DOMContentLoaded', () => {
     const tempApp = new AppState();
     
-    if (tempApp.validateDOMIntegrity()) {
-      window.app = tempApp;
-      window.adminManager = new AdminManager();
-      console.log('App inicializada correctamente');
-    } else {
-      console.error('Error: DOM incompleto, no se puede inicializar la aplicación');
-    }
+    window.app = tempApp;
+    window.adminManager = new AdminManager();
   });
 }
 
@@ -1538,7 +1480,6 @@ class AdminManager {
     // Cerrar popup
     this.cerrarPopupEliminar();
     
-    console.log('Usuario eliminado exitosamente');
   }
 
   cerrarPopupEliminar() {
@@ -1569,7 +1510,6 @@ class AdminManager {
       };
     }
     
-    console.log('Usuario actualizado:', this.usuariosData[userIndex]);
     
     this.mostrarListadoUsuarios();
   }
@@ -1594,7 +1534,6 @@ class AdminManager {
     
     this.usuariosData.push(nuevoUsuario);
     
-    console.log('Nuevo usuario creado:', nuevoUsuario);
     
     this.volverPerfilAdmin();
   }

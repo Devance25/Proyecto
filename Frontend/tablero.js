@@ -401,11 +401,8 @@ const GameLogic = {
           puntos = reglas.puntos[especiesUnicas] || 0;
         } else if (nombre === 'bosque-semejanza') {
           if (dinosaurios.length > 0 && dinosaurios.every(d => d === dinosaurios[0])) {
-            // Sumar puntos acumulativos: 1 dino=2, 2 dinos=2+4=6, 3 dinos=2+4+8=14, etc.
-            puntos = 0;
-            for (let i = 1; i <= dinosaurios.length; i++) {
-              puntos += reglas.puntos[i] || 0;
-            }
+            // Usar valor directo del array: 1 dino=2, 2 dinos=4, 3 dinos=8, etc.
+            puntos = reglas.puntos[dinosaurios.length] || 0;
           } else {
             puntos = 0;
           }
@@ -515,16 +512,12 @@ const RenderManager = {
       img.draggable = true;
       img.classList.add('dino-arrastreable');
       
-      console.log('✅ Configurando drag para dinosaurio recién colocado:', tipo, 'en:', recinto);
       
       img.addEventListener('dragstart', (e) => {
-        console.log('🚀 DRAG START CORRECCIÓN ejecutado para:', tipo);
         DragDropManager.dinosaurioArrastrado = e.target;
         DragDropManager.esCorreccion = true;
         DragDropManager.recintoOrigen = recinto;
         
-        console.log('🎯 Recinto origen:', recinto);
-        console.log('🔄 Estado esCorreccion:', DragDropManager.esCorreccion);
         
         e.target.classList.add('dragging');
         e.dataTransfer.effectAllowed = 'move';
@@ -634,23 +627,18 @@ const DragDropManager = {
 
     const zonaDisponibles = document.querySelector('.dinosaurios-disponibles');
     if (zonaDisponibles) {
-      console.log('Configurando zona disponibles como drop zone');
       Object.entries(eventHandlers).forEach(([event, handler]) => {
         zonaDisponibles.addEventListener(event, handler.bind(this));
       });
     } else {
-      console.log('No se encontró zona de disponibles');
     }
   },
 
   _initDinosauriosColocados() {
-    console.log('Verificando dinosaurios colocados existentes...');
     const dinosaurios = document.querySelectorAll('.dinosaurio-colocado');
-    console.log('Total dinosaurios encontrados:', dinosaurios.length);
   },
 
   _handleDragStartCorreccion(e) {
-    console.log('🚀 DRAG START CORRECCIÓN ejecutado para:', e.target.dataset.tipo);
     this.dinosaurioArrastrado = e.target;
     this.esCorreccion = true;
     
@@ -674,8 +662,6 @@ const DragDropManager = {
     
     this.recintoOrigen = recintoOrigen;
     
-    console.log('🎯 Recinto origen:', this.recintoOrigen);
-    console.log('🔄 Estado esCorreccion:', this.esCorreccion);
     
     e.target.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
@@ -686,10 +672,6 @@ const DragDropManager = {
   },
 
   _handleDragStart(e) {
-    console.log('🎯 DRAG START NORMAL - Elemento:', e.target.tagName, 'Clases:', e.target.className);
-    console.log('🎯 Dataset tipo:', e.target.dataset.tipo);
-    console.log('🎯 Alt:', e.target.alt);
-    console.log('🎯 Src:', e.target.src);
 
     if (Utils.hayPopupAbierto() || estadoJuego.yaColocoEnTurno) {
       e.preventDefault();
@@ -754,7 +736,6 @@ const DragDropManager = {
     const area = e.currentTarget;
     const recinto = area.dataset.recinto;
     
-    console.log('Drop detectado en:', area.className, 'Recinto:', recinto, 'Es corrección:', this.esCorreccion);
     
     let tipoDino;
     if (e.dataTransfer && e.dataTransfer.getData) {
@@ -763,11 +744,9 @@ const DragDropManager = {
       tipoDino = this.dinosaurioArrastrado.dataset.tipo;
     }
 
-    console.log('Tipo de dinosaurio:', tipoDino);
 
     // Manejar devolución a zona de disponibles
     if (area.classList.contains('dinosaurios-disponibles') && this.esCorreccion) {
-      console.log('Detectado drop en zona disponibles');
       this._devolverDinosaurioABase(tipoDino);
       this._limpiarIndicadores();
       if (this.isDragging) this._cleanupTouch();
@@ -791,7 +770,6 @@ const DragDropManager = {
   },
 
   _devolverDinosaurioABase(tipoDino) {
-    console.log('Devolviendo dinosaurio a base:', tipoDino, 'desde:', this.recintoOrigen);
     const jugador = estadoJuego.getJugadorActual();
     const recintoOrigenId = this.recintoOrigen;
     
@@ -1420,7 +1398,6 @@ const JuegoManager = {
   _repartirDinosaurios() {
     const dinosauriosNecesarios = CONFIG.DINOSAURIOS_POR_RONDA * 2; // 6 por cada jugador
     if (estadoJuego.repartosDisponibles.length < dinosauriosNecesarios) {
-      console.log('Regenerando pool de dinosaurios - Pool insuficiente');
       this._generarPoolDinosaurios();
     }
 
@@ -1436,10 +1413,6 @@ const JuegoManager = {
     estadoJuego.jugador1.dinosauriosDisponibles = tomarDinos(CONFIG.DINOSAURIOS_POR_RONDA);
     estadoJuego.jugador2.dinosauriosDisponibles = tomarDinos(CONFIG.DINOSAURIOS_POR_RONDA);
     
-    console.log(`Ronda ${estadoJuego.rondaActual}: Dinosaurios repartidos`);
-    console.log('J1:', estadoJuego.jugador1.dinosauriosDisponibles);
-    console.log('J2:', estadoJuego.jugador2.dinosauriosDisponibles);
-    console.log('Pool restante:', estadoJuego.repartosDisponibles.length);
   },
 
   _configurarTurnoInicial() {
@@ -1876,9 +1849,6 @@ const JuegoManager = {
     estadoJuego.jugador1.dinosauriosDisponibles = [];
     estadoJuego.jugador2.dinosauriosDisponibles = [];
 
-    console.log(`=== INICIANDO RONDA ${estadoJuego.rondaActual} ===`);
-    console.log(`Modo seguimiento: ${estadoJuego.modoSeguimiento}`);
-    console.log(`Jugador que empieza: ${estadoJuego.primerJugador}`);
 
     if (estadoJuego.modoSeguimiento) {
       const jugador = estadoJuego[`jugador${estadoJuego.primerJugador}`];
@@ -2047,14 +2017,14 @@ function mostrarConsejoContextual(recinto, accion) {
   const consejos = {
     'bosque-semejanza': {
       'colocar': 'Recordá: solo podés poner dinosaurios de la misma especie, llenando de izquierda a derecha sin espacios.',
-      'puntos': 'Puntos: 1, 3, 6, 10, 15, 21 según cantidad de dinos iguales'
+      'puntos': 'Puntos: 2, 4, 8, 12, 18, 24 según cantidad de dinos iguales'
     },
     'prado-diferencia': {
       'colocar': 'Recordá: solo podés poner dinosaurios de especies distintas, llenando de izquierda a derecha sin espacios.',
       'puntos': 'Puntos: 1, 3, 6, 10, 15, 21 según cantidad de especies distintas'
     },
     'pradera-amor': {
-      'colocar': 'Recordá: formá parejas del mismo tipo para obtener 5 puntos por cada pareja.',
+      'colocar': 'Recordá: formá parejas del mismo tipo para obtener 6 puntos por cada pareja.',
       'puntos': 'Podés tener varias parejas de la misma especie'
     },
     'woody-trio': {
@@ -2134,25 +2104,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.addEventListener('dblclick', (e) => {
     if (e.target.classList.contains('dinosaurio-colocado')) {
-      console.log('🎯 DOBLE CLICK en dinosaurio colocado:', e.target.dataset.tipo);
       
       const tipo = e.target.dataset.tipo;
       
       if (!tipo) {
-        console.log('❌ No se encontró tipo de dinosaurio');
         return;
       }
       
       const jugadorActual = estadoJuego.getJugadorActual();
       
       if (!estadoJuego.yaColocoEnTurno || !estadoJuego.dinosaurioColocadoEnTurno) {
-        console.log('❌ No se puede sacar dinosaurio - no hay colocación en este turno');
         return;
       }
       
       if (tipo !== estadoJuego.dinosaurioColocadoEnTurno) {
-        console.log('❌ No se puede sacar dinosaurio - no es el dinosaurio del turno actual');
-        console.log('Dinosaurio clickeado:', tipo, 'Dinosaurio del turno:', estadoJuego.dinosaurioColocadoEnTurno);
         return;
       }
       
@@ -2161,16 +2126,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const index = dinosauriosEnRecinto.indexOf(tipo);
       
       if (index === -1) {
-        console.log('❌ No se puede sacar dinosaurio - no está en el recinto esperado');
         return;
       }
       
       // Remover el dinosaurio del recinto
       jugadorActual.recintos[recintoEsperado].splice(index, 1);
-      console.log('✅ Removido del jugador actual, recinto:', recintoEsperado);
       
       jugadorActual.dinosauriosDisponibles.push(tipo);
-      console.log('✅ Devuelto a disponibles');
         
         RenderManager.actualizarDinosauriosDisponibles();
         RenderManager.renderizarTablero();
@@ -2186,7 +2148,6 @@ document.addEventListener('DOMContentLoaded', () => {
         estadoJuego.puedePasarTurno = false;
         estadoJuego.dinosaurioColocadoEnTurno = null;
         estadoJuego.recintoColocadoEnTurno = null;
-        console.log('✅ Reseteo estado - dinosaurio devuelto');
         
         JuegoManager.actualizarBotonSiguiente();
         mostrarAlertaJuego(`Dinosaurio devuelto a disponibles`, 'success', 2000);

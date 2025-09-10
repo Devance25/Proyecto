@@ -394,10 +394,10 @@
   justify-content: center;
   cursor: pointer;
   transition: var(--transition-base);
-  border: 2px solid var(--color-dorado);
+  border: 2px solid var(--color-beige);
   border-radius: var(--border-radius-md);
   font-weight: var(--font-weight-semibold);
-  background: var(--color-dorado);
+  background: var(--color-beige);
   padding: var(--space-xs) var(--space-sm);
   color: var(--color-marron);
   white-space: nowrap;
