@@ -425,7 +425,7 @@ body {
   background: var(--gradiente-naranja-hover);
 }
 
-.btn + .btn {
+.btn+.btn {
   margin-top: 20px;
 }
 
@@ -566,10 +566,6 @@ body {
   filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.3));
   animation: bounceIn 0.8s ease-out;
   background-size: contain;
-  background-repeat: no-repeat;
-  display: inline-block;
-  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.3));
-  animation: bounceIn 0.8s ease-out;
   background-repeat: no-repeat;
   display: inline-block;
 }
@@ -1003,12 +999,18 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   padding: var(--space-lg) var(--space-md);
 }
 
-.titulo-resumen,
-.titulo-final {
+.titulo-resumen {
   text-align: center;
   text-shadow: 0 2px 4px rgba(0, 0, 0, .5);
   margin-top: var(--space-lg);
   margin-bottom: var(--space-xl);
+}
+
+
+.titulo-final {
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, .5);
+  margin-top: 180px;
 }
 
 
@@ -1129,17 +1131,12 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   color: var(--color-blanco);
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-3xl);
-  transition: all 0.5s ease;
   overflow: visible;
   z-index: -1;
   justify-content: flex-end;
   padding-bottom: 20px;
 }
 
-.barra-podio:hover {
-  transform: translateY(-10px);
-  filter: brightness(1.1);
-}
 
 .barra-podio::before {
   content: attr(data-posicion);

@@ -246,6 +246,7 @@ class EstadoJuego {
     Object.assign(this, {
       jugadorActual: 1, primerJugador: 1, primerJugadorOriginal: 1, rondaActual: 1, turnoEnRonda: 1,
       modoSeguimiento: false, restriccionActual: null, puedePasarTurno: false, yaColocoEnTurno: false,
+      dinosaurioColocadoEnTurno: null, recintoColocadoEnTurno: null,
       dadoNumero: null, repartosDisponibles: [], dinosauriosDescartados: [],
       dinosauriosRondaJ1: [], dinosauriosRondaJ2: [], descartadosJ1: [], descartadosJ2: [],
       turnosCompletadosJ1: 0, turnosCompletadosJ2: 0,
@@ -274,6 +275,8 @@ class EstadoJuego {
     this.turnoEnRonda++;
     this.yaColocoEnTurno = false;
     this.puedePasarTurno = false;
+    this.dinosaurioColocadoEnTurno = null;
+    this.recintoColocadoEnTurno = null;
     
     const btn = document.getElementById('btn-siguiente-turno');
     if (btn) btn.disabled = true;
@@ -354,6 +357,8 @@ const GameLogic = {
     // Agregar visualmente al tablero
     RenderManager.agregarDinosaurioVisual(tipoDino, recinto, area);
     estadoJuego.yaColocoEnTurno = true;
+    estadoJuego.dinosaurioColocadoEnTurno = tipoDino;
+    estadoJuego.recintoColocadoEnTurno = recinto;
 
     // Actualizar interfaz inmediatamente
     this.actualizarPuntos();
@@ -413,7 +418,11 @@ const GameLogic = {
         } else if (nombre === 'bosque-semejanza') {
           // Para bosque-semejanza, solo dar puntos si todos son de la misma especie
           if (dinosaurios.length > 0 && dinosaurios.every(d => d === dinosaurios[0])) {
-            puntos = reglas.puntos[dinosaurios.length] || 0;
+            // Sumar puntos acumulativos: 1 dino=2, 2 dinos=2+4=6, 3 dinos=2+4+8=14, etc.
+            puntos = 0;
+            for (let i = 1; i <= dinosaurios.length; i++) {
+              puntos += reglas.puntos[i] || 0;
+            }
           } else {
             puntos = 0;
           }
@@ -2208,25 +2217,39 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
       
-      // Solo buscar en el jugador actual (turno actual)
+      // Solo permitir sacar el dinosaurio colocado en este turno específico
       const jugadorActual = estadoJuego.getJugadorActual();
-      let recintoOrigen = null;
       
-      // Buscar solo en los recintos del jugador actual
-      for (const [recintoId, dinosaurios] of Object.entries(jugadorActual.recintos)) {
-        const index = dinosaurios.indexOf(tipo);
-        if (index > -1) {
-          recintoOrigen = recintoId;
-          jugadorActual.recintos[recintoId].splice(index, 1);
-          console.log('✅ Removido del jugador actual, recinto:', recintoId);
-          break;
-        }
+      // Verificar si hay un dinosaurio colocado en este turno
+      if (!estadoJuego.yaColocoEnTurno || !estadoJuego.dinosaurioColocadoEnTurno) {
+        console.log('❌ No se puede sacar dinosaurio - no hay colocación en este turno');
+        return;
       }
       
-      if (recintoOrigen) {
-        // Devolver a disponibles del jugador actual
-        jugadorActual.dinosauriosDisponibles.push(tipo);
-        console.log('✅ Devuelto a disponibles');
+      // Verificar si el dinosaurio clickeado es exactamente el que se colocó en este turno
+      if (tipo !== estadoJuego.dinosaurioColocadoEnTurno) {
+        console.log('❌ No se puede sacar dinosaurio - no es el dinosaurio del turno actual');
+        console.log('Dinosaurio clickeado:', tipo, 'Dinosaurio del turno:', estadoJuego.dinosaurioColocadoEnTurno);
+        return;
+      }
+      
+      // Verificar que esté en el recinto correcto
+      const recintoEsperado = estadoJuego.recintoColocadoEnTurno;
+      const dinosauriosEnRecinto = jugadorActual.recintos[recintoEsperado];
+      const index = dinosauriosEnRecinto.indexOf(tipo);
+      
+      if (index === -1) {
+        console.log('❌ No se puede sacar dinosaurio - no está en el recinto esperado');
+        return;
+      }
+      
+      // Remover el dinosaurio del recinto
+      jugadorActual.recintos[recintoEsperado].splice(index, 1);
+      console.log('✅ Removido del jugador actual, recinto:', recintoEsperado);
+      
+      // Devolver a disponibles del jugador actual
+      jugadorActual.dinosauriosDisponibles.push(tipo);
+      console.log('✅ Devuelto a disponibles');
         
         // Actualizar UI completa
         RenderManager.actualizarDinosauriosDisponibles();
@@ -2244,15 +2267,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Resetear estado para permitir nuevas colocaciones
         estadoJuego.yaColocoEnTurno = false;
         estadoJuego.puedePasarTurno = false;
+        estadoJuego.dinosaurioColocadoEnTurno = null;
+        estadoJuego.recintoColocadoEnTurno = null;
         console.log('✅ Reseteo estado - dinosaurio devuelto');
         
         JuegoManager.actualizarBotonSiguiente();
         mostrarAlertaJuego(`Dinosaurio devuelto a disponibles`, 'success', 2000);
-      } else {
-        console.log('❌ No se puede devolver este dinosaurio - solo se pueden devolver dinosaurios del turno actual');
-        // Mostrar mensaje al usuario
-        mostrarAlertaPuntos(0, 'Solo puedes devolver dinosaurios del turno actual');
-      }
     }
   });
 
