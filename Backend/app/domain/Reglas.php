@@ -1,6 +1,22 @@
 <?php
 
-class Reglas{
+class Reglas
+{
+    private static ?Reglas $instance = null;
+
+
+    private function __construct() {
+
+    }
+
+
+    public static function getInstance(): Reglas
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
 
 //     Bosque: Indica que el dinosaurio debe colocarse en una zona de bosque. 
@@ -18,9 +34,39 @@ class Reglas{
 
 
 
-    public function restriccionDado(int $caraDado): array
+
+
+
+    public function restriccionDado(string $caraDado): array
     {
+        $recintosRestringidos = [];
+
+        if($caraDado === 'vacio'){
+            return $recintosRestringidos = [];
+        }
+
+        return $recintosRestringidos;
         
     }
+
+
+// Reglas de puntuación de los recintos:
+
+// bosque-semejanza : Puntos según el número de dinosaurios del mismo color colocados, a menudo por un espacio en el que solo se pueden colocar de un color. 
+
+// rey-jungla: Obtienes 7 puntos si el dinosaurio es único de su especie en tu zoológico, en comparación con otros dinosaurios de esa especie. 
+
+// woody-trio: Se pueden colocar hasta tres dinosaurios de cualquier especie y puntúan según las reglas específicas de ese recinto. 
+
+// pradera-amor: Puedes colocar hasta dos dinosaurios de cada especie, y cada pareja de la misma especie vale 5 puntos. 
+
+// isla-solitaria: Puedes colocar solo un dinosaurio. 
+
+// rio: Cada dinosaurio en el río vale un punto. 
+
+// prado-diferencia
+
+// Puntos adicionales por T-Rex: Cada recinto que contenga un T-Rex, aunque tenga más de uno, otorga 1 punto de victoria adicional. 
+
 
 }

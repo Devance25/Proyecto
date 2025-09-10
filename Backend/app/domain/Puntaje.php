@@ -1,55 +1,69 @@
 <?php
 
-require_once 'Reglas.php';
+class Puntaje
+{
+    private static ?Puntaje $instance = null;
+
+    private ?Reglas $reglas;
 
 
-    class Puntaje{
+    private function __construct() {
 
-        public function calcularPuntaje(array $porRecinto): int
-        {
-            // $porRecitos =['bosque' => ['t-rex',
-            //                            'triceratops',
-            //                            't-rex'],
-            //               'rio' => ['brontosaurio',
-            //                         'brontosaurio'],
-            //               'cafeteria' => ['t-rex']
-            //              ]
+        $this->reglas = Reglas::getInstance();
+    }
 
-            $reglas = new Reglas();
 
-            $puntaje = 0;
+    public static function getInstance(): Puntaje
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
-            foreach ($porRecinto as $recinto => $dinos) {
+    public function calcularPuntaje(array $porRecinto): int
+    {
+        // $porRecinto = [
+        //     'bosque-semejanza' => ['T-rex', 'Triceratops', 'T-rex'],
+        //     'rio' => ['Diplodocus', 'Diplodocus'],
+        //     'pradera-amor' => ['T-rex']
+        // ]
 
-                if($recinto === 'bosque')
-                {
-                    $puntaje += $this->reglas->reglasBosque($dinos);
+        $puntaje = 0;
 
-                }elseif ($recinto === 'pradera')
-                {
-                    $puntaje += $this->reglas->reglasPradera($dinos);
+        foreach ($porRecinto as $recinto => $dinos) {
 
-                }elseif ($recinto === 'rio')
-                {
-                    $puntaje += $this->reglas->reglasRio($dinos);
+            if ($recinto === 'bosque-semejanza') {
 
-                }elseif ($recinto === 'cafeteria')
-                {
-                    $puntaje += $this->reglas->reglasCafeteria($dinos);
+                $puntaje += $this->reglas->reglasBosqueSemejanza($dinos);
 
-                }elseif ($recinto === 'izquierda')
-                {
-                    $puntaje += $this->reglas->reglasIzquierda($dinos);
+            } elseif ($recinto === 'pradera-amor') {
 
-                }elseif ($recinto === 'derecha')
-                {
-                    $puntaje += $this->reglas->reglasDerecha($dinos);
+                $puntaje += $this->reglas->reglasPraderaAmor($dinos);
 
-                }
+            } elseif ($recinto === 'woody-trio') {
+
+                $puntaje += $this->reglas->reglasWoodyTrio($dinos);
+
+            } elseif ($recinto === 'prado-diferencia') {
+
+                $puntaje += $this->reglas->reglasPradoDiferencia($dinos);
+
+            } elseif ($recinto === 'rey-jungla') {
+
+                $puntaje += $this->reglas->reglasReyJungla($dinos);
+
+            } elseif ($recinto === 'isla-solitaria') {
+
+                $puntaje += $this->reglas->reglasIslaSolitaria($dinos);
+
+            } elseif ($recinto === 'rio') {
+
+                $puntaje += $this->reglas->reglasRio($dinos);
+
             }
-
-            return $puntaje;
-
         }
 
+        return $puntaje;
     }
+}

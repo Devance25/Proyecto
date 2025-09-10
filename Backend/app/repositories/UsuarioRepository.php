@@ -68,9 +68,20 @@ class UsuarioRepository
         if ($result) {
             $result->free();
         }
+
         $stmt->close();
 
-        return $usuario ?: null;
+        if ($usuario) {
+            return [
+                'id' => (int)$usuario['id'],
+                'nombreUsuario' => $usuario['nombre_usuario'],
+                'email' => $usuario['email'],
+                'nacimiento' => $usuario['nacimiento'],
+                'password' => $usuario['password'],
+            ];
+        }
+
+        return null;
     }
 
     /**
@@ -107,7 +118,17 @@ class UsuarioRepository
 
         $stmt->close();
 
-        return $usuario ?: null;
+        if ($usuario) {
+            return [
+                'id' => (int)$usuario['id'],
+                'nombreUsuario' => $usuario['nombre_usuario'], // 👈
+                'email' => $usuario['email'],
+                'nacimiento' => $usuario['nacimiento'],
+                'password' => $usuario['password'],
+            ];
+        }
+
+        return null;
     }
 
     /**
@@ -144,7 +165,17 @@ class UsuarioRepository
 
         $stmt->close();
 
-        return $usuario ?: null;
+        if ($usuario) {
+            return [
+                'id' => (int)$usuario['id'],
+                'nombreUsuario' => $usuario['nombre_usuario'], // 👈
+                'email' => $usuario['email'],
+                'nacimiento' => $usuario['nacimiento'],
+                'password' => $usuario['password'],
+            ];
+        }
+
+        return null;
     }
 
     /**
