@@ -440,9 +440,12 @@ class AppState {
   updatePlayerType(tipo) {
     const avatar = document.getElementById('avatar-jugador-2');
     const nombre = document.getElementById('jugador-2');
+    const grupoPassword = document.getElementById('grupo-password-jugador2');
+    const passwordInput = document.getElementById('password-jugador-2');
     
     if (avatar) {
       avatar.src = tipo === 'invitado' ? 'img/invitado.png' : 'img/foto_usuario-2.png';
+      avatar.alt = tipo === 'invitado' ? 'Invitado' : 'Usuario existente';
     }
     
     if (nombre) {
@@ -450,6 +453,18 @@ class AppState {
         'Ingrese nombre de jugador #2' : 
         'Nombre de usuario existente';
       nombre.value = '';
+    }
+
+    // Mostrar/ocultar campo de contraseña
+    if (grupoPassword && passwordInput) {
+      if (tipo === 'usuario') {
+        grupoPassword.classList.remove('hidden');
+        passwordInput.required = true;
+      } else {
+        grupoPassword.classList.add('hidden');
+        passwordInput.required = false;
+        passwordInput.value = '';
+      }
     }
     
     this.actualizarBotonComenzar();
@@ -731,34 +746,34 @@ class AppState {
   mostrarResultadoDado(dadoNumero) {
     const config = {
       1: {
-        titulo: 'Lugar vacío',
-        descripcion: 'Poné el dinosaurio en un lugar donde no haya ningún otro. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
+        titulo: 'Huella (libre)',
+        descripcion: '¡Tablero completamente libre! Podés colocar el dinosaurio en cualquier recinto sin restricciones. Es la cara más flexible del dado.',
         imagen: 'img/dado-huella.png'
       },
       2: {
-        titulo: 'Sin T-Rex',
-        descripcion: 'Poné el dinosaurio en un lugar donde no esté el T-Rex. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
+        titulo: 'No T-Rex',
+        descripcion: 'El Rey de la Jungla está bloqueado. Podés colocar en cualquier otro recinto: Bosque de la Semejanza, Prado de la Diferencia, Pradera del Amor, Trío Frondoso, Isla Solitaria o el Río.',
         imagen: 'img/dado-no-trex.png'
       },
       3: {
-        titulo: 'Lado cafetería (izquierda)',
-        descripcion: 'Poné el dinosaurio en el lado izquierdo del tablero, donde está la cafetería. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
+        titulo: 'Lado Cafetería',
+        descripcion: 'Recintos disponibles: Bosque de la Semejanza, Trío Frondoso, Pradera del Amor. Los recintos del lado izquierdo del tablero están abiertos. Si no podés cumplir, poné el dinosaurio en el río.',
         imagen: 'img/dado-cafe.png'
       },
       4: {
-        titulo: 'Bosque',
-        descripcion: 'Poné el dinosaurio en un lugar del bosque. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
-        imagen: 'img/dado-bosque.png'
+        titulo: 'Lado Baños',
+        descripcion: 'Recintos disponibles: Rey de la Jungla, Prado de la Diferencia, Isla Solitaria. Los recintos del lado derecho del tablero están abiertos. Si no podés cumplir, poné el dinosaurio en el río.',
+        imagen: 'img/dado-banos.png'
       },
       5: {
-        titulo: 'Rocas',
-        descripcion: 'Poné el dinosaurio en un lugar de rocas. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
-        imagen: 'img/dado-rocas.png'
+        titulo: 'Bosque',
+        descripcion: 'Recintos disponibles: Trío Frondoso, Bosque de la Semejanza, Rey de la Jungla. Los recintos con temática de bosque están abiertos. Si no podés cumplir, poné el dinosaurio en el río.',
+        imagen: 'img/dado-bosque.png'
       },
       6: {
-        titulo: 'Lado baños (derecha)',
-        descripcion: 'Poné el dinosaurio en el lado derecho del tablero, donde están los baños. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
-        imagen: 'img/dado-banos.png'
+        titulo: 'Rocas / Pradera',
+        descripcion: 'Recintos disponibles: Prado de la Diferencia, Isla Solitaria, Pradera del Amor. Los recintos con temática de pradera y rocas están abiertos. Si no podés cumplir, poné el dinosaurio en el río.',
+        imagen: 'img/dado-rocas.png'
       }
     };
     
@@ -796,13 +811,33 @@ class AppState {
     try {
       await this.delay(800);
       
+      // Detectar si es administrador
+      const usernameCheck = username.toLowerCase();
+      const isAdmin = usernameCheck === 'admin';
+      
       this.user = {
         username: username,
-        name: username.toUpperCase()
+        name: username.toUpperCase(),
+        isAdmin: isAdmin
       };
       
-      this.showScreen('lobby');
-      this.showToast('¡Bienvenido de vuelta!', 'success');
+      // Dirigir a pantalla correspondiente
+      if (isAdmin) {
+        console.log('Usuario detectado como administrador:', username);
+        // Mostrar perfil de administrador
+        if (window.adminManager) {
+          console.log('AdminManager encontrado, mostrando perfil admin');
+          window.adminManager.mostrarPerfilAdmin(this.user);
+        } else {
+          console.error('AdminManager no encontrado');
+        }
+        this.showToast('¡Bienvenido, Administrador!', 'success');
+      } else {
+        console.log('Usuario normal:', username);
+        // Usuario normal va al lobby
+        this.showScreen('lobby');
+        this.showToast('¡Bienvenido de vuelta!', 'success');
+      }
     } catch (error) {
       this.showToast('Error al iniciar sesión', 'error');
     } finally {
@@ -1091,7 +1126,8 @@ class AppState {
       .forEach(counter => {
         counter.className = 'character-counter';
       });
-  }
+  } 
+
 
   clearFieldError(input) {
     input.classList.remove('error');
@@ -1167,6 +1203,8 @@ class AppState {
     this.players = [];
     this.jugador2Info = null;
     this.dadoSeleccionado = null;
+
+    
     this.tempNombres = null;
     this.tempJugador2Info = null;
     this.modoSeguimiento = false;
@@ -1246,6 +1284,7 @@ if (!window.app) {
     
     if (tempApp.validateDOMIntegrity()) {
       window.app = tempApp;
+      window.adminManager = new AdminManager();
       console.log('App inicializada correctamente');
     } else {
       console.error('Error: DOM incompleto, no se puede inicializar la aplicación');
@@ -1267,3 +1306,334 @@ window.addEventListener('unhandledrejection', e => {
     window.app.showToast('Error en operación asíncrona', 'error');
   }
 });
+
+// ==================== ADMINISTRADOR ====================
+class AdminManager {
+  constructor() {
+    this.currentUser = null;
+    this.usuariosData = []; // Simular datos de usuarios
+    this.currentEditingUser = null;
+    this.init();
+  }
+
+  init() {
+    this.setupAdminEvents();
+    this.loadMockUsers(); // Cargar usuarios simulados
+    this.asegurarPopupOculto(); // Asegurar que el popup esté oculto al inicio
+  }
+
+  asegurarPopupOculto() {
+    const popup = document.getElementById('popup-eliminar-usuario');
+    if (popup) {
+      popup.classList.add('hidden');
+      popup.style.display = 'none';
+    }
+  }
+
+  setupAdminEvents() {
+    // Botones principales del perfil admin
+    const btnModificarUsuarios = document.getElementById('btn-modificar-usuarios');
+    const btnNuevoUsuario = document.getElementById('btn-nuevo-usuario');
+    const btnSalirAdmin = document.getElementById('btn-salir-admin');
+
+    // Botones de navegación
+    const btnVolverAdmin = document.getElementById('btn-volver-admin');
+    const btnVolverListado = document.getElementById('btn-volver-listado');
+    const btnVolverAdminNuevo = document.getElementById('btn-volver-admin-nuevo');
+
+    // Botones de popup
+    const btnConfirmarEliminar = document.getElementById('btn-confirmar-eliminar');
+    const btnCancelarEliminar = document.getElementById('btn-cancelar-eliminar');
+
+    // Formularios
+    const formEditarUsuario = document.getElementById('form-editar-usuario');
+    const formNuevoUsuario = document.getElementById('form-nuevo-usuario');
+
+    // Búsqueda
+    const buscarUsuario = document.getElementById('buscar-usuario');
+
+    // Event listeners
+    if (btnModificarUsuarios) {
+      btnModificarUsuarios.addEventListener('click', () => this.mostrarListadoUsuarios());
+    }
+
+    if (btnNuevoUsuario) {
+      btnNuevoUsuario.addEventListener('click', () => this.mostrarNuevoUsuario());
+    }
+
+    if (btnSalirAdmin) {
+      btnSalirAdmin.addEventListener('click', () => this.salirModoAdmin());
+    }
+
+    if (btnVolverAdmin) {
+      btnVolverAdmin.addEventListener('click', () => this.volverPerfilAdmin());
+    }
+
+    if (btnVolverListado) {
+      btnVolverListado.addEventListener('click', () => this.mostrarListadoUsuarios());
+    }
+
+    if (btnVolverAdminNuevo) {
+      btnVolverAdminNuevo.addEventListener('click', () => this.volverPerfilAdmin());
+    }
+
+    if (btnConfirmarEliminar) {
+      btnConfirmarEliminar.addEventListener('click', () => this.confirmarEliminarUsuario());
+    }
+
+    if (btnCancelarEliminar) {
+      btnCancelarEliminar.addEventListener('click', () => this.cerrarPopupEliminar());
+    }
+
+    if (formEditarUsuario) {
+      formEditarUsuario.addEventListener('submit', (e) => this.handleEditarUsuario(e));
+    }
+
+    if (formNuevoUsuario) {
+      formNuevoUsuario.addEventListener('submit', (e) => this.handleNuevoUsuario(e));
+    }
+
+    if (buscarUsuario) {
+      buscarUsuario.addEventListener('input', (e) => this.filtrarUsuarios(e.target.value));
+    }
+  }
+
+  loadMockUsers() {
+    // Datos simulados de usuarios
+    this.usuariosData = [
+      { id: 1, username: 'Anita', email: 'anita@example.com', birthdate: '1995-03-15', isAdmin: false },
+      { id: 2, username: 'Pepeking', email: 'pepe.alonzo@gmail.com', birthdate: '1998-05-23', isAdmin: false },
+      { id: 3, username: 'Pepita', email: 'pepita@example.com', birthdate: '1992-11-08', isAdmin: false },
+      { id: 4, username: 'Daniel-San', email: 'daniel@example.com', birthdate: '1990-07-12', isAdmin: false },
+      { id: 5, username: 'Joselito', email: 'jose@example.com', birthdate: '1993-01-30', isAdmin: false }
+    ];
+  }
+
+  mostrarPerfilAdmin(usuario) {
+    this.currentUser = usuario;
+    
+    // Actualizar información del admin
+    const adminUsername = document.getElementById('admin-username');
+    if (adminUsername) {
+      adminUsername.textContent = usuario.username;
+    }
+
+    // Actualizar headers con info del admin
+    document.querySelectorAll('.admin-name').forEach(el => {
+      el.textContent = usuario.username;
+    });
+
+    this.mostrarPantalla('pantalla-admin');
+  }
+
+  mostrarListadoUsuarios() {
+    this.renderizarListaUsuarios();
+    this.mostrarPantalla('pantalla-listado-usuarios');
+  }
+
+  mostrarNuevoUsuario() {
+    // Limpiar formulario
+    const form = document.getElementById('form-nuevo-usuario');
+    if (form) form.reset();
+    
+    this.mostrarPantalla('pantalla-nuevo-usuario');
+  }
+
+  mostrarEditarUsuario(usuario) {
+    this.currentEditingUser = usuario;
+    
+    // Llenar formulario con datos del usuario
+    document.getElementById('edit-username').value = usuario.username;
+    document.getElementById('edit-email').value = usuario.email;
+    document.getElementById('edit-birthdate').value = usuario.birthdate;
+    document.getElementById('edit-password').value = '';
+
+    this.mostrarPantalla('pantalla-editar-usuario');
+  }
+
+  renderizarListaUsuarios(filtro = '') {
+    const container = document.getElementById('lista-usuarios-admin');
+    if (!container) return;
+
+    const usuariosFiltrados = this.usuariosData.filter(user => 
+      !user.isAdmin && user.username.toLowerCase().includes(filtro.toLowerCase())
+    );
+
+    container.innerHTML = `
+      <div class="titulo-seccion">Usuarios registrados</div>
+      ${usuariosFiltrados.map(user => `
+        <div class="usuario-item">
+          <span class="usuario-nombre">${user.username}</span>
+          <div class="usuario-acciones">
+            <button class="btn-accion btn-editar" data-user-id="${user.id}" data-action="editar">
+              <img src="img/lapiz.svg" alt="Editar">
+            </button>
+            <button class="btn-accion btn-eliminar" data-user-id="${user.id}" data-username="${user.username}" data-action="eliminar">
+              <img src="img/Cruz.svg" alt="Eliminar">
+            </button>
+          </div>
+        </div>
+      `).join('')}
+    `;
+
+    // Agregar event listeners
+    this.setupUserActionListeners();
+  }
+
+  setupUserActionListeners() {
+    const container = document.getElementById('lista-usuarios-admin');
+    if (!container) return;
+
+    // Usar delegación de eventos
+    container.addEventListener('click', (e) => {
+      const button = e.target.closest('[data-action]');
+      if (!button) return;
+
+      const action = button.dataset.action;
+      const userId = parseInt(button.dataset.userId);
+      const username = button.dataset.username;
+
+      if (action === 'eliminar') {
+        this.mostrarPopupEliminar(username, userId);
+      } else if (action === 'editar') {
+        const user = this.usuariosData.find(u => u.id === userId);
+        if (user) {
+          this.mostrarEditarUsuario(user);
+        }
+      }
+    });
+  }
+
+  filtrarUsuarios(filtro) {
+    this.renderizarListaUsuarios(filtro);
+  }
+
+  mostrarPopupEliminar(username, userId) {
+    const popup = document.getElementById('popup-eliminar-usuario');
+    const usernameSpan = document.getElementById('usuario-a-eliminar');
+    
+    if (!popup) {
+      alert(`¿Desea eliminar el usuario ${username}?`); // Fallback
+      return;
+    }
+    
+    if (usernameSpan) {
+      usernameSpan.textContent = username;
+    }
+    
+    // Asegurar que el popup esté visible
+    popup.classList.remove('hidden');
+    popup.style.display = 'flex';
+    popup.style.zIndex = '10000';
+    popup.dataset.userId = userId;
+    
+    // Forzar reflow
+    popup.offsetHeight;
+  }
+
+  confirmarEliminarUsuario() {
+    const popup = document.getElementById('popup-eliminar-usuario');
+    const userId = parseInt(popup.dataset.userId);
+    
+    // Eliminar usuario del array
+    this.usuariosData = this.usuariosData.filter(user => user.id !== userId);
+    
+    // Actualizar lista
+    this.renderizarListaUsuarios();
+    
+    // Cerrar popup
+    this.cerrarPopupEliminar();
+    
+    // Mostrar mensaje de éxito (opcional)
+    console.log('Usuario eliminado exitosamente');
+  }
+
+  cerrarPopupEliminar() {
+    const popup = document.getElementById('popup-eliminar-usuario');
+    if (popup) {
+      popup.classList.add('hidden');
+      popup.style.display = 'none';
+    }
+  }
+
+  handleEditarUsuario(e) {
+    e.preventDefault();
+    
+    if (!this.currentEditingUser) return;
+    
+    const username = document.getElementById('edit-username').value;
+    const email = document.getElementById('edit-email').value;
+    const birthdate = document.getElementById('edit-birthdate').value;
+    const password = document.getElementById('edit-password').value;
+    
+    // Actualizar usuario en el array
+    const userIndex = this.usuariosData.findIndex(u => u.id === this.currentEditingUser.id);
+    if (userIndex !== -1) {
+      this.usuariosData[userIndex] = {
+        ...this.usuariosData[userIndex],
+        username,
+        email,
+        birthdate,
+        ...(password && { password }) // Solo actualizar password si se proporciona
+      };
+    }
+    
+    console.log('Usuario actualizado:', this.usuariosData[userIndex]);
+    
+    // Volver al listado
+    this.mostrarListadoUsuarios();
+  }
+
+  handleNuevoUsuario(e) {
+    e.preventDefault();
+    
+    const username = document.getElementById('new-username').value;
+    const email = document.getElementById('new-email').value;
+    const birthdate = document.getElementById('new-birthdate').value;
+    const password = document.getElementById('new-password').value;
+    
+    // Crear nuevo usuario
+    const nuevoUsuario = {
+      id: Math.max(...this.usuariosData.map(u => u.id)) + 1,
+      username,
+      email,
+      birthdate,
+      password,
+      isAdmin: false
+    };
+    
+    this.usuariosData.push(nuevoUsuario);
+    
+    console.log('Nuevo usuario creado:', nuevoUsuario);
+    
+    // Volver al perfil admin
+    this.volverPerfilAdmin();
+  }
+
+  volverPerfilAdmin() {
+    this.mostrarPantalla('pantalla-admin');
+  }
+
+  salirModoAdmin() {
+    this.currentUser = null;
+    this.mostrarPantalla('pantalla-login');
+  }
+
+  mostrarPantalla(pantallaId) {
+    // Ocultar todas las pantallas
+    document.querySelectorAll('.pantalla').forEach(pantalla => {
+      pantalla.classList.add('hidden');
+      pantalla.style.display = 'none';
+    });
+
+    // Mostrar la pantalla solicitada
+    const pantalla = document.getElementById(pantallaId);
+    if (pantalla) {
+      pantalla.classList.remove('hidden');
+      pantalla.style.display = 'flex';
+    }
+
+    // Asegurar que el popup esté oculto al cambiar de pantalla
+    this.asegurarPopupOculto();
+  }
+}

@@ -3,10 +3,17 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Draftosaurus</title>
     <meta name="description" content="Draftosaurus - El increíble juego de dinosaurios">
     <meta name="theme-color" content="#628107">
+    
+    <!-- Mobile optimization -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Draftosaurus">
+    <meta name="format-detection" content="telephone=no">
 
     <!-- Preconnect para optimización -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,6 +27,7 @@
     <!-- Estilos -->
     <link rel="stylesheet" href="estilos.css">
     <link rel="stylesheet" href="tablero.css">
+    <link rel="stylesheet" href="administrador.css">
 </head>
 
 <body>
@@ -29,7 +37,7 @@
             <img src="img/Logo-draftosaurus.png" alt="Draftosaurus" class="logo fade-in">
         </div>
         <div class="loader-container">
-            <p class="texto texto--base texto--blanco texto--weight-semibold texto-carga">
+            <p class="texto texto--blanco texto--weight-semibold texto-carga">
                 Cargando...
             </p>
             <div class="progress">
@@ -54,7 +62,7 @@
         <div class="contenedor-centrado fade-in-up">
             <div class="contenedor-titulo">
                 <h1 class="titulo titulo--sm titulo-contenedor">INGRESAR</h1>
-                <p class="texto texto--xs texto--blanco subtitulo-contenedor">
+                <p class="texto texto--blanco subtitulo-contenedor">
                     Ingresá tu email y contraseña
                 </p>
             </div>
@@ -110,7 +118,7 @@
         <div class="contenedor-centrado fade-in-up">
             <div class="contenedor-titulo">
                 <h1 class="titulo titulo--sm titulo-contenedor">Registrate</h1>
-                <p class="texto texto--xs texto--blanco subtitulo-contenedor">
+                <p class="texto texto--blanco subtitulo-contenedor">
                     Unite al increíble mundo de Draftosaurus
                 </p>
             </div>
@@ -187,18 +195,40 @@
         </div>
     </div>
 
+    <!-- ==================== PANTALLA ADMINISTRADOR ==================== -->
+    <div id="pantalla-admin" class="pantalla admin-screen fade-in hidden">
+        <div class="admin-content-container">
+            <div class="admin-profile-card">
+                <div class="admin-avatar-container">
+                    <img src="img/foto_administrador.png" alt="Avatar del administrador" class="admin-avatar-image" loading="lazy">
+                </div>
+                <h2 class="admin-title-main" id="admin-username">ADMIN</h2>
+                <p class="admin-role-label">ADMINISTRADOR</p>
+            </div>
+
+            <div class="admin-buttons">
+                <button type="button" id="btn-modificar-usuarios" class="btn btn--naranja">
+                    Modificar usuarios
+                </button>
+                <button type="button" id="btn-nuevo-usuario" class="btn btn--verde">
+                    Nuevo usuario
+                </button>
+                <button type="button" id="btn-salir-admin" class="btn btn--blanco admin-exit-button">
+                    Salir del modo administrador
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== PANTALLA LOBBY ==================== -->
     <div id="pantalla-lobby" class="pantalla fondo-interfaz fade-in hidden">
-        <button id="btn-logout" class="btn-icon boton-salir" aria-label="Cerrar sesión">
+        <button id="btn-logout" class="btn-icon" aria-label="Cerrar sesión">
             <img src="img/icono-salir.svg" alt="Cerrar sesión" loading="lazy">
         </button>
 
         <div class="contenedor-centrado">
             <div class="perfil-lobby">
-                <div class="avatar">
-                    <img src="img/marco_usuario.png" alt="Marco del avatar" class="avatar__marco" loading="lazy">
-                    <img src="img/foto_usuario-1.png" alt="Avatar del usuario" class="avatar__imagen" loading="lazy">
-                </div>
+                <div class="avatar" style="background-image: url('img/foto_usuario-1.png')"></div>
                 <h2 class="titulo titulo--lg titulo--beige">PEPEKING</h2>
             </div>
 
@@ -232,23 +262,154 @@
         </div>
     </div>
 
+    <!-- ==================== PANTALLA LISTADO USUARIOS (ADMIN) ==================== -->
+    <div id="pantalla-listado-usuarios" class="pantalla admin-screen admin-screen-with-header fade-in hidden">
+        <div class="admin-header">
+            <button type="button" id="btn-volver-admin" class="btn-icon">
+                <img src="img/siguiente.svg" alt="Volver" loading="lazy">
+            </button>
+            <div class="admin-info">
+                <img src="img/foto_administrador.png" alt="Avatar administrador" class="admin-avatar">
+                <span class="admin-name" id="admin-header-name">ADMIN</span>
+                <span class="admin-title">ADMINISTRADOR</span>
+            </div>
+        </div>
+
+        <div class="admin-content-container">
+            <div class="admin-title-container">
+                <h1 class="titulo titulo--lg titulo--beige admin-page-title">GESTIÓN DE USUARIOS</h1>
+            </div>
+
+            <div class="search-container">
+                <input type="text" id="buscar-usuario" class="admin-form-input" placeholder="Buscar usuario..." autocomplete="off">
+                <div class="btn-search">
+                    <img src="img/lupa.svg" alt="Buscar">
+                </div>
+            </div>
+
+            <div class="usuarios-list admin-users-list-container" id="lista-usuarios-admin">
+                <div class="titulo-seccion">Usuarios registrados</div>
+                <!-- Lista dinámica de usuarios -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== PANTALLA EDITAR USUARIO (ADMIN) ==================== -->
+    <div id="pantalla-editar-usuario" class="pantalla admin-screen admin-screen-with-header fade-in hidden">
+        <div class="admin-header">
+            <button type="button" id="btn-volver-listado" class="btn-icon">
+                <img src="img/siguiente.svg" alt="Volver" loading="lazy">
+            </button>
+            <div class="admin-info">
+                <img src="img/foto_administrador.png" alt="Avatar administrador" class="admin-avatar">
+                <span class="admin-name" id="admin-header-name-edit">ADMIN</span>
+                <span class="admin-title">ADMINISTRADOR</span>
+            </div>
+        </div>
+
+        <div class="admin-content-container">
+            <div class="admin-title-container">
+                <h1 class="titulo titulo--lg titulo--beige admin-page-title">EDITAR USUARIO</h1>
+            </div>
+
+            <form id="form-editar-usuario" class="admin-form-container" novalidate>
+                <div class="admin-form-group">
+                    <label for="edit-username" class="admin-form-label">Nombre de usuario</label>
+                    <input type="text" id="edit-username" class="admin-form-input" required>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="edit-email" class="admin-form-label">Correo electrónico</label>
+                    <input type="email" id="edit-email" class="admin-form-input" required>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="edit-birthdate" class="admin-form-label">Fecha de nacimiento</label>
+                    <input type="date" id="edit-birthdate" class="admin-form-input" required>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="edit-password" class="admin-form-label">Nueva contraseña</label>
+                    <input type="password" id="edit-password" class="admin-form-input" placeholder="Dejar vacío para mantener actual">
+                </div>
+
+                <button type="submit" class="btn btn--verde">Confirmar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== PANTALLA NUEVO USUARIO (ADMIN) ==================== -->
+    <div id="pantalla-nuevo-usuario" class="pantalla admin-screen admin-screen-with-header fade-in hidden">
+        <div class="admin-header">
+            <button type="button" id="btn-volver-admin-nuevo" class="btn-icon">
+                <img src="img/siguiente.svg" alt="Volver" loading="lazy">
+            </button>
+            <div class="admin-info">
+                <img src="img/foto_usuario-1.png" alt="Avatar administrador" class="admin-avatar">
+                <span class="admin-name" id="admin-header-name-nuevo">ADMIN</span>
+                <span class="admin-title">ADMINISTRADOR</span>
+            </div>
+        </div>
+
+        <div class="admin-content-container">
+            <div class="admin-title-container">
+                <h1 class="titulo titulo--lg titulo--beige admin-page-title">NUEVO USUARIO</h1>
+            </div>
+
+            <form id="form-nuevo-usuario" class="admin-form-container" novalidate>
+                <div class="admin-form-group">
+                    <label for="new-username" class="admin-form-label">Nombre de usuario</label>
+                    <input type="text" id="new-username" class="admin-form-input" required>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="new-email" class="admin-form-label">Correo electrónico</label>
+                    <input type="email" id="new-email" class="admin-form-input" required>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="new-birthdate" class="admin-form-label">Fecha de nacimiento</label>
+                    <input type="date" id="new-birthdate" class="admin-form-input" required>
+                </div>
+
+                <div class="admin-form-group">
+                    <label for="new-password" class="admin-form-label">Contraseña</label>
+                    <input type="password" id="new-password" class="admin-form-input" required>
+                </div>
+
+                <button type="submit" class="btn btn--verde">Confirmar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== POPUP ELIMINAR USUARIO ==================== -->
+    <div id="popup-eliminar-usuario" class="admin-popup-overlay hidden">
+        <div class="admin-popup-content">
+            <h2 class="admin-popup-title">¿Desea eliminar el usuario <span id="usuario-a-eliminar"></span>?</h2>
+            <div class="admin-popup-buttons">
+                <button type="button" id="btn-confirmar-eliminar" class="btn btn--verde">Sí</button>
+                <button type="button" id="btn-cancelar-eliminar" class="btn btn--naranja">No</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== PANTALLA LISTAR JUGADORES ==================== -->
     <div id="pantalla-jugadores" class="pantalla fondo-interfaz fade-in hidden">
-        <button type="button" id="btn-volver-jugadores" class="btn-icon btn-icon--lg boton-salir">‹</button>
+        <button type="button" id="btn-volver-jugadores" class="btn-icon">
+            <img src="img/siguiente.svg" alt="Volver" loading="lazy">
+        </button>
 
-        <div class="contenedor-centrado fade-in-up">
+        <div class="contenedor-centrado">
             <div class="contenedor-titulo">
                 <h1 class="titulo titulo--sm titulo-contenedor">Listado jugadores</h1>
-                <p class="texto texto--xs texto--blanco subtitulo-contenedor">2 jugadores</p>
+                <p class="texto texto--blanco subtitulo-contenedor">2 jugadores</p>
             </div>
 
             <form id="form-jugadores" novalidate>
                 <div id="lista-jugadores">
                     <!-- Jugador 1: usuario logueado (readonly) -->
                     <div class="form-group form-group--jugador">
-                        <div class="jugador-avatar">
-                            <img src="img/foto_usuario-1.png" alt="Avatar Jugador 1" class="jugador-foto">
-                        </div>
+                        <img src="img/foto_usuario-1.png" alt="Avatar Jugador 1" class="jugador-avatar">
                         <div class="form-campo">
                             <label for="jugador-1" class="form-label">Jugador #1 (tú)</label>
                             <input type="text" id="jugador-1" class="form-input" value="" readonly aria-readonly="true">
@@ -277,14 +438,22 @@
 
                     <!-- Jugador 2: datos -->
                     <div class="form-group form-group--jugador">
-                        <div class="jugador-avatar">
-                            <img src="img/invitado.png" id="avatar-jugador-2" alt="Avatar Jugador 2"
-                                class="jugador-foto">
-                        </div>
+                        <img src="img/invitado.png" id="avatar-jugador-2" alt="Avatar Jugador 2"
+                            class="jugador-avatar">
                         <div class="form-campo">
                             <label for="jugador-2" class="form-label">Jugador #2</label>
                             <input type="text" id="jugador-2" class="form-input"
                                 placeholder="Ingrese nombre de jugador #2" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <!-- Campo de contraseña para usuario existente (oculto por defecto) -->
+                    <div class="form-group form-group--jugador hidden" id="grupo-password-jugador2">
+                        <img src="img/icono_contrasena.png" alt="Contraseña" class="jugador-avatar">
+                        <div class="form-campo">
+                            <label for="password-jugador-2" class="form-label">Contraseña</label>
+                            <input type="password" id="password-jugador-2" class="form-input"
+                                placeholder="Ingrese la contraseña" autocomplete="current-password">
                         </div>
                     </div>
                 </div>
@@ -298,23 +467,23 @@
 
     <!-- ==================== PANTALLA SELECCIÓN INICIAL ==================== -->
     <div id="pantalla-seleccion-inicial" class="pantalla fondo-interfaz fade-in hidden">
-        <button type="button" id="btn-volver-seleccion" class="btn-icon btn-icon--lg boton-salir">‹</button>
+        <button type="button" id="btn-volver-seleccion" class="btn-icon">
+            <img src="img/siguiente.svg" alt="Volver" loading="lazy">
+        </button>
 
         <div class="contenedor-centrado fade-in-up">
             <div class="contenedor-titulo">
                 <h1 class="titulo titulo--sm titulo-contenedor">¿Quién empieza?</h1>
-                <p class="texto texto--xs texto--blanco subtitulo-contenedor">Selecciona el primer jugador</p>
+                <p class="texto texto--blanco subtitulo-contenedor">Selecciona el primer jugador</p>
             </div>
 
             <div class="seleccion-jugadores">
                 <!-- Opción Jugador 1 -->
                 <div id="opcion-jugador-1" class="jugador-opcion">
-                    <div class="jugador-avatar">
-                        <img src="img/foto_usuario-1.png" alt="Avatar Jugador 1" class="jugador-foto">
-                    </div>
+                    <img src="img/foto_usuario-1.png" alt="Avatar Jugador 1" class="jugador-avatar">
                     <div class="jugador-info">
                         <h3 class="nombre-jugador nombre-jugador-1">JUGADOR 1</h3>
-                        <p class="texto texto--xs texto--blanco">Empieza primero</p>
+                        <p class="texto texto--xs">Empieza primero</p>
                     </div>
                     <button id="btn-seleccionar-j1" class="btn btn--verde">
                         <span class="btn-text">Seleccionar</span>
@@ -323,13 +492,11 @@
 
                 <!-- Opción Jugador 2 -->
                 <div id="opcion-jugador-2" class="jugador-opcion">
-                    <div class="jugador-avatar">
-                        <img src="img/invitado.png" id="avatar-seleccion-j2" alt="Avatar Jugador 2"
-                            class="jugador-foto">
-                    </div>
+                    <img src="img/invitado.png" id="avatar-seleccion-j2" alt="Avatar Jugador 2"
+                        class="jugador-avatar">
                     <div class="jugador-info">
                         <h3 class="nombre-jugador nombre-jugador-2">JUGADOR 2</h3>
-                        <p class="texto texto--xs texto--blanco">Empieza primero</p>
+                        <p class="texto texto--xs">Empieza primero</p>
                     </div>
                     <button id="btn-seleccionar-j2" class="btn btn--verde">
                         <span class="btn-text">Seleccionar</span>
@@ -350,10 +517,7 @@
     <div id="pantalla-turno-jugador" class="pantalla fondo-interfaz fade-in hidden">
         <div class="contenedor-turno-jugador">
             <div class="info-turno">
-                <div class="avatar-turno">
-                    <img src="img/foto_usuario-1.png" id="avatar-turno-actual" alt="Avatar jugador"
-                        class="avatar-turno-img">
-                </div>
+                <div id="avatar-turno-actual" class="avatar-turno" style="background-image: url('img/foto_usuario-1.png')"></div>
                 <h1 id="texto-turno" class="titulo titulo--xl titulo--blanco">Sigue</h1>
                 <h2 id="nombre-turno-jugador" class="titulo titulo--lg titulo--beige">ANA</h2>
             </div>
@@ -370,7 +534,7 @@
                     <img src="img/dado-banos.png" id="dado-imagen" alt="Dado" class="dado-imagen">
                 </div>
             </div>
-            <p class="texto texto--lg texto--blanco texto--weight-semibold dado-texto">Lanzando dado...</p>
+            <p class="texto texto--blanco texto--weight-semibold dado-texto">Lanzando dado...</p>
         </div>
     </div>
 
@@ -385,7 +549,7 @@
             </div>
             <div class="popup-content">
                 <h2 id="titulo-dado" class="titulo titulo--md titulo--marron">CUIDADO CON EL T-REX</h2>
-                <p id="descripcion-dado" class="texto texto--base texto--marron popup-descripcion">
+                <p id="descripcion-dado" class="texto texto--marron popup-descripcion">
                     Los dinosaurios deben colocarse en un recinto que no contenga un T-Rex.
                     <br><br>
                     Aún puedes jugar un T-Rex este turno, siempre que en el recinto en cuestión no haya ya uno.
@@ -434,27 +598,27 @@
         <!-- Grilla del Tablero -->
         <div class="rejilla-partida">
             <div class="col">
-                <div class="cuadro" data-recinto="bosque-semejanza">
+                <div class="cuadro" data-recinto="bosque-semejanza" title="🌲 Bosque de la Semejanza">
                     <img src="img/Bosque-de-la-Semejanza.png" alt="Bosque de la Semejanza" class="recinto">
                 </div>
-                <div class="cuadro" data-recinto="woody-trio">
+                <div class="cuadro" data-recinto="woody-trio" title="🌲 Trío Frondoso">
                     <img src="img/Trio-Frondoso.png" alt="Trio Frondoso" class="recinto">
                 </div>
-                <div class="cuadro" data-recinto="pradera-amor">
+                <div class="cuadro" data-recinto="pradera-amor" title="❤️ Pradera del Amor">
                     <img src="img/Pradera-del-Amor-vs2.png" alt="Pradera del Amor" class="recinto">
                 </div>
             </div>
-            <div class="rectangulo" data-recinto="rio">
-                <img src="img/rio.png" alt="Río" class="recinto">
+            <div class="rectangulo" data-recinto="rio" title="🌊 El Río">
+                
             </div>
             <div class="col">
-                <div class="cuadro" data-recinto="rey-jungla">
+                <div class="cuadro" data-recinto="rey-jungla" title="🦖 Rey de la Jungla">
                     <img src="img/recinto-t-rex.png" alt="Rey de la Jungla" class="recinto t-rex">
                 </div>
-                <div class="cuadro" data-recinto="prado-diferencia">
+                <div class="cuadro" data-recinto="prado-diferencia" title="🪨 Prado de la Diferencia">
                     <img src="img/Prado-de-la-Diferencia.png" alt="Prado de la Diferencia" class="recinto">
                 </div>
-                <div class="cuadro" data-recinto="isla-solitaria">
+                <div class="cuadro" data-recinto="isla-solitaria" title="🪨 Isla Solitaria">
                     <img src="img/isla-solitaria.png" alt="Isla Solitaria" class="recinto">
                 </div>
             </div>
@@ -492,14 +656,14 @@
             <!-- Resultados de jugadores -->
             <div class="resultados-ronda">
                 <div class="resultado-jugador-ronda">
-                    <img src="img/foto_usuario-1.png" id="avatar-resumen-j1" alt="Jugador 1" class="avatar-resumen">
+                    <div id="avatar-resumen-j1" class="avatar-resumen" style="background-image: url('img/foto_usuario-1.png')"></div>
                     <div class="info-resultado">
                         <h3 id="nombre-resumen-j1" class="nombre-resultado-ronda">PEPEKING</h3>
                         <p id="puntos-resumen-j1" class="puntos-resultado-ronda">20 puntos</p>
                     </div>
                 </div>
                 <div class="resultado-jugador-ronda">
-                    <img src="img/invitado.png" id="avatar-resumen-j2" alt="Jugador 2" class="avatar-resumen">
+                    <div id="avatar-resumen-j2" class="avatar-resumen" style="background-image: url('img/invitado.png')"></div>
                     <div class="info-resultado">
                         <h3 id="nombre-resumen-j2" class="nombre-resultado-ronda">ANITA</h3>
                         <p id="puntos-resumen-j2" class="puntos-resultado-ronda">13 puntos</p>
@@ -510,12 +674,12 @@
             <!-- Info de repartición -->
             <div class="info-reparticion">
                 <div class="icono-reparticion">
-                    <img src="img/dino-t-rex.png" alt="Dinosaurio" class="dino-reparticion">
-                    <img src="img/dino-triceratops.png" alt="Dinosaurio" class="dino-reparticion dino-animado">
+                    <img src="img/icono_intercambio-dinos.png" alt="Intercambio de dinosaurios" class="icono-intercambio">
                 </div>
                 <div class="texto-reparticion">
                     <h3>Repartición de dinosaurios</h3>
                     <p>Se repartirán 6 nuevos dinosaurios a cada jugador</p>
+                    <p class="nota-ronda-verde">Los dinosaurios colocados se mantienen en sus recintos</p>
                 </div>
             </div>
 
@@ -528,7 +692,9 @@
 
     <!-- ==================== PANTALLA FINAL / RESULTADOS ==================== -->
     <div id="pantalla-resultados" class="pantalla fondo-interfaz fade-in hidden">
-        <button id="btn-volver-inicio-final" class="btn-icon btn-icon--lg boton-salir">‹</button>
+        <button id="btn-volver-inicio-final" class="btn-icon">
+            <img src="img/siguiente.svg" alt="Volver" loading="lazy">
+        </button>
 
         <div class="contenedor-final">
             <h1 class="titulo titulo--xl titulo--blanco titulo-final">FIN DEL JUEGO</h1>
@@ -536,34 +702,38 @@
             <!-- Podio -->
             <div class="podio-container">
                 <div id="segundo-lugar" class="podio-jugador segundo-lugar">
-                    <div class="posicion-podio">
-                        <div class="numero-posicion">2</div>
-                        <img src="img/foto_usuario-2.png" id="avatar-segundo" alt="Segundo lugar" class="avatar-podio">
+                    <div class="corona-ganador invisible">
+                        <img src="img/corona.png" alt="" class="corona">
                     </div>
+                    <div class="posicion-podio">
+                        <div id="avatar-segundo" class="avatar-podio" style="background-image: url('img/foto_usuario-2.png')"></div>
+                        <div class="numero-posicion">2</div>
+                    </div>
+                    <div class="base-podio base-segundo"></div>
                 </div>
                 <div id="primer-lugar" class="podio-jugador primer-lugar">
+                    <div class="corona-ganador">
+                        <img src="img/corona.png" alt="Ganador" class="corona">
+                    </div>
                     <div class="posicion-podio primero">
-                        <img id="avatar-primero" alt="" class="avatar-podio">
-                        <div class="corona-ganador">
-                            <img src="img/corona.png" alt="Ganador" class="corona">
-                        </div>
+                        <div id="avatar-primero" class="avatar-podio" style="background-image: url('img/foto_usuario-1.png')"></div>
                         <div class="numero-posicion">1</div>
                     </div>
+                    <div class="base-podio base-primero"></div>
                 </div>
             </div>
 
             <!-- Resultados detallados -->
             <div class="resultados-detallados">
                 <div class="resultado-detalle">
-                    <img src="img/foto_usuario-1.png" id="avatar-final-j1" alt="Jugador 1"
-                        class="avatar-resultado-final">
+                    <div id="avatar-final-j1" class="avatar-resultado-final" style="background-image: url('img/foto_usuario-1.png')"></div>
                     <div class="info-resultado-final">
                         <h3 id="nombre-final-j1" class="nombre-resultado-final">PEPEKING</h3>
                         <p id="puntos-final-j1" class="puntos-resultado-final">250 puntos</p>
                     </div>
                 </div>
                 <div class="resultado-detalle">
-                    <img src="img/invitado.png" id="avatar-final-j2" alt="Jugador 2" class="avatar-resultado-final">
+                    <div id="avatar-final-j2" class="avatar-resultado-final" style="background-image: url('img/invitado.png')"></div>
                     <div class="info-resultado-final">
                         <h3 id="nombre-final-j2" class="nombre-resultado-final">ANITA</h3>
                         <p id="puntos-final-j2" class="puntos-resultado-final">202 puntos</p>
@@ -596,22 +766,221 @@
                     llenos de estas enormes criaturas. ¡Organiza los recintos de dinosaurios lo mejor que puedas para
                     mostrar a los visitantes curiosos los dinosaurios más trendy!</p>
 
+                <h3>Reglas rápidas</h3>
+                <div class="reglas-rapidas">
+                    <div class="regla-item">
+                        <img src="img/dino-t-rex.png" alt="Dinosaurio" class="regla-icono">
+                        <div class="regla-texto">
+                            <strong>Objetivo:</strong> Construir el mejor zoológico de dinosaurios para obtener la mayor puntuación.
+                        </div>
+                    </div>
+                    <div class="regla-item">
+                        <img src="img/dado-huella.png" alt="Dado" class="regla-icono">
+                        <div class="regla-texto">
+                            <strong>Dado:</strong> En cada turno (excepto el primero), lanzás el dado para ver dónde podés colocar tu dinosaurio.
+                        </div>
+                    </div>
+                    <div class="regla-item">
+                        <img src="img/dino-triceratops.png" alt="Dinosaurios" class="regla-icono">
+                        <div class="regla-texto">
+                            <strong>Dinosaurios:</strong> Cada ronda recibís 6 dinosaurios para colocar en tu zoo.
+                        </div>
+                    </div>
+                    <div class="regla-item">
+                        <img src="img/corona.png" alt="Puntuación" class="regla-icono">
+                        <div class="regla-texto">
+                            <strong>Puntuación:</strong> Cada recinto tiene reglas específicas de puntuación. El T-Rex da bonus especial.
+                        </div>
+                    </div>
+                    <div class="regla-item">
+                        <img src="img/rio.png" alt="Río" class="regla-icono">
+                        <div class="regla-texto">
+                            <strong>Río:</strong> Siempre disponible como "salvavidas" cuando no podés cumplir la restricción del dado.
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Caras del Dado</h3>
+                <div class="caras-dado">
+                    <div class="cara-dado">
+                        <img src="img/dado-huella.png" alt="Huella" class="dado-imagen">
+                        <div class="cara-info">
+                            <strong>Huella (Cara 1):</strong> Tablero libre, sin restricción. Podés colocar el dinosaurio en cualquier recinto.
+                        </div>
+                    </div>
+                    <div class="cara-dado">
+                        <img src="img/dado-no-trex.png" alt="No T-Rex" class="dado-imagen">
+                        <div class="cara-info">
+                            <strong>No T-Rex (Cara 2):</strong> Solo el Rey de la Jungla está bloqueado. Podés colocar en cualquier otro recinto.
+                        </div>
+                    </div>
+                    <div class="cara-dado">
+                        <img src="img/dado-cafe.png" alt="Cafetería" class="dado-imagen">
+                        <div class="cara-info">
+                            <strong>Lado Cafetería (Cara 3):</strong> Recintos disponibles: Bosque de la Semejanza, Trío Frondoso, Pradera del Amor. Si no podés cumplir, poné el dinosaurio en el río.
+                        </div>
+                    </div>
+                    <div class="cara-dado">
+                        <img src="img/dado-banos.png" alt="Baños" class="dado-imagen">
+                        <div class="cara-info">
+                            <strong>Lado Baños (Cara 4):</strong> Recintos disponibles: Rey de la Jungla, Prado de la Diferencia, Isla Solitaria. Si no podés cumplir, poné el dinosaurio en el río.
+                        </div>
+                    </div>
+                    <div class="cara-dado">
+                        <img src="img/dado-bosque.png" alt="Bosque" class="dado-imagen">
+                        <div class="cara-info">
+                            <strong>Bosque (Cara 5):</strong> Recintos disponibles: Trío Frondoso, Bosque de la Semejanza, Rey de la Jungla. Si no podés cumplir, poné el dinosaurio en el río.
+                        </div>
+                    </div>
+                    <div class="cara-dado">
+                        <img src="img/dado-rocas.png" alt="Rocas" class="dado-imagen">
+                        <div class="cara-info">
+                            <strong>Rocas/Pradera (Cara 6):</strong> Recintos disponibles: Prado de la Diferencia, Isla Solitaria, Pradera del Amor. Si no podés cumplir, poné el dinosaurio en el río.
+                        </div>
+                    </div>
+                </div>
+
                 <h3>Recintos y puntuación</h3>
-                <ul>
-                    <li><strong>Bosque de la Semejanza:</strong> Solo dinosaurios de la misma especie. Puntos:
-                        2,4,8,12,18,24</li>
-                    <li><strong>Prado de la Diferencia:</strong> Solo especies diferentes. Puntos: 1,3,6,10,15,21</li>
-                    <li><strong>Pradera del Amor:</strong> 5 puntos por cada pareja de la misma especie.</li>
-                    <li><strong>Trío Frondoso:</strong> Máximo 3 dinosaurios. 7 puntos si hay exactamente 3.</li>
-                    <li><strong>Rey de la Jungla:</strong> Solo 1 dinosaurio. 7 puntos si tienes más de esa especie que
-                        tus oponentes.</li>
-                    <li><strong>Isla Solitaria:</strong> Solo 1 dinosaurio. 7 puntos si es el único de su especie en tu
-                        zoo.</li>
-                    <li><strong>El Río:</strong> 1 punto por cada dinosaurio colocado aquí.</li>
-                </ul>
+                <div class="recintos-info">
+                    <div class="recinto-item">
+                        <img src="img/Bosque-de-la-Semejanza.png" alt="Bosque de la Semejanza" class="recinto-imagen">
+                        <div class="recinto-detalle">
+                            <strong>Bosque de la Semejanza:</strong> Solo dinosaurios de la misma especie, llenando de izquierda a derecha sin espacios. Puntos: 1, 3, 6, 10, 15, 21 (según cantidad de dinos iguales)
+                        </div>
+                    </div>
+                    <div class="recinto-item">
+                        <img src="img/Prado-de-la-Diferencia.png" alt="Prado de la Diferencia" class="recinto-imagen">
+                        <div class="recinto-detalle">
+                            <strong>Prado de la Diferencia:</strong> Solo dinos de especies distintas, llenando de izquierda a derecha sin espacios. Puntos: 1, 3, 6, 10, 15, 21 (según cantidad de especies distintas)
+                        </div>
+                    </div>
+                    <div class="recinto-item">
+                        <img src="img/Pradera-del-Amor-vs2.png" alt="Pradera del Amor" class="recinto-imagen">
+                        <div class="recinto-detalle">
+                            <strong>Pradera del Amor:</strong> Permite parejas de dinosaurios de la misma especie. 5 puntos por cada pareja formada. Podés tener varias parejas de la misma especie.
+                        </div>
+                    </div>
+                    <div class="recinto-item">
+                        <img src="img/Trio-Frondoso.png" alt="Trío Frondoso" class="recinto-imagen">
+                        <div class="recinto-detalle">
+                            <strong>Trío Frondoso:</strong> Puede contener hasta 3 dinos de cualquier especie. 7 puntos si hay exactamente 3, 0 puntos si hay menos.
+                        </div>
+                    </div>
+                    <div class="recinto-item">
+                        <img src="img/recinto-t-rex.png" alt="Rey de la Jungla" class="recinto-imagen">
+                        <div class="recinto-detalle">
+                            <strong>Rey de la Jungla:</strong> Solo 1 dinosaurio de cualquier especie. 7 puntos si tu zoo tiene al menos tantos dinosaurios de esa especie como cada oponente. Si algún oponente tiene más, vale 0 puntos.
+                        </div>
+                    </div>
+                    <div class="recinto-item">
+                        <img src="img/isla-solitaria.png" alt="Isla Solitaria" class="recinto-imagen">
+                        <div class="recinto-detalle">
+                            <strong>Isla Solitaria:</strong> Solo 1 dinosaurio. 7 puntos si es el único de su especie en todo tu zoo, 0 puntos si no.
+                        </div>
+                    </div>
+                    <div class="recinto-item">
+                        <img src="img/rio.png" alt="El Río" class="recinto-imagen">
+                        <div class="recinto-detalle">
+                            <strong>El Río:</strong> Cada dinosaurio aquí colocado vale 1 punto al final.
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Consejos y estrategias</h3>
+                <div class="consejos-interactivos">
+                    <div class="consejo-item" onclick="mostrarDetalleConsejo(this)">
+                        <img src="img/icono_informacion.png" alt="Información" class="consejo-icono">
+                        <div class="consejo-texto">
+                            <strong>Planificá tu zoo:</strong> Pensá en qué recintos querés llenar primero y qué dinosaurios necesitás para maximizar puntos.
+                        </div>
+                        <div class="consejo-detalle">
+                            <strong>Detalle:</strong> Empezá por los recintos que te den más puntos. El Bosque de la Semejanza y Prado de la Diferencia pueden dar hasta 21 puntos si los llenás completamente.
+                        </div>
+                    </div>
+                    <div class="consejo-item" onclick="mostrarDetalleConsejo(this)">
+                        <img src="img/icono_informacion.png" alt="Información" class="consejo-icono">
+                        <div class="consejo-texto">
+                            <strong>El Río es tu salvavidas:</strong> Cuando no podés cumplir la restricción del dado, el Río siempre está disponible y da puntos seguros.
+                        </div>
+                        <div class="consejo-detalle">
+                            <strong>Detalle:</strong> Cada dinosaurio en el Río vale 1 punto. Es mejor poner un dino en el Río que perder un turno. ¡Usalo estratégicamente!
+                        </div>
+                    </div>
+                    <div class="consejo-item" onclick="mostrarDetalleConsejo(this)">
+                        <img src="img/icono_informacion.png" alt="Información" class="consejo-icono">
+                        <div class="consejo-texto">
+                            <strong>T-Rex estratégico:</strong> Distribuí los T-Rex en diferentes recintos para maximizar el bonus (+1 por recinto con T-Rex).
+                        </div>
+                        <div class="consejo-detalle">
+                            <strong>Detalle:</strong> Si tenés 3 T-Rex, ponelos en 3 recintos diferentes para obtener +3 puntos extra. Si los ponés todos en el mismo recinto, solo obtendrás +1 punto.
+                        </div>
+                    </div>
+                    <div class="consejo-item" onclick="mostrarDetalleConsejo(this)">
+                        <img src="img/icono_informacion.png" alt="Información" class="consejo-icono">
+                        <div class="consejo-texto">
+                            <strong>Observá a tu oponente:</strong> Para el Rey de la Jungla e Isla Solitaria, es importante ver qué dinosaurios tiene tu rival.
+                        </div>
+                        <div class="consejo-detalle">
+                            <strong>Detalle:</strong> Si tu oponente tiene muchos T-Rex, poné un T-Rex en el Rey de la Jungla para asegurar los 7 puntos. Para la Isla Solitaria, elegí un dinosaurio que tu oponente no tenga.
+                        </div>
+                    </div>
+                    <div class="consejo-item" onclick="mostrarDetalleConsejo(this)">
+                        <img src="img/icono_informacion.png" alt="Información" class="consejo-icono">
+                        <div class="consejo-texto">
+                            <strong>Llenado sin espacios:</strong> En Bosque de la Semejanza y Prado de la Diferencia, llená de izquierda a derecha sin dejar espacios vacíos.
+                        </div>
+                        <div class="consejo-detalle">
+                            <strong>Detalle:</strong> Los puntos se calculan según la cantidad de dinosaurios consecutivos desde la izquierda. Si dejás espacios vacíos, perdés puntos potenciales.
+                        </div>
+                    </div>
+                    <div class="consejo-item" onclick="mostrarDetalleConsejo(this)">
+                        <img src="img/icono_informacion.png" alt="Información" class="consejo-icono">
+                        <div class="consejo-texto">
+                            <strong>Parejas en Pradera del Amor:</strong> Concentráte en formar parejas del mismo tipo para maximizar los 5 puntos por pareja.
+                        </div>
+                        <div class="consejo-detalle">
+                            <strong>Detalle:</strong> Podés tener varias parejas del mismo tipo. Por ejemplo, 4 T-Rex en la Pradera del Amor te darían 10 puntos (2 parejas × 5 puntos).
+                        </div>
+                    </div>
+                </div>
 
                 <h3>T-Rex especial</h3>
-                <p>Cada recinto con al menos un T-Rex da 1 punto adicional al final del juego.</p>
+                <div class="trex-info">
+                    <img src="img/dino-t-rex.png" alt="T-Rex" class="trex-imagen">
+                    <div class="trex-texto">
+                        <p>El T-Rex es un dinosaurio especial que otorga puntos extra al final de la partida. Cada recinto de tu zoo que contenga al menos un T-Rex otorga +1 punto extra al final.</p>
+                        <p><strong>Ejemplo:</strong> Si tenés un T-Rex en el Bosque de la Semejanza y otro en el Río, obtendrás +2 puntos extra (+1 por cada recinto con T-Rex).</p>
+                        <p><strong>Importante:</strong> Recintos con múltiples T-Rex solo dan +1 punto por recinto, no por cantidad de T-Rex.</p>
+                    </div>
+                </div>
+
+                <h3>Alertas importantes</h3>
+                <div class="alertas-importantes">
+                    <div class="alerta-item alerta-roja">
+                        <img src="img/icono_informacion.png" alt="Alerta" class="alerta-icono">
+                        <div class="alerta-texto">
+                            <strong>¡Atención!</strong> Si no podés cumplir la restricción del dado, tenés que poner el dinosaurio en el Río. No podés saltarte el turno.
+                        </div>
+                    </div>
+                    <div class="alerta-item alerta-verde">
+                        <img src="img/icono_informacion.png" alt="Consejo" class="alerta-icono">
+                        <div class="alerta-texto">
+                            <strong>Consejo:</strong> El primer turno de cada ronda no tiene restricción del dado. ¡Aprovechalo para colocar estratégicamente!
+                        </div>
+                    </div>
+                    <div class="alerta-item alerta-azul">
+                        <img src="img/icono_informacion.png" alt="Info" class="alerta-icono">
+                        <div class="alerta-texto">
+                            <strong>Recordatorio:</strong> Los puntos se calculan al final de cada ronda. Planificá tu zoo pensando en la puntuación final.
+                        </div>
+                    </div>
+                    <div class="alerta-item alerta-amarilla">
+                        <img src="img/icono_informacion.png" alt="Estrategia" class="alerta-icono">
+                        <div class="alerta-texto">
+                            <strong>Estrategia:</strong> Observá el mapa del oponente para tomar decisiones inteligentes en el Rey de la Jungla e Isla Solitaria.
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -620,53 +989,98 @@
     <div id="popup-pesos" class="popup-overlay hidden">
         <div class="popup">
             <button class="popup-close" onclick="cerrarPopup('popup-pesos')" aria-label="Cerrar">×</button>
-            <h2>PESO DE LOS DINOSAURIOS</h2>
+            <h2>Cálculo del peso de cada recinto</h2>
             <div id="contenido-pesos">
                 <table class="tabla-pesos">
                     <thead>
                         <tr>
                             <th>Dinosaurio</th>
-                            <th>Peso (Toneladas)</th>
+                            <th>Masa (kg)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>T-Rex</td>
-                            <td>7.0</td>
+                            <td>7000</td>
                         </tr>
                         <tr>
                             <td>Triceratops</td>
-                            <td>7.0</td>
+                            <td>7000</td>
                         </tr>
                         <tr>
                             <td>Diplodocus</td>
-                            <td>15.0</td>
+                            <td>15000</td>
                         </tr>
                         <tr>
                             <td>Stegosaurus</td>
-                            <td>5.0</td>
+                            <td>5000</td>
                         </tr>
                         <tr>
                             <td>Parasaurolophus</td>
-                            <td>2.5</td>
+                            <td>2500</td>
                         </tr>
                     </tbody>
                 </table>
 
-                <h3>Peso por recinto</h3>
-                <div id="peso-recintos">
-                    <p><strong>Bosque de la Semejanza:</strong> <span id="peso-bosque-semejanza">0</span> toneladas</p>
-                    <p><strong>Trío Frondoso:</strong> <span id="peso-woody-trio">0</span> toneladas</p>
-                    <p><strong>Pradera del Amor:</strong> <span id="peso-pradera-amor">0</span> toneladas</p>
-                    <p><strong>Rey de la Jungla:</strong> <span id="peso-rey-jungla">0</span> toneladas</p>
-                    <p><strong>Prado de la Diferencia:</strong> <span id="peso-prado-diferencia">0</span> toneladas</p>
-                    <p><strong>Isla Solitaria:</strong> <span id="peso-isla-solitaria">0</span> toneladas</p>
-                    <p><strong>Río:</strong> <span id="peso-rio">0</span> toneladas</p>
-                </div>
+                <h3>Masa por recinto (kg)</h3>
+                <table class="tabla-masa-recintos">
+                    <thead>
+                        <tr>
+                            <th>Recinto</th>
+                            <th>Masa (kg)</th>
+                            <th>Peso (N)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Bosque de la Semejanza</strong></td>
+                            <td><span id="masa-bosque-semejanza">0</span></td>
+                            <td><span id="peso-bosque-semejanza">0</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Trío Frondoso</strong></td>
+                            <td><span id="masa-woody-trio">0</span></td>
+                            <td><span id="peso-woody-trio">0</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pradera del Amor</strong></td>
+                            <td><span id="masa-pradera-amor">0</span></td>
+                            <td><span id="peso-pradera-amor">0</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Rey de la Jungla</strong></td>
+                            <td><span id="masa-rey-jungla">0</span></td>
+                            <td><span id="peso-rey-jungla">0</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Prado de la Diferencia</strong></td>
+                            <td><span id="masa-prado-diferencia">0</span></td>
+                            <td><span id="peso-prado-diferencia">0</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Isla Solitaria</strong></td>
+                            <td><span id="masa-isla-solitaria">0</span></td>
+                            <td><span id="peso-isla-solitaria">0</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Río</strong></td>
+                            <td><span id="masa-rio">0</span></td>
+                            <td><span id="peso-rio">0</span></td>
+                        </tr>
+                    </tbody>
+                </table>
 
-                <p style="margin-top: 20px;">
-                    <strong>Peso total del zoológico:</strong> <span id="peso-total">0</span> toneladas
-                </p>
+                <div class="totales-fisica">
+                    <p class="masa-total-info">
+                        <strong>Masa total del zoológico:</strong> <span id="masa-total">0</span> kg
+                    </p>
+                    <p class="peso-total-info">
+                        <strong>Peso total ejercido en el zoológico:</strong> <span id="peso-total">0</span> N
+                    </p>
+                    <p class="primera-ley-newton">
+                        <em>Primera Ley de Newton: El peso (fuerza gravitacional) es igual a la masa multiplicada por la aceleración de la gravedad (P = m × g, donde g = 9.8 m/s²)</em>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -695,12 +1109,12 @@
                         </div>
                     </div>
                     <div class="mini-rectangulo" data-recinto="rio">
-                        <img src="img/rio.png" alt="Río" class="mini-recinto">
+                       
                         <div id="mapa-rio" class="mini-dinosaurios"></div>
                     </div>
                     <div class="mini-col">
                         <div class="mini-cuadro" data-recinto="rey-jungla">
-                            <img src="img/recinto-t-rex.png" alt="Rey" class="mini-recinto">
+                            <img src="img/recinto-t-rex.png" alt="Rey de la Jungla" class="mini-recinto">
                             <div id="mapa-rey-jungla" class="mini-dinosaurios"></div>
                         </div>
                         <div class="mini-cuadro" data-recinto="prado-diferencia">
@@ -761,9 +1175,9 @@
         <div class="popup">
             <button class="popup-close" onclick="cerrarPopup('popup-descarte')" aria-label="Cerrar">×</button>
             <h2 class="titulo titulo--md titulo--marron">Descartar un dinosaurio</h2>
-            <p class="texto texto--base texto--marron">Elegí un dinosaurio de tu mano para descartar.</p>
+            <p class="texto texto--marron">Elegí un dinosaurio de tu mano para descartar.</p>
             <div id="dinosaurios-descarte" class="lista-dinos"></div>
-            <div style="margin-top:16px;display:flex;justify-content:center;">
+            <div class="contenedor-boton-centrado">
                 <button id="btn-confirmar-descarte" class="btn btn--verde" disabled>Descartar</button>
             </div>
         </div>
@@ -775,7 +1189,7 @@
     <div id="popup-seleccion-dinosaurios" class="popup-overlay hidden">
         <div class="popup">
             <h2 class="titulo titulo--md titulo--marron">Seleccionar dinosaurios</h2>
-            <p class="texto texto--base texto--marron">Selecciona los dinosaurios que tienes en tu mano</p>
+            <p class="texto texto--marron">Selecciona los dinosaurios que tienes en tu mano</p>
 
             <div class="seleccion-dinosaurios-grid">
                 <div class="dino-selector" data-tipo="t-rex">
@@ -833,7 +1247,7 @@
                 Total seleccionados: <span id="total-dinosaurios">0</span>/6
             </div>
 
-            <div style="margin-top:20px;display:flex;justify-content:center;">
+            <div class="contenedor-boton-seleccion">
                 <button id="btn-confirmar-seleccion" class="btn btn--verde" disabled>
                     Selecciona 6 dinosaurios
                 </button>
@@ -845,7 +1259,7 @@
     <div id="popup-seleccion-dado" class="popup-overlay hidden">
         <div class="popup">
             <h2 class="titulo titulo--md titulo--marron">Seleccionar cara del dado</h2>
-            <p class="texto texto--base texto--marron">Selecciona la cara que salió al lanzar el dado</p>
+            <p class="texto texto--marron">Selecciona la cara que salió al lanzar el dado</p>
 
             <div class="caras-dado-grid">
                 <div class="cara-dado-opcion" data-cara="1">

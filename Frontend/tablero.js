@@ -1,5 +1,6 @@
-/* ==================== CONFIGURACIÓN Y ESTADO GLOBAL ==================== */
+/* ==================== CONFIGURACIÓN CENTRALIZADA ==================== */
 const CONFIG = {
+  // Dinosaurios
   IMAGENES_DINOSAURIOS: {
     't-rex': { disponible: 'img/dino-t-rex.png', colocado: 'img/dino-t-rex-arriba.png' },
     'triceratops': { disponible: 'img/dino-triceratops.png', colocado: 'img/dino-triceratops-arriba.png' },
@@ -7,7 +8,9 @@ const CONFIG = {
     'stegosaurus': { disponible: 'img/dino-stegosaurus.png', colocado: 'img/dino-stegosaurus-arriba.png' },
     'parasaurolophus': { disponible: 'img/dino-parasaurolophus.png', colocado: 'img/dino-parasaurolophus-arriba.png' }
   },
-
+  
+  // Pesos y masas de dinosaurios
+  MASAS_DINOSAURIOS: { 't-rex': 7000, 'triceratops': 7000, 'diplodocus': 15000, 'stegosaurus': 5000, 'parasaurolophus': 2500 }, // kg
   PESOS_DINOSAURIOS: {
     't-rex': 7.0, 
     'triceratops': 7.0, 
@@ -15,217 +18,266 @@ const CONFIG = {
     'stegosaurus': 5.0, 
     'parasaurolophus': 2.5
   },
-
+  
+  GRAVEDAD: 9.8, // m/s²
   TIPOS_DINOSAURIOS: ['t-rex', 'triceratops', 'diplodocus', 'stegosaurus', 'parasaurolophus'],
   DINOSAURIOS_POR_RONDA: 6,
   MAX_DINOSAURIOS_POOL: 8,
+  TOTAL_RONDAS: 4,
 
+  // Posiciones
   POSICIONES_DINOSAURIOS: [
-    { top: '50%', left: '50%' }, 
-    { top: '30%', left: '30%' },
-    { top: '30%', left: '70%' }, 
-    { top: '70%', left: '30%' },
-    { top: '70%', left: '70%' }, 
-    { top: '50%', left: '20%' },
-    { top: '20%', left: '50%' }, 
-    { top: '80%', left: '50%' }
+    { top: '50%', left: '50%' }, { top: '30%', left: '30%' }, { top: '30%', left: '70%' }, 
+    { top: '70%', left: '30%' }, { top: '70%', left: '70%' }, { top: '50%', left: '20%' },
+    { top: '20%', left: '50%' }, { top: '80%', left: '50%' }
   ],
-
   POSICIONES_MINI: [
-    { top: '50%', left: '50%' }, 
-    { top: '25%', left: '25%' },
-    { top: '25%', left: '75%' }, 
-    { top: '75%', left: '25%' },
-    { top: '75%', left: '75%' }, 
-    { top: '50%', left: '15%' },
-    { top: '15%', left: '50%' }, 
-    { top: '85%', left: '50%' }
+    { top: '50%', left: '50%' }, { top: '25%', left: '25%' }, { top: '25%', left: '75%' }, 
+    { top: '75%', left: '25%' }, { top: '75%', left: '75%' }, { top: '50%', left: '15%' },
+    { top: '15%', left: '50%' }, { top: '85%', left: '50%' }
   ],
 
+  // Posiciones específicas para recintos numerados (de izquierda a derecha)
+  POSICIONES_NUMERADAS: {
+    'bosque-semejanza': [
+      { top: '50%', left: '16%' },  // Posición 1 (casilla 2)
+      { top: '50%', left: '32%' },  // Posición 2 (casilla 4)
+      { top: '50%', left: '48%' },  // Posición 3 (casilla 8)
+      { top: '50%', left: '64%' },  // Posición 4 (casilla 12)
+      { top: '50%', left: '80%' },  // Posición 5 (casilla 18)
+      { top: '50%', left: '96%' }   // Posición 6 (casilla 24)
+    ],
+    'prado-diferencia': [
+      { top: '50%', left: '16%' },  // Posición 1 (casilla 1)
+      { top: '50%', left: '32%' },  // Posición 2 (casilla 3)
+      { top: '50%', left: '48%' },  // Posición 3 (casilla 6)
+      { top: '50%', left: '64%' },  // Posición 4 (casilla 10)
+      { top: '50%', left: '80%' },  // Posición 5 (casilla 15)
+      { top: '50%', left: '96%' }   // Posición 6 (casilla 21)
+    ]
+  },
+
+  POSICIONES_NUMERADAS_MINI: {
+    'bosque-semejanza': [
+      { top: '50%', left: '16%' },  // Posición 1 (casilla 2)
+      { top: '50%', left: '32%' },  // Posición 2 (casilla 4)
+      { top: '50%', left: '48%' },  // Posición 3 (casilla 8)
+      { top: '50%', left: '64%' },  // Posición 4 (casilla 12)
+      { top: '50%', left: '80%' },  // Posición 5 (casilla 18)
+      { top: '50%', left: '96%' }   // Posición 6 (casilla 24)
+    ],
+    'prado-diferencia': [
+      { top: '50%', left: '16%' },  // Posición 1 (casilla 1)
+      { top: '50%', left: '32%' },  // Posición 2 (casilla 3)
+      { top: '50%', left: '48%' },  // Posición 3 (casilla 6)
+      { top: '50%', left: '64%' },  // Posición 4 (casilla 10)
+      { top: '50%', left: '80%' },  // Posición 5 (casilla 15)
+      { top: '50%', left: '96%' }   // Posición 6 (casilla 21)
+    ]
+  },
+
+  // Restricciones del dado - Según el manual oficial del juego
   RESTRICCIONES_DADO: {
-    1: { tipo: 'lugar-vacio', titulo: 'Lugar vací­o', imagen: 'dado-huella' },
-    2: { tipo: 'no-t-rex', titulo: 'Sin T-Rex', imagen: 'dado-no-trex' },
-    3: { tipo: 'lado-cafeteria', titulo: 'Lado cafeterí­a', imagen: 'dado-cafe' },
-    4: { tipo: 'bosque', titulo: 'Bosque', imagen: 'dado-bosque' },
-    5: { tipo: 'rocas', titulo: 'Rocas', imagen: 'dado-rocas' },
-    6: { tipo: 'lado-banos', titulo: 'Lado baí±os', imagen: 'dado-banos' }
+    1: { 
+      tipo: 'huella-libre', 
+      titulo: 'Huella (libre)', 
+      imagen: 'dado-huella',
+      descripcion: 'Tablero libre, sin restricción',
+      recintosBloqueados: [] // No bloquea nada
+    },
+    2: { 
+      tipo: 'no-t-rex', 
+      titulo: 'No T-Rex', 
+      imagen: 'dado-no-trex',
+      descripcion: 'Solo el Rey de la Jungla',
+      recintosBloqueados: ['rey-jungla'] // Solo bloquea el Rey de la Jungla
+    },
+    3: { 
+      tipo: 'lado-cafeteria', 
+      titulo: 'Lado Cafetería', 
+      imagen: 'dado-cafe',
+      descripcion: 'Bosque de la Semejanza, Trío Frondoso, Pradera del Amor',
+      recintosBloqueados: ['bosque-semejanza', 'woody-trio', 'pradera-amor']
+    },
+    4: { 
+      tipo: 'lado-banos', 
+      titulo: 'Lado Baños', 
+      imagen: 'dado-banos',
+      descripcion: 'Rey de la Jungla, Prado de la Diferencia, Isla Solitaria',
+      recintosBloqueados: ['rey-jungla', 'prado-diferencia', 'isla-solitaria']
+    },
+    5: { 
+      tipo: 'bosque', 
+      titulo: 'Bosque', 
+      imagen: 'dado-bosque',
+      descripcion: 'Trío Frondoso, Bosque de la Semejanza, Rey de la Jungla',
+      recintosBloqueados: ['woody-trio', 'bosque-semejanza', 'rey-jungla']
+    },
+    6: { 
+      tipo: 'rocas', 
+      titulo: 'Rocas / Pradera', 
+      imagen: 'dado-rocas',
+      descripcion: 'Prado de la Diferencia, Isla Solitaria, Pradera del Amor',
+      recintosBloqueados: ['prado-diferencia', 'isla-solitaria', 'pradera-amor']
+    }
+  },
+
+  // Selectores DOM
+  SELECTORS: {
+    popupOverlay: '.popup-overlay',
+    popupClose: '.popup-close',
+    dinosaurioColocado: '.dinosaurio-colocado',
+    dino: '.dino',
+    dropZones: '.cuadro, .rectangulo',
+    dinoDescarte: '.dino-descarte'
   }
 };
 
 /* ==================== REGLAS DE RECINTOS ==================== */
 const REGLAS_RECINTOS = {
   'bosque-semejanza': {
-    validar: (recinto, nuevoDino) => {
-      if (recinto.length === 0) return true;
-      return recinto.every(d => d === nuevoDino);
-    },
+    validar: (recinto, nuevoDino) => recinto.length === 0 || recinto.every(d => d === nuevoDino),
     maxDinos: 6,
-    puntos: [0, 2, 4, 8, 12, 18, 24]
+    puntos: [0, 1, 3, 6, 10, 15, 21] // Según cantidad de dinos iguales (sin espacios)
   },
-  
   'pradera-amor': {
     validar: () => true,
     maxDinos: 6,
-    puntos: recinto => {
+    puntos: (recinto) => {
       const conteos = {};
       recinto.forEach(d => conteos[d] = (conteos[d] || 0) + 1);
-      let parejas = 0;
-      Object.values(conteos).forEach(count => {
-        parejas += Math.floor(count / 2);
-      });
-      return parejas * 5;
+      return Object.values(conteos).reduce((parejas, count) => parejas + Math.floor(count / 2), 0) * 5;
     }
   },
-  
-  'woody-trio': {
-    validar: () => true,
-    maxDinos: 3,
-    puntos: cant => cant === 3 ? 7 : 0
+  'woody-trio': { 
+    validar: () => true, 
+    maxDinos: 3, 
+    puntos: cant => cant === 3 ? 7 : 0 
   },
-  
   'prado-diferencia': {
-    validar: (recinto, nuevoDino) => {
-      return !recinto.includes(nuevoDino);
-    },
+    validar: (recinto, nuevoDino) => !recinto.includes(nuevoDino),
     maxDinos: 6,
-    puntos: [0, 1, 3, 6, 10, 15, 21]
+    puntos: [0, 1, 3, 6, 10, 15, 21] // Según cantidad de especies distintas (sin espacios)
   },
-  
   'rey-jungla': {
-    validar: () => true,
+    validar: () => true, 
     maxDinos: 1,
     puntos: (recinto, todosRecintos, jugadorActual, todosJugadores) => {
       if (recinto.length !== 1) return 0;
       const tipo = recinto[0];
-      
-      const miTotal = Object.values(todosRecintos)
-        .flat()
-        .filter(d => d === tipo).length;
+      const miTotal = Object.values(todosRecintos).flat().filter(d => d === tipo).length;
       
       if (todosJugadores) {
         for (let oponente of todosJugadores) {
           if (oponente === jugadorActual) continue;
-          const totalOponente = Object.values(oponente.recintos)
-            .flat()
-            .filter(d => d === tipo).length;
-          
+          const totalOponente = Object.values(oponente.recintos).flat().filter(d => d === tipo).length;
           if (totalOponente > miTotal) return 0;
         }
       }
-      
       return 7;
     }
   },
-  
   'isla-solitaria': {
-    validar: () => true,
+    validar: () => true, 
     maxDinos: 1,
     puntos: (recinto, todosRecintos) => {
       if (recinto.length !== 1) return 0;
       const tipo = recinto[0];
-      
-      const totalEnZoo = Object.values(todosRecintos)
-        .flat()
-        .filter(d => d === tipo).length;
-      
-      return totalEnZoo === 1 ? 7 : 0;
+      return Object.values(todosRecintos).flat().filter(d => d === tipo).length === 1 ? 7 : 0;
     }
   },
-  
-  'rio': {
-    validar: () => true,
-    maxDinos: 20,
-    puntos: cant => cant
+  'rio': { 
+    validar: () => true, 
+    maxDinos: 20, 
+    puntos: cant => cant // 1 punto por cada dinosaurio
+  }
+};
+
+/* ==================== UTILIDADES ==================== */
+const Utils = {
+  mezclarArray: (arr) => {
+    const copia = [...arr];
+    for (let i = copia.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copia[i], copia[j]] = [copia[j], copia[i]];
+    }
+    return copia;
+  },
+
+  togglePopup: (popup, show) => {
+    if (!popup) return;
+    const method = show ? 'remove' : 'add';
+    popup.classList[method]('hidden');
+    popup.style.display = show ? (popup.classList.contains('popup-overlay') ? 'flex' : 'block') : 'none';
+    document.body.style.overflow = show ? 'hidden' : '';
+  },
+
+  hayPopupAbierto: () => Array.from(document.querySelectorAll(CONFIG.SELECTORS.popupOverlay))
+    .some(p => !p.classList.contains('hidden') && p.style.display !== 'none'),
+
+  limpiarElementos: (selector) => document.querySelectorAll(selector).forEach(el => el.remove()),
+
+  crearElemento: (tag, attrs = {}, styles = {}) => {
+    const el = document.createElement(tag);
+    
+    if (attrs.dataset) {
+      Object.assign(el.dataset, attrs.dataset);
+      delete attrs.dataset;
+    }
+    
+    Object.assign(el, attrs);
+    Object.assign(el.style, styles);
+    return el;
   }
 };
 
 /* ==================== ESTADO DEL JUEGO ==================== */
 class EstadoJuego {
-  constructor() {
-    this.reset();
-  }
+  constructor() { this.reset(); }
 
   reset() {
-    // Estado del juego
-    this.jugadorActual = 1;
-    this.primerJugador = 1;
-    this.primerJugadorOriginal = 1;
-    this.rondaActual = 1;
-    this.turnoEnRonda = 1;
-    this.modoSeguimiento = false;
-    this.restriccionActual = null;
-    this.puedePasarTurno = false;
-    this.yaColocoEnTurno = false;
-    this.dadoNumero = null;
-    
-    // Colecciones
-    this.repartosDisponibles = [];
-    this.dinosauriosDescartados = [];
-    this.dinosauriosRondaJ1 = [];
-    this.dinosauriosRondaJ2 = [];
-    this.descartadosJ1 = [];
-    this.descartadosJ2 = [];
-    this.turnosCompletadosJ1 = 0;
-    this.turnosCompletadosJ2 = 0;
-
-    // Inicializar jugadores
-    this.jugador1 = this._crearJugador();
-    this.jugador2 = this._crearJugador();
+    Object.assign(this, {
+      jugadorActual: 1, primerJugador: 1, primerJugadorOriginal: 1, rondaActual: 1, turnoEnRonda: 1,
+      modoSeguimiento: false, restriccionActual: null, puedePasarTurno: false, yaColocoEnTurno: false,
+      dadoNumero: null, repartosDisponibles: [], dinosauriosDescartados: [],
+      dinosauriosRondaJ1: [], dinosauriosRondaJ2: [], descartadosJ1: [], descartadosJ2: [],
+      turnosCompletadosJ1: 0, turnosCompletadosJ2: 0,
+      jugador1: this._crearJugador(), jugador2: this._crearJugador()
+    });
   }
 
-  // Método privado para crear un jugador
   _crearJugador() {
     return {
-      nombre: '',
-      dinosauriosDisponibles: [],
+      nombre: '', dinosauriosDisponibles: [], puntos: 0, puntosRonda: 0,
       recintos: {
         'bosque-semejanza': [], 'pradera-amor': [], 'woody-trio': [], 
         'prado-diferencia': [], 'rey-jungla': [], 'isla-solitaria': [], 'rio': []
-      },
-      puntos: 0,
-      puntosRonda: 0
+      }
     };
   }
 
-  // Métodos de acceso
-  getJugadorActual() {
-    return this[`jugador${this.jugadorActual}`];
-  }
+  getJugadorActual() { return this[`jugador${this.jugadorActual}`]; }
+  getOponente() { return this[`jugador${this.jugadorActual === 1 ? 2 : 1}`]; }
+  getTodosJugadores() { return [this.jugador1, this.jugador2]; }
 
-  getOponente() {
-    return this[`jugador${this.jugadorActual === 1 ? 2 : 1}`];
-  }
-
-  getTodosJugadores() {
-    return [this.jugador1, this.jugador2];
-  }
-
-  // Gestión de turnos
   cambiarTurno() {
-    // Actualizar contadores de turnos en modo seguimiento
-    if (this.modoSeguimiento) {
-      this[`turnosCompletadosJ${this.jugadorActual}`]++;
-    }
+    if (this.modoSeguimiento) this[`turnosCompletadosJ${this.jugadorActual}`]++;
     
-    // Cambiar al siguiente jugador
     this.jugadorActual = this.jugadorActual === 1 ? 2 : 1;
     this.turnoEnRonda++;
     this.yaColocoEnTurno = false;
     this.puedePasarTurno = false;
     
-    // Actualizar UI
     const btn = document.getElementById('btn-siguiente-turno');
     if (btn) btn.disabled = true;
   }
 
-  // Verificación de estado de ronda
   esFinDeRonda() {
     if (!this.modoSeguimiento) {
       return this.jugador1.dinosauriosDisponibles.length === 0 && 
              this.jugador2.dinosauriosDisponibles.length === 0;
     }
     
-    // Lógica para modo seguimiento
     if (this.esPrimerTurnoDeRonda()) return false;
     
     const ambosCompletaronTresTurnos = this.turnosCompletadosJ1 >= 3 && this.turnosCompletadosJ2 >= 3;
@@ -235,272 +287,19 @@ class EstadoJuego {
     return sinDinosaurios || ambosCompletaronTresTurnos;
   }
 
-  esPrimerTurnoDeRonda() {
-    return this.turnoEnRonda === 1;
-  }
-
-  esPrimerTurnoAbsoluto() {
-    return this.turnoEnRonda === 1 && this.rondaActual === 1;
-  }
-
-  necesitaRestriccion() {
-    return !this.esPrimerTurnoDeRonda();
-  }
+  esPrimerTurnoDeRonda() { return this.turnoEnRonda === 1; }
+  esPrimerTurnoAbsoluto() { return this.turnoEnRonda === 1 && this.rondaActual === 1; }
+  necesitaRestriccion() { return !this.esPrimerTurnoDeRonda(); }
 }
 
 const estadoJuego = new EstadoJuego();
-
-/* ==================== UTILIDADES ==================== */
-const Utils = {
-  mezclarArray(arr) {
-    const copia = [...arr];
-    for (let i = copia.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [copia[i], copia[j]] = [copia[j], copia[i]];
-    }
-    return copia;
-  },
-
-  abrirPopup(popup) {
-    if (!popup) return;
-    popup.classList.remove('hidden');
-    popup.style.display = popup.classList.contains('popup-overlay') ? 'flex' : 'block';
-    document.body.style.overflow = 'hidden';
-  },
-
-  cerrarPopup(popup) {
-    if (!popup) return;
-    popup.classList.add('hidden');
-    popup.style.display = 'none';
-    document.body.style.overflow = '';
-  },
-
-  hayPopupAbierto() {
-    return Array.from(document.querySelectorAll('.popup-overlay'))
-      .some(p => !p.classList.contains('hidden') && p.style.display !== 'none');
-  },
-
-  limpiarElementos(selector) {
-    document.querySelectorAll(selector).forEach(el => el.remove());
-  },
-
-  crearElemento(tag, attrs = {}, styles = {}) {
-    const el = document.createElement(tag);
-
-    if (attrs.dataset) {
-      Object.keys(attrs.dataset).forEach(key => {
-        el.dataset[key] = attrs.dataset[key];
-      });
-      delete attrs.dataset;
-    }
-
-    Object.keys(attrs).forEach(key => {
-      el[key] = attrs[key];
-    });
-
-    Object.assign(el.style, styles);
-
-    return el;
-  }
-};
-
-/* ==================== SISTEMA DE MAPAS ==================== */
-const MapaOponente = {
-  mostrar() {
-    const oponente = estadoJuego.getOponente();
-
-    this.actualizarTitulo(oponente.nombre);
-    this.renderizarMiniTablero(oponente.recintos);
-    this.mostrarPuntuacion(oponente.recintos);
-
-    Utils.abrirPopup(document.getElementById('popup-mapa'));
-  },
-
-  actualizarTitulo(nombre) {
-    const titulo = document.getElementById('titulo-mapa');
-    if (titulo) {
-      titulo.textContent = `MAPA DE ${(nombre || 'OPONENTE').toUpperCase()}`;
-    }
-  },
-
-  renderizarMiniTablero(recintos) {
-    document.querySelectorAll('.mini-dinosaurios').forEach(cont => {
-      cont.innerHTML = '';
-    });
-
-    Object.entries(recintos).forEach(([recinto, dinosaurios]) => {
-      const contenedor = document.getElementById(`mapa-${recinto}`);
-      if (!contenedor || dinosaurios.length === 0) return;
-
-      dinosaurios.forEach((tipo, index) => {
-        const img = this.crearMiniDinosaurio(tipo, index + 1);
-        contenedor.appendChild(img);
-      });
-    });
-  },
-
-  crearMiniDinosaurio(tipo, posicion) {
-    const pos = CONFIG.POSICIONES_MINI[(posicion - 1) % CONFIG.POSICIONES_MINI.length];
-
-    const img = Utils.crearElemento('img', {
-      src: CONFIG.IMAGENES_DINOSAURIOS[tipo].colocado,
-      className: 'mini-dinosaurio',
-      alt: tipo
-    }, {
-      position: 'absolute',
-      top: pos.top,
-      left: pos.left,
-      transform: 'translate(-50%, -50%)',
-      zIndex: '15',
-      pointerEvents: 'none'
-    });
-
-    return img;
-  },
-
-  mostrarPuntuacion(recintos) {
-    const detalles = {};
-    let total = 0;
-    const oponente = estadoJuego.getOponente();
-    const todosJugadores = estadoJuego.getTodosJugadores();
-
-    Object.entries(recintos).forEach(([nombre, dinosaurios]) => {
-      const reglas = REGLAS_RECINTOS[nombre];
-      if (!reglas) return;
-
-      let puntos = 0;
-
-      if (typeof reglas.puntos === 'function') {
-        if (nombre === 'isla-solitaria') {
-          puntos = reglas.puntos(dinosaurios, recintos);
-        } else if (nombre === 'rey-jungla') {
-          puntos = reglas.puntos(dinosaurios, recintos, oponente, todosJugadores);
-        } else if (nombre === 'pradera-amor') {
-          puntos = reglas.puntos(dinosaurios);
-        } else {
-          puntos = reglas.puntos(dinosaurios.length);
-        }
-      } else if (Array.isArray(reglas.puntos)) {
-        puntos = reglas.puntos[dinosaurios.length] || 0;
-      }
-
-      detalles[nombre] = puntos;
-      total += puntos;
-    });
-
-    // Bonus T-Rex
-    Object.values(recintos).forEach(recinto => {
-      if (recinto.some(d => d === 't-rex')) {
-        total += 1;
-      }
-    });
-
-    Object.entries(detalles).forEach(([recinto, puntos]) => {
-      const elem = document.getElementById(`puntos-${recinto}`);
-      if (elem) elem.textContent = `${puntos} pts`;
-    });
-
-    const totalElem = document.getElementById('puntos-total-oponente');
-    if (totalElem) {
-      totalElem.innerHTML = `<strong>${total} PUNTOS</strong>`;
-    }
-  }
-};
-
-/* ==================== SISTEMA DE POPUPS ==================== */
-const PopupManager = {
-  /**
-   * Muestra el popup de reglas del juego
-   */
-  mostrarReglas() {
-    Utils.abrirPopup(document.getElementById('popup-reglas'));
-  },
-
-  /**
-   * Muestra el popup con los pesos de los dinosaurios
-   */
-  mostrarPesos() {
-    GameLogic.actualizarPesos();
-    Utils.abrirPopup(document.getElementById('popup-pesos'));
-  },
-
-  /**
-   * Cierra un popup específico o todos los popups
-   * @param {String} popupId - ID del popup a cerrar (opcional)
-   */
-  cerrar(popupId) {
-    // Función para verificar si un popup puede cerrarse
-    const puedeSerCerrado = (popup) => {
-      if (popup.id === 'popup-descarte' && !estadoJuego.puedePasarTurno) {
-        return false;
-      }
-      if (popup.id === 'popup-seleccion-dinosaurios') {
-        return false;
-      }
-      return true;
-    };
-
-    if (popupId) {
-      // Cerrar un popup específico
-      const popup = document.getElementById(popupId);
-      if (popup && puedeSerCerrado(popup)) {
-        Utils.cerrarPopup(popup);
-      }
-    } else {
-      // Cerrar todos los popups que puedan cerrarse
-      document.querySelectorAll('.popup-overlay').forEach(popup => {
-        if (puedeSerCerrado(popup)) {
-          Utils.cerrarPopup(popup);
-        }
-      });
-    }
-  },
-
-  /**
-   * Configura los event listeners para los popups
-   */
-  setupEventListeners() {
-    // Cerrar al hacer clic en el overlay
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('popup-overlay')) {
-        const popup = e.target;
-        if (popup.id === 'popup-descarte' && !estadoJuego.puedePasarTurno) return;
-        if (popup.id === 'popup-seleccion-dinosaurios') return;
-        Utils.cerrarPopup(popup);
-      }
-    });
-
-    // Cerrar al hacer clic en botones de cierre
-    document.querySelectorAll('.popup-close').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const popup = btn.closest('.popup-overlay');
-        if (popup?.id === 'popup-descarte' && !estadoJuego.puedePasarTurno && estadoJuego.yaColocoEnTurno) return;
-        Utils.cerrarPopup(popup);
-      });
-    });
-
-    // Cerrar con la tecla Escape
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        document.querySelectorAll('.popup-overlay:not(.hidden)').forEach(popup => {
-          if (popup.style.display !== 'none') {
-            if (popup.id === 'popup-descarte' && !estadoJuego.puedePasarTurno) return;
-            if (popup.id === 'popup-seleccion-dinosaurios') return;
-            Utils.cerrarPopup(popup);
-          }
-        });
-      }
-    });
-  }
-};
 
 /* ==================== LÓGICA DEL JUEGO ==================== */
 const GameLogic = {
   puedeColocarDinosaurio(recinto, tipoDino) {
     if (estadoJuego.yaColocoEnTurno) return false;
 
-    // El rí­o SIEMPRE está disponible
+    // El río SIEMPRE está disponible (no se bloquea nunca)
     if (recinto === 'rio') return true;
 
     const jugador = estadoJuego.getJugadorActual();
@@ -508,31 +307,26 @@ const GameLogic = {
     const reglas = REGLAS_RECINTOS[recinto];
 
     if (!reglas || recintoActual.length >= reglas.maxDinos) return false;
-
-    if (estadoJuego.restriccionActual && !this.cumpleRestriccion(recinto, tipoDino)) {
-      return false;
-    }
+    
+    // NUEVA LÓGICA: Verificar si el recinto está bloqueado por la restricción actual
+    if (estadoJuego.restriccionActual && this.estaRecintoBloqueado(recinto)) return false;
 
     return reglas.validar(recintoActual, tipoDino);
   },
 
-  cumpleRestriccion(recinto, tipoDino) {
-    const recintos = estadoJuego.getJugadorActual().recintos;
-    const restricciones = {
-      'no-t-rex': () => {
-        if (tipoDino === 't-rex') {
-          return !recintos[recinto].some(d => d === 't-rex');
-        } else {
-          return !recintos[recinto].some(d => d === 't-rex');
-        }
-      },
-      'lugar-vacio': () => recintos[recinto].length === 0,
-      'lado-cafeteria': () => ['bosque-semejanza', 'pradera-amor', 'woody-trio'].includes(recinto),
-      'bosque': () => ['bosque-semejanza', 'woody-trio'].includes(recinto),
-      'rocas': () => ['rey-jungla', 'isla-solitaria'].includes(recinto),
-      'lado-banos': () => ['prado-diferencia', 'rey-jungla', 'isla-solitaria'].includes(recinto)
-    };
-    return restricciones[estadoJuego.restriccionActual]?.() ?? true;
+  estaRecintoBloqueado(recinto) {
+    // Si no hay restricción actual, no hay bloqueos
+    if (!estadoJuego.restriccionActual) return false;
+    
+    // Buscar la configuración de la restricción actual
+    const restriccionConfig = Object.values(CONFIG.RESTRICCIONES_DADO)
+      .find(r => r.tipo === estadoJuego.restriccionActual);
+    
+    // Si no se encuentra la configuración o no tiene recintos bloqueados, no bloquear
+    if (!restriccionConfig || !restriccionConfig.recintosBloqueados) return false;
+    
+    // Verificar si el recinto está en la lista de bloqueados
+    return restriccionConfig.recintosBloqueados.includes(recinto);
   },
 
   colocarDinosaurio(recinto, tipoDino, area) {
@@ -542,19 +336,37 @@ const GameLogic = {
     const idx = jugador.dinosauriosDisponibles.indexOf(tipoDino);
     if (idx === -1) return false;
 
+    // Capturar puntos antes de colocar el dinosaurio
+    const puntosAntes = jugador.puntosRonda || 0;
+
+    // Eliminar el dinosaurio del array de disponibles
     jugador.dinosauriosDisponibles.splice(idx, 1);
     jugador.recintos[recinto].push(tipoDino);
 
+    // Agregar visualmente al tablero
     RenderManager.agregarDinosaurioVisual(tipoDino, recinto, area);
-
     estadoJuego.yaColocoEnTurno = true;
+
+    // Actualizar interfaz inmediatamente
     this.actualizarPuntos();
     this.actualizarPesos();
-
     JuegoManager.actualizarInterfaz();
-    RenderManager.actualizarDinosauriosDisponibles();
-    setTimeout(() => JuegoManager.mostrarPopupDescarte(), 350);
-
+    
+    // Forzar actualización visual de dinosaurios disponibles
+    setTimeout(() => {
+      RenderManager.actualizarDinosauriosDisponibles();
+    }, 50);
+    
+    // Capturar puntos después de colocar el dinosaurio y mostrar alerta
+    const puntosDesues = jugador.puntosRonda || 0;
+    const puntosObtenidos = puntosDesues - puntosAntes;
+    
+    // Mostrar alerta de puntos obtenidos
+    setTimeout(() => {
+      JuegoManager.mostrarAlertaPuntos(puntosObtenidos, tipoDino, recinto);
+      setTimeout(() => JuegoManager.mostrarPopupDescarte(), 200);
+    }, 350);
+    
     return true;
   },
 
@@ -566,289 +378,238 @@ const GameLogic = {
       if (!reglas) return;
 
       let puntos = 0;
-
       if (typeof reglas.puntos === 'function') {
         if (nombre === 'isla-solitaria') {
           puntos = reglas.puntos(dinosaurios, recintos);
         } else if (nombre === 'pradera-amor') {
           puntos = reglas.puntos(dinosaurios);
-        } else if (nombre === 'rey-jungla') {
-          puntos = reglas.puntos(dinosaurios, recintos, jugadorActual, todosJugadores);
-        } else {
+              } else if (nombre === 'rey-jungla') {
+        puntos = reglas.puntos(dinosaurios, recintos, jugadorActual, todosJugadores);
+      } else {
           puntos = reglas.puntos(dinosaurios.length);
         }
       } else if (Array.isArray(reglas.puntos)) {
-        const cantidad = dinosaurios.length;
-        puntos = reglas.puntos[cantidad] || 0;
+        puntos = reglas.puntos[dinosaurios.length] || 0;
       }
-
       total += puntos;
     });
 
-    // Bonus T-Rex
-    let bonusTRex = 0;
-    Object.entries(recintos).forEach(([nombre, dinosaurios]) => {
-      if (dinosaurios.some(d => d === 't-rex')) {
-        bonusTRex += 1;
-      }
-    });
-    total += bonusTRex;
-
+    // Bonus T-Rex: +1 punto por cada recinto que contenga al menos un T-Rex
+    total += Object.values(recintos).filter(recinto => recinto.some(d => d === 't-rex')).length;
     return total;
   },
 
   actualizarPuntos() {
-    const jugador1 = estadoJuego.jugador1;
-    const jugador2 = estadoJuego.jugador2;
     const todosJugadores = estadoJuego.getTodosJugadores();
-    
-    jugador1.puntosRonda = this.calcularPuntos(jugador1.recintos, jugador1, todosJugadores);
-    jugador2.puntosRonda = this.calcularPuntos(jugador2.recintos, jugador2, todosJugadores);
-    
-    console.log(`Puntos actualizados - J1: ${jugador1.puntosRonda}, J2: ${jugador2.puntosRonda}`);
+    estadoJuego.jugador1.puntosRonda = this.calcularPuntos(estadoJuego.jugador1.recintos, estadoJuego.jugador1, todosJugadores);
+    estadoJuego.jugador2.puntosRonda = this.calcularPuntos(estadoJuego.jugador2.recintos, estadoJuego.jugador2, todosJugadores);
   },
 
   actualizarPesos() {
     const jugador = estadoJuego.getJugadorActual();
+    let masaTotal = 0;
     let pesoTotal = 0;
 
     Object.entries(jugador.recintos).forEach(([recinto, dinosaurios]) => {
-      const peso = dinosaurios.reduce((sum, dino) =>
-        sum + (CONFIG.PESOS_DINOSAURIOS[dino] || 0), 0);
-
+      // Calcular masa del recinto (kg)
+      const masa = dinosaurios.reduce((sum, dino) => sum + (CONFIG.MASAS_DINOSAURIOS[dino] || 0), 0);
+      // Calcular peso usando la primera ley de Newton: P = m × g (N)
+      const peso = masa * CONFIG.GRAVEDAD;
+      
+      masaTotal += masa;
       pesoTotal += peso;
-      const elem = document.getElementById(`peso-${recinto}`);
-      if (elem) elem.textContent = peso.toFixed(1);
+      
+      // Actualizar elementos de masa
+      const elemMasa = document.getElementById(`masa-${recinto}`);
+      if (elemMasa) elemMasa.textContent = masa.toFixed(0);
+      
+      // Actualizar elementos de peso
+      const elemPeso = document.getElementById(`peso-${recinto}`);
+      if (elemPeso) elemPeso.textContent = peso.toFixed(0);
     });
 
-    const elemTotal = document.getElementById('peso-total');
-    if (elemTotal) elemTotal.textContent = pesoTotal.toFixed(1);
+    // Actualizar totales
+    const elemMasaTotal = document.getElementById('masa-total');
+    if (elemMasaTotal) elemMasaTotal.textContent = masaTotal.toFixed(0);
+    
+    const elemPesoTotal = document.getElementById('peso-total');
+    if (elemPesoTotal) elemPesoTotal.textContent = pesoTotal.toFixed(0);
   }
 };
 
 /* ==================== RENDERIZADO ==================== */
 const RenderManager = {
   renderizarTablero() {
-    estadoJuego.modoSeguimiento ?
-      this.renderizarTableroSeguimiento() :
-      this.renderizarTableroNormal();
+    // INTERFAZ UNIFICADA: Siempre usar la misma lógica de renderizado
+    Utils.limpiarElementos(CONFIG.SELECTORS.dinosaurioColocado);
+    this._renderizarRecintos(estadoJuego.getJugadorActual().recintos);
+    setTimeout(() => DragDropManager.init(), 50);
   },
 
-  renderizarTableroNormal() {
-    Utils.limpiarElementos('.dinosaurio-colocado');
-    const jugador = estadoJuego.getJugadorActual();
-
-    Object.entries(jugador.recintos).forEach(([recinto, dinosaurios]) => {
-      const area = document.querySelector(`[data-recinto="${recinto}"]`);
-      if (!area) return;
-
-      dinosaurios.forEach((tipo, index) => {
-        this.crearDinosaurioVisual(tipo, index + 1, area);
-      });
-    });
-    
-    DragDropManager.init();
-  },
-
-  renderizarTableroSeguimiento() {
-    Utils.limpiarElementos('.dinosaurio-colocado');
-    const jugador = estadoJuego.getJugadorActual();
-
-    Object.entries(jugador.recintos).forEach(([recinto, dinosaurios]) => {
+  _renderizarRecintos(recintos) {
+    Object.entries(recintos).forEach(([recinto, dinosaurios]) => {
       const area = document.querySelector(`[data-recinto="${recinto}"]`);
       if (!area) return;
 
       dinosaurios.forEach((tipo, index) => {
         const img = this.crearDinosaurioVisual(tipo, index + 1, area);
         
-        // Habilitar drag para ronda 2 en modo seguimiento
-        if (estadoJuego.modoSeguimiento && estadoJuego.rondaActual === 2) {
+        // INTERFAZ UNIFICADA: Configurar arrastre desde la ronda 2 en adelante independientemente del modo
+        if (estadoJuego.rondaActual >= 2) {
+          // Configurar arrastre SIN sobrescribir los estilos de posición
           img.draggable = true;
-          img.style.cursor = 'move';
-          img.style.pointerEvents = 'auto';
-          img.dataset.recinto = recinto;
-          img.dataset.tipo = tipo;
-          img.dataset.jugador = estadoJuego.jugadorActual;
-          // No agregar eventos aquí, se harán en DragDropManager.init()
+          img.classList.add('dino-arrastreable');
+          
+          // Agregar datos necesarios
+          Object.assign(img.dataset, { recinto, tipo, jugador: estadoJuego.jugadorActual });
         }
       });
     });
-    
-    // Llamar a init después de que todos los elementos estén en el DOM
-    setTimeout(() => {
-      DragDropManager.init();
-    }, 50);
   },
 
   crearDinosaurioVisual(tipo, posicion, area) {
-    const pos = CONFIG.POSICIONES_DINOSAURIOS[(posicion - 1) % CONFIG.POSICIONES_DINOSAURIOS.length];
+    const jugadorActual = estadoJuego.jugadorActual;
+    const recinto = area.dataset.recinto;
+    
+    // Determinar las posiciones según el tipo de recinto
+    let pos;
+    if (CONFIG.POSICIONES_NUMERADAS[recinto]) {
+      // Usar posiciones específicas para recintos numerados (de izquierda a derecha)
+      pos = CONFIG.POSICIONES_NUMERADAS[recinto][(posicion - 1) % CONFIG.POSICIONES_NUMERADAS[recinto].length];
+    } else {
+      // Usar posiciones normales para otros recintos
+      pos = CONFIG.POSICIONES_DINOSAURIOS[(posicion - 1) % CONFIG.POSICIONES_DINOSAURIOS.length];
+    }
+    
     const img = Utils.crearElemento('img', {
       src: CONFIG.IMAGENES_DINOSAURIOS[tipo].colocado,
-      className: 'dinosaurio-colocado',
-      alt: tipo
-    }, {
-      position: 'absolute',
-      top: pos.top,
-      left: pos.left,
-      transform: 'translate(-50%, -50%)',
-      zIndex: '15',
-      pointerEvents: estadoJuego.modoSeguimiento && estadoJuego.rondaActual === 2 ? 'auto' : 'none'
+      className: `dinosaurio-colocado dinosaurio-j${jugadorActual}`,
+      alt: tipo,
+      dataset: { jugador: jugadorActual.toString(), tipo }
     });
+
+    // Solo aplicar posición - el resto está en CSS
+    img.style.top = pos.top;
+    img.style.left = pos.left;
+    // INTERFAZ UNIFICADA: pointer-events basado solo en la ronda, no en el modo
+    img.style.pointerEvents = estadoJuego.rondaActual >= 2 ? 'auto' : 'none';
 
     area.appendChild(img);
     return img;
   },
 
   agregarDinosaurioVisual(tipo, recinto, area) {
-    const jugador = estadoJuego.getJugadorActual();
-    const cantidad = jugador.recintos[recinto].length;
+    const cantidad = estadoJuego.getJugadorActual().recintos[recinto].length;
     this.crearDinosaurioVisual(tipo, cantidad, area);
-  },
-
-  agregarEventosCorreccion(img) {
-    img.addEventListener('dragstart', (e) => {
-      e.dataTransfer.setData('tipo', img.dataset.tipo);
-      e.dataTransfer.setData('recinto-origen', img.dataset.recinto);
-      e.dataTransfer.setData('correccion', 'true');
-      img.classList.add('dragging');
-    });
-
-    img.addEventListener('dragend', () => {
-      img.classList.remove('dragging');
-    });
   },
 
   actualizarDinosauriosDisponibles() {
     const contenedor = document.querySelector('.dinosaurios-disponibles');
     if (!contenedor) return;
 
+    // Limpiar completamente el contenedor
     contenedor.innerHTML = '';
+    
     const jugador = estadoJuego.getJugadorActual();
 
+    // Solo crear dinosaurios que realmente están disponibles
     jugador.dinosauriosDisponibles.forEach((tipo, index) => {
       const img = Utils.crearElemento('img', {
         src: CONFIG.IMAGENES_DINOSAURIOS[tipo].disponible,
-        className: 'dino',
-        draggable: true,
+        className: 'dino', 
+        draggable: true, 
         alt: tipo,
-        dataset: { tipo: tipo, index: index.toString() }
+        dataset: { tipo, index: index.toString() }
       });
+      
+      // Asegurar que el elemento se agregue correctamente
       contenedor.appendChild(img);
     });
 
+    // Reinicializar el sistema de drag & drop
     DragDropManager.init();
   }
 };
 
 /* ==================== DRAG & DROP ==================== */
 const DragDropManager = {
-  dinosaurioArrastrado: null,
-  esCorreccion: false,
+  dinosaurioArrastrado: null, 
+  esCorreccion: false, 
   recintoOrigen: null,
+  touchStartPosition: { x: 0, y: 0 },
+  isDragging: false,
+  ghostElement: null,
 
-  /**
-   * Inicializa el sistema de renderizado
-   */
   init() {
-    // Inicializar dinosaurios y zonas de drop
-    this.initDinosaurios();
-    this.initDropZones();
-    
-    // Inicializar dinosaurios colocados para ronda 2 en modo seguimiento
-    if (estadoJuego.modoSeguimiento && estadoJuego.rondaActual === 2) {
-      // Usar setTimeout para asegurar que el DOM esté completamente renderizado
-      setTimeout(() => this.initDinosauriosColocados(), 100);
+    this._initDinosaurios();
+    this._initDropZones();
+    // INTERFAZ UNIFICADA: Inicializar dinosaurios colocados desde la ronda 2 en adelante independientemente del modo
+    if (estadoJuego.rondaActual >= 2) {
+      setTimeout(() => this._initDinosauriosColocados(), 100);
     }
   },
-  
-  /**
-   * Inicializa los dinosaurios ya colocados en el tablero para el modo seguimiento
-   */
-  initDinosauriosColocados() {
-    // Función auxiliar para reiniciar los event listeners
-    const reiniciarEventListeners = (selector) => {
-      document.querySelectorAll(selector).forEach(elemento => {
-        const nuevoElemento = elemento.cloneNode(true);
-        elemento.parentNode.replaceChild(nuevoElemento, elemento);
-        return nuevoElemento;
-      });
-    };
-    
-    // Limpiar event listeners previos
-    reiniciarEventListeners('.dinosaurio-colocado');
-    
-    // Ahora agregar los nuevos event listeners
-    document.querySelectorAll('.dinosaurio-colocado').forEach(dino => {
-      if (estadoJuego.modoSeguimiento && estadoJuego.rondaActual === 2) {
-        // SOLO habilitar drag para el jugador actual
-        const jugadorDelDino = parseInt(dino.dataset.jugador);
-        if (jugadorDelDino === estadoJuego.jugadorActual) {
-          // Configurar propiedades para arrastre
-          dino.draggable = true;
-          dino.style.cursor = 'move';
-          dino.style.pointerEvents = 'auto';
-          
-          // Asegurar que el dinosaurio tenga tipo
-          if (!dino.dataset.tipo && dino.alt) {
-            dino.dataset.tipo = dino.alt;
-          }
-          
-          // Asegurar que el dinosaurio tenga recinto
-          const area = dino.closest('[data-recinto]');
-          if (area && area.dataset.recinto) {
-            dino.dataset.recinto = area.dataset.recinto;
-          }
-          
-          // Agregar event listeners
-          dino.addEventListener('dragstart', this.handleDragStartCorreccion.bind(this));
-          dino.addEventListener('dragend', this.handleDragEnd.bind(this));
-        }
-      }
-    });
-  },
 
-  /**
-   * Inicializa los dinosaurios en la mano del jugador
-   */
-  initDinosaurios() {
-    document.querySelectorAll('.dino').forEach(dino => {
+  _initDinosaurios() {
+    document.querySelectorAll(CONFIG.SELECTORS.dino).forEach(dino => {
       const newDino = dino.cloneNode(true);
       dino.parentNode.replaceChild(newDino, dino);
-
-      // Agregar event listeners para arrastre
-      newDino.addEventListener('dragstart', this.handleDragStart.bind(this));
-      newDino.addEventListener('dragend', this.handleDragEnd.bind(this));
+      
+      // Eventos de arrastre clásico
+      newDino.addEventListener('dragstart', this._handleDragStart.bind(this));
+      newDino.addEventListener('dragend', this._handleDragEnd.bind(this));
+      
+      // Eventos táctiles para móvil
+      newDino.addEventListener('touchstart', this._handleTouchStart.bind(this), { passive: false });
+      newDino.addEventListener('touchmove', this._handleTouchMove.bind(this), { passive: false });
+      newDino.addEventListener('touchend', this._handleTouchEnd.bind(this), { passive: false });
     });
   },
 
-  /**
-   * Inicializa las zonas donde se pueden soltar dinosaurios
-   */
-  initDropZones() {
-    const dropZones = document.querySelectorAll('.cuadro, .rectangulo');
+  _initDropZones() {
     const eventHandlers = {
-      dragover: this.handleDragover,
-      drop: this.handleDrop,
-      dragenter: this.handleDragenter,
-      dragleave: this.handleDragleave
+      dragover: this._handleDragover,
+      drop: this._handleDrop,
+      dragenter: this._handleDragenter,
+      dragleave: this._handleDragleave
     };
 
-    dropZones.forEach(zone => {
+    document.querySelectorAll(CONFIG.SELECTORS.dropZones).forEach(zone => {
       const newZone = zone.cloneNode(true);
       zone.parentNode.replaceChild(newZone, zone);
       
-      // Agregar los event listeners para cada evento
       Object.entries(eventHandlers).forEach(([event, handler]) => {
         newZone.addEventListener(event, handler.bind(this));
       });
     });
   },
-  
-  /**
-   * Maneja el inicio del arrastre en modo corrección
-   * @param {DragEvent} e - Evento de arrastre
-   */
-  handleDragStartCorreccion(e) {
+
+  _initDinosauriosColocados() {
+    document.querySelectorAll(CONFIG.SELECTORS.dinosaurioColocado).forEach(dino => {
+      // INTERFAZ UNIFICADA: Funcionalidad desde ronda 2 en adelante disponible independientemente del modo
+      if (estadoJuego.rondaActual >= 2) {
+        const jugadorDelDino = parseInt(dino.dataset.jugador);
+        if (jugadorDelDino === estadoJuego.jugadorActual) {
+          Object.assign(dino, { draggable: true });
+          dino.classList.add('dino-arrastreable');
+          
+          if (!dino.dataset.tipo && dino.alt) dino.dataset.tipo = dino.alt;
+          
+          const area = dino.closest('[data-recinto]');
+          if (area?.dataset.recinto) dino.dataset.recinto = area.dataset.recinto;
+          
+          dino.addEventListener('dragstart', this._handleDragStartCorreccion.bind(this));
+          dino.addEventListener('dragend', this._handleDragEnd.bind(this));
+          
+          // Eventos táctiles para móvil
+          dino.addEventListener('touchstart', this._handleTouchStartCorreccion.bind(this), { passive: false });
+          dino.addEventListener('touchmove', this._handleTouchMove.bind(this), { passive: false });
+          dino.addEventListener('touchend', this._handleTouchEnd.bind(this), { passive: false });
+        }
+      }
+    });
+  },
+
+  _handleDragStartCorreccion(e) {
     this.dinosaurioArrastrado = e.target;
     this.esCorreccion = true;
     this.recintoOrigen = e.target.dataset.recinto;
@@ -860,11 +621,7 @@ const DragDropManager = {
     e.dataTransfer.setData('correccion', 'true');
   },
 
-  /**
-   * Maneja el inicio del arrastre en modo normal
-   * @param {DragEvent} e - Evento de arrastre
-   */
-  handleDragStart(e) {
+  _handleDragStart(e) {
     if (Utils.hayPopupAbierto() || estadoJuego.yaColocoEnTurno) {
       e.preventDefault();
       return;
@@ -879,32 +636,18 @@ const DragDropManager = {
     e.dataTransfer.setData('text/plain', e.target.dataset.tipo);
   },
 
-  /**
-   * Maneja el fin del arrastre
-   * @param {DragEvent} e - Evento de arrastre
-   */
-  handleDragEnd(e) {
+  _handleDragEnd(e) {
     e.target.classList.remove('dragging');
-    this.limpiarIndicadores();
-    this.dinosaurioArrastrado = null;
-    this.esCorreccion = false;
-    this.recintoOrigen = null;
+    this._limpiarIndicadores();
+    Object.assign(this, { dinosaurioArrastrado: null, esCorreccion: false, recintoOrigen: null });
   },
 
-  /**
-   * Maneja el evento dragover
-   * @param {DragEvent} e - Evento de arrastre
-   */
-  handleDragover(e) {
+  _handleDragover(e) {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
   },
 
-  /**
-   * Maneja el evento dragenter
-   * @param {DragEvent} e - Evento de arrastre
-   */
-  handleDragenter(e) {
+  _handleDragenter(e) {
     e.preventDefault();
     const zona = e.currentTarget;
     const recinto = zona.dataset.recinto;
@@ -912,110 +655,391 @@ const DragDropManager = {
     if (!recinto || !this.dinosaurioArrastrado) return;
 
     const tipoDino = this.dinosaurioArrastrado.dataset.tipo;
-    const puedeColocar = this.esCorreccion || GameLogic.puedeColocarDinosaurio(recinto, tipoDino);
+    let puedeColocar = false;
+    let claseEstilo = 'drop-zone-invalid';
+    
+    if (this.esCorreccion) {
+      puedeColocar = true;
+      claseEstilo = 'drop-zone-active';
+    } else {
+      // Verificar si está bloqueado por restricción
+      const estaBloqueado = GameLogic.estaRecintoBloqueado(recinto);
+      if (estaBloqueado) {
+        claseEstilo = 'drop-zone-blocked'; // Nueva clase para recintos bloqueados
+      } else {
+        puedeColocar = GameLogic.puedeColocarDinosaurio(recinto, tipoDino);
+        claseEstilo = puedeColocar ? 'drop-zone-active' : 'drop-zone-invalid';
+      }
+    }
 
-    zona.classList.add(puedeColocar ? 'drop-zone-active' : 'drop-zone-invalid');
+    zona.classList.add(claseEstilo);
   },
 
-  /**
-   * Maneja el evento dragleave
-   * @param {DragEvent} e - Evento de arrastre
-   */
-  handleDragleave(e) {
+  _handleDragleave(e) {
     if (!e.currentTarget.contains(e.relatedTarget)) {
-      e.currentTarget.classList.remove('drop-zone-active', 'drop-zone-invalid');
+      e.currentTarget.classList.remove('drop-zone-active', 'drop-zone-invalid', 'drop-zone-blocked');
     }
   },
 
-  /**
-   * Maneja el evento drop
-   * @param {DragEvent} e - Evento de arrastre
-   */
-  handleDrop(e) {
+  _handleDrop(e) {
     e.preventDefault();
-
     const area = e.currentTarget;
     const recinto = area.dataset.recinto;
-    const tipoDino = e.dataTransfer.getData('text/plain') || 
-                     e.dataTransfer.getData('tipo');
+    
+    // Obtener tipo de dinosaurio: desde dataTransfer (drag normal) o desde elemento arrastrado (touch)
+    let tipoDino;
+    if (e.dataTransfer && e.dataTransfer.getData) {
+      tipoDino = e.dataTransfer.getData('text/plain') || e.dataTransfer.getData('tipo');
+    } else if (this.dinosaurioArrastrado) {
+      tipoDino = this.dinosaurioArrastrado.dataset.tipo;
+    }
 
     if (!recinto || !tipoDino) {
-      this.limpiarIndicadores();
+      this._limpiarIndicadores();
+      // Limpiar estado de touch si aplica
+      if (this.isDragging) {
+        this._cleanupTouch();
+      }
       return;
     }
 
-    // Procesar la colocación según el modo
     if (this.esCorreccion) {
-      this.manejarCorreccion(recinto, tipoDino, area);
+      this._manejarCorreccion(recinto, tipoDino, area);
     } else if (GameLogic.puedeColocarDinosaurio(recinto, tipoDino)) {
       GameLogic.colocarDinosaurio(recinto, tipoDino, area);
     }
 
-    this.limpiarIndicadores();
+    this._limpiarIndicadores();
+    
+    // Limpiar estado de touch si aplica
+    if (this.isDragging) {
+      this._cleanupTouch();
+    }
   },
 
-  /**
-   * Maneja la corrección de posición de un dinosaurio
-   * @param {string} recintoDestino - Recinto donde se quiere colocar el dinosaurio
-   * @param {string} tipoDino - Tipo de dinosaurio
-   * @param {HTMLElement} area - Elemento DOM del área de destino
-   */
-  manejarCorreccion(recintoDestino, tipoDino, area) {
-    // Verificar que no sea el mismo recinto
+  _manejarCorreccion(recintoDestino, tipoDino, area) {
     if (!this.recintoOrigen || this.recintoOrigen === recintoDestino) return;
 
     const jugador = estadoJuego.getJugadorActual();
     const reglas = REGLAS_RECINTOS[recintoDestino];
     
-    // Verificar capacidad del recinto
-    if (reglas && reglas.maxDinos && jugador.recintos[recintoDestino].length >= reglas.maxDinos) {
-      console.log('Recinto destino lleno');
-      return;
-    }
+    if (reglas?.maxDinos && jugador.recintos[recintoDestino].length >= reglas.maxDinos) return;
     
     const idxOrigen = jugador.recintos[this.recintoOrigen].indexOf(tipoDino);
-
     if (idxOrigen !== -1) {
       jugador.recintos[this.recintoOrigen].splice(idxOrigen, 1);
       jugador.recintos[recintoDestino].push(tipoDino);
 
-      RenderManager.renderizarTableroSeguimiento();
+      RenderManager.renderizarTablero();
       GameLogic.actualizarPuntos();
       GameLogic.actualizarPesos();
     }
   },
 
-  /**
-   * Limpia los indicadores visuales de las zonas de drop
-   */
-  limpiarIndicadores() {
-    document.querySelectorAll('.drop-zone-active, .drop-zone-invalid')
-      .forEach(el => el.classList.remove('drop-zone-active', 'drop-zone-invalid'));
+  _limpiarIndicadores() {
+    document.querySelectorAll('.drop-zone-active, .drop-zone-invalid, .drop-zone-blocked')
+      .forEach(el => el.classList.remove('drop-zone-active', 'drop-zone-invalid', 'drop-zone-blocked'));
+  },
+
+  // ==================== EVENTOS TÁCTILES ==================== 
+  _handleTouchStart(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    this.touchStartPosition = { x: touch.clientX, y: touch.clientY };
+    this.dinosaurioArrastrado = e.target;
+    this.isDragging = false;
+    this.esCorreccion = false;
+  },
+
+  _handleTouchStartCorreccion(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    this.touchStartPosition = { x: touch.clientX, y: touch.clientY };
+    this.dinosaurioArrastrado = e.target;
+    this.isDragging = false;
+    this.esCorreccion = true;
+    this.recintoOrigen = e.target.dataset.recinto;
+  },
+
+  _handleTouchMove(e) {
+    e.preventDefault();
+    if (!this.dinosaurioArrastrado) return;
+
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - this.touchStartPosition.x);
+    const deltaY = Math.abs(touch.clientY - this.touchStartPosition.y);
+    
+    // Comenzar arrastre si se movió suficiente
+    if (!this.isDragging && (deltaX > 10 || deltaY > 10)) {
+      this.isDragging = true;
+      this._createGhostElement(this.dinosaurioArrastrado);
+      this.dinosaurioArrastrado.classList.add('dragging');
+    }
+
+    if (this.isDragging && this.ghostElement) {
+      // Mover el elemento fantasma
+      this.ghostElement.style.left = `${touch.clientX - 30}px`;
+      this.ghostElement.style.top = `${touch.clientY - 30}px`;
+      
+      // Encontrar elemento debajo del dedo
+      const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+      const dropZone = elementBelow?.closest('.cuadro, .rectangulo');
+      
+      // Actualizar indicadores visuales
+      this._updateDropZoneIndicators(dropZone);
+    }
+  },
+
+  _handleTouchEnd(e) {
+    e.preventDefault();
+    if (!this.dinosaurioArrastrado || !this.isDragging) {
+      this._cleanupTouch();
+      return;
+    }
+
+    const touch = e.changedTouches[0];
+    const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+    const dropZone = elementBelow?.closest('.cuadro, .rectangulo');
+
+    if (dropZone) {
+      // Simular evento drop
+      const fakeEvent = {
+        preventDefault: () => {},
+        currentTarget: dropZone,
+        target: dropZone
+      };
+      this._handleDrop(fakeEvent);
+    }
+
+    this._cleanupTouch();
+  },
+
+  _createGhostElement(dino) {
+    this.ghostElement = dino.cloneNode(true);
+    this.ghostElement.style.position = 'fixed';
+    this.ghostElement.style.zIndex = '10000';
+    this.ghostElement.style.pointerEvents = 'none';
+    this.ghostElement.style.opacity = '0.8';
+    this.ghostElement.style.transform = 'scale(1.1)';
+    this.ghostElement.style.width = '60px';
+    this.ghostElement.style.height = '60px';
+    document.body.appendChild(this.ghostElement);
+  },
+
+  _updateDropZoneIndicators(dropZone) {
+    // Limpiar indicadores anteriores
+    this._limpiarIndicadores();
+    
+    if (!dropZone) return;
+
+    const recinto = dropZone.dataset.recinto;
+    if (!recinto) return;
+
+    const tipoDino = this.dinosaurioArrastrado.dataset.tipo;
+    let puedeColocar = false;
+    let claseEstilo = 'drop-zone-invalid';
+    
+    if (this.esCorreccion) {
+      puedeColocar = true;
+      claseEstilo = 'drop-zone-active';
+    } else {
+      const estaBloqueado = GameLogic.estaRecintoBloqueado(recinto);
+      if (estaBloqueado) {
+        claseEstilo = 'drop-zone-blocked';
+      } else {
+        puedeColocar = GameLogic.puedeColocarDinosaurio(recinto, tipoDino);
+        claseEstilo = puedeColocar ? 'drop-zone-active' : 'drop-zone-invalid';
+      }
+    }
+
+    dropZone.classList.add(claseEstilo);
+  },
+
+  _cleanupTouch() {
+    if (this.ghostElement) {
+      this.ghostElement.remove();
+      this.ghostElement = null;
+    }
+    
+    if (this.dinosaurioArrastrado) {
+      this.dinosaurioArrastrado.classList.remove('dragging');
+    }
+    
+    this._limpiarIndicadores();
+    this.dinosaurioArrastrado = null;
+    this.isDragging = false;
+    this.esCorreccion = false;
+    this.recintoOrigen = null;
+  }
+};
+
+/* ==================== SISTEMA DE POPUPS ==================== */
+const PopupManager = {
+  mostrarReglas: () => Utils.togglePopup(document.getElementById('popup-reglas'), true),
+  mostrarPesos: () => { GameLogic.actualizarPesos(); Utils.togglePopup(document.getElementById('popup-pesos'), true); },
+
+  cerrar(popupId) {
+    const puedeSerCerrado = (popup) => {
+      return !(popup.id === 'popup-descarte' && !estadoJuego.puedePasarTurno) &&
+             popup.id !== 'popup-seleccion-dinosaurios' &&
+             popup.id !== 'popup-seleccion-dado';
+    };
+
+    if (popupId) {
+      const popup = document.getElementById(popupId);
+      if (popup && puedeSerCerrado(popup)) Utils.togglePopup(popup, false);
+    } else {
+      document.querySelectorAll(CONFIG.SELECTORS.popupOverlay).forEach(popup => {
+        if (puedeSerCerrado(popup)) Utils.togglePopup(popup, false);
+      });
+    }
+  },
+
+  setupEventListeners() {
+    // Cerrar al hacer clic en el overlay
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('popup-overlay')) {
+        const popup = e.target;
+        if (popup.id === 'popup-descarte' && !estadoJuego.puedePasarTurno) return;
+        if (popup.id === 'popup-seleccion-dinosaurios') return;
+        if (popup.id === 'popup-seleccion-dado') return;
+        Utils.togglePopup(popup, false);
+      }
+    });
+
+    // Cerrar al hacer clic en botones de cierre
+    document.querySelectorAll(CONFIG.SELECTORS.popupClose).forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const popup = btn.closest('.popup-overlay');
+        if (popup?.id === 'popup-descarte' && !estadoJuego.puedePasarTurno && estadoJuego.yaColocoEnTurno) return;
+        if (popup?.id === 'popup-seleccion-dinosaurios') return;
+        if (popup?.id === 'popup-seleccion-dado') return;
+        Utils.togglePopup(popup, false);
+      });
+    });
+
+    // Cerrar con la tecla Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.popup-overlay:not(.hidden)').forEach(popup => {
+          if (popup.style.display !== 'none') {
+            if (popup.id === 'popup-descarte' && !estadoJuego.puedePasarTurno) return;
+            if (popup.id === 'popup-seleccion-dinosaurios') return;
+            if (popup.id === 'popup-seleccion-dado') return;
+            Utils.togglePopup(popup, false);
+          }
+        });
+      }
+    });
+  }
+};
+
+/* ==================== SISTEMA DE MAPAS ==================== */
+const MapaOponente = {
+  mostrar() {
+    const oponente = estadoJuego.getOponente();
+    this._actualizarTitulo(oponente.nombre);
+    this._renderizarMiniTablero(oponente.recintos);
+    this._mostrarPuntuacion(oponente.recintos);
+    Utils.togglePopup(document.getElementById('popup-mapa'), true);
+  },
+
+  _actualizarTitulo(nombre) {
+    const titulo = document.getElementById('titulo-mapa');
+    if (titulo) {
+      titulo.textContent = `MAPA DE ${(nombre || 'OPONENTE').toUpperCase()}`;
+    }
+  },
+
+  _renderizarMiniTablero(recintos) {
+    document.querySelectorAll('.mini-dinosaurios').forEach(cont => cont.innerHTML = '');
+
+    Object.entries(recintos).forEach(([recinto, dinosaurios]) => {
+      const contenedor = document.getElementById(`mapa-${recinto}`);
+      if (!contenedor || dinosaurios.length === 0) return;
+
+      dinosaurios.forEach((tipo, index) => {
+        const img = this._crearMiniDinosaurio(tipo, index + 1, recinto);
+        contenedor.appendChild(img);
+      });
+    });
+  },
+
+  _crearMiniDinosaurio(tipo, posicion, recinto) {
+    // Determinar las posiciones según el tipo de recinto para el mini mapa
+    let pos;
+    if (CONFIG.POSICIONES_NUMERADAS_MINI[recinto]) {
+      // Usar posiciones específicas para recintos numerados (de izquierda a derecha)
+      pos = CONFIG.POSICIONES_NUMERADAS_MINI[recinto][(posicion - 1) % CONFIG.POSICIONES_NUMERADAS_MINI[recinto].length];
+    } else {
+      // Usar posiciones normales para otros recintos
+      pos = CONFIG.POSICIONES_MINI[(posicion - 1) % CONFIG.POSICIONES_MINI.length];
+    }
+    
+    return Utils.crearElemento('img', {
+      src: CONFIG.IMAGENES_DINOSAURIOS[tipo].colocado,
+      className: 'mini-dinosaurio', alt: tipo
+    }, {
+      position: 'absolute', top: pos.top, left: pos.left, transform: 'translate(-50%, -50%)',
+      zIndex: '15', pointerEvents: 'none'
+    });
+  },
+
+  _mostrarPuntuacion(recintos) {
+    const detalles = {};
+    let total = 0;
+    const oponente = estadoJuego.getOponente();
+    const todosJugadores = estadoJuego.getTodosJugadores();
+
+    Object.entries(recintos).forEach(([nombre, dinosaurios]) => {
+      const reglas = REGLAS_RECINTOS[nombre];
+      if (!reglas) return;
+
+      let puntos = 0;
+      if (typeof reglas.puntos === 'function') {
+        if (nombre === 'isla-solitaria') puntos = reglas.puntos(dinosaurios, recintos);
+        else if (nombre === 'rey-jungla') puntos = reglas.puntos(dinosaurios, recintos, oponente, todosJugadores);
+        else if (nombre === 'pradera-amor') puntos = reglas.puntos(dinosaurios);
+        else puntos = reglas.puntos(dinosaurios.length);
+      } else if (Array.isArray(reglas.puntos)) {
+        puntos = reglas.puntos[dinosaurios.length] || 0;
+      }
+
+      detalles[nombre] = puntos;
+      total += puntos;
+    });
+
+    // Bonus T-Rex
+    total += Object.values(recintos).filter(recinto => recinto.some(d => d === 't-rex')).length;
+
+    Object.entries(detalles).forEach(([recinto, puntos]) => {
+      const elem = document.getElementById(`puntos-${recinto}`);
+      if (elem) elem.textContent = `${puntos} pts`;
+    });
+
+    const totalElem = document.getElementById('puntos-total-oponente');
+    if (totalElem) {
+      totalElem.innerHTML = `<strong>${total} PUNTOS</strong>`;
+    }
   }
 };
 
 /* ==================== MODO SEGUIMIENTO ==================== */
 const ModoSeguimiento = {
-  MAX_DINOSAURIOS: 6,
-  dinosauriosSeleccionados: [],
-  eventListeners: new Map(),
+  MAX_DINOSAURIOS: 6, dinosauriosSeleccionados: [], eventListeners: new Map(),
 
-  /**
-   * Muestra el popup de selección de dinosaurios o restaura los ya seleccionados
-   */
   mostrarPopupSeleccionDinosaurios() {
     const jugadorNum = estadoJuego.jugadorActual;
     const yaSeleccionoEnRonda = (jugadorNum === 1 && estadoJuego.dinosauriosRondaJ1.length > 0) ||
                                (jugadorNum === 2 && estadoJuego.dinosauriosRondaJ2.length > 0);
 
-    // Si ya seleccionó dinosaurios en esta ronda, restaurarlos
     if (yaSeleccionoEnRonda) {
-      this.restaurarDinosauriosGuardados();
+      this._restaurarDinosauriosGuardados();
       return;
     }
 
-    // Preparar para nueva selección
-    this.resetearContadores();
+    this._resetearContadores();
     const popup = document.getElementById('popup-seleccion-dinosaurios');
     if (!popup) return;
 
@@ -1025,84 +1049,42 @@ const ModoSeguimiento = {
       titulo.textContent = `${nombre.toUpperCase()} - Seleccionar dinosaurios para RONDA ${estadoJuego.rondaActual}`;
     }
 
-    this.configurarSeleccionDinosaurios();
-    Utils.abrirPopup(popup);
+    this._configurarSeleccionDinosaurios();
+    Utils.togglePopup(popup, true);
   },
 
-  restaurarDinosauriosGuardados() {
+  _restaurarDinosauriosGuardados() {
     const jugador = estadoJuego.getJugadorActual();
     const jugadorNum = estadoJuego.jugadorActual;
     
-    if (jugadorNum === 1) {
-      // Restaurar los dinosaurios originales de J1
-      jugador.dinosauriosDisponibles = [...estadoJuego.dinosauriosRondaJ1];
-      
-      // Eliminar los dinosaurios ya colocados y descartados
-      const dinosauriosUsados = estadoJuego.turnosCompletadosJ1 * 2;
-      
-      // Tambií©n eliminar especí­ficamente los descartados
-      estadoJuego.descartadosJ1.forEach(descartado => {
-        const idx = jugador.dinosauriosDisponibles.indexOf(descartado);
-        if (idx !== -1) {
-          jugador.dinosauriosDisponibles.splice(idx, 1);
-        }
-      });
-      
-      // Y eliminar los que ya están en recintos
-      Object.values(jugador.recintos).flat().forEach(dinoColocado => {
-        const idx = jugador.dinosauriosDisponibles.indexOf(dinoColocado);
-        if (idx !== -1) {
-          jugador.dinosauriosDisponibles.splice(idx, 1);
-        }
-      });
-      
-      console.log(`J1: Restaurando. Disponibles: ${jugador.dinosauriosDisponibles.length}`, jugador.dinosauriosDisponibles);
-    } else {
-      // Restaurar los dinosaurios originales de J2
-      jugador.dinosauriosDisponibles = [...estadoJuego.dinosauriosRondaJ2];
-      
-      // Eliminar los dinosaurios ya colocados y descartados
-      const dinosauriosUsados = estadoJuego.turnosCompletadosJ2 * 2;
-      
-      // Tambií©n eliminar especí­ficamente los descartados
-      estadoJuego.descartadosJ2.forEach(descartado => {
-        const idx = jugador.dinosauriosDisponibles.indexOf(descartado);
-        if (idx !== -1) {
-          jugador.dinosauriosDisponibles.splice(idx, 1);
-        }
-      });
-      
-      // Y eliminar los que ya están en recintos
-      Object.values(jugador.recintos).flat().forEach(dinoColocado => {
-        const idx = jugador.dinosauriosDisponibles.indexOf(dinoColocado);
-        if (idx !== -1) {
-          jugador.dinosauriosDisponibles.splice(idx, 1);
-        }
-      });
-      
-      console.log(`J2: Restaurando. Disponibles: ${jugador.dinosauriosDisponibles.length}`, jugador.dinosauriosDisponibles);
-    }
+    const dinosauriosRonda = jugadorNum === 1 ? estadoJuego.dinosauriosRondaJ1 : estadoJuego.dinosauriosRondaJ2;
+    const descartados = jugadorNum === 1 ? estadoJuego.descartadosJ1 : estadoJuego.descartadosJ2;
+    
+    jugador.dinosauriosDisponibles = [...dinosauriosRonda];
+    
+    // Eliminar descartados y colocados
+    [...descartados, ...Object.values(jugador.recintos).flat()].forEach(dino => {
+      const idx = jugador.dinosauriosDisponibles.indexOf(dino);
+      if (idx !== -1) jugador.dinosauriosDisponibles.splice(idx, 1);
+    });
 
     RenderManager.actualizarDinosauriosDisponibles();
     JuegoManager.actualizarInterfaz();
     
-    // Renderizar tablero correctamente
     setTimeout(() => {
       RenderManager.renderizarTablero();
       DragDropManager.init();
     }, 100);
 
     if (estadoJuego.necesitaRestriccion()) {
-      setTimeout(() => this.mostrarPopupSeleccionDado(), 200);
+      setTimeout(() => this._mostrarPopupSeleccionDado(), 200);
     } else {
       JuegoManager.establecerSinRestriccion();
-      if (window.app?.showScreen) {
-        window.app.showScreen('partida');
-      }
+      window.app?.showScreen?.('partida');
     }
   },
 
-  configurarSeleccionDinosaurios() {
+  _configurarSeleccionDinosaurios() {
     const popup = document.getElementById('popup-seleccion-dinosaurios');
     if (!popup) return;
 
@@ -1121,7 +1103,7 @@ const ModoSeguimiento = {
           const valor = parseInt(contador.textContent) || 0;
           if (valor > 0) {
             contador.textContent = valor - 1;
-            this.actualizarTotalSeleccion();
+            this._actualizarTotalSeleccion();
           }
         };
         btnDecrease.addEventListener('click', decreaseHandler);
@@ -1131,15 +1113,13 @@ const ModoSeguimiento = {
       if (btnIncrease && contador) {
         const increaseHandler = () => {
           const valorActual = parseInt(contador.textContent) || 0;
-          const totalActual = this.calcularTotalSeleccionado();
+          const totalActual = this._calcularTotalSeleccionado();
 
           if (totalActual < this.MAX_DINOSAURIOS) {
             contador.textContent = valorActual + 1;
-            this.actualizarTotalSeleccion();
+            this._actualizarTotalSeleccion();
           } else {
-            if (window.app?.showToast) {
-              window.app.showToast(`Máximo ${this.MAX_DINOSAURIOS} dinosaurios`, 'warning');
-            }
+            window.app?.showToast?.(`Máximo ${this.MAX_DINOSAURIOS} dinosaurios`, 'warning');
           }
         };
         btnIncrease.addEventListener('click', increaseHandler);
@@ -1148,23 +1128,21 @@ const ModoSeguimiento = {
     });
 
     const btnConfirmar = document.getElementById('btn-confirmar-seleccion');
-    if (btnConfirmar) {
-      btnConfirmar.onclick = () => this.confirmarSeleccionDinosaurios();
-    }
+    if (btnConfirmar) btnConfirmar.onclick = () => this._confirmarSeleccionDinosaurios();
   },
 
-  calcularTotalSeleccionado() {
+  _calcularTotalSeleccionado() {
     return Array.from(document.querySelectorAll('.contador-valor'))
       .reduce((total, contador) => total + (parseInt(contador.textContent) || 0), 0);
   },
 
-  actualizarTotalSeleccion() {
-    const total = this.calcularTotalSeleccionado();
+  _actualizarTotalSeleccion() {
+    const total = this._calcularTotalSeleccionado();
     const totalElement = document.getElementById('total-dinosaurios');
 
     if (totalElement) {
       totalElement.textContent = total;
-      totalElement.style.color = total === this.MAX_DINOSAURIOS ? '#4CAF50' : '';
+      totalElement.classList.toggle('total-correcto', total === this.MAX_DINOSAURIOS);
     }
 
     const btnConfirmar = document.getElementById('btn-confirmar-seleccion');
@@ -1175,82 +1153,62 @@ const ModoSeguimiento = {
     }
   },
 
-  confirmarSeleccionDinosaurios() {
+  _confirmarSeleccionDinosaurios() {
     const dinosaurios = [];
 
     document.querySelectorAll('.dino-selector').forEach(selector => {
       const tipo = selector.dataset.tipo;
       const cantidad = parseInt(selector.querySelector('.contador-valor').textContent) || 0;
-
-      for (let i = 0; i < cantidad; i++) {
-        dinosaurios.push(tipo);
-      }
+      for (let i = 0; i < cantidad; i++) dinosaurios.push(tipo);
     });
 
     if (dinosaurios.length !== this.MAX_DINOSAURIOS) {
-      if (window.app?.showToast) {
-        window.app.showToast(`Debes seleccionar exactamente ${this.MAX_DINOSAURIOS} dinosaurios`, 'error');
-      }
+      window.app?.showToast?.(`Debes seleccionar exactamente ${this.MAX_DINOSAURIOS} dinosaurios`, 'error');
       return;
     }
 
-    if (estadoJuego.jugadorActual === 1) {
+    const jugadorNum = estadoJuego.jugadorActual;
+    if (jugadorNum === 1) {
       estadoJuego.dinosauriosRondaJ1 = [...dinosaurios];
-      // Limpiar descartados al inicio de la ronda
-      if (estadoJuego.turnosCompletadosJ1 === 0) {
-        estadoJuego.descartadosJ1 = [];
-      }
+      if (estadoJuego.turnosCompletadosJ1 === 0) estadoJuego.descartadosJ1 = [];
     } else {
       estadoJuego.dinosauriosRondaJ2 = [...dinosaurios];
-      // Limpiar descartados al inicio de la ronda
-      if (estadoJuego.turnosCompletadosJ2 === 0) {
-        estadoJuego.descartadosJ2 = [];
-      }
+      if (estadoJuego.turnosCompletadosJ2 === 0) estadoJuego.descartadosJ2 = [];
     }
 
     estadoJuego.getJugadorActual().dinosauriosDisponibles = [...dinosaurios];
-
-    Utils.cerrarPopup(document.getElementById('popup-seleccion-dinosaurios'));
-    this.resetearContadores();
+    Utils.togglePopup(document.getElementById('popup-seleccion-dinosaurios'), false);
+    this._resetearContadores();
 
     RenderManager.actualizarDinosauriosDisponibles();
     JuegoManager.actualizarInterfaz();
 
     if (estadoJuego.necesitaRestriccion()) {
-      setTimeout(() => this.mostrarPopupSeleccionDado(), 100);
+      setTimeout(() => this._mostrarPopupSeleccionDado(), 100);
     } else {
-      console.log('Primer turno de la ronda - Sin restricción');
-      
-      // Resetear estado del turno para el primer turno sin restricción
       estadoJuego.yaColocoEnTurno = false;
       estadoJuego.puedePasarTurno = false;
-      estadoJuego.dadoNumero = null; // No hay dado en el primer turno
+      estadoJuego.dadoNumero = null;
       
       JuegoManager.establecerSinRestriccion();
-      if (window.app?.showScreen) {
-        window.app.showScreen('partida');
-      }
+      window.app?.showScreen?.('partida');
 
       RenderManager.actualizarDinosauriosDisponibles();
       JuegoManager.actualizarInterfaz();
       JuegoManager.actualizarBotonSiguiente();
       RenderManager.renderizarTablero();
       
-      setTimeout(() => {
-        DragDropManager.init();
-      }, 100);
+      setTimeout(() => DragDropManager.init(), 100);
     }
   },
 
-  resetearContadores() {
-    document.querySelectorAll('.contador-valor').forEach(contador => {
-      contador.textContent = '0';
-    });
+  _resetearContadores() {
+    document.querySelectorAll('.contador-valor').forEach(contador => contador.textContent = '0');
 
     const totalElement = document.getElementById('total-dinosaurios');
     if (totalElement) {
       totalElement.textContent = '0';
-      totalElement.style.color = '';
+      totalElement.classList.remove('total-correcto');
     }
 
     const btnConfirmar = document.getElementById('btn-confirmar-seleccion');
@@ -1260,159 +1218,112 @@ const ModoSeguimiento = {
     }
   },
 
-  mostrarPopupSeleccionDado() {
+  _mostrarPopupSeleccionDado() {
     document.querySelectorAll('.cara-dado-opcion').forEach(cara => {
       cara.classList.remove('seleccionada');
-      cara.onclick = () => this.seleccionarCaraDado(cara);
+      cara.onclick = () => this._seleccionarCaraDado(cara);
     });
 
-    Utils.abrirPopup(document.getElementById('popup-seleccion-dado'));
+    const popup = document.getElementById('popup-seleccion-dado');
+    popup.classList.add('obligatorio');
+    Utils.togglePopup(popup, true);
   },
 
-  seleccionarCaraDado(cara) {
-    document.querySelectorAll('.cara-dado-opcion').forEach(c => {
-      c.classList.remove('seleccionada');
-    });
+  _seleccionarCaraDado(cara) {
+    document.querySelectorAll('.cara-dado-opcion').forEach(c => c.classList.remove('seleccionada'));
     cara.classList.add('seleccionada');
 
     const caraSeleccionada = parseInt(cara.dataset.cara);
     estadoJuego.dadoNumero = caraSeleccionada;
 
     setTimeout(() => {
-      this.procesarDadoSeleccionado(caraSeleccionada);
-      Utils.cerrarPopup(document.getElementById('popup-seleccion-dado'));
+      this._procesarDadoSeleccionado(caraSeleccionada);
+      const popup = document.getElementById('popup-seleccion-dado');
+      popup.classList.remove('obligatorio');
+      Utils.togglePopup(popup, false);
     }, 300);
   },
 
-  procesarDadoSeleccionado(numeroDado) {
+  _procesarDadoSeleccionado(numeroDado) {
     const restriccion = CONFIG.RESTRICCIONES_DADO[numeroDado];
+    if (restriccion) JuegoManager.establecerRestriccion(restriccion.tipo, restriccion.titulo);
 
-    if (restriccion) {
-      JuegoManager.establecerRestriccion(restriccion.tipo, restriccion.titulo);
-    }
-
-    // CRíTICO: Resetear estado del turno despuí©s de seleccionar dado
     estadoJuego.yaColocoEnTurno = false;
     estadoJuego.puedePasarTurno = false;
     
-    // Deshabilitar botón siguiente turno
     const btn = document.getElementById('btn-siguiente-turno');
-    if (btn) {
-      btn.disabled = true;
-    }
+    if (btn) btn.disabled = true;
 
-    if (window.app?.showScreen) {
-      window.app.showScreen('partida');
-    }
-
+    window.app?.showScreen?.('partida');
     RenderManager.actualizarDinosauriosDisponibles();
     JuegoManager.actualizarInterfaz();
     RenderManager.renderizarTablero();
     
-    setTimeout(() => {
-      DragDropManager.init();
-    }, 100);
+    setTimeout(() => DragDropManager.init(), 100);
   }
 };
 
 /* ==================== GESTOR PRINCIPAL ==================== */
 const JuegoManager = {
-  // Estado del gestor
-  dinoSeleccionadoDescarte: null,
-  tipoSeleccionadoDescarte: null,
-  
-  /**
-   * Inicializa una nueva partida con los parámetros dados
-   * @param {Array} jugadores - Nombres de los jugadores
-   * @param {Object} jugador2Info - Información del segundo jugador
-   * @param {Number} primerJugador - Índice del jugador que comienza (1 o 2)
-   * @param {Boolean} modoSeguimiento - Si se juega en modo seguimiento
-   */
+  dinoSeleccionadoDescarte: null, tipoSeleccionadoDescarte: null,
+
   inicializarPartida(jugadores, jugador2Info, primerJugador, modoSeguimiento = false) {
-    // Reiniciar estado del juego
     estadoJuego.reset();
 
-    // Configurar jugadores
+    Object.assign(estadoJuego, {
+      modoSeguimiento,
+      primerJugador, primerJugadorOriginal: primerJugador, jugadorActual: primerJugador,
+      turnosCompletadosJ1: 0, turnosCompletadosJ2: 0, descartadosJ1: [], descartadosJ2: []
+    });
+
     estadoJuego.jugador1.nombre = jugadores[0] || 'Jugador 1';
     estadoJuego.jugador2.nombre = jugadores[1] || 'Jugador 2';
-    estadoJuego.primerJugador = primerJugador;
-    estadoJuego.primerJugadorOriginal = primerJugador;
-    estadoJuego.jugadorActual = primerJugador;
-    estadoJuego.modoSeguimiento = modoSeguimiento;
 
-    // Reiniciar contadores de turnos y descartes
-    estadoJuego.turnosCompletadosJ1 = 0;
-    estadoJuego.turnosCompletadosJ2 = 0;
-    estadoJuego.descartadosJ1 = [];
-    estadoJuego.descartadosJ2 = [];
+    if (window.app) window.app.jugador2Info = jugador2Info || { tipo: 'invitado' };
 
-    // Configurar app si existe
-    if (window.app) {
-      window.app.jugador2Info = jugador2Info || { tipo: 'invitado' };
-    }
-
-    // Iniciar según el modo
     if (modoSeguimiento) {
       estadoJuego.turnoEnRonda = 1;
       estadoJuego.rondaActual = 1;
     } else {
-      this.generarPoolDinosaurios();
-      this.iniciarRonda();
-      if (window.app?.showScreen) {
-        setTimeout(() => window.app.showScreen('partida'), 100);
-      }
+      this._generarPoolDinosaurios();
+      this._iniciarRonda();
+      setTimeout(() => window.app?.showScreen?.('partida'), 100);
     }
   },
 
-  /**
-   * Genera el pool inicial de dinosaurios para la partida
-   */
-  generarPoolDinosaurios() {
-    // Crear array con todos los tipos de dinosaurios según la configuración
-    estadoJuego.repartosDisponibles = CONFIG.TIPOS_DINOSAURIOS.flatMap(tipo => 
-      Array(CONFIG.MAX_DINOSAURIOS_POOL).fill(tipo)
+  _generarPoolDinosaurios() {
+    estadoJuego.repartosDisponibles = Utils.mezclarArray(
+      CONFIG.TIPOS_DINOSAURIOS.flatMap(tipo => Array(CONFIG.MAX_DINOSAURIOS_POOL).fill(tipo))
     );
-    // Mezclar aleatoriamente
-    estadoJuego.repartosDisponibles = Utils.mezclarArray(estadoJuego.repartosDisponibles);
   },
 
-  /**
-   * Inicia una nueva ronda de juego
-   */
-  iniciarRonda() {
-    if (!estadoJuego.modoSeguimiento) {
-      this.repartirDinosaurios();
-    }
-    this.configurarTurnoInicial();
+  _iniciarRonda() {
+    if (!estadoJuego.modoSeguimiento) this._repartirDinosaurios();
+    this._configurarTurnoInicial();
   },
 
-  /**
-   * Limpia el tablero para una nueva ronda
-   */
   limpiarTablero() {
-    // Limpiar elementos visuales
-    Utils.limpiarElementos('.dinosaurio-colocado');
+    Utils.limpiarElementos(CONFIG.SELECTORS.dinosaurioColocado);
 
-    // Reiniciar recintos y puntos
     [estadoJuego.jugador1, estadoJuego.jugador2].forEach(jugador => {
-      Object.keys(jugador.recintos).forEach(recinto => {
-        jugador.recintos[recinto] = [];
-      });
+      Object.keys(jugador.recintos).forEach(recinto => jugador.recintos[recinto] = []);
       jugador.puntosRonda = 0;
     });
 
-    // Actualizar interfaz
     RenderManager.renderizarTablero();
     GameLogic.actualizarPuntos();
     GameLogic.actualizarPesos();
     this.actualizarInterfaz();
   },
 
-  /**
-   * Reparte dinosaurios a los jugadores
-   */
-  repartirDinosaurios() {
-    // Función para tomar dinosaurios aleatorios del pool
+  _repartirDinosaurios() {
+    // Verificar si hay suficientes dinosaurios en el pool
+    const dinosauriosNecesarios = CONFIG.DINOSAURIOS_POR_RONDA * 2; // 6 por cada jugador
+    if (estadoJuego.repartosDisponibles.length < dinosauriosNecesarios) {
+      console.log('Regenerando pool de dinosaurios - Pool insuficiente');
+      this._generarPoolDinosaurios();
+    }
+
     const tomarDinos = (cantidad) => {
       const dinos = [];
       for (let i = 0; i < cantidad && estadoJuego.repartosDisponibles.length > 0; i++) {
@@ -1422,24 +1333,25 @@ const JuegoManager = {
       return dinos;
     };
 
-    // Repartir a ambos jugadores
     estadoJuego.jugador1.dinosauriosDisponibles = tomarDinos(CONFIG.DINOSAURIOS_POR_RONDA);
     estadoJuego.jugador2.dinosauriosDisponibles = tomarDinos(CONFIG.DINOSAURIOS_POR_RONDA);
+    
+    console.log(`Ronda ${estadoJuego.rondaActual}: Dinosaurios repartidos`);
+    console.log('J1:', estadoJuego.jugador1.dinosauriosDisponibles);
+    console.log('J2:', estadoJuego.jugador2.dinosauriosDisponibles);
+    console.log('Pool restante:', estadoJuego.repartosDisponibles.length);
   },
 
-  configurarTurnoInicial() {
-    estadoJuego.puedePasarTurno = false;
-    estadoJuego.yaColocoEnTurno = false;
-
+  _configurarTurnoInicial() {
+    Object.assign(estadoJuego, { puedePasarTurno: false, yaColocoEnTurno: false });
+    
     const btn = document.getElementById('btn-siguiente-turno');
-    if (btn) {
-      btn.disabled = true;
-    }
+    if (btn) btn.disabled = true;
 
     if (estadoJuego.esPrimerTurnoDeRonda()) {
       this.establecerSinRestriccion();
     } else {
-      this.ocultarRestriccion();
+      this._ocultarRestriccion();
     }
 
     RenderManager.actualizarDinosauriosDisponibles();
@@ -1452,59 +1364,53 @@ const JuegoManager = {
     const jugadorActual = estadoJuego.getJugadorActual();
     const tienenDinosaurios = jugadorActual.dinosauriosDisponibles.length > 0;
     
-    // CORRECIÓN CRíTICA: Solo validar si hay dinosaurios disponibles
     if (tienenDinosaurios) {
       if (!estadoJuego.yaColocoEnTurno) {
-        console.log('Debe colocar un dinosaurio');
-        if (window.app?.showToast) {
-          window.app.showToast('Debes colocar un dinosaurio primero', 'warning');
-        }
+        window.app?.showToast?.('Debes colocar un dinosaurio primero', 'warning');
         return;
       }
       
       if (!estadoJuego.puedePasarTurno) {
-        console.log('Debe descartar un dinosaurio');
-        if (window.app?.showToast) {
-          window.app.showToast('Debes descartar un dinosaurio primero', 'warning');
-        }
+        window.app?.showToast?.('Debes descartar un dinosaurio primero', 'warning');
         return;
       }
     }
 
     if (estadoJuego.esFinDeRonda()) {
-      this.finalizarRonda();
+      this._finalizarRonda();
       return;
     }
 
     estadoJuego.cambiarTurno();
 
     if (estadoJuego.modoSeguimiento) {
-      this.procesarTurnoSeguimiento();
+      this._procesarTurnoSeguimiento();
     } else {
-      this.procesarTurnoNormal();
+      this._procesarTurnoNormal();
     }
   },
 
-  procesarTurnoSeguimiento() {
+  _procesarTurnoSeguimiento() {
+    // Limpiar indicadores de turno antes de mostrar pantalla de selección
+    this.limpiarIndicadoresTurno();
+    
     const jugador = estadoJuego.getJugadorActual();
-    console.log(`Procesando turno seguimiento - Jugador ${estadoJuego.jugadorActual}, Turno ${estadoJuego.turnoEnRonda}, Ronda ${estadoJuego.rondaActual}`);
-
     const avatarSrc = estadoJuego.jugadorActual === 1 ?
       'img/foto_usuario-1.png' :
       (window.app?.jugador2Info?.tipo === 'invitado' ? 'img/invitado.png' : 'img/foto_usuario-2.png');
 
-    if (window.app?.mostrarTurnoJugadorConSeleccion) {
-      window.app.mostrarTurnoJugadorConSeleccion(jugador.nombre, avatarSrc);
-    }
+    window.app?.mostrarTurnoJugadorConSeleccion?.(jugador.nombre, avatarSrc);
   },
 
-  procesarTurnoNormal() {
+  _procesarTurnoNormal() {
     if (window.app?.showScreen) {
+      // Limpiar indicadores de turno antes de cambiar de pantalla
+      this.limpiarIndicadoresTurno();
       document.getElementById('pantalla-partida')?.setAttribute('style', 'display:none');
       window.app.showScreen('dado-animacion');
       setTimeout(() => window.app.iniciarAnimacionDado(), 400);
     } else {
-      this.ocultarRestriccion();
+      this._ocultarRestriccion();
       RenderManager.actualizarDinosauriosDisponibles();
       this.actualizarInterfaz();
       RenderManager.renderizarTablero();
@@ -1514,12 +1420,10 @@ const JuegoManager = {
   procesarResultadoDado(numeroDado) {
     estadoJuego.dadoNumero = numeroDado;
     const restriccion = CONFIG.RESTRICCIONES_DADO[numeroDado || 1];
-    if (restriccion) {
-      this.establecerRestriccion(restriccion.tipo, restriccion.titulo);
-    }
+    if (restriccion) this.establecerRestriccion(restriccion.tipo, restriccion.titulo);
 
     const partida = document.getElementById('pantalla-partida');
-    if (partida) partida.style.display = 'block';
+    if (partida) partida.classList.add('pantalla-partida-visible');
 
     RenderManager.actualizarDinosauriosDisponibles();
     this.actualizarInterfaz();
@@ -1535,17 +1439,28 @@ const JuegoManager = {
     const icono = document.querySelector('.icono-restriccion-footer');
     const texto = document.querySelector('.texto-restriccion');
 
-    if (info) info.style.visibility = 'visible';
+    if (info) info.classList.add('restriccion-visible');
     if (icono && tipo) {
-      const restriccion = Object.values(CONFIG.RESTRICCIONES_DADO)
-        .find(r => r.tipo === tipo);
+      const restriccion = Object.values(CONFIG.RESTRICCIONES_DADO).find(r => r.tipo === tipo);
       if (restriccion) {
         icono.src = `img/${restriccion.imagen}.png`;
-        icono.style.display = 'block';
+        icono.classList.remove('icono-restriccion-ocultar');
+        icono.classList.add('icono-restriccion-mostrar');
       }
     }
+    
+    // Mostrar información de recintos bloqueados
     if (texto) {
-      texto.innerHTML = `<div>Restricción</div><div>${titulo}</div>`;
+      const restriccionConfig = Object.values(CONFIG.RESTRICCIONES_DADO).find(r => r.tipo === tipo);
+      let mensaje = `<div>Restricción Actual</div><div>${titulo}</div>`;
+      
+      if (restriccionConfig && restriccionConfig.recintosBloqueados.length > 0) {
+        mensaje += `<div class="texto-restriccion-bloqueados">Recintos bloqueados: ${restriccionConfig.recintosBloqueados.length}</div>`;
+      } else {
+        mensaje += `<div class="texto-sin-restriccion">Todos los recintos disponibles</div>`;
+      }
+      
+      texto.innerHTML = mensaje;
     }
   },
 
@@ -1556,18 +1471,26 @@ const JuegoManager = {
     const texto = document.querySelector('.texto-restriccion');
     const icono = document.querySelector('.icono-restriccion-footer');
 
-    if (info) info.style.visibility = 'visible';
-    if (texto) texto.innerHTML = '<div>Sin restricción</div>';
-    if (icono) icono.style.display = 'none';
+    if (info) info.classList.add('restriccion-visible');
+    if (texto) {
+      texto.innerHTML = `<div>Sin restricción</div><div class="texto-sin-restriccion">Todos los recintos disponibles</div>`;
+    }
+    if (icono) {
+      icono.classList.remove('icono-restriccion-mostrar');
+      icono.classList.add('icono-restriccion-ocultar');
+    }
   },
 
-  ocultarRestriccion() {
+  _ocultarRestriccion() {
     estadoJuego.restriccionActual = null;
     const info = document.querySelector('.info-restriccion');
     const icono = document.querySelector('.icono-restriccion-footer');
 
-    if (info) info.style.visibility = 'hidden';
-    if (icono) icono.style.display = 'block';
+    if (info) info.classList.add('restriccion-oculta');
+    if (icono) {
+      icono.classList.remove('icono-restriccion-mostrar');
+      icono.classList.add('icono-restriccion-ocultar');
+    }
   },
 
   mostrarPopupDescarte() {
@@ -1575,7 +1498,7 @@ const JuegoManager = {
 
     if (jugador.dinosauriosDisponibles.length === 0) {
       estadoJuego.puedePasarTurno = true;
-      this.habilitarBotonSiguiente();
+      this._habilitarBotonSiguiente();
       return;
     }
 
@@ -1591,52 +1514,36 @@ const JuegoManager = {
     jugador.dinosauriosDisponibles.forEach((tipo, index) => {
       const img = Utils.crearElemento('img', {
         src: CONFIG.IMAGENES_DINOSAURIOS[tipo].disponible,
-        className: 'dino-descarte',
-        alt: tipo,
-        dataset: { 
-          tipo: tipo, 
-          index: index.toString()
-        }
-      }, {
-        width: '64px',
-        height: '64px',
-        cursor: 'pointer'
+        className: 'dino-descarte', alt: tipo,
+        dataset: { tipo, index: index.toString() }
       });
 
-      img.onclick = () => this.seleccionarParaDescarte(img, index, tipo);
+      img.onclick = () => this._seleccionarParaDescarte(img, index, tipo);
       contenedor.appendChild(img);
     });
 
     const btnConfirmar = document.getElementById('btn-confirmar-descarte');
     if (btnConfirmar) {
       btnConfirmar.disabled = true;
-      btnConfirmar.onclick = () => this.confirmarDescarte();
+      btnConfirmar.onclick = () => this._confirmarDescarte();
     }
 
-    Utils.abrirPopup(popup);
+    Utils.togglePopup(popup, true);
   },
 
-  seleccionarParaDescarte(elemento, index, tipo) {
-    document.querySelectorAll('.dino-descarte').forEach(d => {
-      d.classList.remove('seleccionado');
-    });
-
+  _seleccionarParaDescarte(elemento, index, tipo) {
+    document.querySelectorAll(CONFIG.SELECTORS.dinoDescarte).forEach(d => d.classList.remove('seleccionado'));
     elemento.classList.add('seleccionado');
     
     this.dinoSeleccionadoDescarte = index;
     this.tipoSeleccionadoDescarte = tipo;
-    
-    console.log(`Seleccionado para descarte: í­ndice ${index}, tipo ${tipo}`);
 
     const btnConfirmar = document.getElementById('btn-confirmar-descarte');
     if (btnConfirmar) btnConfirmar.disabled = false;
   },
 
-  confirmarDescarte() {
-    if (this.dinoSeleccionadoDescarte == null || !this.tipoSeleccionadoDescarte) {
-      console.log('No hay dinosaurio seleccionado para descartar');
-      return;
-    }
+  _confirmarDescarte() {
+    if (this.dinoSeleccionadoDescarte === null || !this.tipoSeleccionadoDescarte) return;
 
     const jugador = estadoJuego.getJugadorActual();
     
@@ -1646,29 +1553,25 @@ const JuegoManager = {
       const dinoEliminado = jugador.dinosauriosDisponibles.splice(this.dinoSeleccionadoDescarte, 1)[0];
       estadoJuego.dinosauriosDescartados.push(dinoEliminado);
       
-      // CRíTICO: Guardar el descarte para el jugador especí­fico
       if (estadoJuego.jugadorActual === 1) {
         estadoJuego.descartadosJ1.push(dinoEliminado);
       } else {
         estadoJuego.descartadosJ2.push(dinoEliminado);
       }
-      
-      console.log(`Descartado correctamente: ${dinoEliminado} (í­ndice: ${this.dinoSeleccionadoDescarte})`);
     }
 
-    Utils.cerrarPopup(document.getElementById('popup-descarte'));
+    Utils.togglePopup(document.getElementById('popup-descarte'), false);
     this.dinoSeleccionadoDescarte = null;
     this.tipoSeleccionadoDescarte = null;
 
     estadoJuego.puedePasarTurno = true;
-    this.habilitarBotonSiguiente();
+    this._habilitarBotonSiguiente();
     RenderManager.actualizarDinosauriosDisponibles();
   },
 
-  habilitarBotonSiguiente() {
+  _habilitarBotonSiguiente() {
     const btn = document.getElementById('btn-siguiente-turno');
     if (btn) {
-      // Permitir el botón si no hay dinosaurios disponibles O si ya se descartó
       const jugador = estadoJuego.getJugadorActual();
       const sinDinosaurios = jugador.dinosauriosDisponibles.length === 0;
       
@@ -1684,13 +1587,25 @@ const JuegoManager = {
     const jugador = estadoJuego.getJugadorActual();
     const sinDinosaurios = jugador.dinosauriosDisponibles.length === 0;
     
-    // Habilitar si no hay dinosaurios O si ya se completó el turno
     btn.disabled = !sinDinosaurios && (!estadoJuego.yaColocoEnTurno || !estadoJuego.puedePasarTurno);
 
     if (estadoJuego.esFinDeRonda()) {
-      btn.textContent = estadoJuego.rondaActual === 1 ? 'Finalizar ronda' : 'Fin del juego';
+      btn.textContent = estadoJuego.rondaActual < CONFIG.TOTAL_RONDAS ? 'Finalizar ronda' : 'Fin del juego';
     } else {
       btn.textContent = 'Siguiente turno';
+    }
+  },
+
+  limpiarIndicadoresTurno() {
+    // Remover todos los indicadores de turno activo
+    const infoJugador = document.querySelector('.info-jugador');
+    const infoJugador2 = document.querySelector('.info-jugador2');
+    
+    if (infoJugador) {
+      infoJugador.classList.remove('turno-activo');
+    }
+    if (infoJugador2) {
+      infoJugador2.classList.remove('turno-activo');
     }
   },
 
@@ -1698,29 +1613,45 @@ const JuegoManager = {
     const jugador = estadoJuego.getJugadorActual();
     const oponente = estadoJuego.getOponente();
 
+    // Actualizar nombre del jugador actual
     const textoJugador = document.querySelector('.texto-jugador');
-    const nombrePuntos = document.querySelector('.nombre-puntos');
-
     if (textoJugador) {
       textoJugador.textContent = jugador.nombre.toUpperCase();
     }
 
+    // Actualizar nombre y puntos del oponente
+    const nombrePuntos = document.querySelector('.nombre-puntos');
     if (nombrePuntos) {
-      const puntosOponente = parseInt(oponente.puntosRonda) || 0;
-      nombrePuntos.textContent = `${oponente.nombre.toUpperCase()} - ${puntosOponente} PUNTOS`;
+      nombrePuntos.textContent = `${oponente.nombre.toUpperCase()} - ${parseInt(oponente.puntosRonda) || 0} PUNTOS`;
     }
 
     const infoJugador2 = document.querySelector('.info-jugador2');
     const verMapa = document.querySelector('.ver-mapa');
 
-    if (estadoJuego.modoSeguimiento) {
-      if (infoJugador2) infoJugador2.style.visibility = 'visible';
-      if (verMapa) verMapa.style.display = 'none';
-    } else {
-      if (infoJugador2) infoJugador2.style.visibility = 'visible';
-      if (verMapa) verMapa.style.display = 'block';
+    // INTERFAZ UNIFICADA: Modo seguimiento y modo normal tienen EXACTAMENTE la misma interfaz
+    // Todos los elementos UI están siempre visibles independientemente del modo de juego
+    if (infoJugador2) infoJugador2.classList.add('info-jugador-visible');
+    if (verMapa) verMapa.classList.add('ver-mapa-visible');
+
+    // INTERFAZ UNIFICADA: Aplicar indicadores de turno activo SOLO cuando estamos en la pantalla de partida
+    const pantallaPartida = document.getElementById('pantalla-partida');
+    const esPantallaPartidaVisible = pantallaPartida && pantallaPartida.style.display !== 'none' && !pantallaPartida.hidden;
+    
+    const infoJugador = document.querySelector('.info-jugador');
+    if (infoJugador && infoJugador2) {
+      if (esPantallaPartidaVisible) {
+        // El jugador activo siempre está abajo (.info-jugador), independientemente de cuál jugador sea
+        infoJugador.classList.add('turno-activo');
+        // El oponente siempre está arriba (.info-jugador2) y nunca debe tener estilo activo
+        infoJugador2.classList.remove('turno-activo');
+      } else {
+        // Limpiar indicadores cuando no estamos en pantalla de partida
+        infoJugador.classList.remove('turno-activo');
+        infoJugador2.classList.remove('turno-activo');
+      }
     }
 
+    // Actualizar avatares
     const avatarJugador2Top = document.getElementById('avatar-jugador2-top');
     const avatarJugador1Bottom = document.querySelector('.info-jugador .avatar-circular');
 
@@ -1738,21 +1669,24 @@ const JuegoManager = {
       if (avatarJugador2Top) avatarJugador2Top.src = 'img/foto_usuario-1.png';
     }
 
+    // Actualizar icono de restricción
     const iconoRestriccion = document.querySelector('.icono-restriccion-footer');
     if (iconoRestriccion) {
       if (estadoJuego.dadoNumero && estadoJuego.restriccionActual) {
         const restriccion = CONFIG.RESTRICCIONES_DADO[estadoJuego.dadoNumero];
         if (restriccion) {
           iconoRestriccion.src = `img/${restriccion.imagen}.png`;
-          iconoRestriccion.style.display = 'block';
+          iconoRestriccion.classList.remove('icono-restriccion-ocultar');
+          iconoRestriccion.classList.add('icono-restriccion-mostrar');
         }
       } else {
-        iconoRestriccion.style.display = 'none';
+        iconoRestriccion.classList.remove('icono-restriccion-mostrar');
+        iconoRestriccion.classList.add('icono-restriccion-ocultar');
       }
     }
 
+    // Actualizar puntos del jugador actual
     const puntosActuales = parseInt(jugador.puntosRonda) || 0;
-
     const puntosFooter = document.querySelector('.info-jugador .puntos-jugador span');
     if (puntosFooter) {
       puntosFooter.textContent = `${puntosActuales} PUNTOS`;
@@ -1761,57 +1695,44 @@ const JuegoManager = {
     GameLogic.actualizarPuntos();
   },
 
-  finalizarRonda() {
-    this.calcularPuntosRonda();
+  _finalizarRonda() {
+    this._calcularPuntosRonda();
 
-    if (estadoJuego.rondaActual === 1) {
-      this.mostrarResumenRonda();
+    if (estadoJuego.rondaActual < CONFIG.TOTAL_RONDAS) {
+      this._mostrarResumenRonda();
     } else {
-      this.mostrarPantallaFinal();
+      this._mostrarPantallaFinal();
     }
   },
 
-  calcularPuntosRonda() {
+  _calcularPuntosRonda() {
     const todosJugadores = estadoJuego.getTodosJugadores();
     
-    const puntosRondaJ1 = GameLogic.calcularPuntos(
-      estadoJuego.jugador1.recintos, 
-      estadoJuego.jugador1, 
-      todosJugadores
-    );
-    const puntosRondaJ2 = GameLogic.calcularPuntos(
-      estadoJuego.jugador2.recintos, 
-      estadoJuego.jugador2, 
-      todosJugadores
-    );
+    const puntosRondaJ1 = GameLogic.calcularPuntos(estadoJuego.jugador1.recintos, estadoJuego.jugador1, todosJugadores);
+    const puntosRondaJ2 = GameLogic.calcularPuntos(estadoJuego.jugador2.recintos, estadoJuego.jugador2, todosJugadores);
 
     estadoJuego.jugador1.puntosRonda = puntosRondaJ1;
     estadoJuego.jugador2.puntosRonda = puntosRondaJ2;
-
     estadoJuego.jugador1.puntos += puntosRondaJ1;
     estadoJuego.jugador2.puntos += puntosRondaJ2;
-
-    console.log(`Ronda ${estadoJuego.rondaActual} finalizada`);
-    console.log(`J1: ${puntosRondaJ1} puntos esta ronda, total: ${estadoJuego.jugador1.puntos}`);
-    console.log(`J2: ${puntosRondaJ2} puntos esta ronda, total: ${estadoJuego.jugador2.puntos}`);
   },
 
-  mostrarResumenRonda() {
+  _mostrarResumenRonda() {
     if (window.app?.showScreen) {
+      // Limpiar indicadores de turno al mostrar resumen
+      this.limpiarIndicadoresTurno();
       window.app.showScreen('resumen-ronda');
-      this.actualizarResumenRonda();
+      this._actualizarResumenRonda();
 
       const btnSiguiente = document.getElementById('btn-siguiente-ronda');
-      if (btnSiguiente) {
-        btnSiguiente.onclick = () => this.prepararSiguienteRonda();
-      }
+      if (btnSiguiente) btnSiguiente.onclick = () => this._prepararSiguienteRonda();
     }
   },
 
-  actualizarResumenRonda() {
+  _actualizarResumenRonda() {
     const elementos = {
-      'puntos-resumen-j1': `${estadoJuego.jugador1.puntosRonda} puntos`,
-      'puntos-resumen-j2': `${estadoJuego.jugador2.puntosRonda} puntos`,
+      'puntos-resumen-j1': `${estadoJuego.jugador1.puntos} puntos totales`,
+      'puntos-resumen-j2': `${estadoJuego.jugador2.puntos} puntos totales`,
       'nombre-resumen-j1': estadoJuego.jugador1.nombre.toUpperCase(),
       'nombre-resumen-j2': estadoJuego.jugador2.nombre.toUpperCase()
     };
@@ -1822,31 +1743,35 @@ const JuegoManager = {
     });
   },
 
-  prepararSiguienteRonda() {
-    this.limpiarTablero();
+  _prepararSiguienteRonda() {
+    // NO limpiar el tablero - los dinosaurios colocados se mantienen entre rondas
+    // this.limpiarTablero();
 
-    estadoJuego.rondaActual = 2;
+    estadoJuego.rondaActual++;
 
+    // Alternar quién empieza cada ronda:
+    // Ronda 1: Jugador original
+    // Ronda 2: El otro jugador  
+    // Ronda 3: Jugador original
+    // Ronda 4: El otro jugador
     const quienEmpezoRonda1 = estadoJuego.primerJugadorOriginal || 1;
-    estadoJuego.primerJugador = quienEmpezoRonda1 === 1 ? 2 : 1;
+    const esRondaImpar = estadoJuego.rondaActual % 2 === 1;
+    estadoJuego.primerJugador = esRondaImpar ? quienEmpezoRonda1 : (quienEmpezoRonda1 === 1 ? 2 : 1);
     estadoJuego.jugadorActual = estadoJuego.primerJugador;
     estadoJuego.turnoEnRonda = 1;
 
-    // Reset completo para ronda 2
-    estadoJuego.turnosCompletadosJ1 = 0;
-    estadoJuego.turnosCompletadosJ2 = 0;
-    estadoJuego.descartadosJ1 = [];
-    estadoJuego.descartadosJ2 = [];
-
-    estadoJuego.dinosauriosRondaJ1 = [];
-    estadoJuego.dinosauriosRondaJ2 = [];
+    // Reset solo de variables de turno y dinosaurios disponibles para la nueva ronda
+    Object.assign(estadoJuego, {
+      turnosCompletadosJ1: 0, turnosCompletadosJ2: 0, descartadosJ1: [], descartadosJ2: [],
+      dinosauriosRondaJ1: [], dinosauriosRondaJ2: [], dinosauriosDescartados: []
+    });
+    
     estadoJuego.jugador1.dinosauriosDisponibles = [];
     estadoJuego.jugador2.dinosauriosDisponibles = [];
-    estadoJuego.dinosauriosDescartados = [];
 
-    console.log(`=== INICIANDO RONDA 2 ===`);
-    console.log(`Empezó Ronda 1: Jugador ${quienEmpezoRonda1}`);
-    console.log(`Empieza Ronda 2: Jugador ${estadoJuego.primerJugador}`);
+    console.log(`=== INICIANDO RONDA ${estadoJuego.rondaActual} ===`);
+    console.log(`Modo seguimiento: ${estadoJuego.modoSeguimiento}`);
+    console.log(`Jugador que empieza: ${estadoJuego.primerJugador}`);
 
     if (estadoJuego.modoSeguimiento) {
       const jugador = estadoJuego[`jugador${estadoJuego.primerJugador}`];
@@ -1860,21 +1785,21 @@ const JuegoManager = {
         setTimeout(() => ModoSeguimiento.mostrarPopupSeleccionDinosaurios(), 500);
       }
     } else {
-      this.iniciarRonda();
-      if (window.app?.showScreen) {
-        window.app.showScreen('partida');
-      }
+      this._iniciarRonda();
+      window.app?.showScreen?.('partida');
     }
   },
 
-  mostrarPantallaFinal() {
+  _mostrarPantallaFinal() {
     if (window.app?.showScreen) {
+      // Limpiar indicadores de turno al mostrar resultados finales
+      this.limpiarIndicadoresTurno();
       window.app.showScreen('resultados');
-      this.actualizarPantallaFinal();
+      this._actualizarPantallaFinal();
     }
   },
 
-  actualizarPantallaFinal() {
+  _actualizarPantallaFinal() {
     const j1 = estadoJuego.jugador1;
     const j2 = estadoJuego.jugador2;
 
@@ -1904,19 +1829,198 @@ const JuegoManager = {
     }
   },
 
+  mostrarAlertaPuntos(puntosObtenidos, tipoDino, recinto) {
+    const jugador = estadoJuego.getJugadorActual();
+    const nombreRecinto = this._obtenerNombreRecinto(recinto);
+    const nombreDino = this._obtenerNombreDinosaurio(tipoDino);
+    
+    let mensaje = '';
+    let tipoAlerta = 'info';
+    
+    if (puntosObtenidos > 0) {
+      mensaje = `<div class="puntos-enfasis">+${puntosObtenidos} PUNTO${puntosObtenidos !== 1 ? 'S' : ''}</div>`;
+      tipoAlerta = 'success';
+    } else if (puntosObtenidos === 0) {
+      mensaje = `<div class="puntos-enfasis">0 PUNTOS</div>`;
+      tipoAlerta = 'info';
+    } else {
+      mensaje = `<div class="puntos-enfasis">ESTRATÉGICO</div>`;
+      tipoAlerta = 'info';
+    }
+    
+    // Agregar información del total actual
+    mensaje += `<div class="total-puntos">Total: ${jugador.puntosRonda || 0} puntos</div>`;
+    
+    mostrarAlertaJuego(mensaje, tipoAlerta, 2500);
+  },
+
+  _obtenerNombreRecinto(recinto) {
+    const nombres = {
+      'bosque-semejanza': 'Bosque de la Semejanza',
+      'pradera-amor': 'Pradera del Amor',
+      'woody-trio': 'Trío Frondoso',
+      'prado-diferencia': 'Prado de la Diferencia',
+      'rey-jungla': 'Rey de la Jungla',
+      'isla-solitaria': 'Isla Solitaria',
+      'rio': 'El Río'
+    };
+    return nombres[recinto] || recinto;
+  },
+
+  _obtenerNombreDinosaurio(tipo) {
+    const nombres = {
+      't-rex': 'T-Rex',
+      'triceratops': 'Triceratops',
+      'diplodocus': 'Diplodocus',
+      'stegosaurus': 'Stegosaurus',
+      'parasaurolophus': 'Parasaurolophus'
+    };
+    return nombres[tipo] || tipo;
+  },
+
   reiniciarJuegoCompleto() {
     estadoJuego.reset();
-    this.generarPoolDinosaurios();
+    this._generarPoolDinosaurios();
+  },
+
+  prepararSiguienteRonda() {
+    return this._prepararSiguienteRonda();
   }
 };
 
+/* ==================== FUNCIONES PARA REGLAS INTERACTIVAS ==================== */
+
+// Función para expandir/contraer consejos
+function mostrarDetalleConsejo(elemento) {
+  // Cerrar todos los otros consejos
+  document.querySelectorAll('.consejo-item').forEach(item => {
+    if (item !== elemento) {
+      item.classList.remove('expandido');
+    }
+  });
+  
+  // Toggle del consejo actual
+  elemento.classList.toggle('expandido');
+  
+  // Scroll suave al elemento si se expandió
+  if (elemento.classList.contains('expandido')) {
+    elemento.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'nearest' 
+    });
+  }
+}
+
+// Función para mostrar alertas durante el juego
+function mostrarAlertaJuego(mensaje, tipo = 'info', duracion = 5000) {
+  // Determinar el icono según el tipo de alerta
+  const iconos = {
+    'info': 'img/icono_informacion.png',
+    'warning': 'img/icono_informacion.png',
+    'success': 'img/icono_ganador.png',
+    'error': 'img/icono_informacion.png'
+  };
+  
+  const alerta = document.createElement('div');
+  alerta.className = `alerta-juego alerta-${tipo}`;
+  alerta.innerHTML = `
+    <div class="alerta-contenido">
+      <img src="${iconos[tipo] || iconos.info}" alt="${tipo}" class="alerta-icono">
+      <span class="alerta-mensaje">${mensaje}</span>
+      <button class="alerta-cerrar" onclick="this.parentElement.parentElement.remove()">×</button>
+    </div>
+  `;
+  
+  // Agregar al DOM
+  document.body.appendChild(alerta);
+  
+  // Auto-remover después del tiempo especificado
+  setTimeout(() => {
+    if (alerta.parentElement) {
+      alerta.remove();
+    }
+  }, duracion);
+}
+
+// Función para mostrar consejos contextuales
+function mostrarConsejoContextual(recinto, accion) {
+  const consejos = {
+    'bosque-semejanza': {
+      'colocar': 'Recordá: solo podés poner dinosaurios de la misma especie, llenando de izquierda a derecha sin espacios.',
+      'puntos': 'Puntos: 1, 3, 6, 10, 15, 21 según cantidad de dinos iguales'
+    },
+    'prado-diferencia': {
+      'colocar': 'Recordá: solo podés poner dinosaurios de especies distintas, llenando de izquierda a derecha sin espacios.',
+      'puntos': 'Puntos: 1, 3, 6, 10, 15, 21 según cantidad de especies distintas'
+    },
+    'pradera-amor': {
+      'colocar': 'Recordá: formá parejas del mismo tipo para obtener 5 puntos por cada pareja.',
+      'puntos': 'Podés tener varias parejas de la misma especie'
+    },
+    'woody-trio': {
+      'colocar': 'Recordá: podés poner hasta 3 dinosaurios de cualquier especie.',
+      'puntos': '7 puntos si hay exactamente 3, 0 puntos si hay menos'
+    },
+    'rey-jungla': {
+      'colocar': 'Recordá: solo podés poner 1 dinosaurio de cualquier especie.',
+      'puntos': '7 puntos si tu zoo tiene al menos tantos de esa especie como cada oponente'
+    },
+    'isla-solitaria': {
+      'colocar': 'Recordá: solo podés poner 1 dinosaurio.',
+      'puntos': '7 puntos si es el único de su especie en todo tu zoo'
+    },
+    'rio': {
+      'colocar': 'El Río siempre está disponible como salvavidas.',
+      'puntos': 'Cada dinosaurio aquí vale 1 punto al final'
+    }
+  };
+  
+  const consejo = consejos[recinto]?.[accion];
+  if (consejo) {
+    mostrarAlertaJuego(consejo, 'info', 4000);
+  }
+}
+
+// Función para mostrar alertas de restricción del dado
+function mostrarAlertaRestriccionDado(cara) {
+  const alertas = {
+    1: '¡Tablero libre! Podés colocar el dinosaurio en cualquier recinto.',
+    2: 'El Rey de la Jungla está bloqueado. Podés colocar en cualquier otro recinto.',
+    3: 'Recintos disponibles: Bosque de la Semejanza, Trío Frondoso, Pradera del Amor.',
+    4: 'Recintos disponibles: Rey de la Jungla, Prado de la Diferencia, Isla Solitaria.',
+    5: 'Recintos disponibles: Trío Frondoso, Bosque de la Semejanza, Rey de la Jungla.',
+    6: 'Recintos disponibles: Prado de la Diferencia, Isla Solitaria, Pradera del Amor.'
+  };
+  
+  const alerta = alertas[cara];
+  if (alerta) {
+    mostrarAlertaJuego(alerta, 'warning', 5000);
+  }
+}
+
+// Función para mostrar consejos de estrategia
+function mostrarConsejoEstrategia(tipo) {
+  const estrategias = {
+    'primer-turno': '¡Primer turno sin restricción! Aprovechalo para colocar estratégicamente.',
+    't-rex-bonus': 'Recordá: cada recinto con T-Rex da +1 punto extra al final.',
+    'rio-salvavidas': 'Si no podés cumplir la restricción, usá el Río como salvavidas.',
+    'observar-oponente': 'Observá el mapa del oponente para tomar decisiones inteligentes.',
+    'llenado-consecutivo': 'En recintos grandes, llená de izquierda a derecha sin espacios.',
+    'parejas-amor': 'En Pradera del Amor, concentráte en formar parejas del mismo tipo.'
+  };
+  
+  const estrategia = estrategias[tipo];
+  if (estrategia) {
+    mostrarAlertaJuego(estrategia, 'success', 4000);
+  }
+}
+
 /* ==================== INICIALIZACIÓN ==================== */
 document.addEventListener('DOMContentLoaded', () => {
+  // Los estilos de alertas ahora están en tablero.css
   const btnSiguiente = document.getElementById('btn-siguiente-turno');
   if (btnSiguiente) {
-    btnSiguiente.addEventListener('click', () => {
-      JuegoManager.procesarSiguienteTurno();
-    });
+    btnSiguiente.addEventListener('click', () => JuegoManager.procesarSiguienteTurno());
   }
 
   PopupManager.setupEventListeners();
@@ -1930,15 +2034,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Exponer funciones globales
-  window.JuegoManager = JuegoManager;
-  window.estadoJuego = estadoJuego;
-  window.ModoSeguimiento = ModoSeguimiento;
-  window.RenderManager = RenderManager;
-
-  window.mostrarReglas = () => PopupManager.mostrarReglas();
-  window.mostrarPesos = () => PopupManager.mostrarPesos();
-  window.mostrarMapa = () => MapaOponente.mostrar();
-  window.cerrarPopup = (id) => PopupManager.cerrar(id);
+  Object.assign(window, {
+    JuegoManager, estadoJuego, ModoSeguimiento, RenderManager,
+    mostrarReglas: () => PopupManager.mostrarReglas(),
+    mostrarPesos: () => PopupManager.mostrarPesos(),
+    mostrarMapa: () => MapaOponente.mostrar(),
+    cerrarPopup: (id) => PopupManager.cerrar(id),
+    limpiarIndicadoresTurno: () => JuegoManager.limpiarIndicadoresTurno(),
+    // Funciones de reglas interactivas
+    mostrarDetalleConsejo,
+    mostrarAlertaJuego,
+    mostrarConsejoContextual,
+    mostrarAlertaRestriccionDado,
+    mostrarConsejoEstrategia
+  });
 
   if (window.app) {
     window.app.empezarTurnoSeguimiento = function () {
@@ -1948,15 +2057,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const yaSeleccionoEnRonda = (jugadorNum === 1 && estadoJuego.dinosauriosRondaJ1.length > 0) ||
         (jugadorNum === 2 && estadoJuego.dinosauriosRondaJ2.length > 0);
 
-      console.log(`empezarTurnoSeguimiento - Jugador ${jugadorNum}, Ya seleccionó: ${yaSeleccionoEnRonda}`);
-
       setTimeout(() => {
         if (!yaSeleccionoEnRonda) {
-          console.log(`Mostrando selección para jugador ${jugadorNum}`);
           ModoSeguimiento.mostrarPopupSeleccionDinosaurios();
         } else {
-          console.log(`Restaurando dinosaurios para jugador ${jugadorNum}`);
-          ModoSeguimiento.restaurarDinosauriosGuardados();
+          ModoSeguimiento._restaurarDinosauriosGuardados();
         }
       }, 100);
     };
