@@ -1,4 +1,4 @@
-/* ==================== ADMINISTRADOR=================== */
+/* ==================== ADMINISTRADOR (MOBILE FIRST) ==================== */
 .pantalla,
 .pantalla-inicio {
   flex-direction: column;
@@ -6,113 +6,140 @@
   justify-content: center;
 }
 
-/* === Asegurar que hidden funcione === */
+/* Asegurar que hidden funcione */
 .admin-screen.hidden {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
+  visibility: hidden;
+  opacity: 0;
 }
 
-
-/* === Perfil de administrador === */
+/* ==================== PERFIL DE ADMINISTRADOR (MOBILE FIRST) ==================== */
 .admin-profile-card {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  margin: 20px 0 !important;
-  padding: 30px !important;
-  border-radius: 15px !important;
-  border: 2px solid var(--color-secundario) !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 15px;
+  border: 2px solid var(--color-secundario);
+  width: calc(100% - 40px);
+  max-width: 400px;
 }
 
-/* Avatar del administrador */
+/* Avatar del administrador (Mobile First) */
 .admin-avatar-container {
-  position: relative !important;
-  width: 120px !important;
-  height: 120px !important;
-  margin-bottom: 20px !important;
-  display: block !important;
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 15px;
+  display: block;
 }
 
 .admin-avatar-image {
-  width: 120px !important;
-  height: 120px !important;
-  border-radius: 50% !important;
-  object-fit: cover !important;
-  border: 3px solid var(--color-secundario) !important;
-  box-shadow: 0 0 20px rgba(148, 204, 4, 0.5) !important;
-  display: block !important;
-  margin: 0 auto !important;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--color-secundario);
+  box-shadow: 0 0 20px rgba(148, 204, 4, 0.5);
+  display: block;
+  margin: 0 auto;
 }
 
-/* Título del admin */
+/* Título del admin (Mobile First) */
 .admin-title-main {
-  color: #ffffff !important;
-  font-size: 2rem !important;
-  font-weight: bold !important;
-  margin: 20px 0 30px 0 !important;
-  text-align: center !important;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
-  background: transparent !important;
-  border: none !important;
-  text-transform: uppercase !important;
-  letter-spacing: 2px !important;
-  font-family: inherit !important;
-  line-height: 1.2 !important;
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 15px 0 8px 0;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  background: transparent;
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: inherit;
+  line-height: 1.2;
 }
 
 .admin-role-label {
-  font-size: 16px !important;
-  font-weight: bold !important;
-  margin-top: 5px !important;
-  margin-bottom: 30px !important;
-  text-transform: uppercase !important;
-  letter-spacing: 2px !important;
-  color: var(--color-secundario) !important;
-  text-shadow: 0 0 10px rgba(148, 204, 4, 0.3) !important;
-  text-align: center !important;
-  font-family: inherit !important;
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 5px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--color-secundario);
+  text-shadow: 0 0 10px rgba(148, 204, 4, 0.3);
+  text-align: center;
+  font-family: inherit;
 }
 
+/* Botones del administrador (Mobile First) */
+.admin-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 0 auto;
+  padding: 0;
+  width: calc(100% - 40px);
+  max-width: 400px;
+}
 
+.admin-buttons .btn {
+  padding: 12px 16px;
+  font-size: 14px;
+}
 
-/* === Header administrativo === */
+/* ==================== HEADER ADMINISTRATIVO (MOBILE FIRST) ==================== */
 .admin-header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
-  padding: var(--space-md);
+  padding: 15px;
   display: flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   z-index: var(--z-ui);
   border-bottom: 2px solid #333;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  gap: 10px;
 }
 
-/* Contenedores de pantallas admin */
-
-
 .admin-title-container {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  margin: 0;
+  padding: 0;
 }
 
 .admin-exit-button {
-  color: var(--color-blanco);
-  background: var(--color-transparente);
-  border: none;
+  color: #ffffff;
+  background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+  border: 2px solid #444;
+  border-radius: var(--border-radius-md);
   width: 100%;
   padding: var(--space-md);
+  transition: all var(--transition-base);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
 }
 
-/* Padding para pantallas con header */
+.admin-exit-button:hover {
+  background: linear-gradient(135deg, #3d3d3d 0%, #2a2a2a 100%);
+  border-color: var(--color-secundario);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 20px rgba(148, 204, 4, 0.2);
+}
 
+.admin-exit-button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
 
 .admin-users-list-container {
   flex: 1;
@@ -122,16 +149,16 @@
 .admin-info {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
+  gap: 8px;
   background: rgba(255, 255, 255, 0.1);
-  padding: var(--space-sm) var(--space-md);
+  padding: 8px 12px;
   border-radius: var(--border-radius-pill);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .admin-avatar {
-  width: 45px;
-  height: 45px;
+  width: 35px;
+  height: 35px;
   border-radius: var(--border-radius-circle);
   object-fit: cover;
   border: 2px solid var(--color-secundario);
@@ -141,23 +168,37 @@
 .admin-name {
   color: var(--color-secundario);
   font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-md);
+  font-size: 14px;
   text-shadow: 0 0 5px rgba(148, 204, 4, 0.3);
 }
 
 .admin-title {
   color: #b0bec5;
-  font-size: var(--font-size-xs);
+  font-size: 11px;
   font-weight: var(--font-weight-medium);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
-/* === Contenido de listados === */
+/* ==================== CONTENIDO DE ADMINISTRADOR (MOBILE FIRST) ==================== */
+.admin-content-container {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 80px);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* === Contenido de listados (Mobile First) === */
 .search-container {
   display: flex;
-  margin-bottom: var(--space-xl);
+  margin-bottom: 20px;
   align-items: center;
+  flex-direction: row;
+  gap: 0;
 }
 
 .search-container .form-input {
@@ -170,6 +211,7 @@
   font-size: var(--font-size-md);
   box-sizing: border-box;
   min-width: 0;
+  margin-bottom: 0;
 }
 
 .search-container .form-input:focus {
@@ -190,9 +232,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0px 10px 10px 0px;
+  border-radius: 0 10px 10px 0;
+  border-top: 2px solid var(--color-secundario);
+  border-right: 2px solid var(--color-secundario);
+  border-bottom: 2px solid var(--color-secundario);
 }
-
 
 .btn-search img {
   width: 24px;
@@ -203,15 +247,16 @@
 .usuarios-list {
   width: 100%;
   background: rgba(0, 0, 0, 0.6) !important;
-  padding: var(--space-xl);
+  padding: 15px;
   border-radius: var(--border-radius-lg);
   border: 2px solid #444;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  max-height: 60vh;
+  max-height: 50vh;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: var(--color-secundario) rgba(255, 255, 255, 0.1);
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Scrollbar personalizado para WebKit */
@@ -234,28 +279,30 @@
 }
 
 .titulo-seccion {
-  font-size: var(--font-size-lg);
+  font-size: 1.2rem;
   font-weight: var(--font-weight-bold);
   color: var(--color-secundario);
-  margin-bottom: var(--space-2xl);
+  margin-bottom: 20px;
   text-align: center;
   text-transform: uppercase;
   letter-spacing: 2px;
   text-shadow: 0 0 10px rgba(148, 204, 4, 0.3);
 }
 
-/* === Items de usuario === */
+/* === Items de usuario (Mobile First) === */
 .usuario-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  padding: var(--space-lg);
+  padding: 15px;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
   border-radius: var(--border-radius-lg);
-  margin-bottom: var(--space-md);
+  margin-bottom: 10px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   transition: all var(--transition-base);
+  flex-direction: column;
+  gap: 10px;
 }
 
 .usuario-item:hover {
@@ -268,18 +315,20 @@
 .usuario-nombre {
   font-weight: var(--font-weight-bold);
   color: #ffffff;
-  font-size: var(--font-size-md);
+  font-size: 16px;
+  margin-bottom: 5px;
 }
 
 .usuario-acciones {
   display: flex;
-  gap: var(--space-sm);
+  gap: 8px;
+  align-self: flex-end;
 }
 
-/* === Botones de acción === */
+/* === Botones de acción (Mobile First) === */
 .btn-accion {
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   border-radius: var(--border-radius-circle);
   border: none;
   cursor: pointer;
@@ -294,8 +343,8 @@
 }
 
 .btn-accion img {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   filter: brightness(0) invert(1);
 }
 
@@ -321,373 +370,488 @@
   box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
 }
 
-/* === Formularios de administrador === */
+/* ==================== FORMULARIOS DE ADMINISTRADOR (MOBILE FIRST) ==================== */
 .admin-form-group {
-  margin-bottom: var(--space-lg) !important;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  width: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
+  margin-bottom: 15px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .admin-form-input {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border: 2px solid #333 !important;
-  color: #ffffff !important;
-  border-radius: 10px !important;
-  padding: var(--space-md) !important;
-  font-size: var(--font-size-md) !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
-  box-sizing: border-box !important;
-  box-shadow: none !important;
-  font-family: inherit !important;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid #333;
+  color: #ffffff;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 16px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  box-shadow: none;
+  font-family: inherit;
 }
 
 .admin-form-input:focus {
-  border-color: var(--color-secundario) !important;
-  background: rgba(255, 255, 255, 0.15) !important;
-  box-shadow: 0 0 15px rgba(148, 204, 4, 0.3) !important;
-  outline: none !important;
-  color: #ffffff !important;
+  border-color: var(--color-secundario);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 15px rgba(148, 204, 4, 0.3);
+  outline: none;
+  color: #ffffff;
 }
 
 .admin-form-input::placeholder {
-  color: #999 !important;
+  color: #999;
 }
 
 .admin-form-label {
-  color: #b0bec5 !important;
-  font-weight: var(--font-weight-bold) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 1px !important;
-  font-size: var(--font-size-sm) !important;
-  margin-bottom: var(--space-sm) !important;
-  display: block !important;
-  width: 100% !important;
-  background: transparent !important;
-  border: none !important;
-  text-shadow: none !important;
-  font-family: inherit !important;
+  color: #b0bec5;
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px;
+  margin-bottom: 5px;
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-shadow: none;
+  font-family: inherit;
 }
 
 .admin-form-container {
-  background: rgba(0, 0, 0, 0.6) !important;
-  padding: var(--space-2xl) !important;
-  border-radius: var(--border-radius-lg) !important;
-  border: 2px solid #444 !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
-  backdrop-filter: blur(10px) !important;
-  width: 100% !important;
-  max-width: 500px !important;
-  margin: 0 auto !important;
-  box-sizing: border-box !important;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 20px;
+  border-radius: var(--border-radius-lg);
+  border: 2px solid #444;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  box-sizing: border-box;
 }
 
-
-
-/* === Popup de confirmación === */
+/* ==================== POPUP DE CONFIRMACIÓN (MOBILE FIRST) ==================== */
 .admin-popup-overlay {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  background: rgba(0, 0, 0, 0.9) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 10000 !important;
-  backdrop-filter: blur(5px) !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(5px);
 }
 
-/* Asegurar que esté oculto por defecto */
-.admin-popup-overlay.hidden {
-  display: none !important;
+.admin-popup-overlay {
+  display: none;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.admin-popup-overlay:not(.hidden) {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .admin-popup-content {
-  background: #2d2d2d !important;
-  padding: 30px !important;
-  border-radius: 10px !important;
-  max-width: 400px !important;
-  width: 90% !important;
-  text-align: center !important;
-  border: 1px solid #555 !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7) !important;
-  color: #ffffff !important;
+  background: #2d2d2d;
+  padding: 25px;
+  border-radius: 10px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  border: 1px solid #555;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  color: #ffffff;
+  margin: 20px;
 }
 
 .admin-popup-title {
-  color: #ffffff !important;
-  margin-bottom: 20px !important;
-  font-size: 18px !important;
-  font-weight: bold !important;
+  color: #ffffff;
+  margin-bottom: 15px;
+  font-size: 16px;
+  font-weight: bold;
 }
 
+.admin-popup-buttons {
+  display: flex;
+  flex-direction: column;
+  margin-top: 30px;
+  padding: 0 15px;
+}
 
+.admin-popup-buttons .btn {
+  width: 100%;
+  padding: 20px 25px;
+  font-size: 16px;
+  font-weight: 600;
+  min-height: 60px;
+  margin: 5px 0;
+}
 
-/* === Títulos de páginas de administrador === */
+.admin-popup-buttons .btn + .btn {
+  margin-top: 20px;
+}
+
+/* Títulos de páginas de administrador (Mobile First) */
 .admin-page-title {
   color: var(--color-blanco);
-  margin-bottom: var(--space-2xl) !important;
+  margin-bottom: var(--space-2xl);
+  font-size: 1.5rem;
 }
 
-/* === Desktop centering for admin content === */
-@media (min-width: 1024px) {
-  .admin-content-container {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch;
-    justify-content: center !important;
-    min-height: calc(100vh - 80px) !important;
-    padding: var(--space-xl) !important;
-    max-width: 90vw !important;
-    margin: 0 auto !important;
-    width: 60%;
-  }
-
-  .admin-profile-card {
-    max-width: 1000px !important;
-    width: 100% !important;
-  }
-
-  .admin-form-container {
-    max-width: 1200px !important;
-    width: 100% !important;
-  }
-
-  .usuarios-list {
-    max-width: 1400px !important;
-    width: 100% !important;
-  }
-
-  /* === Botón de volver con estética oscura === */
-  .btn-icon {
-    background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%) !important;
-    border: 2px solid #444 !important;
-    border-radius: var(--border-radius-md) !important;
-    color: #ffffff !important;
-    transition: all var(--transition-base) !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
-    backdrop-filter: blur(10px) !important;
-  }
-
-  .btn-icon:hover {
-    background: linear-gradient(135deg, #3d3d3d 0%, #2a2a2a 100%) !important;
-    border-color: var(--color-secundario) !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 20px rgba(148, 204, 4, 0.2) !important;
-  }
-
-  .btn-icon:active {
-    transform: translateY(0) !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
-  }
-
-  .btn-icon img {
-    filter: brightness(0) invert(1) !important;
-    opacity: 0.9 !important;
-  }
-
-  .btn-icon:hover img {
-    opacity: 1 !important;
-    filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(148, 204, 4, 0.5)) !important;
-  }
+/* Botones de navegación (Mobile First) */
+.btn-icon {
+  width: 35px;
+  height: 35px;
+  top: 15px;
+  left: 15px;
+  background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+  border: 2px solid #444;
+  border-radius: var(--border-radius-md);
+  color: #ffffff;
+  transition: all var(--transition-base);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
 }
 
-/* === Responsive Design === */
-@media (max-width: 768px) {
+.btn-icon:hover {
+  background: linear-gradient(135deg, #3d3d3d 0%, #2a2a2a 100%);
+  border-color: var(--color-secundario);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 20px rgba(148, 204, 4, 0.2);
+}
 
+.btn-icon:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
 
+.btn-icon img {
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
 
-  /* === Header administrativo === */
-  .admin-header {
-    padding: 15px !important;
-    flex-direction: row !important;
-    gap: 10px !important;
-  }
+.btn-icon:hover img {
+  opacity: 1;
+  filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(148, 204, 4, 0.5));
+}
 
-  .admin-info {
-    padding: 8px 12px !important;
-    gap: 8px !important;
-  }
+/* ==================== RESPONSIVE DESIGN - MOBILE FIRST ==================== */
 
-  .admin-avatar {
-    width: 35px !important;
-    height: 35px !important;
-  }
-
-  .admin-name {
-    font-size: 14px !important;
-  }
-
-  .admin-title {
-    font-size: 11px !important;
-  }
-
-  /* === Perfil admin === */
+/* Small devices (480px and up) */
+@media (min-width: 480px) {
   .admin-profile-card {
+    padding: 30px;
+    max-width: 400px;
     width: 100%;
   }
 
   .admin-avatar-container {
-    width: 80px !important;
-    height: 80px !important;
-    margin-bottom: 15px !important;
+    width: 100px;
+    height: 100px;
+    margin-bottom: 20px;
   }
 
   .admin-avatar-image {
-    width: 80px !important;
-    height: 80px !important;
+    width: 100px;
+    height: 100px;
   }
 
   .admin-title-main {
-    font-size: 1.5rem !important;
-    margin: 15px 0 8px 0 !important;
+    font-size: 1.8rem;
+    margin: 18px 0 12px 0;
   }
 
   .admin-role-label {
-    font-size: 14px !important;
-    margin-bottom: 20px !important;
+    font-size: 15px;
+    margin-bottom: 20px;
   }
 
-  /* === Botones administrativos === */
   .admin-buttons {
-    gap: 10px !important;
+    gap: var(--space-md);
+    width: 100%;
+    max-width: 400px;
   }
 
   .admin-buttons .btn {
-    padding: 12px 16px !important;
-    font-size: 14px !important;
+    padding: var(--space-md) var(--space-lg);
+    font-size: var(--font-size-base);
   }
 
-  /* === Contenedores === */
-
-
-  /* === Títulos === */
   .admin-page-title {
-    font-size: 1.5rem !important;
-    margin-bottom: 20px !important;
+    font-size: 1.8rem;
+    margin-bottom: var(--space-2xl);
   }
 
   .titulo-seccion {
-    font-size: 1.2rem !important;
-    margin-bottom: 20px !important;
+    font-size: 1.4rem;
+    margin-bottom: var(--space-2xl);
   }
 
-  /* === Búsqueda === */
-  .search-container {
-    margin-bottom: 20px !important;
-    flex-direction: column !important;
-    gap: 0 !important;
-  }
-
-  .search-container .form-input {
-    border-radius: 10px 10px 0 0 !important;
-    margin-bottom: 0 !important;
-  }
-
-  .btn-search {
-    width: 100% !important;
-    height: 40px !important;
-    border-radius: 0 0 10px 10px !important;
-    border-top: none !important;
-  }
-
-  /* === Lista de usuarios === */
   .usuarios-list {
-    padding: 15px !important;
-    max-height: 50vh !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important;
+    padding: var(--space-lg);
+    max-height: 55vh;
   }
 
   .usuario-item {
-    padding: 15px !important;
-    margin-bottom: 10px !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 10px !important;
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-md);
   }
 
   .usuario-nombre {
-    font-size: 16px !important;
-    margin-bottom: 5px !important;
+    font-size: var(--font-size-lg);
+    margin-bottom: 0;
   }
 
   .usuario-acciones {
-    align-self: flex-end !important;
-    gap: 8px !important;
+    gap: var(--space-sm);
+    align-self: auto;
   }
 
   .btn-accion {
-    width: 35px !important;
-    height: 35px !important;
+    width: 38px;
+    height: 38px;
   }
 
   .btn-accion img {
-    width: 16px !important;
-    height: 16px !important;
+    width: 18px;
+    height: 18px;
   }
 
-  /* === Formularios === */
   .admin-form-container {
-    padding: 20px !important;
-    max-width: 100% !important;
-    margin: 0 !important;
+    padding: var(--space-xl);
+    max-width: 450px;
+    margin: 0 auto;
   }
 
   .admin-form-group {
-    margin-bottom: 15px !important;
+    margin-bottom: var(--space-lg);
   }
 
   .admin-form-label {
-    font-size: 12px !important;
-    margin-bottom: 5px !important;
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-sm);
   }
 
   .admin-form-input {
-    padding: 12px !important;
-    font-size: 16px !important;
+    padding: var(--space-md);
+    font-size: var(--font-size-md);
   }
 
-  /* === Popup === */
   .admin-popup-content {
-    max-width: 320px !important;
-    padding: 20px !important;
-    margin: 20px !important;
+    max-width: 450px;
+    padding: 30px;
+    margin: var(--space-lg);
   }
 
   .admin-popup-title {
-    font-size: 16px !important;
-    margin-bottom: 15px !important;
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--space-lg);
   }
 
   .admin-popup-buttons {
-    flex-direction: column !important;
-    gap: 10px !important;
+    flex-direction: row;
+    gap: var(--space-lg);
+    justify-content: center;
   }
 
   .admin-popup-buttons .btn {
-    width: 100% !important;
-    padding: 12px !important;
+    width: 120px;
+    padding: 15px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    min-height: 50px;
   }
 
-  /* === Botones de navegación === */
   .btn-icon {
-    width: 35px !important;
-    height: 35px !important;
-    top: 15px !important;
-    left: 15px !important;
+    width: 40px;
+    height: 40px;
+    top: var(--space-md);
+    left: var(--space-md);
   }
 
   .btn-icon img {
-    width: 20px !important;
-    height: 20px !important;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Medium devices (768px and up) */
+@media (min-width: 768px) {
+  .admin-header {
+    padding: var(--space-md);
+    flex-direction: row;
+    gap: var(--space-md);
+  }
+
+  .admin-info {
+    padding: var(--space-sm) var(--space-md);
+    gap: var(--space-md);
+  }
+
+  .admin-avatar {
+    width: 45px;
+    height: 45px;
+  }
+
+  .admin-name {
+    font-size: var(--font-size-md);
+  }
+
+  .admin-title {
+    font-size: var(--font-size-xs);
+  }
+
+  .admin-profile-card {
+    max-width: 500px;
+    padding: var(--space-2xl);
+  }
+
+  .admin-avatar-container {
+    width: 120px;
+    height: 120px;
+  }
+
+  .admin-avatar-image {
+    width: 120px;
+    height: 120px;
+  }
+
+  .admin-title-main {
+    font-size: 2rem;
+    margin: 20px 0 30px 0;
+  }
+
+  .admin-role-label {
+    font-size: 16px;
+  }
+
+  .admin-buttons {
+    max-width: 400px;
+    gap: var(--space-lg);
+  }
+
+  .search-container {
+    margin-bottom: var(--space-xl);
+  }
+
+  .usuarios-list {
+    padding: var(--space-xl);
+    max-height: 60vh;
+  }
+
+  .usuario-item {
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    gap: 0;
+  }
+
+  .usuario-acciones {
+    gap: var(--space-sm);
+  }
+
+  .btn-accion {
+    width: 40px;
+    height: 40px;
+  }
+
+  .btn-accion img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .admin-form-container {
+    max-width: 500px;
+    padding: var(--space-2xl);
+  }
+
+  .admin-popup-content {
+    max-width: 400px;
+    padding: 30px;
+  }
+
+  .admin-popup-title {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+}
+
+/* Large devices (1024px and up) */
+@media (min-width: 1024px) {
+  .admin-content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    min-height: calc(100vh - 80px);
+    padding: var(--space-xl);
+    max-width: 90vw;
+    margin: 0 auto;
+    width: 60%;
+  }
+
+  .admin-profile-card {
+    max-width: 1000px;
+    width: 100%;
+  }
+
+  .admin-form-container {
+    max-width: 1200px;
+    width: 100%;
+  }
+
+  .usuarios-list {
+    max-width: 1400px;
+    width: 100%;
+  }
+
+  .btn-icon {
+    background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+    border: 2px solid #444;
+    border-radius: var(--border-radius-md);
+    color: #ffffff;
+    transition: all var(--transition-base);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-icon:hover {
+    background: linear-gradient(135deg, #3d3d3d 0%, #2a2a2a 100%);
+    border-color: var(--color-secundario);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 20px rgba(148, 204, 4, 0.2);
+  }
+
+  .btn-icon:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  .btn-icon img {
+    filter: brightness(0) invert(1);
+    opacity: 0.9;
+  }
+
+  .btn-icon:hover img {
+    opacity: 1;
+    filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(148, 204, 4, 0.5));
   }
 }

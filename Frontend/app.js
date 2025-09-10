@@ -71,8 +71,20 @@ class AppState {
       'btn-modo-asistente': () => this.iniciarModoSeguimiento(),
       'btn-volver-jugadores': () => this.showScreen('lobby'),
       'btn-volver-seleccion': () => this.showScreen('jugadores'),
-      'btn-seleccionar-j1': () => this.iniciarPartidaConJugador(1),
-      'btn-seleccionar-j2': () => this.iniciarPartidaConJugador(2),
+      'btn-seleccionar-j1': () => {
+        // Solo procesar si no hay una selección ya en curso
+        if (!this.seleccionEnCurso) {
+          this.seleccionEnCurso = true;
+          this.iniciarPartidaConJugador(1);
+        }
+      },
+      'btn-seleccionar-j2': () => {
+        // Solo procesar si no hay una selección ya en curso
+        if (!this.seleccionEnCurso) {
+          this.seleccionEnCurso = true;
+          this.iniciarPartidaConJugador(2);
+        }
+      },
       'btn-seleccion-aleatoria': () => this.seleccionAleatoria(),
       'btn-empezar-turno': () => this.empezarTurnoSeguimiento(),
       'btn-comenzar-juego': () => this.comenzarJuego(),
@@ -333,20 +345,36 @@ class AppState {
 
   // ==================== MANEJO DE PANTALLAS ====================
   showScreen(screenName) {
-    // Ocultar todas las pantallas
+    // Encontrar la pantalla que queremos mostrar
+    const targetScreen = document.getElementById(`pantalla-${screenName}`);
+    if (!targetScreen) {
+      console.error(`Pantalla no encontrada: pantalla-${screenName}`);
+      return;
+    }
+
+    // Primero asegurarnos de que la pantalla de carga esté oculta
+    const loadingScreen = document.getElementById('pantalla-carga');
+    if (loadingScreen) {
+      loadingScreen.classList.add('hidden');
+    }
+
+    // Mostrar inmediatamente la pantalla objetivo
+    targetScreen.classList.remove('hidden');
+    targetScreen.style.opacity = '1';
+    targetScreen.style.transition = '';
+    
+    // Luego ocultar todas las demás pantallas
     document.querySelectorAll('.pantalla, .pantalla-inicio').forEach(s => {
-      s.style.display = 'none';
+      if (s !== targetScreen) {
+        s.classList.add('hidden');
+        s.style.opacity = '';
+        s.style.transition = '';
+      }
     });
     
-    // Mostrar la pantalla solicitada
-    const screen = document.getElementById(`pantalla-${screenName}`);
-    if (screen) {
-      screen.style.display = screenName === 'carga' ? 'flex' : 'block';
-      this.animateScreenElements(screen);
-    }
-    
+    this.animateScreenElements(targetScreen);
     this.currentScreen = screenName;
-    this.handleScreenSpecificSetup(screenName, screen);
+    this.handleScreenSpecificSetup(screenName, targetScreen);
   }
 
   animateScreenElements(screen) {
@@ -377,7 +405,7 @@ class AppState {
         // Asegurar que el tablero está visible
         const pantallaPartida = document.getElementById('pantalla-partida');
         if (pantallaPartida) {
-          pantallaPartida.style.display = 'block';
+          pantallaPartida.classList.remove('hidden');
         }
         break;
     }
@@ -506,7 +534,12 @@ class AppState {
         
         // Iniciar partida
         const jugadorNum = opcion.id === 'opcion-jugador-2' ? 2 : 1;
-        setTimeout(() => this.iniciarPartidaConJugador(jugadorNum), 250);
+        
+        // Solo procesar si no hay una selección ya en curso
+        if (!this.seleccionEnCurso) {
+          this.seleccionEnCurso = true;
+          setTimeout(() => this.iniciarPartidaConJugador(jugadorNum), 250);
+        }
       });
     });
   }
@@ -610,6 +643,11 @@ class AppState {
     // Limpiar datos temporales
     this.tempNombres = null;
     this.tempJugador2Info = null;
+    
+    // Resetear la bandera después de un tiempo
+    setTimeout(() => {
+      this.seleccionEnCurso = false;
+    }, 1000);
   }
 
   iniciarPartida(nombres, jugador2Info, primerJugador) {
@@ -1165,8 +1203,8 @@ class AppState {
 
   // ==================== ACCIONES DE JUEGO ====================
   siguienteRonda() {
-    if (window.JuegoManager?.prepararSiguienteRonda) {
-      window.JuegoManager.prepararSiguienteRonda();
+    if (window.JuegoManager?._prepararSiguienteRonda) {
+      window.JuegoManager._prepararSiguienteRonda();
     }
   }
 
@@ -1523,7 +1561,6 @@ class AdminManager {
     
     // Asegurar que el popup esté visible
     popup.classList.remove('hidden');
-    popup.style.display = 'flex';
     popup.style.zIndex = '10000';
     popup.dataset.userId = userId;
     
@@ -1552,7 +1589,6 @@ class AdminManager {
     const popup = document.getElementById('popup-eliminar-usuario');
     if (popup) {
       popup.classList.add('hidden');
-      popup.style.display = 'none';
     }
   }
 
@@ -1623,14 +1659,12 @@ class AdminManager {
     // Ocultar todas las pantallas
     document.querySelectorAll('.pantalla').forEach(pantalla => {
       pantalla.classList.add('hidden');
-      pantalla.style.display = 'none';
     });
 
     // Mostrar la pantalla solicitada
     const pantalla = document.getElementById(pantallaId);
     if (pantalla) {
       pantalla.classList.remove('hidden');
-      pantalla.style.display = 'flex';
     }
 
     // Asegurar que el popup esté oculto al cambiar de pantalla
