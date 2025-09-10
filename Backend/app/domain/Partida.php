@@ -2,9 +2,24 @@
 
 class Partida {
 
+    private static ?Partida $instance = null;
+
+
+    private function __construct() {
+
+    }
+
+    public static function getInstance(): Partida
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
+
+
+
     private string $caraDado;
-
-
 
 
     public function tirarDado(): string

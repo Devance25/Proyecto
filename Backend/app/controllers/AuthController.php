@@ -92,7 +92,10 @@ class AuthController
         // Si el servicio no retornó un array válido, lo consideramos error interno
         if (!is_array($result) || !array_key_exists('success', $result)) {
             http_response_code(500);
-            echo json_encode(['success' => false, 'message' => 'Error interno del servidor.']);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Error interno del servidor.'
+                ]);
             return;
         }
 

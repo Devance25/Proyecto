@@ -1,6 +1,22 @@
 <?php
 
-class Reglas{
+class Reglas
+{
+    private static ?Reglas $instance = null;
+
+
+    private function __construct() {
+
+    }
+
+
+    public static function getInstance(): Reglas
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
 
 //     Bosque: Indica que el dinosaurio debe colocarse en una zona de bosque. 
@@ -21,8 +37,15 @@ class Reglas{
 
 
 
-    public function restriccionDado(int $caraDado): array
+    public function restriccionDado(string $caraDado): array
     {
+        $recintosRestringidos = [];
+
+        if($caraDado === 'vacio'){
+            return $recintosRestringidos = [];
+        }
+
+        return $recintosRestringidos;
         
     }
 
@@ -45,9 +68,5 @@ class Reglas{
 
 // Puntos adicionales por T-Rex: Cada recinto que contenga un T-Rex, aunque tenga más de uno, otorga 1 punto de victoria adicional. 
 
-    public function reglasBosque($dinos): int
-    {
-
-    }
 
 }

@@ -8,16 +8,16 @@ class PartidaService
 
 
     //DOMAIN
-    private Partida $partida;
-    private Reglas $reglas;
-    private Puntaje $puntaje;
+    private ?Partida $partida;
+    private ?Reglas $reglas;
+    private ?Puntaje $puntaje;
 
     private function __construct()
     {
         $this->partidaRepo = PartidaRepository::getInstance();
-        $this->partida = new Partida();
-        $this->reglas = new Reglas();
-        $this->puntaje = new Puntaje();
+        $this->partida = Partida::getInstance();
+        $this->reglas = Reglas::getInstance();
+        $this->puntaje = Puntaje::getInstance();
     }
 
     public static function getInstance(): ?PartidaService
