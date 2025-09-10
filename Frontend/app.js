@@ -1,4 +1,4 @@
-// ==================== CONFIGURACIÓN GLOBAL ====================
+// CONFIGURACIÓN GLOBAL
 class AppState {
   constructor() {
     this.currentScreen = 'carga';
@@ -33,13 +33,12 @@ class AppState {
     setTimeout(() => this.showScreen('login'), 1000);
   }
 
-  // ==================== EVENTOS ====================
+  // EVENTOS
   bindEvents() {
     document.addEventListener('click', this.handleClick.bind(this));
     document.addEventListener('submit', this.handleSubmit.bind(this));
     document.addEventListener('keydown', this.handleKeydown.bind(this));
     
-    // Prevenir submit con Enter si el form no es válido
     document.addEventListener('keydown', e => {
       if (e.key === 'Enter' && e.target.matches('input:not([type="submit"])')) {
         const form = e.target.closest('form');
@@ -72,14 +71,12 @@ class AppState {
       'btn-volver-jugadores': () => this.showScreen('lobby'),
       'btn-volver-seleccion': () => this.showScreen('jugadores'),
       'btn-seleccionar-j1': () => {
-        // Solo procesar si no hay una selección ya en curso
         if (!this.seleccionEnCurso) {
           this.seleccionEnCurso = true;
           this.iniciarPartidaConJugador(1);
         }
       },
       'btn-seleccionar-j2': () => {
-        // Solo procesar si no hay una selección ya en curso
         if (!this.seleccionEnCurso) {
           this.seleccionEnCurso = true;
           this.iniciarPartidaConJugador(2);
@@ -118,7 +115,7 @@ class AppState {
     }
   }
 
-  // ==================== VALIDACIÓN EN TIEMPO REAL ====================
+  // VALIDACIÓN EN TIEMPO REAL
   setupRealTimeValidation() {
     document.addEventListener('input', e => {
       if (e.target.matches('#jugador-1, #jugador-2')) {
@@ -142,13 +139,11 @@ class AppState {
       this.showToast(`Nombre máximo ${max} caracteres`, 'warning');
     }
     
-    // Solo letras y espacios
     if (!/^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]*$/.test(value)) {
       input.value = value.replace(/[^a-zA-ZÀ-ÿ\u00f1\u00d1\s]/g, '');
       this.showToast('Solo se permiten letras y espacios', 'warning');
     }
     
-    // Evitar espacios múltiples
     if (/\s{2,}/.test(value)) {
       input.value = value.replace(/\s+/g, ' ');
     }
@@ -198,7 +193,7 @@ class AppState {
     }
   }
 
-  // ==================== ACTUALIZACIÓN BOTÓN COMENZAR ====================
+  // ACTUALIZACIÓN BOTÓN COMENZAR
   actualizarBotonComenzar() {
     const j1 = document.getElementById('jugador-1');
     const j2 = document.getElementById('jugador-2');
@@ -213,7 +208,6 @@ class AppState {
     
     btn.disabled = !(j1Valid && j2Valid && namesAreDifferent);
     
-    // Actualizar texto del botón según el modo
     const btnText = btn.querySelector('.btn-text');
     if (btnText) {
       btnText.textContent = this.modoSeguimiento ? 'Modo seguimiento' : 'Jugar en la app';
@@ -227,7 +221,7 @@ class AppState {
     }
   }
 
-  // ==================== VALIDACIÓN DE FORMULARIOS ====================
+  // VALIDACIÓN DE FORMULARIOS
   validateLoginForm(username, password, form) {
     const validations = [
       [!username, '#login-username', 'Por favor ingresa tu usuario'],
@@ -304,7 +298,7 @@ class AppState {
     return true;
   }
 
-  // ==================== UTILIDADES DE VALIDACIÓN ====================
+  // UTILIDADES DE VALIDACIÓN
   isFormValid(form) {
     const fields = form.querySelectorAll('input[required], input.form-input');
     return Array.from(fields).every(field => {
@@ -343,27 +337,23 @@ class AppState {
     return age < minAge;
   }
 
-  // ==================== MANEJO DE PANTALLAS ====================
+  // MANEJO DE PANTALLAS
   showScreen(screenName) {
-    // Encontrar la pantalla que queremos mostrar
     const targetScreen = document.getElementById(`pantalla-${screenName}`);
     if (!targetScreen) {
       console.error(`Pantalla no encontrada: pantalla-${screenName}`);
       return;
     }
 
-    // Primero asegurarnos de que la pantalla de carga esté oculta
     const loadingScreen = document.getElementById('pantalla-carga');
     if (loadingScreen) {
       loadingScreen.classList.add('hidden');
     }
 
-    // Mostrar inmediatamente la pantalla objetivo
     targetScreen.classList.remove('hidden');
     targetScreen.style.opacity = '1';
     targetScreen.style.transition = '';
     
-    // Luego ocultar todas las demás pantallas
     document.querySelectorAll('.pantalla, .pantalla-inicio').forEach(s => {
       if (s !== targetScreen) {
         s.classList.add('hidden');
@@ -402,7 +392,6 @@ class AppState {
         }
         break;
       case 'partida':
-        // Asegurar que el tablero está visible
         const pantallaPartida = document.getElementById('pantalla-partida');
         if (pantallaPartida) {
           pantallaPartida.classList.remove('hidden');
@@ -483,7 +472,6 @@ class AppState {
       nombre.value = '';
     }
 
-    // Mostrar/ocultar campo de contraseña
     if (grupoPassword && passwordInput) {
       if (tipo === 'usuario') {
         grupoPassword.classList.remove('hidden');
@@ -499,13 +487,11 @@ class AppState {
   }
 
   setupSeleccionInicialEvents() {
-    // Limpiar eventos anteriores
     document.querySelectorAll('.jugador-opcion').forEach(opcion => {
       const newOpcion = opcion.cloneNode(true);
       opcion.parentNode.replaceChild(newOpcion, opcion);
     });
     
-    // Configurar nuevos eventos
     document.querySelectorAll('.jugador-opcion').forEach(opcion => {
       opcion.addEventListener('mouseenter', () => {
         opcion.style.transform = 'translateY(-5px)';
@@ -535,7 +521,6 @@ class AppState {
         // Iniciar partida
         const jugadorNum = opcion.id === 'opcion-jugador-2' ? 2 : 1;
         
-        // Solo procesar si no hay una selección ya en curso
         if (!this.seleccionEnCurso) {
           this.seleccionEnCurso = true;
           setTimeout(() => this.iniciarPartidaConJugador(jugadorNum), 250);
@@ -544,7 +529,7 @@ class AppState {
     });
   }
 
-  // ==================== MODO SEGUIMIENTO ====================
+  // MODO SEGUIMIENTO
   iniciarModoSeguimiento() {
     this.modoSeguimiento = true;
     this.showScreen('jugadores');
@@ -570,7 +555,7 @@ class AppState {
     }, 100);
   }
 
-  // ==================== MANEJO DE JUGADORES ====================
+  // MANEJO DE JUGADORES
   handleJugadoresSubmit(form) {
     const j1 = form.querySelector('#jugador-1');
     const j2 = form.querySelector('#jugador-2');
@@ -595,14 +580,12 @@ class AppState {
     this.tempNombres = nombres;
     this.tempJugador2Info = jugador2Info;
     
-    // Actualizar nombres en la pantalla
     const n1 = document.querySelector('.nombre-jugador-1');
     const n2 = document.querySelector('.nombre-jugador-2');
     
     if (n1) n1.textContent = nombres[0].toUpperCase();
     if (n2) n2.textContent = nombres[1].toUpperCase();
     
-    // Actualizar avatar jugador 2
     const avatar = document.getElementById('avatar-seleccion-j2');
     if (avatar && jugador2Info) {
       avatar.src = jugador2Info.tipo === 'invitado' ? 
@@ -626,7 +609,6 @@ class AppState {
   }
 
   iniciarPartidaConJugador(primerJugador) {
-    // Verificar datos temporales
     if (!this.tempNombres || !this.tempJugador2Info) {
       const j1 = document.getElementById('jugador-1')?.value?.trim() || 'Jugador 1';
       const j2 = document.getElementById('jugador-2')?.value?.trim() || 'Jugador 2';
@@ -640,11 +622,9 @@ class AppState {
     
     this.iniciarPartida(this.tempNombres, this.tempJugador2Info, primerJugador);
     
-    // Limpiar datos temporales
     this.tempNombres = null;
     this.tempJugador2Info = null;
     
-    // Resetear la bandera después de un tiempo
     setTimeout(() => {
       this.seleccionEnCurso = false;
     }, 1000);
@@ -654,7 +634,6 @@ class AppState {
     this.players = nombres.slice(0, 2);
     this.jugador2Info = jugador2Info;
     
-    // Inicializar el juego
     if (window.JuegoManager?.inicializarPartida) {
       window.JuegoManager.inicializarPartida(nombres, jugador2Info, primerJugador, this.modoSeguimiento);
     } else {
@@ -662,7 +641,6 @@ class AppState {
     }
     
     if (this.modoSeguimiento) {
-      // Modo seguimiento: mostrar pantalla de turno
       const nombreJugador = nombres[primerJugador - 1];
       const avatarSrc = primerJugador === 1 ? 
         'img/foto_usuario-1.png' : 
@@ -670,7 +648,6 @@ class AppState {
       
       this.mostrarTurnoJugadorConSeleccion(nombreJugador, avatarSrc);
     } else {
-      // Modo normal: verificar restricción del primer turno
       if (window.estadoJuego?.turnoEnRonda === 1 && window.estadoJuego?.rondaActual === 1) {
         // Primer turno de la primera ronda: sin restricción
         this.mostrarPantallaSinRestriccion();
@@ -683,10 +660,8 @@ class AppState {
   }
 
   mostrarPantallaSinRestriccion() {
-    // Ir directo a la pantalla de partida sin dado
     this.showScreen('partida');
     
-    // Establecer "Sin restricción" en el footer
     const infoRestriccion = document.querySelector('.info-restriccion');
     const textoRestriccion = document.querySelector('.texto-restriccion');
     
@@ -698,7 +673,6 @@ class AppState {
       textoRestriccion.innerHTML = '<div>Sin restricción</div>';
     }
     
-    // Actualizar interfaz
     if (window.JuegoManager) {
       window.JuegoManager.actualizarInterfaz();
       window.RenderManager?.actualizarDinosauriosDisponibles();
@@ -706,7 +680,6 @@ class AppState {
   }
 
   comenzarJuego() {
-    // Verificar si es el primer turno
     if (window.estadoJuego?.turnoEnRonda === 1 && window.estadoJuego?.rondaActual === 1) {
       this.mostrarPantallaSinRestriccion();
     } else {
@@ -717,7 +690,7 @@ class AppState {
     }
   }
 
-  // ==================== ANIMACIÓN DE DADOS ====================
+  // ANIMACIÓN DE DADOS
   iniciarAnimacionDado() {
     const img = document.getElementById('dado-imagen');
     const cont = document.getElementById('dado-animado');
@@ -835,7 +808,7 @@ class AppState {
     if (desc) desc.textContent = config.descripcion;
   }
 
-  // ==================== MANEJO DE FORMULARIOS ====================
+  // MANEJO DE FORMULARIOS
   async handleLogin(form) {
     const username = form.querySelector('#login-username').value.trim();
     const password = form.querySelector('#login-password').value.trim();
@@ -859,10 +832,8 @@ class AppState {
         isAdmin: isAdmin
       };
       
-      // Dirigir a pantalla correspondiente
       if (isAdmin) {
         console.log('Usuario detectado como administrador:', username);
-        // Mostrar perfil de administrador
         if (window.adminManager) {
           console.log('AdminManager encontrado, mostrando perfil admin');
           window.adminManager.mostrarPerfilAdmin(this.user);
@@ -921,7 +892,7 @@ class AppState {
     };
   }
 
-  // ==================== CONFIGURACIÓN DE FORMULARIOS ====================
+  // CONFIGURACIÓN DE FORMULARIOS
   setupFormValidation() {
     document.querySelectorAll('.form-input').forEach(input => {
       input.addEventListener('input', () => {
@@ -1045,19 +1016,16 @@ class AppState {
     const fechaInput = document.querySelector('#register-fecha');
     if (!fechaInput) return;
     
-    // Establecer fecha máxima (hoy)
     const hoy = new Date();
     const yyyy = hoy.getFullYear();
     const mm = String(hoy.getMonth() + 1).padStart(2, '0');
     const dd = String(hoy.getDate()).padStart(2, '0');
     fechaInput.max = `${yyyy}-${mm}-${dd}`;
     
-    // Establecer fecha mínima (100 años atrás)
     const fechaMinima = new Date();
     fechaMinima.setFullYear(fechaMinima.getFullYear() - 100);
     fechaInput.min = `${fechaMinima.getFullYear()}-${String(fechaMinima.getMonth() + 1).padStart(2, '0')}-${String(fechaMinima.getDate()).padStart(2, '0')}`;
     
-    // Validar edad al cambiar
     fechaInput.addEventListener('change', () => {
       const birthDate = new Date(fechaInput.value);
       const today = new Date();
@@ -1072,12 +1040,11 @@ class AppState {
     });
   }
 
-  // ==================== SISTEMA DE TOASTS ====================
+  // SISTEMA DE TOASTS
   showToast(message, type = 'info', duration = 5000) {
     const container = document.getElementById('toast-container');
     if (!container) return;
     
-    // Evitar duplicados
     const existingToasts = Array.from(container.querySelectorAll('.toast'));
     const isDuplicate = existingToasts.some(toast => {
       const msgElement = toast.querySelector('.toast__message');
@@ -1115,7 +1082,6 @@ class AppState {
       </div>
     `;
     
-    // Eventos
     const closeBtn = toast.querySelector('.toast__close');
     closeBtn.addEventListener('click', () => this.removeToast(toast));
     
@@ -1143,7 +1109,7 @@ class AppState {
     });
   }
 
-  // ==================== UTILIDADES ====================
+  // UTILIDADES
   showFieldError(form, selector, message) {
     const field = form.querySelector(selector);
     if (field) {
@@ -1201,7 +1167,7 @@ class AppState {
     });
   }
 
-  // ==================== ACCIONES DE JUEGO ====================
+  // ACCIONES DE JUEGO
   siguienteRonda() {
     if (window.JuegoManager?._prepararSiguienteRonda) {
       window.JuegoManager._prepararSiguienteRonda();
@@ -1219,7 +1185,6 @@ class AppState {
     this.modoSeguimiento = false;
     this.showScreen('jugadores');
     
-    // Limpiar campos
     const j2 = document.getElementById('jugador-2');
     if (j2) j2.value = '';
     
@@ -1236,7 +1201,6 @@ class AppState {
     
     if (!confirmLogout) return;
     
-    // Limpiar estado
     this.user = null;
     this.players = [];
     this.jugador2Info = null;
@@ -1247,14 +1211,13 @@ class AppState {
     this.tempJugador2Info = null;
     this.modoSeguimiento = false;
     
-    // Limpiar formularios
     document.querySelectorAll('form').forEach(form => form.reset());
     
     this.showScreen('login');
     this.showToast('Sesión cerrada', 'info');
   }
 
-  // ==================== UTILIDADES AUXILIARES ====================
+  // UTILIDADES AUXILIARES
   delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
@@ -1315,7 +1278,7 @@ class AppState {
   }
 }
 
-// ==================== INICIALIZACIÓN ====================
+// INICIALIZACIÓN
 if (!window.app) {
   document.addEventListener('DOMContentLoaded', () => {
     const tempApp = new AppState();
@@ -1330,7 +1293,7 @@ if (!window.app) {
   });
 }
 
-// ==================== MANEJO DE ERRORES GLOBALES ====================
+// MANEJO DE ERRORES GLOBALES
 window.addEventListener('error', e => {
   console.error('Error global capturado:', e.error);
   if (window.app) {
@@ -1345,7 +1308,7 @@ window.addEventListener('unhandledrejection', e => {
   }
 });
 
-// ==================== ADMINISTRADOR ====================
+// ADMINISTRADOR
 class AdminManager {
   constructor() {
     this.currentUser = null;
@@ -1357,7 +1320,7 @@ class AdminManager {
   init() {
     this.setupAdminEvents();
     this.loadMockUsers(); // Cargar usuarios simulados
-    this.asegurarPopupOculto(); // Asegurar que el popup esté oculto al inicio
+    this.asegurarPopupOculto();
   }
 
   asegurarPopupOculto() {
@@ -1450,13 +1413,11 @@ class AdminManager {
   mostrarPerfilAdmin(usuario) {
     this.currentUser = usuario;
     
-    // Actualizar información del admin
     const adminUsername = document.getElementById('admin-username');
     if (adminUsername) {
       adminUsername.textContent = usuario.username;
     }
 
-    // Actualizar headers con info del admin
     document.querySelectorAll('.admin-name').forEach(el => {
       el.textContent = usuario.username;
     });
@@ -1470,7 +1431,6 @@ class AdminManager {
   }
 
   mostrarNuevoUsuario() {
-    // Limpiar formulario
     const form = document.getElementById('form-nuevo-usuario');
     if (form) form.reset();
     
@@ -1522,7 +1482,6 @@ class AdminManager {
     const container = document.getElementById('lista-usuarios-admin');
     if (!container) return;
 
-    // Usar delegación de eventos
     container.addEventListener('click', (e) => {
       const button = e.target.closest('[data-action]');
       if (!button) return;
@@ -1559,7 +1518,6 @@ class AdminManager {
       usernameSpan.textContent = username;
     }
     
-    // Asegurar que el popup esté visible
     popup.classList.remove('hidden');
     popup.style.zIndex = '10000';
     popup.dataset.userId = userId;
@@ -1575,13 +1533,11 @@ class AdminManager {
     // Eliminar usuario del array
     this.usuariosData = this.usuariosData.filter(user => user.id !== userId);
     
-    // Actualizar lista
     this.renderizarListaUsuarios();
     
     // Cerrar popup
     this.cerrarPopupEliminar();
     
-    // Mostrar mensaje de éxito (opcional)
     console.log('Usuario eliminado exitosamente');
   }
 
@@ -1602,7 +1558,6 @@ class AdminManager {
     const birthdate = document.getElementById('edit-birthdate').value;
     const password = document.getElementById('edit-password').value;
     
-    // Actualizar usuario en el array
     const userIndex = this.usuariosData.findIndex(u => u.id === this.currentEditingUser.id);
     if (userIndex !== -1) {
       this.usuariosData[userIndex] = {
@@ -1610,13 +1565,12 @@ class AdminManager {
         username,
         email,
         birthdate,
-        ...(password && { password }) // Solo actualizar password si se proporciona
+        ...(password && { password })
       };
     }
     
     console.log('Usuario actualizado:', this.usuariosData[userIndex]);
     
-    // Volver al listado
     this.mostrarListadoUsuarios();
   }
 
@@ -1642,7 +1596,6 @@ class AdminManager {
     
     console.log('Nuevo usuario creado:', nuevoUsuario);
     
-    // Volver al perfil admin
     this.volverPerfilAdmin();
   }
 
@@ -1656,18 +1609,15 @@ class AdminManager {
   }
 
   mostrarPantalla(pantallaId) {
-    // Ocultar todas las pantallas
     document.querySelectorAll('.pantalla').forEach(pantalla => {
       pantalla.classList.add('hidden');
     });
 
-    // Mostrar la pantalla solicitada
     const pantalla = document.getElementById(pantallaId);
     if (pantalla) {
       pantalla.classList.remove('hidden');
     }
 
-    // Asegurar que el popup esté oculto al cambiar de pantalla
     this.asegurarPopupOculto();
   }
 }

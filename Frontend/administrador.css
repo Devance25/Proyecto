@@ -1,4 +1,4 @@
-/* ==================== ADMINISTRADOR (MOBILE FIRST) ==================== */
+/* ADMINISTRADOR (MOBILE FIRST) */
 .pantalla,
 .pantalla-inicio {
   flex-direction: column;
@@ -12,7 +12,7 @@
   opacity: 0;
 }
 
-/* ==================== PERFIL DE ADMINISTRADOR (MOBILE FIRST) ==================== */
+/* PERFIL DE ADMINISTRADOR (MOBILE FIRST) */
 .admin-profile-card {
   display: flex;
   flex-direction: column;
@@ -91,7 +91,7 @@
   font-size: 14px;
 }
 
-/* ==================== HEADER ADMINISTRATIVO (MOBILE FIRST) ==================== */
+/* HEADER ADMINISTRATIVO (MOBILE FIRST) */
 .admin-header {
   position: fixed;
   top: 0;
@@ -180,7 +180,7 @@
   letter-spacing: 1px;
 }
 
-/* ==================== CONTENIDO DE ADMINISTRADOR (MOBILE FIRST) ==================== */
+/* CONTENIDO DE ADMINISTRADOR (MOBILE FIRST) */
 .admin-content-container {
   padding: var(--space-lg);
   display: flex;
@@ -192,7 +192,7 @@
   box-sizing: border-box;
 }
 
-/* === Contenido de listados (Mobile First) === */
+/* Contenido de listados (Mobile First) */
 .search-container {
   display: flex;
   margin-bottom: 20px;
@@ -289,7 +289,7 @@
   text-shadow: 0 0 10px rgba(148, 204, 4, 0.3);
 }
 
-/* === Items de usuario (Mobile First) === */
+/* Items de usuario (Mobile First) */
 .usuario-item {
   display: flex;
   align-items: flex-start;
@@ -325,7 +325,7 @@
   align-self: flex-end;
 }
 
-/* === Botones de acción (Mobile First) === */
+/* Botones de acción (Mobile First) */
 .btn-accion {
   width: 35px;
   height: 35px;
@@ -370,7 +370,7 @@
   box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
 }
 
-/* ==================== FORMULARIOS DE ADMINISTRADOR (MOBILE FIRST) ==================== */
+/* FORMULARIOS DE ADMINISTRADOR (MOBILE FIRST) */
 .admin-form-group {
   margin-bottom: 15px;
   background: transparent;
@@ -437,7 +437,7 @@
   box-sizing: border-box;
 }
 
-/* ==================== POPUP DE CONFIRMACIÓN (MOBILE FIRST) ==================== */
+/* POPUP DE CONFIRMACIÓN (MOBILE FIRST) */
 .admin-popup-overlay {
   position: fixed;
   top: 0;
@@ -550,7 +550,7 @@
   filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(148, 204, 4, 0.5));
 }
 
-/* ==================== RESPONSIVE DESIGN - MOBILE FIRST ==================== */
+/* RESPONSIVE DESIGN - MOBILE FIRST */
 
 /* Small devices (480px and up) */
 @media (min-width: 480px) {

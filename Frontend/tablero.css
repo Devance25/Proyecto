@@ -1,6 +1,6 @@
 @import url("estilos.css");
 
-/* ==================== UTILIDADES CSS ==================== */
+/* UTILIDADES CSS */
 .flex-center {
   display: flex;
   align-items: center;
@@ -18,7 +18,7 @@
   flex-direction: column;
 }
 
-/* ==================== TABLERO BASE ==================== */
+/* TABLERO BASE */
 .tablero {
   background: url('img/bosque.jpg') center / cover no-repeat;
   width: 100%;
@@ -31,7 +31,7 @@
   padding: var(--space-sm);
 }
 
-/* ==================== GRILLA PRINCIPAL ==================== */
+/* GRILLA PRINCIPAL */
 .rejilla-partida {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -76,7 +76,7 @@
   box-sizing: border-box;
 }
 
-/* ==================== SISTEMA DE DROP ZONES ==================== */
+/* SISTEMA DE DROP ZONES */
 .cuadro::after,
 .rectangulo::after {
   content: '';
@@ -116,7 +116,7 @@
   100% { opacity: 1; }
 }
 
-/* ==================== DINOSAURIOS ==================== */
+/* DINOSAURIOS */
 
 /* Dinosaurios colocados */
 .dinosaurio-colocado {
@@ -218,7 +218,7 @@
 .dino.usado { opacity: 0.3; filter: grayscale(100%); pointer-events: none; }
 .dino.eliminado { display: none !important; visibility: hidden !important; opacity: 0 !important; transform: scale(0) !important; transition: all 0.2s ease-out; }
 
-/* ==================== MARCADORES DE JUGADOR ==================== */
+/* MARCADORES DE JUGADOR */
 .dinosaurio-j1 {
   border: 2px solid #FFD700;
   border-radius: 50%;
@@ -277,9 +277,9 @@
   border-color: #87CEEB !important;
 }
 
-/* ==================== INTERFAZ DE USUARIO ==================== */
+/* INTERFAZ DE USUARIO */
 
-/* === Header Superior === */
+/* Header Superior */
 .header-superior {
   position: fixed;
   top: 0;
@@ -294,7 +294,7 @@
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
 }
 
-/* === Información de Jugadores === */
+/* Información de Jugadores */
 .player-info,
 .info-jugador-base,
 .info-jugador,
@@ -352,7 +352,7 @@
   white-space: nowrap;
 }
 
-/* === Botón Ver Mapa === */
+/* Botón Ver Mapa */
 .ver-mapa {
   cursor: pointer;
   transition: var(--transition-base);
@@ -377,7 +377,7 @@
   display: none;
 }
 
-/* === Botones de Información === */
+/* Botones de Información */
 .botones-info {
   display: flex;
   align-items: center;
@@ -506,9 +506,9 @@
   100% { box-shadow: 0 0 0 0 rgba(255, 165, 0, 0); }
 }
 
-/* ==================== SISTEMA DE POPUPS ==================== */
+/* SISTEMA DE POPUPS */
 
-/* === Base de Popups === */
+/* Base de Popups */
 .popup-overlay {
   position: fixed;
   inset: 0;
@@ -614,7 +614,7 @@ div.popup-overlay:not(.hidden) {
   outline-offset: 2px;
 }
 
-/* ==================== POPUP ESPECÍFICOS ==================== */
+/* POPUP ESPECÍFICOS */
 
 /* Popup de pesos */
 .tabla-pesos {
@@ -829,9 +829,9 @@ div.popup-overlay:not(.hidden) {
   border-radius: var(--border-radius-sm);
 }
 
-/* ==================== MODO SEGUIMIENTO - POPUPS ==================== */
+/* MODO SEGUIMIENTO - POPUPS */
 
-/* === Popup Selección de Dinosaurios === */
+/* Popup Selección de Dinosaurios */
 .seleccion-dinosaurios-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -909,9 +909,9 @@ div.popup-overlay:not(.hidden) {
   font-weight: var(--font-weight-semibold);
 }
 
-/* ==================== CONTENIDO INFORMATIVO - CONSOLIDADO ==================== */
+/* CONTENIDO INFORMATIVO - CONSOLIDADO */
 
-/* === Base para elementos informativos === */
+/* Base para elementos informativos */
 .info-item-base {
   display: flex;
   align-items: flex-start;
@@ -943,7 +943,7 @@ div.popup-overlay:not(.hidden) {
   line-height: 1.5;
 }
 
-/* === Recintos Info === */
+/* Recintos Info */
 .recintos-info {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -989,7 +989,7 @@ div.popup-overlay:not(.hidden) {
   font-weight: var(--font-weight-semibold);
 }
 
-/* === Consejos Interactivos === */
+/* Consejos Interactivos */
 .consejos-interactivos {
   display: flex;
   flex-direction: column;
@@ -1059,7 +1059,7 @@ div.popup-overlay:not(.hidden) {
   display: block;
 }
 
-/* === Alertas Importantes === */
+/* Alertas Importantes */
 .alertas-importantes {
   display: flex;
   flex-direction: column;
@@ -1128,7 +1128,7 @@ div.popup-overlay:not(.hidden) {
 .alerta-azul .alerta-texto strong { color: var(--color-azul); }
 .alerta-amarilla .alerta-texto strong { color: var(--color-amarillo); }
 
-/* ==================== POPUP REGLAS ==================== */
+/* POPUP REGLAS */
 .popup-reglas {
   max-height: 85vh;
   overflow-y: auto;
@@ -1151,7 +1151,7 @@ div.popup-overlay:not(.hidden) {
   line-height: 1.5;
 }
 
-/* === T-Rex Especial === */
+/* T-Rex Especial */
 .trex-info {
   display: flex;
   align-items: flex-start;
@@ -1186,7 +1186,7 @@ div.popup-overlay:not(.hidden) {
   color: var(--color-rojo);
 }
 
-/* === Reglas con Información === */
+/* Reglas con Información */
 .regla-item {
   display: flex;
   align-items: flex-start;
@@ -1228,7 +1228,7 @@ div.popup-overlay:not(.hidden) {
   display: block;
 }
 
-/* === Consejos y Estrategias === */
+/* Consejos y Estrategias */
 .consejos-estrategias {
   margin: var(--space-lg) 0;
 }
@@ -1257,7 +1257,7 @@ div.popup-overlay:not(.hidden) {
   color: #1976d2;
 }
 
-/* ==================== SISTEMA DE ALERTAS DE JUEGO ==================== */
+/* SISTEMA DE ALERTAS DE JUEGO */
 .alerta-juego {
   position: fixed;
   top: 20px;
@@ -1372,7 +1372,7 @@ div.popup-overlay:not(.hidden) {
   animation: slideOutRight 0.3s ease-in;
 }
 
-/* ==================== DADOS Y ANIMACIONES ==================== */
+/* DADOS Y ANIMACIONES */
 .contenedor-dado-animacion {
   position: fixed;
   top: 50%;
@@ -1492,7 +1492,7 @@ div.popup-overlay:not(.hidden) {
   padding: 0 var(--space-md);
 }
 
-/* === Caras del Dado === */
+/* Caras del Dado */
 .caras-dado {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -1500,7 +1500,7 @@ div.popup-overlay:not(.hidden) {
   margin: 15px 0;
 }
 
-/* === Popup Selección Cara del Dado === */
+/* Popup Selección Cara del Dado */
 .caras-dado-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -1555,7 +1555,7 @@ div.popup-overlay:not(.hidden) {
   line-height: 1.2;
 }
 
-/* === Popups Obligatorios === */
+/* Popups Obligatorios */
 .popup-overlay.obligatorio {
   background: rgba(0, 0, 0, 0.8);
   padding: var(--space-xl) var(--space-lg);
@@ -1584,9 +1584,9 @@ div.popup-overlay:not(.hidden) {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* === Clases de Utilidad para Elementos Específicos === */
+/* Clases de Utilidad para Elementos Específicos */
 
-/* === Estados Dinámicos === */
+/* Estados Dinámicos */
 .dino-arrastreable {
   cursor: move;
   pointer-events: auto;
@@ -1673,7 +1673,7 @@ div.popup-overlay:not(.hidden) {
   font-weight: 600;
 }
 
-/* ==================== ANIMACIONES DEL DADO ==================== */
+/* ANIMACIONES DEL DADO */
 @keyframes dadoBounce {
   0%, 100% {
     transform: translateY(0) rotate(0deg);
@@ -1716,7 +1716,7 @@ div.popup-overlay:not(.hidden) {
   }
 }
 
-/* === Estados de Animación del Dado === */
+/* Estados de Animación del Dado */
 .dado-animado.spinning {
   animation: dadoSpin .25s linear infinite;
 }
@@ -1725,7 +1725,7 @@ div.popup-overlay:not(.hidden) {
   animation: dadoFinal 1s ease-out forwards;
 }
 
-/* ==================== RESPONSIVE DESIGN - MOBILE FIRST ==================== */
+/* RESPONSIVE DESIGN - MOBILE FIRST */
 
 /* En tablet y mobile, hacer el texto horizontal */
 @media (max-width: 1024px) {
@@ -1987,7 +1987,7 @@ div.popup-overlay:not(.hidden) {
   .cara-dado-texto { font-size: var(--font-size-xs); }
 }
 
-/* === Desktop (1024px+) === */
+/* Desktop (1024px+) */
 @media (min-width: 1024px) {
   .tablero { padding: 0; }
 
@@ -2019,7 +2019,7 @@ div.popup-overlay:not(.hidden) {
 
   .dino { padding: 0; margin: 0; height: 40px; min-height: 40px; width: auto; }
 
-  /* === Dinosaurios Colocados en Desktop === */
+  /* Dinosaurios Colocados en Desktop */
   .dinosaurio-colocado {
     width: 35px !important;
   }
@@ -2040,7 +2040,7 @@ div.popup-overlay:not(.hidden) {
     justify-content: center;
   }
 
-  /* === Jugador Activo en Desktop === */
+  /* Jugador Activo en Desktop */
   .info-jugador-base.turno-activo,
   .info-jugador.turno-activo,
   .info-jugador2.turno-activo {
@@ -2067,7 +2067,7 @@ div.popup-overlay:not(.hidden) {
   }
 }
 
-/* ==================== OPTIMIZACIONES Y UTILIDADES ==================== */
+/* OPTIMIZACIONES Y UTILIDADES */
 
 /* Performance */
 .dino,

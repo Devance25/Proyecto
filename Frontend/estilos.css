@@ -1,4 +1,4 @@
-/* ==================== VARIABLES GLOBALES (MOBILE FIRST) ==================== */
+/* VARIABLES GLOBALES (MOBILE FIRST) */
 :root {
   /* Colores principales */
   --color-primario: #628107;
@@ -95,7 +95,7 @@
   --z-popup: 2000;
 }
 
-/* ==================== RESET GLOBAL ==================== */
+/* RESET GLOBAL */
 *,
 *::before,
 *::after {
@@ -124,7 +124,7 @@ body {
   touch-action: manipulation;
 }
 
-/* ==================== PANTALLAS BASE ==================== */
+/* PANTALLAS BASE */
 .pantalla,
 .pantalla-inicio {
   position: fixed;
@@ -165,7 +165,7 @@ body {
   z-index: 1;
 }
 
-/* ==================== TIPOGRAFÍA ==================== */
+/* TIPOGRAFÍA */
 .texto {
   font-family: var(--font-primary);
   margin: 0;
@@ -229,7 +229,7 @@ body {
   margin: 1px 0 0;
 }
 
-/* ==================== ELEMENTOS COMUNES ==================== */
+/* ELEMENTOS COMUNES */
 .logo {
   width: 100%;
   max-width: 220px;
@@ -243,7 +243,7 @@ body {
   margin: 0 auto;
 }
 
-/* ==================== CONTENEDORES ==================== */
+/* CONTENEDORES */
 .container {
   max-width: var(--container-max-width);
   margin: 0 auto;
@@ -290,7 +290,7 @@ body {
   transform: translate(-50%, -50%);
 }
 
-/* ==================== PANTALLA DE CARGA ==================== */
+/* PANTALLA DE CARGA */
 #pantalla-carga {
   display: flex;
   flex-direction: column;
@@ -325,7 +325,7 @@ body {
   font-size: var(--font-size-sm);
 }
 
-/* ==================== BARRA DE PROGRESO ==================== */
+/* BARRA DE PROGRESO */
 .progress {
   box-sizing: content-box;
   width: 100%;
@@ -360,7 +360,7 @@ body {
   animation: animar-carga 2s forwards;
 }
 
-/* ==================== SISTEMA DE BOTONES ==================== */
+/* SISTEMA DE BOTONES */
 .btn {
   display: flex;
   justify-content: center;
@@ -439,7 +439,7 @@ body {
 
 
 
-/* ==================== BOTONES ESPECIALES ==================== */
+/* BOTONES ESPECIALES */
 .botones-idioma {
   position: absolute;
   top: var(--space-md);
@@ -515,7 +515,7 @@ body {
   right: var(--space-md);
 }
 
-/* ==================== SISTEMA DE AVATARES ==================== */
+/* SISTEMA DE AVATARES */
 .avatar,
 .jugador-avatar,
 .avatar-turno,
@@ -602,7 +602,7 @@ body {
   background-size: 100%;
 }
 
-/* ==================== PERFIL Y ESTADÍSTICAS ==================== */
+/* PERFIL Y ESTADÍSTICAS */
 .perfil-lobby {
   display: flex;
   flex-direction: column;
@@ -660,7 +660,7 @@ body {
   line-height: 1.2;
 }
 
-/* ==================== FORMULARIOS ==================== */
+/* FORMULARIOS */
 .form-group {
   display: flex;
   align-items: center;
@@ -776,7 +776,7 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   min-height: 60px;
 }
 
-/* ==================== RADIO BUTTONS ==================== */
+/* RADIO BUTTONS */
 .tipo-jugador-selector {
   width: 100%;
   padding: var(--space-sm) 0;
@@ -856,7 +856,7 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   transform: scale(.95);
 }
 
-/* ==================== VALIDACIÓN Y FEEDBACK ==================== */
+/* VALIDACIÓN Y FEEDBACK */
 .character-counter {
   font-size: 0.75rem;
   color: var(--color-marron);
@@ -889,7 +889,7 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   color: var(--color-verde-claro);
 }
 
-/* ==================== SELECCIÓN INICIAL ==================== */
+/* SELECCIÓN INICIAL */
 .seleccion-jugadores {
   display: flex;
   flex-direction: column;
@@ -942,7 +942,7 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   box-shadow: 0 0 20px rgba(98, 129, 7, .4);
 }
 
-/* ==================== INTERFAZ DE TURNO ==================== */
+/* INTERFAZ DE TURNO */
 .contenedor-turno-jugador {
   position: fixed;
   top: 50%;
@@ -982,7 +982,7 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   font-size: var(--font-size-md);
 }
 
-/* ==================== PANTALLAS DE RESULTADOS ==================== */
+/* PANTALLAS DE RESULTADOS */
 .contenedor-resumen,
 .contenedor-final {
   position: fixed;
@@ -1107,7 +1107,7 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   line-height: 1.4;
 }
 
-/* ==================== PODIO ==================== */
+/* PODIO */
 
 .podio {
   width: 90%;
@@ -1243,7 +1243,7 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   margin: 0 0 var(--space-xs) 0;
 }
 
-/* ==================== SISTEMA DE TOASTS ==================== */
+/* SISTEMA DE TOASTS */
 .toast-container {
   position: fixed;
   top: var(--space-md);
@@ -1319,7 +1319,7 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   color: var(--color-negro);
 }
 
-/* ==================== ANIMACIONES ==================== */
+/* ANIMACIONES */
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -1467,7 +1467,7 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
 }
 
 
-/* ==================== UTILIDADES ==================== */
+/* UTILIDADES */
 body .hidden {
   display: none;
 }
@@ -1504,7 +1504,7 @@ body .hidden {
   border: 0;
 }
 
-/* ==================== FOOTER ==================== */
+/* FOOTER */
 .footer {
   text-align: center;
   font-size: var(--font-size-base);
@@ -1523,7 +1523,7 @@ body .hidden {
   color: var(--color-marron);
 }
 
-/* ==================== ACCESIBILIDAD ==================== */
+/* ACCESIBILIDAD */
 .keyboard-nav *:focus {
   outline: 2px solid var(--color-azul) !important;
   outline-offset: 2px;
@@ -1534,7 +1534,7 @@ body .hidden {
   outline-offset: 2px;
 }
 
-/* ==================== TOOLTIPS ==================== */
+/* TOOLTIPS */
 
 /* Tooltip universal (click) */
 .tooltip-click {
@@ -1568,7 +1568,7 @@ body .hidden {
   border-top-color: rgba(0, 0, 0, 0.9);
 }
 
-/* ==================== RESPONSIVE DESIGN - MOBILE FIRST ==================== */
+/* RESPONSIVE DESIGN - MOBILE FIRST */
 
 /* Small devices (landscape phones, 480px and up) */
 @media (min-width: 480px) {
