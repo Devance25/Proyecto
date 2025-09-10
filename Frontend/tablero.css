@@ -1,29 +1,51 @@
 @import url("estilos.css");
 
-/* ==================== TABLERO BASE ==================== */
-.tablero {
-  background: url('img/bosque.jpg') center / cover no-repeat;
-  width: 100vw;
-  height: 100vh;
+/* UTILIDADES CSS */
+.flex-center {
   display: flex;
-  justify-content: center;
   align-items: center;
-  position: relative;
-  overflow: hidden;
+  justify-content: center;
 }
 
-/* ==================== GRILLA PRINCIPAL ==================== */
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* TABLERO BASE */
+.tablero {
+  background: url('img/bosque.jpg') center / cover no-repeat;
+  width: 100%;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-sm);
+}
+
+/* GRILLA PRINCIPAL */
 .rejilla-partida {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  width: min(80vh, 80vw);
-  height: min(80vh, 80vw);
+  width: min(75vw, calc(100vh - 100px));
+  height: min(75vw, calc(100vh - 100px));
+  max-width: 600px;
+  max-height: 600px;
   aspect-ratio: 1;
   margin: 0 auto;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  touch-action: manipulation;
 }
 
 .rejilla-partida .col {
@@ -34,8 +56,11 @@
 .rejilla-partida .cuadro,
 .rejilla-partida .rectangulo {
   display: flex;
+  align-items: center;
+  justify-content: center;
   position: relative;
   box-sizing: border-box;
+  overflow: visible;
 }
 
 .rejilla-partida .recinto {
@@ -51,7 +76,7 @@
   box-sizing: border-box;
 }
 
-/* ==================== SISTEMA DE DROP ZONES ==================== */
+/* SISTEMA DE DROP ZONES */
 .cuadro::after,
 .rectangulo::after {
   content: '';
@@ -70,28 +95,53 @@
 .drop-zone-active::after {
   background: rgba(98, 129, 7, 0.3);
   border: 3px solid var(--color-primario);
-  box-shadow: 0 0 15px rgba(98, 129, 7, 0.5);
+  box-shadow: 0 0 15px var(--color-primario);
 }
 
 .drop-zone-invalid::after {
   background: rgba(220, 53, 69, 0.3);
   border: 3px solid #dc3545;
-  box-shadow: 0 0 15px rgba(220, 53, 69, 0.5);
+  box-shadow: 0 0 15px rgba(220, 53, 69, 0.3);
 }
 
-/* ==================== DINOSAURIOS ==================== */
+.drop-zone-blocked::after {
+  background: rgba(255, 87, 34, 0.4);
+  border: 3px solid #FF5722;
+  box-shadow: 0 0 15px rgba(255, 87, 34, 0.4);
+  animation: pulse-blocked 1s infinite alternate;
+}
 
-/* === Dinosaurios Colocados === */
+@keyframes pulse-blocked {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+/* DINOSAURIOS */
+
+/* Dinosaurios colocados */
 .dinosaurio-colocado {
-  position: absolute;
-  width: 30px;
-  height: auto;
-  z-index: 15;
+  position: absolute !important;
+  width: 25px !important;
+  min-width: 25px !important;
+  height: auto !important;
+  z-index: 20 !important;
   pointer-events: none;
   transition: var(--transition-base);
+  animation: colocarDino 0.3s ease-out;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  transform: translate(-50%, -50%) !important;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
-/* === Animación al colocar === */
+.cuadro .dinosaurio-colocado,
+.rectangulo .dinosaurio-colocado {
+  position: absolute !important;
+}
+
 @keyframes colocarDino {
   0% {
     transform: translate(-50%, -50%) scale(1.3);
@@ -107,64 +157,73 @@
   }
 }
 
-.dinosaurio-colocado {
-  animation: colocarDino 0.3s ease-out;
-}
-
-/* === Dinosaurios Disponibles === */
+/* Dinosaurios disponibles */
 .dinosaurios-disponibles {
   position: absolute;
-  left: var(--space-3xl);
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.8);
-  border: 3px solid var(--color-superficie);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--space-lg));
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid var(--color-superficie);
   border-radius: var(--border-radius-md);
-  padding: var(--space-lg);
+  padding: var(--space-sm);
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: var(--space-md);
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: var(--space-sm);
   z-index: 90;
   align-items: center;
+  justify-items: center;
+  backdrop-filter: blur(4px);
+  width: max-content;
+  overflow: hidden;
 }
 
+/* Mensaje cuando no hay dinosaurios */
+.mensaje-sin-dinosaurios {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-blanco);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  padding: var(--space-md);
+  min-height: 60px;
+}
+
+/* Dinosaurios base */
 .dino {
   width: auto;
   height: 35px;
+  min-height: 35px;
   cursor: grab;
   border-radius: var(--border-radius-sm);
   transition: var(--transition-base);
   background: transparent;
+  padding: var(--space-xs);
+  margin: var(--space-xs);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  position: relative;
+  z-index: 1;
+  display: block;
 }
 
-.dino:hover {
-  transform: scale(1.1);
-}
+.dino:hover { transform: scale(1.1); }
+.dino.dragging { cursor: grabbing; opacity: 0.7; transform: scale(1.2); z-index: 1000; }
+.dino.usado { opacity: 0.3; filter: grayscale(100%); pointer-events: none; }
+.dino.eliminado { display: none !important; visibility: hidden !important; opacity: 0 !important; transform: scale(0) !important; transition: all 0.2s ease-out; }
 
-.dino.dragging {
-  cursor: grabbing;
-  opacity: 0.7;
-  transform: scale(1.2);
-  z-index: 1000;
-}
-
-.dino.usado {
-  opacity: 0.3;
-  filter: grayscale(100%);
-  pointer-events: none;
-}
-
-/* ==================== MODO SEGUIMIENTO - DIFERENCIACIÓN ==================== */
-
-/* === Marcadores de Jugador === */
+/* MARCADORES DE JUGADOR */
 .dinosaurio-j1 {
   border: 2px solid #FFD700;
   border-radius: 50%;
   padding: 2px;
   background: rgba(255, 215, 0, 0.1);
-  margin-top: -5px;
-  margin-left: -5px;
 }
 
 .dinosaurio-j2 {
@@ -172,11 +231,9 @@
   border-radius: 50%;
   padding: 2px;
   background: rgba(135, 206, 235, 0.1);
-  margin-top: 5px;
-  margin-left: 5px;
 }
 
-/* === Estados de Dinosaurios === */
+/* Estados de dinosaurios */
 .dinosaurio-colocado[data-jugador="1"],
 .dinosaurio-colocado[data-jugador="2"] {
   filter: none;
@@ -187,89 +244,93 @@
   filter: grayscale(30%);
 }
 
-/* === Tooltips de Identificación === */
+/* Tooltips de identificación */
 .dinosaurio-colocado[data-jugador]::after {
   content: attr(data-jugador);
   position: absolute;
   top: -20px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
+  background: rgba(0, 0, 0, 0.9);
+  color: var(--color-blanco);
   padding: 2px 6px;
-  border-radius: 3px;
-  font-size: 10px;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xxs);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s;
 }
 
-.dinosaurio-colocado[data-jugador]:hover::after {
-  opacity: 1;
-}
+.dinosaurio-colocado[data-jugador]:hover::after { opacity: 1; }
 
-/* === Indicadores de Turno === */
+/* Indicadores de turno */
+.info-jugador-base.turno-activo,
 .info-jugador.turno-activo,
 .info-jugador2.turno-activo {
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+  box-shadow: 0 0 20px #FFD700;
   border-color: #FFD700 !important;
   border-width: 3px !important;
 }
 
-/* === Contenedores de Recintos === */
-.cuadro[data-recinto],
-.rectangulo[data-recinto] {
-  position: relative;
+.info-jugador2.turno-activo {
+  box-shadow: 0 0 20px #87CEEB;
+  border-color: #87CEEB !important;
 }
 
-/* ==================== HEADER SUPERIOR ==================== */
+/* INTERFAZ DE USUARIO */
+
+/* Header Superior */
 .header-superior {
-  position: absolute;
-  top: var(--space-lg);
+  position: fixed;
+  top: 0;
   left: 0;
   right: 0;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 var(--space-3xl);
+  justify-content: space-around;
+  padding: var(--space-sm);
   z-index: 100;
-  gap: var(--space-md);
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
 }
 
-/* === Información de Jugadores === */
+/* Información de Jugadores */
 .player-info,
 .info-jugador-base,
 .info-jugador,
 .info-jugador2 {
   display: flex;
   align-items: center;
+  justify-content: center;
   background: var(--color-primario);
   border: 2px solid var(--color-primario-dark);
   border-radius: var(--border-radius-md);
-  padding: var(--space-sm) var(--space-md);
-  color: var(--color-blanco);
-  min-width: 0;
-}
-
-.info-jugador {
   padding: var(--space-sm) var(--space-lg);
+  color: var(--color-blanco);
+  font-size: var(--font-size-xs);
+  backdrop-filter: blur(4px);
+  flex-shrink: 1;
 }
 
 .avatar-circular {
-  width: 40px;
-  height: 40px;
+  width: var(--avatar-size-sm);
+  height: var(--avatar-size-sm);
   border-radius: var(--border-radius-circle);
-  margin-right: var(--space-sm);
+  margin-right: var(--space-xs);
   flex-shrink: 0;
 }
 
 .info-texto {
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .nombre-puntos {
   font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   color: var(--color-blanco);
   white-space: nowrap;
   overflow: hidden;
@@ -286,90 +347,100 @@
 }
 
 .puntos-jugador {
-  font-size: var(--font-size-sm);
-  color: rgba(255, 255, 255, 0.9);
+  font-size: var(--font-size-base);
+  color: var(--color-blanco);
   white-space: nowrap;
 }
 
-/* === Botón Ver Mapa === */
+/* Botón Ver Mapa */
 .ver-mapa {
-  font-size: var(--font-size-xs);
-  color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--border-radius-sm);
   transition: var(--transition-base);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xs);
+  color: var(--color-blanco);
+  padding: var(--space-xs) var(--space-sm);
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--color-blanco);
   white-space: nowrap;
 }
 
 .ver-mapa:hover {
   background: rgba(255, 255, 255, 0.2);
   color: var(--color-blanco);
-  transform: scale(1.05);
 }
 
-.ver-mapa:focus-visible {
-  outline: 2px solid var(--color-primario);
-  outline-offset: 2px;
+/* Ocultar Ver Mapa en el footer para que ambos elementos se vean iguales */
+.footer-juego .ver-mapa {
+  display: none;
 }
 
-/* === Botones de Información === */
+/* Botones de Información */
 .botones-info {
   display: flex;
-  gap: var(--space-md);
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
 }
+
 
 .btn-como-jugar,
-.btn-datos-fisicos {
+.btn-datos-fisicos,
+.btn-cancelar-partida {
   display: flex;
   align-items: center;
-  background: var(--color-dorado);
-  border: 2px solid var(--color-dorado);
-  border-radius: var(--border-radius-pill);
-  padding: var(--space-sm) var(--space-lg);
-  color: var(--color-marron);
-  font-weight: var(--font-weight-semibold);
+  justify-content: center;
   cursor: pointer;
   transition: var(--transition-base);
+  border: 2px solid var(--color-beige);
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-semibold);
+  background: var(--color-beige);
+  padding: var(--space-xs) var(--space-sm);
+  color: var(--color-marron);
   white-space: nowrap;
+  font-size: var(--font-size-xs);
   min-width: 0;
-  font-size: var(--font-size-sm);
 }
 
+
 .btn-como-jugar:hover,
-.btn-datos-fisicos:hover {
-  background: var(--color-dorado);
-  transform: scale(1.05);
-  filter: brightness(1.1);
+.btn-datos-fisicos:hover { 
+  background: var(--color-dorado); 
+  filter: brightness(1.1); 
 }
 
 .icono-btn {
-  width: 25px;
-  height: 25px;
-  margin-right: var(--space-sm);
+  width: 20px;
+  height: 20px;
+  margin-right: var(--space-xs);
   flex-shrink: 0;
+  object-fit: contain;
 }
 
-/* ==================== FOOTER DEL JUEGO ==================== */
+/* Footer del juego */
 .footer-juego {
-  position: absolute;
-  bottom: var(--space-lg);
+  position: fixed;
+  bottom: 0;
   left: 0;
   right: 0;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
-  padding: 0 var(--space-3xl);
+  padding: var(--space-xs);
   z-index: 100;
-  gap: var(--space-md);
+  gap: var(--space-sm);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+  flex-wrap: wrap;
 }
 
-/* === Restricciones === */
+/* Restricciones */
 .info-restriccion {
   display: flex;
   align-items: center;
+  justify-content: center;
   background: var(--color-marron);
   border: 2px solid var(--color-marron-dark);
   border-radius: var(--border-radius-md);
@@ -383,34 +454,35 @@
   height: 35px;
   margin-right: var(--space-sm);
   flex-shrink: 0;
+  object-fit: contain;
+  display: block;
 }
 
 .texto-restriccion {
   display: flex;
   flex-direction: column;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   line-height: 1.2;
   min-width: 0;
 }
 
-/* === Botón Siguiente Turno === */
+/* Botón siguiente turno */
 .boton-siguiente {
-  background: var(--gradiente-naranja);
-  color: var(--color-blanco);
-  border: none;
-  border-radius: var(--border-radius-pill);
-  padding: var(--space-md) var(--space-xl);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-base);
   cursor: pointer;
   transition: var(--transition-base);
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-semibold);
+  background: var(--gradiente-naranja);
+  color: var(--color-blanco);
+  padding: var(--space-md) var(--space-xl);
+  font-size: var(--font-size-base);
   white-space: nowrap;
   height: auto;
 }
 
 .boton-siguiente:hover {
   background: var(--gradiente-naranja-hover);
-  transform: scale(1.05);
 }
 
 .boton-siguiente:disabled {
@@ -419,37 +491,50 @@
   pointer-events: none;
 }
 
-.boton-siguiente:focus-visible {
-  outline: 2px solid var(--color-primario);
-  outline-offset: 2px;
-}
-
-/* === Efecto Glow cuando está habilitado === */
 #btn-siguiente-turno:not(:disabled) {
-  animation: btnGlow 1.6s ease-in-out infinite;
-  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.35);
+  animation: btnGlow 1.2s ease-in-out infinite;
+  box-shadow: var(--shadow-button);
 }
 
 @keyframes btnGlow {
-  0% { box-shadow: 0 0 0 0 rgba(154, 206, 28, 0.75); }
-  70% { box-shadow: 0 0 0 16px rgba(154, 206, 28, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(154, 206, 28, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(255, 165, 0, 0); }
+  50% {
+    box-shadow: 0 0 40px 8px rgba(255, 165, 0, 0.8),
+      0 0 80px 16px rgba(255, 165, 0, 0.4),
+      0 0 120px 24px rgba(255, 165, 0, 0.2);
+  }
+  100% { box-shadow: 0 0 0 0 rgba(255, 165, 0, 0); }
 }
 
-/* ==================== SISTEMA DE POPUPS ==================== */
+/* SISTEMA DE POPUPS */
 
-/* === Base de Popups === */
+/* Base de Popups */
 .popup-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
+  background: rgba(0, 0, 0, 0.6);
+  display: none;
+  visibility: hidden;
+  opacity: 0;
   align-items: center;
   justify-content: center;
   z-index: 2000;
   backdrop-filter: blur(5px);
   padding: var(--space-lg);
   box-sizing: border-box;
+}
+
+.popup-overlay:not(.hidden) {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Regla más específica para asegurar que se aplique */
+div.popup-overlay:not(.hidden) {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .popup {
@@ -459,9 +544,11 @@
   max-width: 700px;
   max-height: 80vh;
   overflow-y: auto;
+  overflow-x: hidden;
   position: relative;
   box-shadow: var(--shadow-elevation-3);
   width: 100%;
+  box-sizing: border-box;
 }
 
 .popup h2 {
@@ -469,7 +556,7 @@
   margin-bottom: var(--space-lg);
   text-align: center;
   font-family: var(--font-display);
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-xl);
   text-transform: uppercase;
 }
 
@@ -497,24 +584,24 @@
   margin-bottom: var(--space-sm);
 }
 
-/* === Botón Cerrar Popup === */
+/* Botón cerrar popup */
 .popup-close {
   position: absolute;
-  top: var(--space-md);
-  right: var(--space-md);
+  top: var(--space-sm);
+  right: var(--space-sm);
   background: var(--color-marron);
   color: var(--color-blanco);
   border: none;
   border-radius: var(--border-radius-circle);
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
-  font-size: var(--font-size-md);
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: var(--transition-base);
-  z-index: 10;
+  z-index: 2005;
 }
 
 .popup-close:hover {
@@ -527,7 +614,9 @@
   outline-offset: 2px;
 }
 
-/* ==================== POPUP DE PESOS ==================== */
+/* POPUP ESPECÍFICOS */
+
+/* Popup de pesos */
 .tabla-pesos {
   width: 100%;
   border-collapse: collapse;
@@ -543,11 +632,63 @@
 }
 
 .tabla-pesos th {
-  background: rgba(139, 69, 19, 0.1);
+  background: rgb(110 52 11 / 25%);
   font-weight: var(--font-weight-bold);
 }
 
-/* ==================== POPUP MAPA DEL OPONENTE ==================== */
+/* Tabla de masa por recintos */
+.tabla-masa-recintos {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-lg) 0;
+}
+
+.tabla-masa-recintos th,
+.tabla-masa-recintos td {
+  padding: var(--space-sm);
+  text-align: left;
+  border-bottom: 1px solid var(--color-marron);
+  color: var(--color-marron);
+}
+
+.tabla-masa-recintos th {
+  background: rgb(110 52 11 / 25%);
+  font-weight: var(--font-weight-bold);
+}
+
+.tabla-masa-recintos td:nth-child(2),
+.tabla-masa-recintos td:nth-child(3) {
+  text-align: center;
+  font-weight: var(--font-weight-bold);
+}
+
+/* Totales de física */
+.totales-fisica {
+  margin-top: var(--space-lg);
+  padding: var(--space-md);
+  background: rgb(110 52 11 / 10%);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-marron);
+}
+
+.masa-total-info,
+.peso-total-info {
+  margin: var(--space-sm) 0;
+  color: var(--color-marron);
+  font-size: var(--font-size-md);
+}
+
+.primera-ley-newton {
+  margin-top: var(--space-md);
+  padding: var(--space-sm);
+  background: rgb(110 52 11 / 15%);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-marron);
+  line-height: 1.4;
+}
+
+/* Popup mapa del oponente */
 .popup-mapa {
   background: var(--color-beige);
   border-radius: var(--border-radius-lg);
@@ -564,7 +705,7 @@
   color: var(--color-marron);
   text-align: center;
   font-family: var(--font-display);
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-lg);
   text-transform: uppercase;
   margin-bottom: var(--space-lg);
 }
@@ -577,12 +718,13 @@
   margin-bottom: var(--space-md);
 }
 
-/* === Mini Tablero === */
+/* Mini tablero */
 .mini-tablero {
   margin-bottom: var(--space-lg);
   display: flex;
+  align-items: center;
   justify-content: center;
-  background: url(img/bosque.jpg) center / cover no-repeat;
+  background: url('img/bosque.jpg') center / cover no-repeat;
   border-radius: var(--border-radius-lg);
   padding: var(--space-sm);
 }
@@ -604,6 +746,8 @@
 .mini-rectangulo {
   position: relative;
   display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mini-recinto {
@@ -627,14 +771,7 @@
   pointer-events: none;
 }
 
-/* === Información de Puntos === */
-.info-puntos-oponente {
-  background: rgba(139, 69, 19, 0.1);
-  padding: var(--space-md);
-  border-radius: var(--border-radius-sm);
-  border: 2px solid var(--color-marron);
-}
-
+/* Información de puntos */
 .puntos-detalle {
   display: grid;
   grid-template-columns: 1fr;
@@ -647,48 +784,68 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--space-xs) var(--space-sm);
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--color-blanco);
   border-radius: var(--border-radius-sm);
   font-size: var(--font-size-xs);
   color: var(--color-marron);
 }
 
 .punto-item.total {
-  background: rgba(98, 129, 7, 0.2);
-  border: 2px solid var(--color-primario);
-  font-size: var(--font-size-sm);
+  background: rgb(98 129 7 / 25%);
+  border: 1px solid var(--color-primario);
+  font-size: var(--font-size-base);
   padding: var(--space-sm) var(--space-md);
   font-weight: var(--font-weight-bold);
 }
 
-/* ==================== POPUP DE DESCARTE ==================== */
-#popup-descarte .dino-descarte {
-  transition: transform .15s ease, filter .15s ease, outline-color .15s ease;
+/* Popup de descarte */
+#dinosaurios-descarte {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: var(--space-lg) 0;
+  padding: var(--space-md);
+}
+
+.dino-descarte {
+  width: auto;
+  height: 50px;
   cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
-#popup-descarte .dino-descarte.seleccionado {
-  transform: translateY(-3px) scale(1.06);
-  outline: 4px solid var(--color-primario);
-  outline-offset: 4px;
-  border-radius: var(--border-radius-md);
-  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
+.dino-descarte:hover {
+  transform: translateY(-3px) scale(1.05);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
-/* ==================== MODO SEGUIMIENTO - POPUPS ==================== */
+.dino-descarte.seleccionado {
+  transform: translateY(-5px) scale(1.1);
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.4));
+  outline: 3px solid var(--color-primario);
+  outline-offset: 3px;
+  border-radius: var(--border-radius-sm);
+}
 
-/* === Popup Selección de Dinosaurios === */
+/* MODO SEGUIMIENTO - POPUPS */
+
+/* Popup Selección de Dinosaurios */
 .seleccion-dinosaurios-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-lg);
   padding: var(--space-lg);
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .dino-selector {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: var(--space-sm);
   padding: var(--space-md);
   background: rgba(255, 255, 255, 0.1);
@@ -704,6 +861,7 @@
 .dino-contador {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-md);
 }
 
@@ -713,7 +871,7 @@
   border: none;
   background: var(--color-primario);
   color: var(--color-blanco);
-  border-radius: var(--border-radius-circle);
+  border-radius: var(--border-radius-md);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
   cursor: pointer;
@@ -738,7 +896,7 @@
 }
 
 .dino-nombre {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   color: var(--color-marron);
   text-align: center;
 }
@@ -751,12 +909,604 @@
   font-weight: var(--font-weight-semibold);
 }
 
-/* === Popup Selección de Dado === */
+/* CONTENIDO INFORMATIVO - CONSOLIDADO */
+
+/* Base para elementos informativos */
+.info-item-base {
+  display: flex;
+  align-items: flex-start;
+  border-radius: var(--border-radius-md);
+  padding: var(--space-md);
+  transition: var(--transition-base);
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-base);
+  line-height: 1.4;
+  color: var(--color-negro);
+}
+
+.info-item-base:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevation-2);
+}
+
+.info-icon-base {
+  width: 24px;
+  height: 24px;
+  margin-right: var(--space-md);
+  flex-shrink: 0;
+  object-fit: contain;
+  margin-top: 2px;
+}
+
+.info-text-base {
+  flex: 1;
+  line-height: 1.5;
+}
+
+/* Recintos Info */
+.recintos-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 15px;
+  margin: 15px 0;
+}
+
+.recinto-item {
+  display: flex;
+  align-items: flex-start;
+  border-radius: var(--border-radius-md);
+  padding: var(--space-md);
+  transition: var(--transition-base);
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-base);
+  line-height: 1.4;
+  color: var(--color-negro);
+  background: var(--color-beige);
+  border: 1px solid var(--color-naranja);
+}
+
+.recinto-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevation-2);
+}
+
+.recinto-imagen {
+  width: 60px;
+  height: 60px;
+  margin-right: var(--space-md);
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: var(--border-radius-sm);
+}
+
+.recinto-detalle {
+  flex: 1;
+  line-height: 1.5;
+}
+
+.recinto-detalle strong {
+  color: var(--color-naranja-dark);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Consejos Interactivos */
+.consejos-interactivos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin: var(--space-md) 0;
+}
+
+.consejo-item {
+  display: flex;
+  align-items: flex-start;
+  border-radius: var(--border-radius-md);
+  padding: var(--space-md);
+  transition: var(--transition-base);
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-base);
+  line-height: 1.4;
+  color: var(--color-negro);
+  background: rgb(51 152 219 / 10%);
+  border: 1px solid var(--color-azul);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.consejo-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevation-2);
+}
+
+.consejo-item.expandido {
+  background: var(--color-verde-claro);
+  border-color: var(--color-verde-claro);
+}
+
+.consejo-icono {
+  width: 24px;
+  height: 24px;
+  margin-right: var(--space-md);
+  flex-shrink: 0;
+  object-fit: contain;
+  margin-top: 2px;
+}
+
+.consejo-texto {
+  flex: 1;
+  line-height: 1.5;
+}
+
+.consejo-texto strong {
+  color: var(--color-azul);
+  font-weight: var(--font-weight-semibold);
+}
+
+.consejo-detalle {
+  display: none;
+  margin-top: var(--space-sm);
+  padding: var(--space-sm);
+  background: var(--color-blanco);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  line-height: 1.4;
+  border-left: 3px solid var(--color-verde-claro);
+  color: var(--color-negro);
+}
+
+.consejo-item.expandido .consejo-detalle {
+  display: block;
+}
+
+/* Alertas Importantes */
+.alertas-importantes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin: var(--space-md) 0;
+}
+
+.alerta-item {
+  display: flex;
+  align-items: flex-start;
+  border-radius: var(--border-radius-md);
+  padding: var(--space-md);
+  transition: var(--transition-base);
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-base);
+  line-height: 1.4;
+  color: var(--color-negro);
+  border-left: 4px solid;
+}
+
+.alerta-item:hover {
+  transform: translateY(-2px) translateX(5px);
+  box-shadow: var(--shadow-elevation-2);
+}
+
+.alerta-roja {
+  background: rgb(231 76 60 / 20%);
+  border-left-color: var(--color-rojo);
+}
+
+.alerta-verde {
+  background: rgb(39 174 96 / 15%);
+  border-left-color: var(--color-verde-claro);
+}
+
+.alerta-azul {
+  background: rgb(52 152 219 / 20%);
+  border-left-color: var(--color-azul);
+}
+
+.alerta-amarilla {
+  background: rgb(243 156 18 / 15%);
+  border-left-color: var(--color-amarillo);
+}
+
+.alerta-icono {
+  width: 24px;
+  height: 24px;
+  margin-right: var(--space-md);
+  flex-shrink: 0;
+  object-fit: contain;
+  margin-top: 2px;
+}
+
+.alerta-texto {
+  flex: 1;
+  line-height: 1.5;
+}
+
+.alerta-texto strong {
+  font-weight: var(--font-weight-semibold);
+}
+
+.alerta-roja .alerta-texto strong { color: var(--color-rojo); }
+.alerta-verde .alerta-texto strong { color: var(--color-verde-claro); }
+.alerta-azul .alerta-texto strong { color: var(--color-azul); }
+.alerta-amarilla .alerta-texto strong { color: var(--color-amarillo); }
+
+/* POPUP REGLAS */
+.popup-reglas {
+  max-height: 85vh;
+  overflow-y: auto;
+  color: var(--color-texto-principal);
+  line-height: 1.5;
+  padding: var(--space-xl);
+}
+
+.popup-reglas h3 {
+  color: var(--color-marron);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  margin: var(--space-xl) 0 var(--space-md) 0;
+}
+
+.popup-reglas p {
+  color: var(--color-texto-principal);
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+}
+
+/* T-Rex Especial */
+.trex-info {
+  display: flex;
+  align-items: flex-start;
+  padding: var(--space-lg);
+  background: rgb(231 76 60 / 20%);
+  border: 1px solid var(--color-rojo);
+  border-radius: var(--border-radius-lg);
+  margin: var(--space-lg) 0;
+  color: var(--color-negro);
+}
+
+.trex-imagen {
+  width: 40px;
+  height: 40px;
+  margin-right: var(--space-lg);
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.trex-texto {
+  flex: 1;
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+}
+
+.trex-texto p {
+  margin: var(--space-sm) 0;
+  color: var(--color-negro);
+}
+
+.trex-texto strong {
+  color: var(--color-rojo);
+}
+
+/* Reglas con Información */
+.regla-item {
+  display: flex;
+  align-items: flex-start;
+  border-radius: var(--border-radius-md);
+  padding: var(--space-md);
+  transition: var(--transition-base);
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-base);
+  line-height: 1.4;
+  color: var(--color-negro);
+  background: #fff8e1;
+  border: 2px solid #ffc107;
+  border-radius: var(--border-radius-lg);
+}
+
+.regla-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevation-2);
+}
+
+.regla-icono {
+  width: 24px;
+  height: 24px;
+  margin-right: var(--space-md);
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.regla-texto {
+  flex: 1;
+  line-height: 1.5;
+  color: var(--color-texto-principal);
+}
+
+.regla-texto strong {
+  color: var(--color-marron);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-xs);
+  display: block;
+}
+
+/* Consejos y Estrategias */
+.consejos-estrategias {
+  margin: var(--space-lg) 0;
+}
+
+.consejos-estrategias .consejo-item {
+  background: #e3f2fd;
+  border: 2px solid #2196f3;
+  border-radius: var(--border-radius-lg);
+}
+
+.consejos-estrategias .consejo-icono {
+  width: var(--alerta-icon-size);
+  height: var(--alerta-icon-size);
+  margin-right: var(--space-md);
+  background: #ffc107;
+  border-radius: var(--border-radius-circle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-blanco);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+}
+
+.consejos-estrategias .consejo-texto strong {
+  color: #1976d2;
+}
+
+/* SISTEMA DE ALERTAS DE JUEGO */
+.alerta-juego {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  max-width: 350px;
+  animation: slideInRight 0.3s ease-out;
+}
+
+.alerta-contenido {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.alerta-info {
+  background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+  border-left: 4px solid #17a2b8;
+}
+
+.alerta-warning {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  border-left: 4px solid #ffc107;
+}
+
+.alerta-success {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border-left: 4px solid #28a745;
+}
+
+.alerta-error {
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  border-left: 4px solid #dc3545;
+}
+
+.alerta-juego .alerta-icono {
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.alerta-mensaje {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #333;
+}
+
+.puntos-enfasis {
+  font-size: 18px;
+  font-weight: var(--font-weight-bold);
+  text-align: center;
+  margin-bottom: var(--space-xs);
+}
+
+.total-puntos {
+  font-size: 12px;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.alerta-cerrar {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 8px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.alerta-cerrar:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.alerta-juego.removing {
+  animation: slideOutRight 0.3s ease-in;
+}
+
+/* DADOS Y ANIMACIONES */
+.contenedor-dado-animacion {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3xl);
+}
+
+.dado-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 250px;
+  height: 250px;
+}
+
+.dado-animado {
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: dadoBounce 1.5s ease-in-out infinite;
+}
+
+.dado-imagen {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px var(--color-negro));
+}
+
+.dado-texto {
+  text-align: center;
+  text-shadow: 0 2px 4px var(--color-negro);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  margin-top: var(--space-lg);
+}
+
+.popup-dado {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 400px;
+  background: var(--color-beige);
+  border-radius: var(--border-radius-lg);
+  padding: 0;
+  z-index: 100;
+  box-shadow: 0 20px 40px var(--color-negro);
+  overflow: visible;
+}
+
+.popup-dado::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 200px;
+  background: url('img/Brillo.png') center/cover no-repeat;
+  z-index: -1;
+  border-radius: var(--border-radius-lg);
+}
+
+.popup-header {
+  background: transparent;
+  padding: var(--space-2xl) var(--space-lg) 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60px;
+}
+
+.dado-resultado-container {
+  position: relative;
+  top: -40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.dado-resultado {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 16px var(--color-negro));
+  animation: dadoFinal .8s ease-out;
+}
+
+.popup-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: 0 var(--space-xl) var(--space-xl);
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.popup-descripcion {
+  line-height: 1.6;
+  margin-bottom: var(--space-xl);
+  text-align: center;
+  color: var(--color-marron);
+  font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-base);
+  padding: 0 var(--space-md);
+}
+
+/* Caras del Dado */
+.caras-dado {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 15px;
+  margin: 15px 0;
+}
+
+/* Popup Selección Cara del Dado */
 .caras-dado-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-lg);
-  padding: var(--space-lg);
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-md);
+  margin: var(--space-lg) 0;
+  padding: var(--space-md);
 }
 
 .cara-dado-opcion {
@@ -765,170 +1515,277 @@
   align-items: center;
   gap: var(--space-sm);
   padding: var(--space-md);
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-blanco);
+  border: 2px solid var(--color-gris-dark);
   border-radius: var(--border-radius-md);
   cursor: pointer;
   transition: var(--transition-base);
-  border: 3px solid transparent;
+  text-align: center;
 }
 
 .cara-dado-opcion:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-3px);
+  transform: scale(1.05);
+  border-color: var(--color-primario);
+  box-shadow: var(--shadow-elevation-2);
 }
 
 .cara-dado-opcion.seleccionada {
-  background: rgba(98, 129, 7, 0.2);
   border-color: var(--color-primario);
-  transform: translateY(-3px);
+  background: var(--color-beige);
+  box-shadow: 0 0 0 3px var(--color-primario);
+  transform: scale(1.05);
+}
+
+.cara-dado-opcion.seleccionada .cara-dado-texto {
+  color: var(--color-primario);
+  font-weight: var(--font-weight-bold);
 }
 
 .cara-dado-img {
   width: 60px;
   height: 60px;
   object-fit: contain;
+  flex-shrink: 0;
 }
 
 .cara-dado-texto {
   font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-marron);
-  text-align: center;
-  font-weight: var(--font-weight-medium);
+  line-height: 1.2;
 }
 
-/* ==================== ETIQUETAS DE RECINTOS ==================== */
-.recinto-container {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+/* Popups Obligatorios */
+.popup-overlay.obligatorio {
+  background: rgba(0, 0, 0, 0.8);
+  padding: var(--space-xl) var(--space-lg);
 }
 
-.recinto-label {
+.popup-overlay.obligatorio .popup {
+  border: 3px solid var(--color-naranja);
+  box-shadow: 0 0 20px var(--color-naranja);
+  overflow: visible;
+}
+
+.popup-overlay.obligatorio .popup::before {
+  content: "⚠️ OBLIGATORIO";
   position: absolute;
-  bottom: -25px;
+  top: -20px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.8);
+  background: var(--color-naranja);
   color: var(--color-blanco);
-  font-size: 11px;
-  font-weight: var(--font-weight-semibold);
-  padding: 4px 8px;
-  border-radius: 6px;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--border-radius-pill);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  z-index: 2010;
   white-space: nowrap;
-  text-align: center;
-  pointer-events: none;
-  user-select: none;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(2px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  z-index: 20;
-  transition: all var(--transition-fast);
-  font-family: var(--font-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* === Variantes de Etiquetas === */
-.recinto-label--bosque {
-  background: rgba(46, 125, 50, 0.9);
+/* Clases de Utilidad para Elementos Específicos */
+
+/* Estados Dinámicos */
+.dino-arrastreable {
+  cursor: move;
+  pointer-events: auto;
 }
 
-.recinto-label--rocas {
-  background: rgba(121, 85, 72, 0.9);
+.restriccion-visible { visibility: visible; }
+.restriccion-oculta { visibility: hidden; }
+.icono-restriccion-mostrar { display: block; }
+.icono-restriccion-ocultar { display: none; }
+.total-correcto { color: #4CAF50; }
+.pantalla-partida-visible { display: block; }
+.ver-mapa-visible { display: block; }
+.info-jugador-visible { visibility: visible; }
+
+.texto-sin-restriccion {
+  font-size: 0.8em;
+  margin-top: 5px;
+  color: #51cf66;
 }
 
-.recinto-label--rio {
-  background: rgba(33, 150, 243, 0.9);
+.texto-restriccion-bloqueados {
+  font-size: 0.8em;
+  margin-top: 5px;
+  color: #ff6b6b;
 }
 
-.recinto-label--pradera {
-  background: rgba(139, 195, 74, 0.9);
+.nota-ronda-verde {
+  font-size: 0.9em;
+  color: var(--color-verde-claro);
+  margin-top: var(--space-sm);
 }
 
-.recinto-label--rey {
-  background: rgba(156, 39, 176, 0.9);
+.peso-total-info {
+  margin-top: var(--space-xl);
 }
 
-.recinto-container:hover .recinto-label {
-  transform: translateX(-50%) translateY(-3px);
-  background: rgba(0, 0, 0, 0.95);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  scale: 1.05;
+.contenedor-boton-centrado,
+.contenedor-boton-seleccion {
+  display: flex;
+  justify-content: center;
 }
 
-/* ==================== UTILIDADES Y OPTIMIZACIÓN ==================== */
-.dino,
-.btn-como-jugar,
-.btn-datos-fisicos,
-.ver-mapa,
-.boton-siguiente,
-.popup-close {
-  will-change: transform;
-  backface-visibility: hidden;
+.contenedor-boton-centrado {
+  margin-top: var(--space-md);
 }
 
-/* ==================== RESPONSIVE DESIGN ==================== */
+.contenedor-boton-seleccion {
+  margin-top: var(--space-xl);
+}
 
-/* === Tablet y Móvil (max-width: 1024px) === */
+.cara-dado {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius-md);
+  padding: var(--space-md);
+  transition: var(--transition-base);
+  background: var(--color-gris);
+  border: 1px solid var(--color-gris-dark);
+}
+
+.cara-dado:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevation-2);
+}
+
+.caras-dado .dado-imagen {
+  width: 40px;
+  height: 40px;
+  margin-right: 12px;
+  flex-shrink: 0;
+  object-fit: contain;
+  filter: none;
+}
+
+.cara-info {
+  font-size: var(--font-size-base);
+  color: var(--color-negro);
+  line-height: 1.4;
+}
+
+.cara-info strong {
+  color: var(--color-primario);
+  font-weight: 600;
+}
+
+/* ANIMACIONES DEL DADO */
+@keyframes dadoBounce {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-30px) rotate(45deg);
+  }
+  50% {
+    transform: translateY(-40px) rotate(90deg);
+  }
+  75% {
+    transform: translateY(-30px) rotate(135deg);
+  }
+}
+
+@keyframes dadoSpin {
+  0% {
+    transform: rotate(0) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.05);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes dadoFinal {
+  0% {
+    transform: scale(.3) rotate(270deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.3) rotate(135deg);
+    opacity: .7;
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+/* Estados de Animación del Dado */
+.dado-animado.spinning {
+  animation: dadoSpin .25s linear infinite;
+}
+
+.dado-animado.final {
+  animation: dadoFinal 1s ease-out forwards;
+}
+
+/* RESPONSIVE DESIGN - MOBILE FIRST */
+
+/* En tablet y mobile, hacer el texto horizontal */
 @media (max-width: 1024px) {
-  /* Header */
-  .header-superior {
-    flex-direction: column;
-    top: 0;
-    padding: var(--space-sm);
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 100%);
+  .info-texto {
+    flex-direction: row;
+    align-items: center;
     gap: var(--space-sm);
-    align-items: stretch;
+    flex-wrap: wrap;
   }
 
-  .info-jugador2 {
-    align-self: center;
-    border: 2px solid var(--color-primario-dark);
-    padding: var(--space-sm) var(--space-md);
+  .info-jugador-base {
+    width: 100%;
+    padding: var(--space-xs);
   }
 
-  .info-jugador2 .avatar-circular {
-    width: 45px;
-    height: 45px;
+  .info-jugador-base .avatar-circular {
+    width: 50px;
+    height: 50px;
+  }
+
+  .info-jugador-base.info-jugador2 .avatar-circular {
+    width: 35px;
+    height: 35px;
   }
 
   .info-jugador2 .info-texto {
-    display: flex;
-    gap: var(--space-sm);
+    flex-direction: row;
     align-items: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .botones-info { 
+    width: 100%; 
   }
 
   .btn-como-jugar,
   .btn-datos-fisicos {
     flex: 1;
-    justify-content: center;
     padding: var(--space-md) var(--space-lg);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-base);
   }
 
-  /* Grilla Principal */
+
   .rejilla-partida {
-    margin-bottom: 140px;
-    width: min(70vh, 85vw);
-    height: min(70vh, 85vw);
+    width: 95vw;
+    height: 95vw;
+    top: 40%;
   }
 
-  /* Dinosaurios Disponibles */
   .dinosaurios-disponibles {
-    position: absolute;
-    left: 0;
-    right: 0;
+    left: 5%;
+    right: 5%;
     bottom: 140px;
     top: auto;
     transform: none;
-    border-radius: 0;
-    border: none;
-    background: rgba(0, 0, 0, 0.9);
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: 1fr;
-    padding: var(--space-lg);
-    justify-items: center;
+    width: 90%;
+    border-radius: 60px;
   }
 
   .dino {
@@ -937,227 +1794,300 @@
     object-fit: contain;
   }
 
-  /* Footer */
-  .footer-juego {
-    flex-direction: column;
-    bottom: 0;
-    padding: var(--space-md);
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 100%);
-    min-height: 130px;
-    gap: var(--space-md);
-  }
-
-  .info-jugador {
-    border: 2px solid var(--color-primario-dark);
-    padding: var(--space-sm) var(--space-lg);
-    width: 100%;
-    justify-content: center;
-  }
-
-  .info-jugador .avatar-circular {
-    width: 45px;
-    height: 45px;
-  }
-
-  .info-restriccion,
-  .boton-siguiente {
-    width: 100%;
-    justify-content: center;
-    padding: var(--space-md) var(--space-lg);
-  }
-}
-
-/* === Landscape Móvil (orientation: landscape y max-height: 600px) === */
-@media (orientation: landscape) and (max-height: 600px) {
-  /* Header */
-  .header-superior {
-    flex-direction: row;
-    top: 0;
-    padding: var(--space-xs) var(--space-sm);
-    background: rgba(0, 0, 0, 0.8);
-  }
-
-  .info-jugador2 {
-    flex: 0 0 auto;
-    min-width: 180px;
-  }
-
-  .info-jugador2 .avatar-circular {
-    width: 35px;
-    height: 35px;
-  }
-
-  .info-jugador2 .nombre-puntos,
-  .info-jugador2 .ver-mapa {
-    font-size: var(--font-size-xs);
-  }
-
-  .btn-como-jugar,
-  .btn-datos-fisicos {
-    flex: 1;
-    font-size: var(--font-size-xs);
-    padding: var(--space-xs) var(--space-sm);
-  }
-
-  .icono-btn {
-    width: 20px;
-    height: 20px;
-  }
-
-  /* Grilla Principal */
-  .rejilla-partida {
-    width: min(50vh, 60vw);
-    height: min(50vh, 60vw);
-    margin-bottom: 80px;
-  }
-
-  /* Dinosaurios Disponibles */
-  .dinosaurios-disponibles {
-    left: var(--space-sm);
-    right: auto;
-    top: 50%;
-    bottom: auto;
-    transform: translateY(-50%);
-    width: 90px;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    padding: var(--space-sm);
-  }
-
-  .dino {
-    width: 35px;
-    height: 35px;
-  }
-
-  /* Footer */
-  .footer-juego {
-    flex-direction: row;
-    bottom: 0;
-    min-height: 70px;
-    padding: var(--space-xs) var(--space-sm);
-    background: rgba(0, 0, 0, 0.8);
-    justify-content: space-between;
-    gap: var(--space-sm);
-  }
-
-  .info-jugador {
-    flex: 0 0 auto;
-    width: auto;
-    min-width: 140px;
-    padding: var(--space-xs) var(--space-sm);
-  }
-
-  .info-jugador .avatar-circular {
-    width: 35px;
-    height: 35px;
-  }
-
-  .texto-jugador {
-    font-size: var(--font-size-sm);
-    margin-right: var(--space-sm);
-  }
-
-  .puntos-jugador {
-    font-size: var(--font-size-xs);
-  }
-
   .info-restriccion {
     flex: 1;
     padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-xs);
+    text-align: center;
+    height: auto;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .icono-restriccion-footer {
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    height: 30px;
+    margin-right: var(--space-xs);
+    flex-shrink: 0;
   }
 
   .texto-restriccion {
     font-size: var(--font-size-xs);
+    line-height: 1.1;
+    text-align: center;
+    flex: 1;
+    min-width: 0;
   }
 
   .boton-siguiente {
-    flex: 0 0 auto;
+    flex: 1;
     padding: var(--space-sm) var(--space-md);
     font-size: var(--font-size-sm);
-    width: auto;
-    min-width: 120px;
+    height: 50px;
   }
 }
 
-/* === Móvil (max-width: 768px) === */
-@media (max-width: 768px) {
-  /* Popups */
-  .popup {
-    margin: var(--space-sm);
-    padding: var(--space-lg);
-    max-height: 85vh;
+/* Mobile muy pequeño (max-width: 480px) */
+@media (max-width: 480px) {
+  .footer-juego {
+    flex-direction: row;
+    gap: var(--space-xs);
+    padding: var(--space-xs);
+  }
+  
+  .info-restriccion {
+    flex: 1;
+    padding: var(--space-xs);
+    min-height: 40px;
+  }
+  
+  .icono-restriccion-footer {
+    width: 25px;
+    height: 25px;
+    margin-right: var(--space-xs);
+  }
+  
+  .texto-restriccion {
+    font-size: 10px;
+    line-height: 1.0;
+  }
+  
+  .boton-siguiente {
+    flex: 1;
+    padding: var(--space-sm);
+    font-size: var(--font-size-xs);
+    height: 40px;
   }
 
-  .popup h2 {
+  .btn-como-jugar,
+  .btn-datos-fisicos {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-xs);
+    min-width: 0;
+    flex: 1;
+  }
+
+
+  .ver-mapa {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-xs);
+  }
+
+  .dino-descarte {
+    height: 45px;
+  }
+
+  .seleccion-dinosaurios-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+  }
+  
+  .dino-selector {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm);
+  }
+  
+  .dino-selector-img {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .dino-contador {
+    gap: var(--space-sm);
+  }
+  
+  .btn-contador {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+  }
+  
+  .popup {
+    margin: var(--space-sm);
+    padding: var(--space-md);
+    max-width: calc(100vw - 2 * var(--space-sm));
+  }
+  
+  .popup-close {
+    top: var(--space-sm);
+    right: var(--space-sm);
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    z-index: 1000;
+    background: var(--color-marron);
+    border: none;
+    box-shadow: none;
+  }
+}
+
+/* Responsive para popup de descarte */
+@media (max-width: 768px) {
+  #dinosaurios-descarte {
+    padding: var(--space-sm);
+    gap: var(--space-xs);
+  }
+  
+  .dino-descarte {
+    height: 45px;
+  }
+
+  .seleccion-dinosaurios-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+    padding: var(--space-md);
+  }
+  
+  .dino-selector {
+    padding: var(--space-sm);
+  }
+  
+  .dino-selector-img {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .btn-contador {
+    width: 25px;
+    height: 25px;
+    font-size: 14px;
+  }
+  
+  .popup-close {
+    top: var(--space-sm);
+    right: var(--space-sm);
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+    z-index: 1000;
+  }
+
+  .popup { margin: var(--space-sm); padding: var(--space-lg); max-height: 85vh; }
+  .popup h2 { font-size: var(--font-size-lg); }
+  .popup-mapa { width: 95vw; padding: var(--space-md); max-height: 90vh; }
+  .mini-dinosaurio { width: 10px; height: 10px; }
+  .punto-item { font-size: var(--font-size-xs); padding: var(--space-xs); }
+  .popup-reglas { max-height: 90vh; padding: var(--space-md); }
+  .info-item-base { padding: var(--space-sm); margin-bottom: var(--space-sm); }
+  .trex-imagen { width: 40px; height: 40px; margin-right: var(--space-md); }
+  .regla-icono { width: 20px; height: 20px; margin-right: var(--space-sm); }
+  .info-icon-base { width: 20px; height: 20px; margin-right: var(--space-sm); }
+  .popup-reglas h3 { font-size: var(--font-size-base); margin: var(--space-lg) 0 var(--space-sm) 0; }
+  .trex-texto, .alerta-texto, .regla-texto, .consejo-texto, .info-text-base { font-size: var(--font-size-sm); }
+  .dado-container { width: 200px; height: 200px; }
+  .popup-dado { width: 95%; max-width: 360px; }
+  .caras-dado-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-sm); padding: var(--space-sm); }
+  .cara-dado-opcion { padding: var(--space-sm); gap: var(--space-xs); }
+  .cara-dado-img { width: 50px; height: 50px; }
+  .cara-dado-texto { font-size: var(--font-size-xs); }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+  .tablero { padding: 0; }
+
+  .rejilla-partida {
+    width: min(70vw, calc(100vh - 100px));
+    height: min(70vw, calc(100vh - 100px));
+    max-width: 700px;
+    max-height: 700px;
+  }
+
+  .dinosaurios-disponibles {
+    left: var(--space-3xl);
+    top: 50%;
+    transform: translateY(-50%);
+    bottom: auto;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    padding: var(--space-lg);
+    gap: var(--space-md);
+    width: max-content;
+    border-radius: var(--border-radius-md);
+  }
+  
+  .mensaje-sin-dinosaurios {
+    font-size: var(--font-size-base);
+    padding: var(--space-lg);
+    min-height: 80px;
+  }
+
+  .dino { padding: 0; margin: 0; height: 40px; min-height: 40px; width: auto; }
+
+  /* Dinosaurios Colocados en Desktop */
+  .dinosaurio-colocado {
+    width: 35px !important;
+  }
+
+  .info-jugador-base,
+  .info-jugador,
+  .info-jugador2 {
+    padding: var(--space-md);
+    font-size: var(--font-size-base);
+    backdrop-filter: none;
+  }
+
+  .avatar-circular { width: 40px; height: 40px; }
+
+  .info-texto {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  /* Jugador Activo en Desktop */
+  .info-jugador-base.turno-activo,
+  .info-jugador.turno-activo,
+  .info-jugador2.turno-activo {
+    padding: var(--space-md);
     font-size: var(--font-size-lg);
   }
 
-  .popup-mapa {
-    width: 95vw;
+  .info-jugador-base.turno-activo .avatar-circular,
+  .info-jugador.turno-activo .avatar-circular,
+  .info-jugador2.turno-activo .avatar-circular {
+    width: 60px;
+    height: 60px;
+  }
+
+  .info-jugador-base.turno-activo .nombre-puntos,
+  .info-jugador.turno-activo .nombre-puntos,
+  .info-jugador2.turno-activo .nombre-puntos {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .footer-juego {
     padding: var(--space-md);
-    max-height: 90vh;
-  }
-
-  .mini-dinosaurio {
-    width: 10px;
-    height: 10px;
-  }
-
-  .punto-item {
-    font-size: var(--font-size-xs);
-    padding: var(--space-xs);
-  }
-
-  /* Etiquetas de Recintos */
-  .recinto-label {
-    font-size: 9px;
-    padding: 3px 6px;
-    bottom: -20px;
   }
 }
 
-/* === Móvil Pequeño (max-width: 480px) === */
-@media (max-width: 480px) {
-  .seleccion-dinosaurios-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* OPTIMIZACIONES Y UTILIDADES */
 
-  .caras-dado-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* Performance */
+.dino,
+.btn-como-jugar,
+.btn-datos-fisicos,
+.ver-mapa,
+.boton-siguiente,
+.popup-close,
+.btn-cancelar-partida {
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
-/* === Tablets Grandes (min-width: 768px) === */
-@media (min-width: 768px) {
-  .recinto-label {
-    font-size: 12px;
-    padding: 3px 8px;
-  }
-}
-
-/* === Pantallas medianas (min-width: 480px) === */
-@media (min-width: 480px) {
-  .recinto-label {
-    font-size: 11px;
-    padding: 3px 7px;
-  }
-}
-
-/* ==================== ACCESIBILIDAD ==================== */
-
-/* === Reduced Motion === */
+/* Accesibilidad */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-
   .dino:hover,
   .btn-como-jugar:hover,
   .btn-datos-fisicos:hover,
@@ -1167,7 +2097,7 @@
   }
 }
 
-/* === Touch Devices === */
+/* Touch devices */
 @media (hover: none) and (pointer: coarse) {
   .dino:hover,
   .btn-como-jugar:hover,
@@ -1175,14 +2105,40 @@
   .ver-mapa:hover {
     transform: none;
   }
-
-  .dino:active {
-    transform: scale(0.95);
+  .dino:active { transform: scale(0.95); }
+  .dino {
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
   }
-
-  .ver-mapa,
+  .dino.dragging {
+    opacity: 0.3;
+    transform: scale(0.9);
+    transition: none;
+  }
+  .cuadro,
+  .rectangulo {
+    transition: background-color 0.2s ease;
+  }
+  .drop-zone-active {
+    background: rgba(76, 175, 80, 0.3) !important;
+    border: 2px solid #4CAF50 !important;
+  }
+  .drop-zone-invalid {
+    background: rgba(244, 67, 54, 0.3) !important;
+    border: 2px solid #f44336 !important;
+  }
+  .drop-zone-blocked {
+    background: rgba(255, 152, 0, 0.3) !important;
+    border: 2px solid #ff9800 !important;
+  }
   .popup-close {
-    min-height: 44px;
-    min-width: 44px;
+    min-height: 32px;
+    min-width: 32px;
+    top: var(--space-sm);
+    right: var(--space-sm);
+    z-index: 1000;
+    border: none;
+    box-shadow: none;
   }
 }

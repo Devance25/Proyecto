@@ -1,4 +1,4 @@
-// ==================== CONFIGURACIÓN GLOBAL ====================
+// CONFIGURACIÓN GLOBAL
 class AppState {
   constructor() {
     this.currentScreen = 'carga';
@@ -7,8 +7,6 @@ class AppState {
     this.players = [];
     this.jugador2Info = null;
     this.dadoSeleccionado = null;
-    this.tempNombres = null;
-    this.tempJugador2Info = null;
     this.modoSeguimiento = false;
     
     this.validationConfig = {
@@ -33,13 +31,12 @@ class AppState {
     setTimeout(() => this.showScreen('login'), 1000);
   }
 
-  // ==================== EVENTOS ====================
+  // EVENTOS
   bindEvents() {
     document.addEventListener('click', this.handleClick.bind(this));
     document.addEventListener('submit', this.handleSubmit.bind(this));
     document.addEventListener('keydown', this.handleKeydown.bind(this));
     
-    // Prevenir submit con Enter si el form no es válido
     document.addEventListener('keydown', e => {
       if (e.key === 'Enter' && e.target.matches('input:not([type="submit"])')) {
         const form = e.target.closest('form');
@@ -71,8 +68,18 @@ class AppState {
       'btn-modo-asistente': () => this.iniciarModoSeguimiento(),
       'btn-volver-jugadores': () => this.showScreen('lobby'),
       'btn-volver-seleccion': () => this.showScreen('jugadores'),
-      'btn-seleccionar-j1': () => this.iniciarPartidaConJugador(1),
-      'btn-seleccionar-j2': () => this.iniciarPartidaConJugador(2),
+      'btn-seleccionar-j1': () => {
+        if (!this.seleccionEnCurso) {
+          this.seleccionEnCurso = true;
+          this.iniciarPartidaConJugador(1);
+        }
+      },
+      'btn-seleccionar-j2': () => {
+        if (!this.seleccionEnCurso) {
+          this.seleccionEnCurso = true;
+          this.iniciarPartidaConJugador(2);
+        }
+      },
       'btn-seleccion-aleatoria': () => this.seleccionAleatoria(),
       'btn-empezar-turno': () => this.empezarTurnoSeguimiento(),
       'btn-comenzar-juego': () => this.comenzarJuego(),
@@ -106,7 +113,7 @@ class AppState {
     }
   }
 
-  // ==================== VALIDACIÓN EN TIEMPO REAL ====================
+  // VALIDACIÓN EN TIEMPO REAL
   setupRealTimeValidation() {
     document.addEventListener('input', e => {
       if (e.target.matches('#jugador-1, #jugador-2')) {
@@ -130,13 +137,11 @@ class AppState {
       this.showToast(`Nombre máximo ${max} caracteres`, 'warning');
     }
     
-    // Solo letras y espacios
     if (!/^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]*$/.test(value)) {
       input.value = value.replace(/[^a-zA-ZÀ-ÿ\u00f1\u00d1\s]/g, '');
       this.showToast('Solo se permiten letras y espacios', 'warning');
     }
     
-    // Evitar espacios múltiples
     if (/\s{2,}/.test(value)) {
       input.value = value.replace(/\s+/g, ' ');
     }
@@ -186,7 +191,7 @@ class AppState {
     }
   }
 
-  // ==================== ACTUALIZACIÓN BOTÓN COMENZAR ====================
+  // ACTUALIZACIÓN BOTÓN COMENZAR
   actualizarBotonComenzar() {
     const j1 = document.getElementById('jugador-1');
     const j2 = document.getElementById('jugador-2');
@@ -201,7 +206,6 @@ class AppState {
     
     btn.disabled = !(j1Valid && j2Valid && namesAreDifferent);
     
-    // Actualizar texto del botón según el modo
     const btnText = btn.querySelector('.btn-text');
     if (btnText) {
       btnText.textContent = this.modoSeguimiento ? 'Modo seguimiento' : 'Jugar en la app';
@@ -215,7 +219,7 @@ class AppState {
     }
   }
 
-  // ==================== VALIDACIÓN DE FORMULARIOS ====================
+  // VALIDACIÓN DE FORMULARIOS
   validateLoginForm(username, password, form) {
     const validations = [
       [!username, '#login-username', 'Por favor ingresa tu usuario'],
@@ -292,7 +296,7 @@ class AppState {
     return true;
   }
 
-  // ==================== UTILIDADES DE VALIDACIÓN ====================
+  // UTILIDADES DE VALIDACIÓN
   isFormValid(form) {
     const fields = form.querySelectorAll('input[required], input.form-input');
     return Array.from(fields).every(field => {
@@ -331,22 +335,34 @@ class AppState {
     return age < minAge;
   }
 
-  // ==================== MANEJO DE PANTALLAS ====================
+  // MANEJO DE PANTALLAS
   showScreen(screenName) {
-    // Ocultar todas las pantallas
+    const targetScreen = document.getElementById(`pantalla-${screenName}`);
+    if (!targetScreen) {
+      console.error(`Pantalla no encontrada: pantalla-${screenName}`);
+      return;
+    }
+
+    const loadingScreen = document.getElementById('pantalla-carga');
+    if (loadingScreen) {
+      loadingScreen.classList.add('hidden');
+    }
+
+    targetScreen.classList.remove('hidden');
+    targetScreen.style.opacity = '1';
+    targetScreen.style.transition = '';
+    
     document.querySelectorAll('.pantalla, .pantalla-inicio').forEach(s => {
-      s.style.display = 'none';
+      if (s !== targetScreen) {
+        s.classList.add('hidden');
+        s.style.opacity = '';
+        s.style.transition = '';
+      }
     });
     
-    // Mostrar la pantalla solicitada
-    const screen = document.getElementById(`pantalla-${screenName}`);
-    if (screen) {
-      screen.style.display = screenName === 'carga' ? 'flex' : 'block';
-      this.animateScreenElements(screen);
-    }
-    
+    this.animateScreenElements(targetScreen);
     this.currentScreen = screenName;
-    this.handleScreenSpecificSetup(screenName, screen);
+    this.handleScreenSpecificSetup(screenName, targetScreen);
   }
 
   animateScreenElements(screen) {
@@ -374,10 +390,9 @@ class AppState {
         }
         break;
       case 'partida':
-        // Asegurar que el tablero está visible
         const pantallaPartida = document.getElementById('pantalla-partida');
         if (pantallaPartida) {
-          pantallaPartida.style.display = 'block';
+          pantallaPartida.classList.remove('hidden');
         }
         break;
     }
@@ -440,9 +455,12 @@ class AppState {
   updatePlayerType(tipo) {
     const avatar = document.getElementById('avatar-jugador-2');
     const nombre = document.getElementById('jugador-2');
+    const grupoPassword = document.getElementById('grupo-password-jugador2');
+    const passwordInput = document.getElementById('password-jugador-2');
     
     if (avatar) {
       avatar.src = tipo === 'invitado' ? 'img/invitado.png' : 'img/foto_usuario-2.png';
+      avatar.alt = tipo === 'invitado' ? 'Invitado' : 'Usuario existente';
     }
     
     if (nombre) {
@@ -451,18 +469,27 @@ class AppState {
         'Nombre de usuario existente';
       nombre.value = '';
     }
+
+    if (grupoPassword && passwordInput) {
+      if (tipo === 'usuario') {
+        grupoPassword.classList.remove('hidden');
+        passwordInput.required = true;
+      } else {
+        grupoPassword.classList.add('hidden');
+        passwordInput.required = false;
+        passwordInput.value = '';
+      }
+    }
     
     this.actualizarBotonComenzar();
   }
 
   setupSeleccionInicialEvents() {
-    // Limpiar eventos anteriores
     document.querySelectorAll('.jugador-opcion').forEach(opcion => {
       const newOpcion = opcion.cloneNode(true);
       opcion.parentNode.replaceChild(newOpcion, opcion);
     });
     
-    // Configurar nuevos eventos
     document.querySelectorAll('.jugador-opcion').forEach(opcion => {
       opcion.addEventListener('mouseenter', () => {
         opcion.style.transform = 'translateY(-5px)';
@@ -491,12 +518,16 @@ class AppState {
         
         // Iniciar partida
         const jugadorNum = opcion.id === 'opcion-jugador-2' ? 2 : 1;
-        setTimeout(() => this.iniciarPartidaConJugador(jugadorNum), 250);
+        
+        if (!this.seleccionEnCurso) {
+          this.seleccionEnCurso = true;
+          setTimeout(() => this.iniciarPartidaConJugador(jugadorNum), 250);
+        }
       });
     });
   }
 
-  // ==================== MODO SEGUIMIENTO ====================
+  // MODO SEGUIMIENTO
   iniciarModoSeguimiento() {
     this.modoSeguimiento = true;
     this.showScreen('jugadores');
@@ -522,7 +553,7 @@ class AppState {
     }, 100);
   }
 
-  // ==================== MANEJO DE JUGADORES ====================
+  // MANEJO DE JUGADORES
   handleJugadoresSubmit(form) {
     const j1 = form.querySelector('#jugador-1');
     const j2 = form.querySelector('#jugador-2');
@@ -544,17 +575,13 @@ class AppState {
   }
 
   mostrarSelectorQuienEmpieza(nombres, jugador2Info) {
-    this.tempNombres = nombres;
-    this.tempJugador2Info = jugador2Info;
     
-    // Actualizar nombres en la pantalla
     const n1 = document.querySelector('.nombre-jugador-1');
     const n2 = document.querySelector('.nombre-jugador-2');
     
     if (n1) n1.textContent = nombres[0].toUpperCase();
     if (n2) n2.textContent = nombres[1].toUpperCase();
     
-    // Actualizar avatar jugador 2
     const avatar = document.getElementById('avatar-seleccion-j2');
     if (avatar && jugador2Info) {
       avatar.src = jugador2Info.tipo === 'invitado' ? 
@@ -578,30 +605,27 @@ class AppState {
   }
 
   iniciarPartidaConJugador(primerJugador) {
-    // Verificar datos temporales
-    if (!this.tempNombres || !this.tempJugador2Info) {
-      const j1 = document.getElementById('jugador-1')?.value?.trim() || 'Jugador 1';
-      const j2 = document.getElementById('jugador-2')?.value?.trim() || 'Jugador 2';
-      
-      this.tempNombres = [j1, j2];
-      this.tempJugador2Info = {
-        nombre: j2,
-        tipo: document.querySelector('input[name="tipo-jugador-2"]:checked')?.value || 'invitado'
-      };
-    }
+    const j1 = document.getElementById('jugador-1')?.value?.trim() || 'Jugador 1';
+    const j2 = document.getElementById('jugador-2')?.value?.trim() || 'Jugador 2';
     
-    this.iniciarPartida(this.tempNombres, this.tempJugador2Info, primerJugador);
+    const nombres = [j1, j2];
+    const jugador2Info = {
+      nombre: j2,
+      tipo: document.querySelector('input[name="tipo-jugador-2"]:checked')?.value || 'invitado'
+    };
     
-    // Limpiar datos temporales
-    this.tempNombres = null;
-    this.tempJugador2Info = null;
+    this.iniciarPartida(nombres, jugador2Info, primerJugador);
+    
+    
+    setTimeout(() => {
+      this.seleccionEnCurso = false;
+    }, 1000);
   }
 
   iniciarPartida(nombres, jugador2Info, primerJugador) {
     this.players = nombres.slice(0, 2);
     this.jugador2Info = jugador2Info;
     
-    // Inicializar el juego
     if (window.JuegoManager?.inicializarPartida) {
       window.JuegoManager.inicializarPartida(nombres, jugador2Info, primerJugador, this.modoSeguimiento);
     } else {
@@ -609,7 +633,6 @@ class AppState {
     }
     
     if (this.modoSeguimiento) {
-      // Modo seguimiento: mostrar pantalla de turno
       const nombreJugador = nombres[primerJugador - 1];
       const avatarSrc = primerJugador === 1 ? 
         'img/foto_usuario-1.png' : 
@@ -617,7 +640,6 @@ class AppState {
       
       this.mostrarTurnoJugadorConSeleccion(nombreJugador, avatarSrc);
     } else {
-      // Modo normal: verificar restricción del primer turno
       if (window.estadoJuego?.turnoEnRonda === 1 && window.estadoJuego?.rondaActual === 1) {
         // Primer turno de la primera ronda: sin restricción
         this.mostrarPantallaSinRestriccion();
@@ -630,10 +652,8 @@ class AppState {
   }
 
   mostrarPantallaSinRestriccion() {
-    // Ir directo a la pantalla de partida sin dado
     this.showScreen('partida');
     
-    // Establecer "Sin restricción" en el footer
     const infoRestriccion = document.querySelector('.info-restriccion');
     const textoRestriccion = document.querySelector('.texto-restriccion');
     
@@ -645,7 +665,6 @@ class AppState {
       textoRestriccion.innerHTML = '<div>Sin restricción</div>';
     }
     
-    // Actualizar interfaz
     if (window.JuegoManager) {
       window.JuegoManager.actualizarInterfaz();
       window.RenderManager?.actualizarDinosauriosDisponibles();
@@ -653,7 +672,6 @@ class AppState {
   }
 
   comenzarJuego() {
-    // Verificar si es el primer turno
     if (window.estadoJuego?.turnoEnRonda === 1 && window.estadoJuego?.rondaActual === 1) {
       this.mostrarPantallaSinRestriccion();
     } else {
@@ -664,7 +682,7 @@ class AppState {
     }
   }
 
-  // ==================== ANIMACIÓN DE DADOS ====================
+  // ANIMACIÓN DE DADOS
   iniciarAnimacionDado() {
     const img = document.getElementById('dado-imagen');
     const cont = document.getElementById('dado-animado');
@@ -731,34 +749,34 @@ class AppState {
   mostrarResultadoDado(dadoNumero) {
     const config = {
       1: {
-        titulo: 'Lugar vacío',
-        descripcion: 'Poné el dinosaurio en un lugar donde no haya ningún otro. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
+        titulo: 'Huella (libre)',
+        descripcion: '¡Tablero completamente libre! Podés colocar el dinosaurio en cualquier recinto sin restricciones. Es la cara más flexible del dado.',
         imagen: 'img/dado-huella.png'
       },
       2: {
-        titulo: 'Sin T-Rex',
-        descripcion: 'Poné el dinosaurio en un lugar donde no esté el T-Rex. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
+        titulo: 'No T-Rex',
+        descripcion: 'El Rey de la Jungla está bloqueado. Podés colocar en cualquier otro recinto: Bosque de la Semejanza, Prado de la Diferencia, Pradera del Amor, Trío Frondoso, Isla Solitaria o el Río.',
         imagen: 'img/dado-no-trex.png'
       },
       3: {
-        titulo: 'Lado cafetería (izquierda)',
-        descripcion: 'Poné el dinosaurio en el lado izquierdo del tablero, donde está la cafetería. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
+        titulo: 'Lado Cafetería',
+        descripcion: 'Recintos disponibles: Bosque de la Semejanza, Trío Frondoso, Pradera del Amor. Los recintos del lado izquierdo del tablero están abiertos. Si no podés cumplir, poné el dinosaurio en el río.',
         imagen: 'img/dado-cafe.png'
       },
       4: {
-        titulo: 'Bosque',
-        descripcion: 'Poné el dinosaurio en un lugar del bosque. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
-        imagen: 'img/dado-bosque.png'
+        titulo: 'Lado Baños',
+        descripcion: 'Recintos disponibles: Rey de la Jungla, Prado de la Diferencia, Isla Solitaria. Los recintos del lado derecho del tablero están abiertos. Si no podés cumplir, poné el dinosaurio en el río.',
+        imagen: 'img/dado-banos.png'
       },
       5: {
-        titulo: 'Rocas',
-        descripcion: 'Poné el dinosaurio en un lugar de rocas. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
-        imagen: 'img/dado-rocas.png'
+        titulo: 'Bosque',
+        descripcion: 'Recintos disponibles: Trío Frondoso, Bosque de la Semejanza, Rey de la Jungla. Los recintos con temática de bosque están abiertos. Si no podés cumplir, poné el dinosaurio en el río.',
+        imagen: 'img/dado-bosque.png'
       },
       6: {
-        titulo: 'Lado baños (derecha)',
-        descripcion: 'Poné el dinosaurio en el lado derecho del tablero, donde están los baños. Si no podés cumplir la consigna, poné el dinosaurio en el río.',
-        imagen: 'img/dado-banos.png'
+        titulo: 'Rocas / Pradera',
+        descripcion: 'Recintos disponibles: Prado de la Diferencia, Isla Solitaria, Pradera del Amor. Los recintos con temática de pradera y rocas están abiertos. Si no podés cumplir, poné el dinosaurio en el río.',
+        imagen: 'img/dado-rocas.png'
       }
     };
     
@@ -782,7 +800,7 @@ class AppState {
     if (desc) desc.textContent = config.descripcion;
   }
 
-  // ==================== MANEJO DE FORMULARIOS ====================
+  // MANEJO DE FORMULARIOS
   async handleLogin(form) {
     const username = form.querySelector('#login-username').value.trim();
     const password = form.querySelector('#login-password').value.trim();
@@ -794,15 +812,30 @@ class AppState {
     this.setLoading(true);
     
     try {
-      await this.delay(800);
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // Detectar si es administrador
+      const usernameCheck = username.toLowerCase();
+      const isAdmin = usernameCheck === 'admin';
       
       this.user = {
         username: username,
-        name: username.toUpperCase()
+        name: username.toUpperCase(),
+        isAdmin: isAdmin
       };
       
-      this.showScreen('lobby');
-      this.showToast('¡Bienvenido de vuelta!', 'success');
+      if (isAdmin) {
+        if (window.adminManager) {
+          window.adminManager.mostrarPerfilAdmin(this.user);
+        } else {
+          console.error('AdminManager no encontrado');
+        }
+        this.showToast('¡Bienvenido, Administrador!', 'success');
+      } else {
+        // Usuario normal va al lobby
+        this.showScreen('lobby');
+        this.showToast('¡Bienvenido de vuelta!', 'success');
+      }
     } catch (error) {
       this.showToast('Error al iniciar sesión', 'error');
     } finally {
@@ -820,7 +853,7 @@ class AppState {
     this.setLoading(true);
     
     try {
-      await this.delay(2000);
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       this.user = {
         username: formData.username,
@@ -848,7 +881,7 @@ class AppState {
     };
   }
 
-  // ==================== CONFIGURACIÓN DE FORMULARIOS ====================
+  // CONFIGURACIÓN DE FORMULARIOS
   setupFormValidation() {
     document.querySelectorAll('.form-input').forEach(input => {
       input.addEventListener('input', () => {
@@ -972,19 +1005,16 @@ class AppState {
     const fechaInput = document.querySelector('#register-fecha');
     if (!fechaInput) return;
     
-    // Establecer fecha máxima (hoy)
     const hoy = new Date();
     const yyyy = hoy.getFullYear();
     const mm = String(hoy.getMonth() + 1).padStart(2, '0');
     const dd = String(hoy.getDate()).padStart(2, '0');
     fechaInput.max = `${yyyy}-${mm}-${dd}`;
     
-    // Establecer fecha mínima (100 años atrás)
     const fechaMinima = new Date();
     fechaMinima.setFullYear(fechaMinima.getFullYear() - 100);
     fechaInput.min = `${fechaMinima.getFullYear()}-${String(fechaMinima.getMonth() + 1).padStart(2, '0')}-${String(fechaMinima.getDate()).padStart(2, '0')}`;
     
-    // Validar edad al cambiar
     fechaInput.addEventListener('change', () => {
       const birthDate = new Date(fechaInput.value);
       const today = new Date();
@@ -999,12 +1029,11 @@ class AppState {
     });
   }
 
-  // ==================== SISTEMA DE TOASTS ====================
+  // SISTEMA DE TOASTS
   showToast(message, type = 'info', duration = 5000) {
     const container = document.getElementById('toast-container');
     if (!container) return;
     
-    // Evitar duplicados
     const existingToasts = Array.from(container.querySelectorAll('.toast'));
     const isDuplicate = existingToasts.some(toast => {
       const msgElement = toast.querySelector('.toast__message');
@@ -1042,7 +1071,6 @@ class AppState {
       </div>
     `;
     
-    // Eventos
     const closeBtn = toast.querySelector('.toast__close');
     closeBtn.addEventListener('click', () => this.removeToast(toast));
     
@@ -1070,7 +1098,7 @@ class AppState {
     });
   }
 
-  // ==================== UTILIDADES ====================
+  // UTILIDADES
   showFieldError(form, selector, message) {
     const field = form.querySelector(selector);
     if (field) {
@@ -1091,7 +1119,8 @@ class AppState {
       .forEach(counter => {
         counter.className = 'character-counter';
       });
-  }
+  } 
+
 
   clearFieldError(input) {
     input.classList.remove('error');
@@ -1127,10 +1156,10 @@ class AppState {
     });
   }
 
-  // ==================== ACCIONES DE JUEGO ====================
+  // ACCIONES DE JUEGO
   siguienteRonda() {
-    if (window.JuegoManager?.prepararSiguienteRonda) {
-      window.JuegoManager.prepararSiguienteRonda();
+    if (window.JuegoManager?._prepararSiguienteRonda) {
+      window.JuegoManager._prepararSiguienteRonda();
     }
   }
 
@@ -1145,7 +1174,6 @@ class AppState {
     this.modoSeguimiento = false;
     this.showScreen('jugadores');
     
-    // Limpiar campos
     const j2 = document.getElementById('jugador-2');
     if (j2) j2.value = '';
     
@@ -1162,41 +1190,21 @@ class AppState {
     
     if (!confirmLogout) return;
     
-    // Limpiar estado
     this.user = null;
     this.players = [];
     this.jugador2Info = null;
     this.dadoSeleccionado = null;
-    this.tempNombres = null;
-    this.tempJugador2Info = null;
+
+    
     this.modoSeguimiento = false;
     
-    // Limpiar formularios
     document.querySelectorAll('form').forEach(form => form.reset());
     
     this.showScreen('login');
     this.showToast('Sesión cerrada', 'info');
   }
 
-  // ==================== UTILIDADES AUXILIARES ====================
-  delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
 
-  getDebugInfo() {
-    return {
-      currentScreen: this.currentScreen,
-      user: this.user,
-      players: this.players,
-      loading: this.loading,
-      modoSeguimiento: this.modoSeguimiento,
-      tempData: {
-        nombres: this.tempNombres,
-        jugador2Info: this.tempJugador2Info
-      },
-      validationConfig: this.validationConfig
-    };
-  }
 
   resetAppState() {
     this.currentScreen = 'login';
@@ -1205,8 +1213,6 @@ class AppState {
     this.players = [];
     this.jugador2Info = null;
     this.dadoSeleccionado = null;
-    this.tempNombres = null;
-    this.tempJugador2Info = null;
     this.modoSeguimiento = false;
     
     this.hideToasts();
@@ -1217,43 +1223,19 @@ class AppState {
     });
   }
 
-  validateDOMIntegrity() {
-    const required = [
-      'pantalla-login',
-      'pantalla-registro',
-      'pantalla-lobby',
-      'pantalla-jugadores',
-      'pantalla-seleccion-inicial',
-      'pantalla-partida',
-      'toast-container'
-    ];
-    
-    const missing = required.filter(id => !document.getElementById(id));
-    
-    if (missing.length > 0) {
-      console.error('Elementos DOM faltantes:', missing);
-      return false;
-    }
-    
-    return true;
-  }
 }
 
-// ==================== INICIALIZACIÓN ====================
+// INICIALIZACIÓN
 if (!window.app) {
   document.addEventListener('DOMContentLoaded', () => {
     const tempApp = new AppState();
     
-    if (tempApp.validateDOMIntegrity()) {
-      window.app = tempApp;
-      console.log('App inicializada correctamente');
-    } else {
-      console.error('Error: DOM incompleto, no se puede inicializar la aplicación');
-    }
+    window.app = tempApp;
+    window.adminManager = new AdminManager();
   });
 }
 
-// ==================== MANEJO DE ERRORES GLOBALES ====================
+// MANEJO DE ERRORES GLOBALES
 window.addEventListener('error', e => {
   console.error('Error global capturado:', e.error);
   if (window.app) {
@@ -1267,3 +1249,314 @@ window.addEventListener('unhandledrejection', e => {
     window.app.showToast('Error en operación asíncrona', 'error');
   }
 });
+
+// ADMINISTRADOR
+class AdminManager {
+  constructor() {
+    this.currentUser = null;
+    this.usuariosData = []; // Simular datos de usuarios
+    this.currentEditingUser = null;
+    this.init();
+  }
+
+  init() {
+    this.setupAdminEvents();
+    this.loadMockUsers(); // Cargar usuarios simulados
+    this.asegurarPopupOculto();
+  }
+
+  asegurarPopupOculto() {
+    const popup = document.getElementById('popup-eliminar-usuario');
+    if (popup) {
+      popup.classList.add('hidden');
+      popup.style.display = 'none';
+    }
+  }
+
+  setupAdminEvents() {
+    // Botones principales del perfil admin
+    const btnModificarUsuarios = document.getElementById('btn-modificar-usuarios');
+    const btnNuevoUsuario = document.getElementById('btn-nuevo-usuario');
+    const btnSalirAdmin = document.getElementById('btn-salir-admin');
+
+    // Botones de navegación
+    const btnVolverAdmin = document.getElementById('btn-volver-admin');
+    const btnVolverListado = document.getElementById('btn-volver-listado');
+    const btnVolverAdminNuevo = document.getElementById('btn-volver-admin-nuevo');
+
+    // Botones de popup
+    const btnConfirmarEliminar = document.getElementById('btn-confirmar-eliminar');
+    const btnCancelarEliminar = document.getElementById('btn-cancelar-eliminar');
+
+    // Formularios
+    const formEditarUsuario = document.getElementById('form-editar-usuario');
+    const formNuevoUsuario = document.getElementById('form-nuevo-usuario');
+
+    // Búsqueda
+    const buscarUsuario = document.getElementById('buscar-usuario');
+
+    // Event listeners
+    if (btnModificarUsuarios) {
+      btnModificarUsuarios.addEventListener('click', () => this.mostrarListadoUsuarios());
+    }
+
+    if (btnNuevoUsuario) {
+      btnNuevoUsuario.addEventListener('click', () => this.mostrarNuevoUsuario());
+    }
+
+    if (btnSalirAdmin) {
+      btnSalirAdmin.addEventListener('click', () => this.salirModoAdmin());
+    }
+
+    if (btnVolverAdmin) {
+      btnVolverAdmin.addEventListener('click', () => this.volverPerfilAdmin());
+    }
+
+    if (btnVolverListado) {
+      btnVolverListado.addEventListener('click', () => this.mostrarListadoUsuarios());
+    }
+
+    if (btnVolverAdminNuevo) {
+      btnVolverAdminNuevo.addEventListener('click', () => this.volverPerfilAdmin());
+    }
+
+    if (btnConfirmarEliminar) {
+      btnConfirmarEliminar.addEventListener('click', () => this.confirmarEliminarUsuario());
+    }
+
+    if (btnCancelarEliminar) {
+      btnCancelarEliminar.addEventListener('click', () => this.cerrarPopupEliminar());
+    }
+
+    if (formEditarUsuario) {
+      formEditarUsuario.addEventListener('submit', (e) => this.handleEditarUsuario(e));
+    }
+
+    if (formNuevoUsuario) {
+      formNuevoUsuario.addEventListener('submit', (e) => this.handleNuevoUsuario(e));
+    }
+
+    if (buscarUsuario) {
+      buscarUsuario.addEventListener('input', (e) => this.filtrarUsuarios(e.target.value));
+    }
+  }
+
+  loadMockUsers() {
+    // Datos simulados de usuarios
+    this.usuariosData = [
+      { id: 1, username: 'Anita', email: 'anita@example.com', birthdate: '1995-03-15', isAdmin: false },
+      { id: 2, username: 'Pepeking', email: 'pepe.alonzo@gmail.com', birthdate: '1998-05-23', isAdmin: false },
+      { id: 3, username: 'Pepita', email: 'pepita@example.com', birthdate: '1992-11-08', isAdmin: false },
+      { id: 4, username: 'Daniel-San', email: 'daniel@example.com', birthdate: '1990-07-12', isAdmin: false },
+      { id: 5, username: 'Joselito', email: 'jose@example.com', birthdate: '1993-01-30', isAdmin: false }
+    ];
+  }
+
+  mostrarPerfilAdmin(usuario) {
+    this.currentUser = usuario;
+    
+    const adminUsername = document.getElementById('admin-username');
+    if (adminUsername) {
+      adminUsername.textContent = usuario.username;
+    }
+
+    document.querySelectorAll('.admin-name').forEach(el => {
+      el.textContent = usuario.username;
+    });
+
+    this.mostrarPantalla('pantalla-admin');
+  }
+
+  mostrarListadoUsuarios() {
+    this.renderizarListaUsuarios();
+    this.mostrarPantalla('pantalla-listado-usuarios');
+  }
+
+  mostrarNuevoUsuario() {
+    const form = document.getElementById('form-nuevo-usuario');
+    if (form) form.reset();
+    
+    this.mostrarPantalla('pantalla-nuevo-usuario');
+  }
+
+  mostrarEditarUsuario(usuario) {
+    this.currentEditingUser = usuario;
+    
+    // Llenar formulario con datos del usuario
+    document.getElementById('edit-username').value = usuario.username;
+    document.getElementById('edit-email').value = usuario.email;
+    document.getElementById('edit-birthdate').value = usuario.birthdate;
+    document.getElementById('edit-password').value = '';
+
+    this.mostrarPantalla('pantalla-editar-usuario');
+  }
+
+  renderizarListaUsuarios(filtro = '') {
+    const container = document.getElementById('lista-usuarios-admin');
+    if (!container) return;
+
+    const usuariosFiltrados = this.usuariosData.filter(user => 
+      !user.isAdmin && user.username.toLowerCase().includes(filtro.toLowerCase())
+    );
+
+    container.innerHTML = `
+      <div class="titulo-seccion">Usuarios registrados</div>
+      ${usuariosFiltrados.map(user => `
+        <div class="usuario-item">
+          <span class="usuario-nombre">${user.username}</span>
+          <div class="usuario-acciones">
+            <button class="btn-accion btn-editar" data-user-id="${user.id}" data-action="editar">
+              <img src="img/lapiz.svg" alt="Editar">
+            </button>
+            <button class="btn-accion btn-eliminar" data-user-id="${user.id}" data-username="${user.username}" data-action="eliminar">
+              <img src="img/Cruz.svg" alt="Eliminar">
+            </button>
+          </div>
+        </div>
+      `).join('')}
+    `;
+
+    // Agregar event listeners
+    this.setupUserActionListeners();
+  }
+
+  setupUserActionListeners() {
+    const container = document.getElementById('lista-usuarios-admin');
+    if (!container) return;
+
+    container.addEventListener('click', (e) => {
+      const button = e.target.closest('[data-action]');
+      if (!button) return;
+
+      const action = button.dataset.action;
+      const userId = parseInt(button.dataset.userId);
+      const username = button.dataset.username;
+
+      if (action === 'eliminar') {
+        this.mostrarPopupEliminar(username, userId);
+      } else if (action === 'editar') {
+        const user = this.usuariosData.find(u => u.id === userId);
+        if (user) {
+          this.mostrarEditarUsuario(user);
+        }
+      }
+    });
+  }
+
+  filtrarUsuarios(filtro) {
+    this.renderizarListaUsuarios(filtro);
+  }
+
+  mostrarPopupEliminar(username, userId) {
+    const popup = document.getElementById('popup-eliminar-usuario');
+    const usernameSpan = document.getElementById('usuario-a-eliminar');
+    
+    if (!popup) {
+      alert(`¿Desea eliminar el usuario ${username}?`); // Fallback
+      return;
+    }
+    
+    if (usernameSpan) {
+      usernameSpan.textContent = username;
+    }
+    
+    popup.classList.remove('hidden');
+    popup.style.zIndex = '10000';
+    popup.dataset.userId = userId;
+    
+    // Forzar reflow
+    popup.offsetHeight;
+  }
+
+  confirmarEliminarUsuario() {
+    const popup = document.getElementById('popup-eliminar-usuario');
+    const userId = parseInt(popup.dataset.userId);
+    
+    // Eliminar usuario del array
+    this.usuariosData = this.usuariosData.filter(user => user.id !== userId);
+    
+    this.renderizarListaUsuarios();
+    
+    // Cerrar popup
+    this.cerrarPopupEliminar();
+    
+  }
+
+  cerrarPopupEliminar() {
+    const popup = document.getElementById('popup-eliminar-usuario');
+    if (popup) {
+      popup.classList.add('hidden');
+    }
+  }
+
+  handleEditarUsuario(e) {
+    e.preventDefault();
+    
+    if (!this.currentEditingUser) return;
+    
+    const username = document.getElementById('edit-username').value;
+    const email = document.getElementById('edit-email').value;
+    const birthdate = document.getElementById('edit-birthdate').value;
+    const password = document.getElementById('edit-password').value;
+    
+    const userIndex = this.usuariosData.findIndex(u => u.id === this.currentEditingUser.id);
+    if (userIndex !== -1) {
+      this.usuariosData[userIndex] = {
+        ...this.usuariosData[userIndex],
+        username,
+        email,
+        birthdate,
+        ...(password && { password })
+      };
+    }
+    
+    
+    this.mostrarListadoUsuarios();
+  }
+
+  handleNuevoUsuario(e) {
+    e.preventDefault();
+    
+    const username = document.getElementById('new-username').value;
+    const email = document.getElementById('new-email').value;
+    const birthdate = document.getElementById('new-birthdate').value;
+    const password = document.getElementById('new-password').value;
+    
+    // Crear nuevo usuario
+    const nuevoUsuario = {
+      id: Math.max(...this.usuariosData.map(u => u.id)) + 1,
+      username,
+      email,
+      birthdate,
+      password,
+      isAdmin: false
+    };
+    
+    this.usuariosData.push(nuevoUsuario);
+    
+    
+    this.volverPerfilAdmin();
+  }
+
+  volverPerfilAdmin() {
+    this.mostrarPantalla('pantalla-admin');
+  }
+
+  salirModoAdmin() {
+    this.currentUser = null;
+    this.mostrarPantalla('pantalla-login');
+  }
+
+  mostrarPantalla(pantallaId) {
+    document.querySelectorAll('.pantalla').forEach(pantalla => {
+      pantalla.classList.add('hidden');
+    });
+
+    const pantalla = document.getElementById(pantallaId);
+    if (pantalla) {
+      pantalla.classList.remove('hidden');
+    }
+
+    this.asegurarPopupOculto();
+  }
+}

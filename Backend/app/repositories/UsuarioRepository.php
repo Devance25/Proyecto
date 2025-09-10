@@ -207,7 +207,6 @@ class UsuarioRepository
         }
 
         $insertId = $stmt->insert_id; // id autoincrement generado
-
         $stmt->close();
 
         return [
