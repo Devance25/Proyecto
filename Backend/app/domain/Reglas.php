@@ -17,6 +17,16 @@ class Reglas{
 
 
 
+
+
+
+
+    public function restriccionDado(int $caraDado): array
+    {
+        
+    }
+
+
 // Reglas de puntuación de los recintos:
 
 // bosque-semejanza : Puntos según el número de dinosaurios del mismo color colocados, a menudo por un espacio en el que solo se pueden colocar de un color. 
@@ -34,13 +44,6 @@ class Reglas{
 // prado-diferencia
 
 // Puntos adicionales por T-Rex: Cada recinto que contenga un T-Rex, aunque tenga más de uno, otorga 1 punto de victoria adicional. 
-
-
-
-    public function restriccionDado(int $caraDado): array
-    {
-        
-    }
 
     public function reglasBosque($dinos): int
     {
