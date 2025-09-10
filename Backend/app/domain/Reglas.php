@@ -15,23 +15,25 @@ class Reglas{
 //     No T-Rex: Un T-Rex sobre un símbolo de peligro indica que el dinosaurio no 
 //           puede colocarse en un recinto que ya contenga un T-Rex. 
 
+
+
 // Reglas de puntuación de los recintos:
 
-// El bosque de la similitud: Puntos según el número de dinosaurios del mismo color colocados, a menudo por un espacio en el que solo se pueden colocar de un color. 
+// bosque-semejanza : Puntos según el número de dinosaurios del mismo color colocados, a menudo por un espacio en el que solo se pueden colocar de un color. 
 
-// El Rey de la jungla: Obtienes 7 puntos si el dinosaurio es único de su especie en tu zoológico, en comparación con otros dinosaurios de esa especie. 
+// rey-jungla: Obtienes 7 puntos si el dinosaurio es único de su especie en tu zoológico, en comparación con otros dinosaurios de esa especie. 
 
-// El trío leñoso: Se pueden colocar hasta tres dinosaurios de cualquier especie y puntúan según las reglas específicas de ese recinto. 
+// woody-trio: Se pueden colocar hasta tres dinosaurios de cualquier especie y puntúan según las reglas específicas de ese recinto. 
 
-// La pradera del amor: Puedes colocar hasta dos dinosaurios de cada especie, y cada pareja de la misma especie vale 5 puntos. 
+// pradera-amor: Puedes colocar hasta dos dinosaurios de cada especie, y cada pareja de la misma especie vale 5 puntos. 
 
-// La Isla Solitaria: Puedes colocar solo un dinosaurio. 
+// isla-solitaria: Puedes colocar solo un dinosaurio. 
 
-// El río: Cada dinosaurio en el río vale un punto. 
+// rio: Cada dinosaurio en el río vale un punto. 
+
+// prado-diferencia
 
 // Puntos adicionales por T-Rex: Cada recinto que contenga un T-Rex, aunque tenga más de uno, otorga 1 punto de victoria adicional. 
-
-
 
 
 
