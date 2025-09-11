@@ -28,7 +28,15 @@ class AppState {
     this.setupRealTimeValidation();
     
     // Pantalla de carga inicial
-    setTimeout(() => this.showScreen('login'), 1000);
+    // Intentar recuperar sesión desde localStorage
+    const usuarioGuardado = localStorage.getItem('usuario');
+    if (usuarioGuardado) {
+      this.user = JSON.parse(usuarioGuardado);
+      this.showScreen('lobby');
+    } else {
+      setTimeout(() => this.showScreen('login'), 1000);
+    }
+
   }
 
   // EVENTOS
@@ -61,6 +69,7 @@ class AppState {
         this.showScreen('login');
       },
       'btn-logout': () => this.logout(),
+      'btn-salir-admin': () => this.logout(),
       'btn-jugar-app': () => {
         this.modoSeguimiento = false;
         this.showScreen('jugadores');
@@ -201,7 +210,7 @@ class AppState {
     
     const j1Valid = j1.value.trim().length >= this.validationConfig.playerName.min;
     const j2Valid = j2.value.trim().length >= this.validationConfig.playerName.min && 
-                   j2.value.trim().length <= this.validationConfig.playerName.max;
+                    j2.value.trim().length <= this.validationConfig.playerName.max;
     const namesAreDifferent = j1.value.trim().toLowerCase() !== j2.value.trim().toLowerCase();
     
     btn.disabled = !(j1Valid && j2Valid && namesAreDifferent);
@@ -243,8 +252,6 @@ class AppState {
       [!data.username, '#register-username', 'Por favor ingresa tu nombre de usuario'],
       [data.username.length < userMin || data.username.length > userMax, 
        '#register-username', `El usuario debe tener entre ${userMin} y ${userMax} caracteres`],
-      [!/^[a-zA-Z0-9_]+$/.test(data.username), 
-       '#register-username', 'El usuario solo puede contener letras, números y guión bajo'],
       [!data.email, '#register-email', 'Por favor ingresa tu email'],
       [!this.validateEmail(data.email), '#register-email', 'Ingresa un email válido'],
       [!data.birthdate, '#register-fecha', 'Por favor ingresa tu fecha de nacimiento'],
@@ -801,75 +808,108 @@ class AppState {
   }
 
   // MANEJO DE FORMULARIOS
-  async handleLogin(form) {
-    const username = form.querySelector('#login-username').value.trim();
-    const password = form.querySelector('#login-password').value.trim();
-    
-    this.clearFormErrors(form);
-    
-    if (!this.validateLoginForm(username, password, form)) return;
-    
-    this.setLoading(true);
-    
-    try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // Detectar si es administrador
-      const usernameCheck = username.toLowerCase();
-      const isAdmin = usernameCheck === 'admin';
-      
-      this.user = {
-        username: username,
-        name: username.toUpperCase(),
-        isAdmin: isAdmin
-      };
-      
-      if (isAdmin) {
-        if (window.adminManager) {
-          window.adminManager.mostrarPerfilAdmin(this.user);
-        } else {
-          console.error('AdminManager no encontrado');
-        }
-        this.showToast('¡Bienvenido, Administrador!', 'success');
-      } else {
-        // Usuario normal va al lobby
-        this.showScreen('lobby');
-        this.showToast('¡Bienvenido de vuelta!', 'success');
-      }
-    } catch (error) {
-      this.showToast('Error al iniciar sesión', 'error');
-    } finally {
-      this.setLoading(false);
-    }
-  }
+async handleLogin(form) {
+  const identificador = form.querySelector('#login-username').value.trim();
+  const password = form.querySelector('#login-password').value.trim();
 
-  async handleRegister(form) {
-    const formData = this.getRegisterFormData(form);
-    
-    this.clearFormErrors(form);
-    
-    if (!this.validateRegisterForm(formData, form)) return;
-    
-    this.setLoading(true);
-    
-    try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      this.user = {
-        username: formData.username,
-        name: formData.username.toUpperCase(),
-        email: formData.email,
-        birthdate: formData.birthdate
-      };
-      
-      this.showScreen('lobby');
-      this.showToast('¡Cuenta creada exitosamente!', 'success');
-    } catch (error) {
-      this.showToast('Error al crear la cuenta', 'error');
-    } finally {
-      this.setLoading(false);
+  this.clearFormErrors(form);
+
+  if (!this.validateLoginForm(identificador, password, form)) return;
+
+  this.setLoading(true);
+
+  try {
+    const response = await fetch('http://localhost:8000/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identificador, password })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      this.showToast(result.message || 'Credenciales inválidas', 'error');
+      return;
     }
+
+    this.user = {
+      id: result.user.id,
+      email: result.user.email,
+      username: result.user.nombreUsuario,
+      name: result.user.nombreUsuario.toUpperCase(),
+      isAdmin: result.user.esAdmin || false
+    };
+
+    localStorage.setItem('usuario', JSON.stringify(this.user));
+
+    if (this.user.isAdmin) {
+      window.adminManager?.mostrarPerfilAdmin(this.user);
+      this.showToast('¡Bienvenido, Administrador!', 'success');
+    } else {
+      this.showScreen('lobby');
+      this.showToast('¡Bienvenido de vuelta!', 'success');
+    }
+
+  } catch (error) {
+    console.error(error);
+    this.showToast('Error al conectar con el servidor', 'error');
+  } finally {
+    this.setLoading(false);
   }
+}
+
+
+
+async handleRegister(form) {
+  const formData = this.getRegisterFormData(form);
+
+  this.clearFormErrors(form);
+
+  if (!this.validateRegisterForm(formData, form)) return;
+
+  this.setLoading(true);
+
+try {
+  const response = await fetch('http://127.0.0.1:8000/registro', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      nombreUsuario: formData.username,
+      email: formData.email,
+      nacimiento: formData.birthdate, // 👈 CAMBIADO
+      password: formData.password,
+      passwordConfirm: formData.passwordConfirm
+    })
+  });
+
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      this.showToast(result.message || 'Error al registrarse', 'error');
+      return;
+    }
+
+    this.user = {
+      id: result.usuario.id,
+      email: result.usuario.email,
+      username: result.usuario.nombreUsuario,
+      name: result.usuario.nombreUsuario.toUpperCase()
+    };
+
+    localStorage.setItem('usuario', JSON.stringify(this.user));
+
+    this.showScreen('lobby');
+    this.showToast('¡Cuenta creada exitosamente!', 'success');
+  } catch (error) {
+    console.error(error);
+    this.showToast('Error al conectar con el servidor', 'error');
+  } finally {
+    this.setLoading(false);
+  }
+}
+
+
 
   getRegisterFormData(form) {
     return {
@@ -1187,22 +1227,23 @@ class AppState {
     const confirmLogout = this.currentScreen === 'partida' ? 
       confirm('¿Estás seguro de que quieres cerrar sesión? Se perderá el progreso de la partida actual.') : 
       true;
-    
+
     if (!confirmLogout) return;
-    
+
+    localStorage.removeItem('usuario');
+
     this.user = null;
     this.players = [];
     this.jugador2Info = null;
     this.dadoSeleccionado = null;
-
-    
     this.modoSeguimiento = false;
-    
+
     document.querySelectorAll('form').forEach(form => form.reset());
-    
+
     this.showScreen('login');
     this.showToast('Sesión cerrada', 'info');
   }
+
 
 
 
@@ -1254,14 +1295,13 @@ window.addEventListener('unhandledrejection', e => {
 class AdminManager {
   constructor() {
     this.currentUser = null;
-    this.usuariosData = []; // Simular datos de usuarios
     this.currentEditingUser = null;
     this.init();
   }
 
   init() {
     this.setupAdminEvents();
-    this.loadMockUsers(); // Cargar usuarios simulados
+    this.fetchUsers();
     this.asegurarPopupOculto();
   }
 
@@ -1341,15 +1381,57 @@ class AdminManager {
     }
   }
 
-  loadMockUsers() {
-    // Datos simulados de usuarios
-    this.usuariosData = [
-      { id: 1, username: 'Anita', email: 'anita@example.com', birthdate: '1995-03-15', isAdmin: false },
-      { id: 2, username: 'Pepeking', email: 'pepe.alonzo@gmail.com', birthdate: '1998-05-23', isAdmin: false },
-      { id: 3, username: 'Pepita', email: 'pepita@example.com', birthdate: '1992-11-08', isAdmin: false },
-      { id: 4, username: 'Daniel-San', email: 'daniel@example.com', birthdate: '1990-07-12', isAdmin: false },
-      { id: 5, username: 'Joselito', email: 'jose@example.com', birthdate: '1993-01-30', isAdmin: false }
-    ];
+  async fetchUsers() {
+    console.log('Iniciando fetchUsers...');
+    
+    try {
+      const url = 'http://127.0.0.1:8000/getUsuarios';
+      console.log('Haciendo petición a:', url);
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      console.log('Status de respuesta:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error en respuesta:', errorText);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Datos recibidos:', data);
+
+      if (!data.success) {
+        throw new Error(data.message || 'No se pudieron obtener los usuarios');
+      }
+
+      // CAMBIO AQUÍ: Verificación mejorada
+      if (data && Array.isArray(data.usuarios)) {
+        this.usuariosData = data.usuarios;
+        console.log('✅ usuariosData asignado correctamente:', this.usuariosData);
+      } else {
+        console.error('❌ Datos de usuarios inválidos:', data);
+        this.usuariosData = [];
+      }
+
+      console.log('Usuarios cargados:', this.usuariosData.length);
+
+      // CAMBIO AQUÍ: Renderizar inmediatamente
+      if (document.getElementById('pantalla-listado-usuarios')?.classList.contains('hidden') === false) {
+        console.log('Renderizando lista inmediatamente...');
+        this.renderizarListaUsuarios();
+      }
+
+    } catch (error) {
+      console.error('Error completo:', error);
+      this.usuariosData = [];
+      throw error;
+    }
   }
 
   mostrarPerfilAdmin(usuario) {
@@ -1367,9 +1449,34 @@ class AdminManager {
     this.mostrarPantalla('pantalla-admin');
   }
 
-  mostrarListadoUsuarios() {
-    this.renderizarListaUsuarios();
+  async mostrarListadoUsuarios() 
+  {
+    console.log('Iniciando mostrarListadoUsuarios...');
+    
+    // Mostrar pantalla primero con mensaje de carga
     this.mostrarPantalla('pantalla-listado-usuarios');
+    
+    const container = document.getElementById('lista-usuarios-admin');
+    if (container) {
+      container.innerHTML = '<div class="titulo-seccion">Cargando usuarios...</div>';
+    }
+    
+    try {
+      // Forzar carga de usuarios
+      await this.fetchUsers();
+      console.log('Usuarios cargados, renderizando lista...');
+      this.renderizarListaUsuarios();
+    } catch (error) {
+      console.error('Error al cargar usuarios:', error);
+      if (container) {
+        container.innerHTML = `
+          <div class="titulo-seccion">Error al cargar usuarios</div>
+          <div class="usuario-item">
+            <span>No se pudieron cargar los usuarios. Verifica la conexión con el servidor.</span>
+          </div>
+        `;
+      }
+    }
   }
 
   mostrarNuevoUsuario() {
@@ -1383,32 +1490,64 @@ class AdminManager {
     this.currentEditingUser = usuario;
     
     // Llenar formulario con datos del usuario
-    document.getElementById('edit-username').value = usuario.username;
+    document.getElementById('edit-username').value = usuario.nombreUsuario;
     document.getElementById('edit-email').value = usuario.email;
-    document.getElementById('edit-birthdate').value = usuario.birthdate;
-    document.getElementById('edit-password').value = '';
+    document.getElementById('edit-birthdate').value = usuario.nacimiento;
+    
+    // Limpiar password
+    const passwordField = document.getElementById('edit-password');
+    if (passwordField) passwordField.value = '';
 
     this.mostrarPantalla('pantalla-editar-usuario');
   }
 
   renderizarListaUsuarios(filtro = '') {
+    console.log('renderizarListaUsuarios llamado, usuariosData:', this.usuariosData);
+    
     const container = document.getElementById('lista-usuarios-admin');
-    if (!container) return;
+    if (!container) {
+      console.error('Container lista-usuarios-admin no encontrado');
+      return;
+    }
+
+    // Validación mejorada
+    if (!Array.isArray(this.usuariosData)) {
+      console.warn('usuariosData no es un array válido:', this.usuariosData);
+      container.innerHTML = `
+        <div class="titulo-seccion">Error</div>
+        <div class="usuario-item">
+          <span>Los datos de usuarios no están disponibles.</span>
+        </div>
+      `;
+      return;
+    }
 
     const usuariosFiltrados = this.usuariosData.filter(user => 
-      !user.isAdmin && user.username.toLowerCase().includes(filtro.toLowerCase())
+      !user.admin && user.nombreUsuario && user.nombreUsuario.toLowerCase().includes(filtro.toLowerCase())
     );
 
+    console.log(`Mostrando ${usuariosFiltrados.length} usuarios filtrados`);
+
+    if (usuariosFiltrados.length === 0) {
+      container.innerHTML = `
+        <div class="titulo-seccion">Usuarios registrados</div>
+        <div class="usuario-item">
+          <span>No se encontraron usuarios${filtro ? ' que coincidan con la búsqueda' : ''}.</span>
+        </div>
+      `;
+      return;
+    }
+
     container.innerHTML = `
-      <div class="titulo-seccion">Usuarios registrados</div>
+      <div class="titulo-seccion">Usuarios registrados (${usuariosFiltrados.length})</div>
       ${usuariosFiltrados.map(user => `
         <div class="usuario-item">
-          <span class="usuario-nombre">${user.username}</span>
+          <span class="usuario-nombre">${user.nombreUsuario}</span>
           <div class="usuario-acciones">
             <button class="btn-accion btn-editar" data-user-id="${user.id}" data-action="editar">
               <img src="img/lapiz.svg" alt="Editar">
             </button>
-            <button class="btn-accion btn-eliminar" data-user-id="${user.id}" data-username="${user.username}" data-action="eliminar">
+            <button class="btn-accion btn-eliminar" data-user-id="${user.id}" data-username="${user.nombreUsuario}" data-action="eliminar">
               <img src="img/Cruz.svg" alt="Eliminar">
             </button>
           </div>
@@ -1416,9 +1555,8 @@ class AdminManager {
       `).join('')}
     `;
 
-    // Agregar event listeners
     this.setupUserActionListeners();
-  }
+}
 
   setupUserActionListeners() {
     const container = document.getElementById('lista-usuarios-admin');
@@ -1468,18 +1606,33 @@ class AdminManager {
     popup.offsetHeight;
   }
 
-  confirmarEliminarUsuario() {
+  async confirmarEliminarUsuario() {
     const popup = document.getElementById('popup-eliminar-usuario');
     const userId = parseInt(popup.dataset.userId);
     
-    // Eliminar usuario del array
-    this.usuariosData = this.usuariosData.filter(user => user.id !== userId);
-    
-    this.renderizarListaUsuarios();
-    
-    // Cerrar popup
-    this.cerrarPopupEliminar();
-    
+    try {
+      const response = await fetch('http://127.0.0.1:8000/eliminarUsuario', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: userId })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Error al eliminar usuario');
+      }
+
+      // Recargar usuarios desde el backend
+      await this.fetchUsers();
+      window.app?.showToast('Usuario eliminado correctamente', 'success');
+      
+    } catch (error) {
+      console.error('Error al eliminar usuario:', error);
+      window.app?.showToast('Error al eliminar usuario', 'error');
+    } finally {
+      this.cerrarPopupEliminar();
+    }
   }
 
   cerrarPopupEliminar() {
@@ -1489,53 +1642,87 @@ class AdminManager {
     }
   }
 
-  handleEditarUsuario(e) {
+  async handleEditarUsuario(e) {
     e.preventDefault();
-    
+
     if (!this.currentEditingUser) return;
-    
-    const username = document.getElementById('edit-username').value;
-    const email = document.getElementById('edit-email').value;
-    const birthdate = document.getElementById('edit-birthdate').value;
-    const password = document.getElementById('edit-password').value;
-    
-    const userIndex = this.usuariosData.findIndex(u => u.id === this.currentEditingUser.id);
-    if (userIndex !== -1) {
-      this.usuariosData[userIndex] = {
-        ...this.usuariosData[userIndex],
-        username,
-        email,
-        birthdate,
-        ...(password && { password })
+
+    const username = document.getElementById('edit-username').value.trim();
+    const email = document.getElementById('edit-email').value.trim();
+    const birthdate = document.getElementById('edit-birthdate').value.trim();
+    const password = document.getElementById('edit-password').value.trim();
+
+    try {
+      const payload = {
+        id: this.currentEditingUser.id,
+        nombreUsuario: username,
+        email: email,
+        nacimiento: birthdate
       };
+
+      // Solo incluir password si se proporcionó
+      if (password) {
+        payload.password = password;
+      }
+
+      const response = await fetch('http://127.0.0.1:8000/modificarUsuario', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Error al modificar el usuario');
+      }
+
+      // Recargar usuarios desde el backend actualizado
+      await this.fetchUsers();
+      this.mostrarListadoUsuarios();
+      window.app?.showToast('Usuario modificado correctamente', 'success');
+
+    } catch (error) {
+      console.error('Error al modificar usuario:', error);
+      window.app?.showToast('Error al modificar usuario', 'error');
     }
-    
-    
-    this.mostrarListadoUsuarios();
   }
 
-  handleNuevoUsuario(e) {
+  async handleNuevoUsuario(e) {
     e.preventDefault();
     
-    const username = document.getElementById('new-username').value;
-    const email = document.getElementById('new-email').value;
-    const birthdate = document.getElementById('new-birthdate').value;
-    const password = document.getElementById('new-password').value;
+    const username = document.getElementById('new-username').value.trim();
+    const email = document.getElementById('new-email').value.trim();
+    const birthdate = document.getElementById('new-birthdate').value.trim();
+    const password = document.getElementById('new-password').value.trim();
     
-    // Crear nuevo usuario
-    const nuevoUsuario = {
-      id: Math.max(...this.usuariosData.map(u => u.id)) + 1,
-      username,
-      email,
-      birthdate,
-      password,
-      isAdmin: false
-    };
-    
-    this.usuariosData.push(nuevoUsuario);
-    
-    
-    this.volverPerfilAdmin();
+    try {
+      const response = await fetch('http://127.0.0.1:8000/registroAdmin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombreUsuario: username,
+          email: email,
+          nacimiento: birthdate,
+          password: password,
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Error al crear usuario');
+      }
+
+      // Recargar usuarios desde el backend
+      await this.fetchUsers();
+      this.volverPerfilAdmin();
+      window.app?.showToast('Usuario creado correctamente', 'success');
+
+    } catch (error) {
+      console.error('Error al crear usuario:', error);
+      window.app?.showToast('Error al crear usuario', 'error');
+    }
   }
 
   volverPerfilAdmin() {
@@ -1544,7 +1731,9 @@ class AdminManager {
 
   salirModoAdmin() {
     this.currentUser = null;
-    this.mostrarPantalla('pantalla-login');
+    if (window.app) {
+      window.app.logout();
+    }
   }
 
   mostrarPantalla(pantallaId) {
