@@ -44,7 +44,7 @@ try {
         //AuthController
         case 'login':
             if ($method === 'POST') {
-                $authController->login();
+                $authController->loginController();
                 break;
             }
             http_response_code(405);
@@ -57,7 +57,7 @@ try {
 
         case 'registro':
             if ($method === 'POST') {
-                $authController->registro();
+                $authController->registroController();
                 break;
             }
             http_response_code(405);
@@ -67,6 +67,54 @@ try {
             ]);
             break;
 
+        case 'registroAdmin':
+            if ($method === 'POST') {
+                $authController->registroAdminController();
+                break;
+            }
+            http_response_code(405);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
+            break;
+
+        
+        case 'getUsuarios':
+            if ($method === 'GET') {
+                $authController->getUsuariosController();
+                break;
+            }
+            http_response_code(405);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
+            break;
+
+        case 'modificarUsuario':
+            if ($method === 'POST') {
+                $authController->modificarUsuarioController();
+                break;
+            }
+            http_response_code(405);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
+            break;
+
+        case 'eliminarUsuario':
+            if ($method === 'POST') {
+                $authController->eliminarUsuarioController();
+                break;
+            }
+            http_response_code(405);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
+            break;
 
 
 

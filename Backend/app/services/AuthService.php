@@ -22,16 +22,15 @@ class AuthService
     }
 
 
-    public function registrarUsuarioService(string $nombreUsuario, string $email, string $nacimiento,string $password, string $passwordConfirm): array
+    public function registrarUsuarioAdminService(string $nombreUsuario, string $email, string $nacimiento,string $password): array
     {
         $nombreUsuario = trim($nombreUsuario);
         $email = trim($email);
         $nacimiento = trim($nacimiento);
         $password = (string)$password;
-        $passwordConfirm = (string)$passwordConfirm;
 
 
-        if ($nombreUsuario === '' || $email === '' || $nacimiento === '' || $password === '' || $passwordConfirm === '') {
+        if ($nombreUsuario === '' || $email === '' || $nacimiento === '' || $password === '') {
             return [
                 'success' => false, 
                 'code' => 'invalid', 
@@ -66,14 +65,6 @@ class AuthService
                 ];
         }
 
-
-        if ($password !== $passwordConfirm){
-            return [
-                'success' => false, 
-                'code' => 'invalid', 
-                'message' => 'Las contrasenias no coinciden.'
-                ];
-        }
 
 
         $usuarioExiste = $this->usuarioRepo->buscarPorNombreUsuarioRepo($nombreUsuario);
@@ -132,7 +123,7 @@ class AuthService
 
 
 
-    private function verificarCredenciales(string $identificador, string $plainPassword)
+    private function verificarCredencialesService(string $identificador, string $plainPassword)
     {
 
         $usuario = $this->usuarioRepo->buscarPorEmailONombreRepo($identificador);
@@ -158,14 +149,17 @@ class AuthService
 
 
     
-    public function login(string $identificador, string $password): array
-    {
-        $basicUser = $this->verificarCredenciales($identificador, $password);
+    public function loginService(string $identificador, string $password): array
+    {   
+        
+        $basicUser = $this->verificarCredencialesService($identificador, $password);
         if ($basicUser === false) {
             return [
                 'success' => false, 
                 'message' => 'Credenciales incorrectas.'];
         }
+
+        $esAdmin = $this->usuarioRepo->esAdmin($basicUser['id']);
 
         return [
             'success' => true,
@@ -174,7 +168,58 @@ class AuthService
                 'id' => $basicUser['id'],
                 'email' => $basicUser['email'],
                 'nombreUsuario' => $basicUser['nombreUsuario'],
+                'esAdmin' => $esAdmin,
             ],
         ];
     }
+
+    public function getUsuariosService(): array
+    {
+        $usuarios = $this->usuarioRepo->getUsuariosRepo(); 
+
+        return $usuarios;
+    }
+
+
+
+    public function modificarUsuarioService(int $usuario_id, string $nombre, string $email, string $nacimiento): array
+    {
+
+         $usuarioModificado = $this->usuarioRepo->modificarUsuarioRepo($usuario_id, $nombre, $email, $nacimiento);
+
+         return [
+            'nombre' => $nombre,
+            'usuarioModificado' => $usuarioModificado
+         ];
+
+    }
+
+
+
+
+    public function eliminarUsuarioService(int $usuario_id): array
+    {
+        if ($usuario_id <= 0) {
+            return [
+                'success' => false,
+                'message' => 'ID inválido'
+            ];
+        }
+
+        $resultado = $this->usuarioRepo->eliminarUsuarioRepo($usuario_id);
+
+        if ($resultado) {
+            return [
+                'success' => true,
+                'message' => 'Usuario eliminado correctamente',
+                'id' => $usuario_id
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => 'No se pudo eliminar el usuario'
+            ];
+        }
+    }
+
 }
