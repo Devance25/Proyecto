@@ -18,55 +18,180 @@ class Reglas
         return self::$instance;
     }
 
-
-//     Bosque: Indica que el dinosaurio debe colocarse en una zona de bosque. 
-//     Roca: Señala que el dinosaurio debe ir a una zona de pradera o llanura. 
-//     baño: Indica que el dinosaurio se debe colocar en una zona de "aseos" (lado 
-//           derecho del río)
-//     Cafeteria: Indica que el dinosaurio se debe colocar en una zona del lado 
-//           izquierdo del río. 
-//     Vacío: Un símbolo de una huella de dinosaurio en un recinto vacío significa 
-//           que se debe colocar el dinosaurio en un recinto que no tenga
-//           dinosaurios. 
-//     No T-Rex: Un T-Rex sobre un símbolo de peligro indica que el dinosaurio no 
-//           puede colocarse en un recinto que ya contenga un T-Rex. 
-
-
-
-
-
-
-
-    public function restriccionDado(string $caraDado): array
+    public function restriccionDado(string $caraDado, array $porRecinto): array //tiene que devolver los recintos en los cuales no se pueden colocar los dinos.
     {
         $recintosRestringidos = [];
 
-        if($caraDado === 'vacio'){
-            return $recintosRestringidos = [];
-        }
+        if ($caraDado === 'elBosque'){
+        $recintosRestringidos = [
+                                'pradoDiferencia',
+                                'islaSolitaria',
+                                'praderaDelAmor'
+                                ];
+        return $recintosRestringidos; 
+
+        }elseif($caraDado === 'llanura'){
+        $recintosRestringidos = [
+                                'bosqueSemejanza',
+                                'reySelva',
+                                'trioFrondozo'
+                                ];
+        return $recintosRestringidos; 
+
+        }elseif($caraDado === 'bagnos'){
+        $recintosRestringidos = [
+                                'bosqueSemejanza',
+                                'trioFrondozo',
+                                'praderaDelAmor'
+                                ];
 
         return $recintosRestringidos;
+
+        }elseif($caraDado === 'cafeteria'){
+        $recintosRestringidos = [
+                                'reySelva',
+                                'pradoDiferencia',
+                                'islaSolitaria'
+                                ];
+        
+        return $recintosRestringidos;
+
+        }elseif($caraDado === 'recintoVacio'){
+            //Tengo que importar recintos con sus respectivos dinos, posiblemente desde getColocacionesRepo
+        }elseif($caraDado === 'cuidadoTRex'){
+            //Tengo que importar recintos con sus respectivos dinos, posiblemente desde getColocacionesRepo
+        }
+        
+    
         
     }
+    //==========================================================================================================================================================
 
+    //==========================================================================================================================================================
+    public function restericcionRecinto(string $recinto): array 
+    {
 
-// Reglas de puntuación de los recintos:
+    }
 
-// bosque-semejanza : Puntos según el número de dinosaurios del mismo color colocados, a menudo por un espacio en el que solo se pueden colocar de un color. 
+    //==========================================================================================================================================================
+    public function reglasBosqueSemejanza(array $dinos): int  //Recibe un array con los dinos ubicados en el recinto desde Puntaje.php metodo: 'calcularPuntaje()'.
+    {
+        $cantDinos = 0;
 
-// rey-jungla: Obtienes 7 puntos si el dinosaurio es único de su especie en tu zoológico, en comparación con otros dinosaurios de esa especie. 
+        for($i = 0; $i<sizeof($dinos); $i++){    /* Ya se da por hecho que son todos de la MISMA!!! especie 
+                                               y que no se ingresaron mas de 6 dinos al recinto por lo que no se verifica. */ 
+            $cantDinos += 1;
 
-// woody-trio: Se pueden colocar hasta tres dinosaurios de cualquier especie y puntúan según las reglas específicas de ese recinto. 
+        }
 
-// pradera-amor: Puedes colocar hasta dos dinosaurios de cada especie, y cada pareja de la misma especie vale 5 puntos. 
+        if($cantDinos == 1){
+            return 2;
+        }elseif($cantDinos == 2){
+            return 4;
+        }elseif($cantDinos == 3){
+            return 8;
+        }elseif($cantDinos == 4){
+            return 12;
+        }elseif($cantDinos == 5){
+            return 18;
+        }elseif($cantDinos == 6){
+            return 24;
+        }elseif($cantDinos == 0){
+            return 0;
+        }
+    }
 
-// isla-solitaria: Puedes colocar solo un dinosaurio. 
+    //==========================================================================================================================================================
+    public function reglasPradoDiferencia(array $dinos): int
+    {
+        $cantDinos = 0;
 
-// rio: Cada dinosaurio en el río vale un punto. 
+        for($i = 0; $i<sizeof($dinos); $i++){    /* Ya se da por hecho que son todos de DIFERENTE!!! especie
+                                               y que no se ingresaron mas de 6 dinos al recinto por lo que no se verifica. */ 
+            $cantDinos += 1;
 
-// prado-diferencia
+        }
 
-// Puntos adicionales por T-Rex: Cada recinto que contenga un T-Rex, aunque tenga más de uno, otorga 1 punto de victoria adicional. 
+        if($cantDinos == 1){
+            return 1;
+        }elseif($cantDinos == 2){
+            return 3;
+        }elseif($cantDinos == 3){
+            return 6;
+        }elseif($cantDinos == 4){
+            return 10;
+        }elseif($cantDinos == 5){
+            return 15;
+        }elseif($cantDinos == 6){
+            return 21;
+        }elseif($cantDinos == 0){
+            return 0;
+        }
+    }
+    
+    //==========================================================================================================================================================
+    public function reglasPraderaDelAmor(array $dinos): int
+    {
+        $parejas = 0;
+        $usados = [];   //Se almacenan los indices que ya fueron emparejados.
 
+    for($i = 0; $i < sizeof($dinos); $i++){
+        if(in_array($i, $usados)) continue;         //'continue; finaliza la iteracion en caso de que $i sea un indice ya emparejado.'
+        for($j = $i+1; $j < sizeof($dinos); $j++){
+            if(in_array($j, $usados)) continue;     //'continue; finaliza la iteracion en caso de que $j sea un indice ya emparejado.'    
+            if($dinos[$i] == $dinos[$j]){
+                $parejas++;
+                $usados[] = $i;
+                $usados[] = $j;
+                break;
+            }
+        }
+    }
+    return $parejas*5;  //Devuelve 5 puntos por pareja.
+    }
 
+    //==========================================================================================================================================================
+    public function reglasTrioFrondoso(array $dinos): int
+    {
+        if(sizeof($dinos) == 3){    //Evalua si hay 3 dinosaurios en el recinto, si los hay, devuelve 7 puntos.
+            return 7;
+        }else{
+            return 0;               //Si hay menos de 3 dinosaurios, devuelve 0 puntos. Se da por hecho que ya fue validado el limite de colocacion.
+        }
+    }
+
+    //==========================================================================================================================================================
+    public function reglasReyDeLaSelva(array $dinos): int
+    {
+        //Hablar con Pablo sobre manejo de tableros al final de la partida. Hay que importar los dinos del tablero del oponente.
+    }
+
+    //==========================================================================================================================================================
+    public function reglasIslaSolitaria(array $dinos, array $porRecinto): int   //Recibe como parametro el dino de la isla y los demas recintos con sus respectivos dinos.
+    {
+        $dinoSolitario = $dinos[0];     //Guarda en la variable el dino 'solitario'
+        $dinosEnTablero = [];           //Crea array para guardar a todos los dinos del tablero.
+
+        foreach($porRecinto as $recinto => $ejemplar){  //Extrae todos los dinos del tablero y 
+            foreach($ejemplar as $dino){                //los guarda en $dinosEnTablero
+            $dinosEnTablero[] = $dino;
+        }
+    }
+        $conteoDinosTablero = array_count_values($dinosEnTablero);  //Crea un array de arrays con el nombre de los dinos 
+                                                                    //como cabecera, y la cantidad de dinos de ese tipo como elemento.
+        if($conteoDinosTablero[$dinoSolitario]<2){  //Evalua si hay mas de 1 dino (del tipo del solitario) y devuelve el puntaje correspondiente.
+            return 7;
+        }else{
+            return 0;
+        }
+    }
+
+    //==========================================================================================================================================================
+    public function reglasRio(array $dinos): int
+    {
+        $resultadoRio = count($dinos);
+
+        return $resultadoRio;
+
+    }
 }

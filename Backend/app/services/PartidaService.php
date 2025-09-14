@@ -95,7 +95,7 @@ class PartidaService
             throw new Exception("ID de partida inválido");
         }
 
-        if (!$jugador_id ||$jugador_id <= 0)  {
+        if (!$jugador_id || $jugador_id <= 0)  {
             throw new Exception("Jugador inválido");
         }
 
@@ -113,7 +113,15 @@ class PartidaService
 
 
         $caraDadoActual = $this->partidaRepo->getCaraDadoActualRepo($partida_id);
-        $restricciones = $this->reglas->restriccionDado($caraDadoActual);
+        $colocacionesJugador = $this->partidaRepo->getColocacionesRepo($partida_id, $jugador_id);
+        $porRecintoJugador = [];
+        foreach($colocacionesJugador as $c)
+        {
+            $recinto = $c['recinto'];
+            $tipoDino = $c['tipo_dino'];
+            $porRecintoJugador1[$recinto][] = $tipoDino;
+        }
+        $restricciones = $this->reglas->restriccionDado($caraDadoActual, $porRecintoJugador);
         $tiradorActual = $this->partidaRepo->getTiradorActualRepo($partida_id);
         $turnoActual = $this->partidaRepo->getTurnoActualRepo($partida_id);
         $rondaActual = $this->partidaRepo->getRondaActualRepo($partida_id);
