@@ -155,7 +155,6 @@ class PartidaService
         }
         //=====================================================================================================================================
 
-        
         //=====================================================================================================================================
         $bolsa = $this->partidaRepo->getBolsa($partida_id, $jugador_id);
 
@@ -180,8 +179,7 @@ class PartidaService
         $this->partidaRepo->sumarTurnoRepo($partida_id);
 
         $turnoActual = $this->partidaRepo->getTurnoActualRepo($partida_id);
-
-
+        
         //Si el turno es del 1 al 5 Tira dado.
         if($turnoActual < 6){
 
@@ -310,8 +308,8 @@ class PartidaService
         }
 
 
-        $puntajeJugador1 = $this->puntaje->calcularPuntaje($porRecintoJugador1);
-        $puntajeJugador2 = $this->puntaje->calcularPuntaje($porRecintoJugador2);
+        $puntajeJugador1 = $this->puntaje->calcularPuntaje($porRecintoJugador1, $porRecintoJugador2);
+        $puntajeJugador2 = $this->puntaje->calcularPuntaje($porRecintoJugador2, $porRecintoJugador1);
 
         return [
             'partida_id' => $partida_id,

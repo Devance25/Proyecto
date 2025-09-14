@@ -61,9 +61,6 @@ class Reglas
         }elseif($caraDado === 'cuidadoTRex'){
             //Tengo que importar recintos con sus respectivos dinos, posiblemente desde getColocacionesRepo
         }
-        
-    
-        
     }
     //==========================================================================================================================================================
 
@@ -161,9 +158,9 @@ class Reglas
     }
 
     //==========================================================================================================================================================
-    public function reglasReyDeLaSelva(array $dinos): int
+    public function reglasReyDeLaSelva(array $porRecinto1, array $porRecinto2): int
     {
-        //Hablar con Pablo sobre manejo de tableros al final de la partida. Hay que importar los dinos del tablero del oponente.
+        //Recibe los array de arrays de cada jugador. Hay que comparar la cantidad del tipo de dino en el recinto con los del otro jugador.!!!!!
     }
 
     //==========================================================================================================================================================

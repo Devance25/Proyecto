@@ -20,14 +20,15 @@ class Puntaje
         return self::$instance;
     }
 
-    public function calcularPuntaje(array $porRecinto): int
+    public function calcularPuntaje(array $porRecinto1, array $porRecinto2): int
     {
         // $porRecinto = [
         //     'bosque-semejanza' => ['T-rex', 'Triceratops', 'T-rex'],
         //     'rio' => ['Diplodocus', 'Diplodocus'],
         //     'pradera-amor' => ['T-rex']
         // ]
-
+            foreach($porRecinto1 as $recinto => $dinos){
+            $puntaje = 0;
                 switch($recinto){
 
                     case 'bosque':
@@ -47,7 +48,7 @@ class Puntaje
                         break;
 
                     case 'rey-selva':
-                        $puntaje += $this->reglas->reglasReyDeLaSelva($dinos);
+                        $puntaje += $this->reglas->reglasReyDeLaSelva($porRecinto1, $porRecinto2);
 
                     case 'isla-solitaria':
                         $puntaje += $this->reglas->reglasIslaSolitaria($dinos, $porRecinto);
@@ -56,7 +57,7 @@ class Puntaje
                         $puntaje += $this->reglas->reglasRio($dinos); 
                         break;
                 }
-
+            }
             return $puntaje;
 
     }
