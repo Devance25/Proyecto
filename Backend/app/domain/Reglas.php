@@ -18,57 +18,64 @@ class Reglas
         return self::$instance;
     }
 
-    public function restriccionDado(string $caraDado, array $porRecinto): array //tiene que devolver los recintos en los cuales no se pueden colocar los dinos.
+    public function restriccionDado(string $caraDado, array $porRecinto): array //Tiene que devolver los recintos en los cuales no se pueden colocar los dinos.
     {
-        $recintosRestringidos = [];
+        $recintosRestringidos = []; //Array para almacenar los recintos restringidos.
 
-        if ($caraDado === 'elBosque'){
-        $recintosRestringidos = [
-                                'pradoDiferencia',
-                                'islaSolitaria',
-                                'praderaDelAmor'
-                                ];
-        return $recintosRestringidos; 
+        switch($caraDado){
 
-        }elseif($caraDado === 'llanura'){
-        $recintosRestringidos = [
-                                'bosqueSemejanza',
-                                'reySelva',
-                                'trioFrondozo'
-                                ];
-        return $recintosRestringidos; 
+            case 'elBosque':
+            $recintosRestringidos = [
+                                    'pradoDiferencia',
+                                    'islaSolitaria',
+                                    'praderaDelAmor'
+                                    ];
+            return $recintosRestringidos;
 
-        }elseif($caraDado === 'bagnos'){
-        $recintosRestringidos = [
-                                'bosqueSemejanza',
-                                'trioFrondozo',
-                                'praderaDelAmor'
-                                ];
+            case 'llanura':
+            $recintosRestringidos = [
+                                    'bosqueSemejanza',
+                                    'reySelva',
+                                    'trioFrondozo'
+                                    ];
+            return $recintosRestringidos; 
 
-        return $recintosRestringidos;
+            case 'bagnos':
+            $recintosRestringidos = [
+                                    'bosqueSemejanza',
+                                    'trioFrondozo',
+                                    'praderaDelAmor'
+                                    ];
+            return $recintosRestringidos;
 
-        }elseif($caraDado === 'cafeteria'){
-        $recintosRestringidos = [
-                                'reySelva',
-                                'pradoDiferencia',
-                                'islaSolitaria'
-                                ];
-        
-        return $recintosRestringidos;
+            case 'cafeteria':
+            $recintosRestringidos = [
+                                    'reySelva',
+                                    'pradoDiferencia',
+                                    'islaSolitaria'
+                                    ];
+            return $recintosRestringidos;
 
-        }elseif($caraDado === 'recintoVacio'){
-            //Tengo que importar recintos con sus respectivos dinos, posiblemente desde getColocacionesRepo
-        }elseif($caraDado === 'cuidadoTRex'){
-            //Tengo que importar recintos con sus respectivos dinos, posiblemente desde getColocacionesRepo
+            case 'recintoVacio':
+            foreach($porRecinto as $recinto=>$dino){
+                if(!empty($recinto)){
+                    $recintosRestringidos[] = $recinto;
+                    continue;
+                }
+            }
+            return $recintosRestringidos;
+
+            case 'cuidadoTRex':
+            foreach($porRecinto as $recinto=>$dinos){
+                if(in_array('TRex', $dinos, true)){
+                    $recintosRestringidos[] = $recinto;
+                    continue;
+                }
+            }
+            return $recintosRestringidos;
         }
     }
     //==========================================================================================================================================================
-
-    //==========================================================================================================================================================
-    public function restericcionRecinto(string $recinto): array 
-    {
-
-    }
 
     //==========================================================================================================================================================
     public function reglasBosqueSemejanza(array $dinos): int  //Recibe un array con los dinos ubicados en el recinto desde Puntaje.php metodo: 'calcularPuntaje()'.
@@ -77,7 +84,7 @@ class Reglas
 
         for($i = 0; $i<sizeof($dinos); $i++){    /* Ya se da por hecho que son todos de la MISMA!!! especie 
                                                y que no se ingresaron mas de 6 dinos al recinto por lo que no se verifica. */ 
-            $cantDinos += 1;
+            $cantDinos += 1;  //Se puede mejorar con un count() y un Switch case.!!!
 
         }
 
@@ -150,11 +157,7 @@ class Reglas
     //==========================================================================================================================================================
     public function reglasTrioFrondoso(array $dinos): int
     {
-        if(sizeof($dinos) == 3){    //Evalua si hay 3 dinosaurios en el recinto, si los hay, devuelve 7 puntos.
-            return 7;
-        }else{
-            return 0;               //Si hay menos de 3 dinosaurios, devuelve 0 puntos. Se da por hecho que ya fue validado el limite de colocacion.
-        }
+        return (count($dinos) === 3) ? 7 : 0;
     }
 
     //==========================================================================================================================================================
@@ -174,7 +177,7 @@ class Reglas
             $dinosEnTablero[] = $dino;
         }
     }
-        $conteoDinosTablero = array_count_values($dinosEnTablero);  //Crea un array de arrays con el nombre de los dinos 
+        $conteoDinosTablero = array_count_values($dinosEnTablero);  //Crea un array asociativo con el nombre de los dinos 
                                                                     //como cabecera, y la cantidad de dinos de ese tipo como elemento.
         if($conteoDinosTablero[$dinoSolitario]<2){  //Evalua si hay mas de 1 dino (del tipo del solitario) y devuelve el puntaje correspondiente.
             return 7;
