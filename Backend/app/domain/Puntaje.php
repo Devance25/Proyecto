@@ -29,10 +29,20 @@ class Puntaje
         //     'pradera-amor' => ['T-rex']
         // ]
 
+
+        // [
+        //     'recinto': dino,
+        //     'recinto': dino,
+        //     'recinto': dino,
+        //     'recinto': dino,
+        //     'recinto': dino,
+        // ]
+
         $puntaje = 0;
 
         foreach ($porRecinto as $recinto => $dinos) {
-
+            
+            //switch mas eficiente
             if ($recinto === 'bosque-semejanza') {
 
                 $puntaje += $this->reglas->reglasBosqueSemejanza($dinos);

@@ -438,15 +438,26 @@
 
 /* Restricciones */
 .info-restriccion {
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: center;
   background: var(--color-marron);
   border: 2px solid var(--color-marron-dark);
+  visibility: visible !important; /* Estado visible por defecto */
   border-radius: var(--border-radius-md);
   padding: var(--space-sm) var(--space-lg);
   color: var(--color-blanco);
   min-width: 0;
+  position: relative;
+  z-index: 101;
+  max-width: 300px;
+  flex: 1;
+  opacity: 1 !important;
+  height: auto !important;
+  width: auto !important;
+  top: 0 !important;
+  left: 0 !important;
+  transform: none !important;
 }
 
 .icono-restriccion-footer {
@@ -1592,7 +1603,16 @@ div.popup-overlay:not(.hidden) {
   pointer-events: auto;
 }
 
-.restriccion-visible { visibility: visible; }
+.restriccion-visible { 
+  visibility: visible !important; 
+  display: flex !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 101 !important;
+  top: 0 !important;
+  left: 0 !important;
+  transform: none !important;
+}
 .restriccion-oculta { visibility: hidden; }
 .icono-restriccion-mostrar { display: block; }
 .icono-restriccion-ocultar { display: none; }

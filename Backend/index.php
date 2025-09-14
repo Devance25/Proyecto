@@ -144,6 +144,19 @@ try {
                 ]);
             break;  
 
+
+        case 'finalizarRonda':
+            if ($method === 'POST') {
+                $partidaController->finalizarRondaController();
+                break;
+            }
+            http_response_code(405);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
+            break;
+
         
         case 'finalizarPartida':
             if ($method === 'POST') {

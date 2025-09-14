@@ -111,7 +111,6 @@ class PartidaService
             throw new Exception("La partida con ID $partida_id no existe.");
         }
 
-
         $caraDadoActual = $this->partidaRepo->getCaraDadoActualRepo($partida_id);
         $restricciones = $this->reglas->restriccionDado($caraDadoActual);
         $tiradorActual = $this->partidaRepo->getTiradorActualRepo($partida_id);
@@ -120,6 +119,11 @@ class PartidaService
         $jugador1_id = $this->partidaRepo->getJugador1IdRepo($partida_id);
         $jugador2_id = $this->partidaRepo->getJugador2IdRepo($partida_id);
 
+        // Debug logging
+        error_log("DEBUG - jugador_id recibido: $jugador_id");
+        error_log("DEBUG - jugador1_id de BD: $jugador1_id");
+        error_log("DEBUG - jugador2_id de BD: $jugador2_id");
+        error_log("DEBUG - turnoActual: $turnoActual, rondaActual: $rondaActual");
 
         if ($turnoActual === 7 && $rondaActual === 2){
             $partidaFinalizada = $this->finalizarPartidaService($partida_id);
@@ -134,7 +138,7 @@ class PartidaService
             throw new Exception("el jugador que comienza la partida debe ser el jugador2.");
         }
 
-
+        // si el jugador coloca un dinosaurio en un rescito que restringe el dado, no lo permite
         if ($turnoActual > 1 && $jugador_id !== $tiradorActual) {
             if (in_array($recinto, $restricciones, true)) {
                 throw new Exception("el jugador no puede colocar un dinosaurio en el $recinto (restringido por el dado).");
@@ -143,30 +147,36 @@ class PartidaService
 
         $bolsa = $this->partidaRepo->getBolsa($partida_id, $jugador_id);
 
+        //existe dinosaurio en bolsa?
         if(!in_array($tipoDino, $bolsa, true)){
                 throw new Exception("el jugador no tiene en su bolsa el dinosaurio $tipoDino para colocar en $recinto.");
         }
             
-        //Coloca
+        //Coloca dino
         $colocacion = $this->partidaRepo->colocarDinosaurioRepo($jugador_id, $recinto, $tipoDino, $partida_id);
 
+        //saca el dino colocado de la bolsa
         $this->partidaRepo->descartarDinoRepo($partida_id, $jugador_id, $tipoDino);
 
+        // Obtener la bolsa actualizada después del primer descarte
+        $bolsaActualizada = $this->partidaRepo->getBolsa($partida_id, $jugador_id);
 
-        if(!in_array($tipoDinoDescarte, $bolsa, true)){
+        //existe dino_descarte en bolsa?
+        if(!in_array($tipoDinoDescarte, $bolsaActualizada, true)){
             throw new Exception("el jugador no tiene en su bolsa el dinosaurio $tipoDinoDescarte para descartar.");
         }
 
-        //Descarta
+        //Descarta dino descaete de la bolsa
         $descarte = $this->partidaRepo->descartarDinoRepo($partida_id, $jugador_id, $tipoDinoDescarte);
 
-        $this->partidaRepo->sumarTurnoRepo($partida_id);
 
-        $turnoActual = $this->partidaRepo->getTurnoActualRepo($partida_id);
+        $turnoActual++;
 
 
         //Si el turno es del 1 al 5 Tira dado
         if($turnoActual < 6){
+
+            $this->partidaRepo->sumarTurnoRepo($partida_id);
 
             $nombreTirador = $this->partidaRepo->getNombreJugadorRepo($jugador_id);
 
@@ -184,12 +194,16 @@ class PartidaService
             $this->partidaRepo->resetTurnosRepo($partida_id);
             $turnoActual = $this->partidaRepo->getTurnoActualRepo($partida_id);
             $rondaActual = $this->partidaRepo->getRondaActualRepo($partida_id);
+            
+            // En turno 6 no hay dado, pero necesitamos los datos para el frontend
+            $nombreTirador = $this->partidaRepo->getNombreJugadorRepo($jugador_id);
+            $caraDadoActual = null; // No se tira dado en turno 6
         }
 
 
         $colocacion['turno'] = $turnoActual;
         $colocacion['ronda'] = $rondaActual;
-        $colocacion['dinoDescartado'] = $descarte;
+        $colocacion['dinoDescartado'] = $descarte['dino_descartado'];
         $colocacion['nombreTirador'] = $nombreTirador;
         $colocacion['caraDado'] = $caraDadoActual;
 
@@ -272,6 +286,8 @@ class PartidaService
         $jugador1_id = $this->partidaRepo->getJugador1IdRepo($partida_id);
         $jugador2_id = $this->partidaRepo->getJugador2IdRepo($partida_id);
 
+
+        //resuar locacl storage
         $nombreJugador1 = $this->partidaRepo->getNombreJugadorRepo($jugador1_id);
         $nombreJugador2 = $this->partidaRepo->getNombreJugadorRepo($jugador2_id);
 

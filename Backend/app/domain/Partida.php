@@ -36,9 +36,9 @@ class Partida {
 
     public function crearBolsa(): array
     {
-        $bolsaDinos = [];
+        $bolsaDinos = []; //bolsa de 60 dinos, que mueva los dinos de la bolsa main a la bosla creada
         
-        $dino = ['T-rex', 'Triceratops', 'Stegosaurus', 'Parasaurolophus', 'Diplodocus', 'Pterodáctilo'];
+        $dino = ['t-rex', 'triceratops', 'stegosaurus', 'parasaurolophus', 'diplodocus', 'pterodáctilo'];
 
         for($i = 0; $i < 6; $i++)
         {
