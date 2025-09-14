@@ -17,7 +17,8 @@ class Reglas
         }
         return self::$instance;
     }
-
+    //==========================================================================================================================================================
+    //==========================================================================================================================================================
     public function restriccionDado(string $caraDado, array $porRecinto): array //Tiene que devolver los recintos en los cuales no se pueden colocar los dinos.
     {
         $recintosRestringidos = []; //Array para almacenar los recintos restringidos.
@@ -76,6 +77,9 @@ class Reglas
         }
     }
     //==========================================================================================================================================================
+
+
+
 
     //==========================================================================================================================================================
     public function reglasBosqueSemejanza(array $dinos): int  //Recibe un array con los dinos ubicados en el recinto desde Puntaje.php metodo: 'calcularPuntaje()'.
@@ -163,7 +167,29 @@ class Reglas
     //==========================================================================================================================================================
     public function reglasReyDeLaSelva(array $porRecinto1, array $porRecinto2): int
     {
-        //Recibe los array de arrays de cada jugador. Hay que comparar la cantidad del tipo de dino en el recinto con los del otro jugador.!!!!!
+        $reyDeLaSelva = $porRecinto1['reySelva'][0];
+        $conteoDinos1 = 0;
+        $conteoTipoRey1 = 0;
+        
+        foreach($porRecinto1 as $recinto=>$dinos){
+            
+            $conteoDinos1 = array_count_values($dinos);
+            $conteoTipoRey1 += $conteoDinos1[$reyDeLaSelva];
+        }
+
+        $conteoDinos2 = 0;
+        $conteoTipoRey2 = 0;
+        foreach($porRecinto2 as $recinto=>$dinos){
+
+            $conteoDinos2 = array_count_values($dinos);
+            $conteoTipoRey2 += $conteoDinos2[$reyDeLaSelva];
+        }
+        if($conteoTipoRey1 >= $conteoTipoRey2){
+            return 7;
+        }else{
+            return 0;
+        }
+
     }
 
     //==========================================================================================================================================================
