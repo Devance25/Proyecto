@@ -4,12 +4,9 @@ class Reglas
 {
     private static ?Reglas $instance = null;
 
-
     private function __construct() {
 
     }
-
-
     public static function getInstance(): Reglas
     {
         if (self::$instance === null) {
@@ -17,6 +14,8 @@ class Reglas
         }
         return self::$instance;
     }
+
+    
     //==========================================================================================================================================================
     //==========================================================================================================================================================
     public function restriccionDado(string $caraDado, array $porRecinto): array //Tiene que devolver los recintos en los cuales no se pueden colocar los dinos.
