@@ -58,7 +58,7 @@ class Reglas
 
             case 'recintoVacio':
             foreach($porRecinto as $recinto=>$dino){
-                if(!empty($recinto)){
+                if(!empty($dino)){
                     $recintosRestringidos[] = $recinto;
                     continue;
                 }
