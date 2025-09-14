@@ -90,7 +90,7 @@ class PartidaService
     //Coloca y descarta dinosaurios, tira dado. Actualiza turnos y rondas
     public function turnoService(int $jugador_id, string $recinto, string $tipoDino, string $tipoDinoDescarte, int $partida_id): array
     {
-
+        //Valida datos engresados
         if (!$partida_id || $partida_id <= 0) {
             throw new Exception("ID de partida inválido");
         }
@@ -110,8 +110,10 @@ class PartidaService
         if (!$this->partidaRepo->getPartidaRepo($partida_id)) {
             throw new Exception("La partida con ID $partida_id no existe.");
         }
+        //=====================================================================================================================================
 
-
+        //Trae del repositorio los datos que precisamos
+        //=====================================================================================================================================
         $caraDadoActual = $this->partidaRepo->getCaraDadoActualRepo($partida_id);
         $colocacionesJugador = $this->partidaRepo->getColocacionesRepo($partida_id, $jugador_id);
         $porRecintoJugador = [];
@@ -121,14 +123,17 @@ class PartidaService
             $tipoDino = $c['tipo_dino'];
             $porRecintoJugador1[$recinto][] = $tipoDino;
         }
-        $restricciones = $this->reglas->restriccionDado($caraDadoActual, $porRecintoJugador);
+
+        //Lista de variables que vamos a usar
+        $restricciones = $this->reglas->restriccionDado($caraDadoActual, $porRecintoJugador);   
         $tiradorActual = $this->partidaRepo->getTiradorActualRepo($partida_id);
         $turnoActual = $this->partidaRepo->getTurnoActualRepo($partida_id);
         $rondaActual = $this->partidaRepo->getRondaActualRepo($partida_id);
         $jugador1_id = $this->partidaRepo->getJugador1IdRepo($partida_id);
         $jugador2_id = $this->partidaRepo->getJugador2IdRepo($partida_id);
 
-
+        //Validaciones de turno y ronda
+        //=====================================================================================================================================
         if ($turnoActual === 7 && $rondaActual === 2){
             $partidaFinalizada = $this->finalizarPartidaService($partida_id);
             return $partidaFinalizada;
@@ -148,14 +153,18 @@ class PartidaService
                 throw new Exception("el jugador no puede colocar un dinosaurio en el $recinto (restringido por el dado).");
             }
         }
+        //=====================================================================================================================================
 
+        
+        //=====================================================================================================================================
         $bolsa = $this->partidaRepo->getBolsa($partida_id, $jugador_id);
 
+        //Valida colocacion.
         if(!in_array($tipoDino, $bolsa, true)){
                 throw new Exception("el jugador no tiene en su bolsa el dinosaurio $tipoDino para colocar en $recinto.");
         }
             
-        //Coloca
+        //Coloca el dino.
         $colocacion = $this->partidaRepo->colocarDinosaurioRepo($jugador_id, $recinto, $tipoDino, $partida_id);
 
         $this->partidaRepo->descartarDinoRepo($partida_id, $jugador_id, $tipoDino);
@@ -165,7 +174,7 @@ class PartidaService
             throw new Exception("el jugador no tiene en su bolsa el dinosaurio $tipoDinoDescarte para descartar.");
         }
 
-        //Descarta
+        //Descarta el dino de la bolsa.
         $descarte = $this->partidaRepo->descartarDinoRepo($partida_id, $jugador_id, $tipoDinoDescarte);
 
         $this->partidaRepo->sumarTurnoRepo($partida_id);
@@ -173,7 +182,7 @@ class PartidaService
         $turnoActual = $this->partidaRepo->getTurnoActualRepo($partida_id);
 
 
-        //Si el turno es del 1 al 5 Tira dado
+        //Si el turno es del 1 al 5 Tira dado.
         if($turnoActual < 6){
 
             $nombreTirador = $this->partidaRepo->getNombreJugadorRepo($jugador_id);
@@ -182,32 +191,28 @@ class PartidaService
 
             $this->partidaRepo->tirarDadoRepo($partida_id, $caraDadoActual, $jugador_id);
 
+
         }
 
         //Si esta corriendo el turno 6 y el jugador ya coloco, descarto (no tira dado porque es el turno 6) setea 'ronda = 2' y resetea los turnos ('turno = 6' => 'tunro = 1'). Actualiza variables $turnoActual y $rondaActual para mandarlo al front end.
         if ($turnoActual === 6 && $rondaActual === 1){
             
-            $puntajes = $this->calcularPuntajesService($partida_id);
             $this->partidaRepo->sumarRondaRepo($partida_id);
             $this->partidaRepo->resetTurnosRepo($partida_id);
             $turnoActual = $this->partidaRepo->getTurnoActualRepo($partida_id);
             $rondaActual = $this->partidaRepo->getRondaActualRepo($partida_id);
         }
 
+        $puntajes = $this->calcularPuntajesService($partida_id);
 
         $colocacion['turno'] = $turnoActual;
         $colocacion['ronda'] = $rondaActual;
         $colocacion['dinoDescartado'] = $descarte;
         $colocacion['nombreTirador'] = $nombreTirador;
         $colocacion['caraDado'] = $caraDadoActual;
-
-        if (isset($puntajes)) {
-            $colocacion['puntajes'] = $puntajes;
-        }
-
-
+        $colocacion['puntajes'] = $puntajes;
+        
         return $colocacion;
-
     }
 
 
