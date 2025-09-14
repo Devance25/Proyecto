@@ -7,13 +7,14 @@ require_once 'Reglas.php';
 
         public function calcularPuntaje(array $porRecinto): int
         {
-            // $porRecitos =['bosque' => ['t-rex',
-            //                            'triceratops',
-            //                            't-rex'],
-            //               'rio' => ['brontosaurio',
-            //                         'brontosaurio'],
-            //               'cafeteria' => ['t-rex']
-            //              ]
+           /* $porRecitos =['bosque' => ['t-rex',
+                                       'triceratops',
+                                       't-rex'],
+                            'rio' => ['brontosaurio',
+                                    'brontosaurio'],
+                            'cafeteria' => ['t-rex']
+                         ]
+            */
 
             $reglas = new Reglas();
 
@@ -21,35 +22,38 @@ require_once 'Reglas.php';
 
             foreach ($porRecinto as $recinto => $dinos) {
 
-                if($recinto === 'bosque')
-                {
-                    $puntaje += $this->reglas->reglasBosque($dinos);
+                switch($recinto){
 
-                }elseif ($recinto === 'pradera')
-                {
-                    $puntaje += $this->reglas->reglasPradera($dinos);
+                    case 'bosque':
+                        $puntaje += $this->reglas->reglasBosqueSemejanza($dinos);
+                        break;
 
-                }elseif ($recinto === 'rio')
-                {
-                    $puntaje += $this->reglas->reglasRio($dinos);
+                    case 'prado':
+                        $puntaje += $this->reglas->reglasPradoDiferencia($dinos);
+                        break;
 
-                }elseif ($recinto === 'cafeteria')
-                {
-                    $puntaje += $this->reglas->reglasCafeteria($dinos);
+                    case 'pradera':
+                        $puntaje += $this->reglas->reglasPraderaDelAmor($dinos);
+                        break;
 
-                }elseif ($recinto === 'izquierda')
-                {
-                    $puntaje += $this->reglas->reglasIzquierda($dinos);
+                    case 'trio-frondoso':
+                        $puntaje += $this->reglas->reglasTrioFrondoso($dinos);
+                        break;
 
-                }elseif ($recinto === 'derecha')
-                {
-                    $puntaje += $this->reglas->reglasDerecha($dinos);
+                    case 'rey-selva':
+                        $puntaje += $this->reglas->reglasReyDeLaSelva($dinos);
 
+                    case 'isla-solitaria':
+                        $puntaje += $this->reglas->reglasIslaSolitaria($dinos, $porRecinto);
+                        
+                    case 'rio':
+                        $puntaje += $this->reglas->reglasRio($dinos); 
+                        break;
                 }
             }
 
             return $puntaje;
 
-        }
+            }
 
-    }
+        }
