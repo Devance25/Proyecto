@@ -24,39 +24,39 @@ class Reglas
 
         switch($caraDado){
 
-            case 'elBosque':
+            case 'bosque':
             $recintosRestringidos = [
-                                    'pradoDiferencia',
-                                    'islaSolitaria',
-                                    'praderaDelAmor'
+                                    'prado-diferencia',
+                                    'isla-solitaria',
+                                    'pradera-amor'
                                     ];
             return $recintosRestringidos;
 
-            case 'llanura':
+            case 'roca':
             $recintosRestringidos = [
-                                    'bosqueSemejanza',
-                                    'reySelva',
-                                    'trioFrondozo'
+                                    'bosque-semejanza',
+                                    'rey-jungla',
+                                    'woody-trio'
                                     ];
             return $recintosRestringidos; 
 
-            case 'bagnos':
+            case 'baño':
             $recintosRestringidos = [
-                                    'bosqueSemejanza',
-                                    'trioFrondozo',
-                                    'praderaDelAmor'
+                                    'bosque-semejanza',
+                                    'woody-trio',
+                                    'pradera-amor'
                                     ];
             return $recintosRestringidos;
 
             case 'cafeteria':
             $recintosRestringidos = [
-                                    'reySelva',
-                                    'pradoDiferencia',
-                                    'islaSolitaria'
+                                    'rey-jungla',
+                                    'prado-diferencia',
+                                    'isla-solitaria'
                                     ];
             return $recintosRestringidos;
 
-            case 'recintoVacio':
+            case 'vacio':
             foreach($porRecinto as $recinto=>$dino){
                 if(!empty($dino)){
                     $recintosRestringidos[] = $recinto;
@@ -65,9 +65,9 @@ class Reglas
             }
             return $recintosRestringidos;
 
-            case 'cuidadoTRex':
+            case 'no-trex':
             foreach($porRecinto as $recinto=>$dinos){
-                if(in_array('TRex', $dinos, true)){
+                if(in_array('t-rex', $dinos, true)){
                     $recintosRestringidos[] = $recinto;
                     continue;
                 }
@@ -166,7 +166,7 @@ class Reglas
     //==========================================================================================================================================================
     public function reglasReyDeLaSelva(array $porRecinto1, array $porRecinto2): int
     {
-        $reyDeLaSelva = $porRecinto1['reySelva'][0];
+        $reyDeLaSelva = $porRecinto1['rey-jungla'][0];
         $conteoDinos1 = 0;
         $conteoTipoRey1 = 0;
         

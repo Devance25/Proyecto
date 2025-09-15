@@ -31,23 +31,23 @@ class Puntaje
             $puntaje = 0;
                 switch($recinto){
 
-                    case 'bosque':
+                    case 'bosque-semejanza':
                         $puntaje += $this->reglas->reglasBosqueSemejanza($dinos);
                         break;
 
-                    case 'prado':
+                    case 'prado-diferencia':
                         $puntaje += $this->reglas->reglasPradoDiferencia($dinos);
                         break;
 
-                    case 'pradera':
+                    case 'pradera-amor':
                         $puntaje += $this->reglas->reglasPraderaDelAmor($dinos);
                         break;
 
-                    case 'trio-frondoso':
+                    case 'woody-trio':
                         $puntaje += $this->reglas->reglasTrioFrondoso($dinos);
                         break;
 
-                    case 'rey-selva':
+                    case 'rey-jungla':
                         $puntaje += $this->reglas->reglasReyDeLaSelva($porRecinto1, $porRecinto2);
 
                     case 'isla-solitaria':
@@ -59,7 +59,6 @@ class Puntaje
                 }
             }
             return $puntaje;
-
     }
 
 }
