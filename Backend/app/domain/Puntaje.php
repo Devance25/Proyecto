@@ -12,7 +12,6 @@ class Puntaje
         $this->reglas = Reglas::getInstance();
     }
 
-
     public static function getInstance(): Puntaje
     {
         if (self::$instance === null) {
@@ -21,49 +20,45 @@ class Puntaje
         return self::$instance;
     }
 
-    public function calcularPuntaje(array $porRecinto): int
+    public function calcularPuntaje(array $porRecinto1, array $porRecinto2): int
     {
         // $porRecinto = [
         //     'bosque-semejanza' => ['T-rex', 'Triceratops', 'T-rex'],
         //     'rio' => ['Diplodocus', 'Diplodocus'],
         //     'pradera-amor' => ['T-rex']
         // ]
+            foreach($porRecinto1 as $recinto => $dinos){
+            $puntaje = 0;
+                switch($recinto){
 
-        $puntaje = 0;
+                    case 'bosque-semejanza':
+                        $puntaje += $this->reglas->reglasBosqueSemejanza($dinos);
+                        break;
 
-        foreach ($porRecinto as $recinto => $dinos) {
+                    case 'prado-diferencia':
+                        $puntaje += $this->reglas->reglasPradoDiferencia($dinos);
+                        break;
 
-            if ($recinto === 'bosque-semejanza') {
+                    case 'pradera-amor':
+                        $puntaje += $this->reglas->reglasPraderaDelAmor($dinos);
+                        break;
 
-                $puntaje += $this->reglas->reglasBosqueSemejanza($dinos);
+                    case 'woody-trio':
+                        $puntaje += $this->reglas->reglasTrioFrondoso($dinos);
+                        break;
 
-            } elseif ($recinto === 'pradera-amor') {
+                    case 'rey-jungla':
+                        $puntaje += $this->reglas->reglasReyDeLaSelva($porRecinto1, $porRecinto2);
 
-                $puntaje += $this->reglas->reglasPraderaAmor($dinos);
-
-            } elseif ($recinto === 'woody-trio') {
-
-                $puntaje += $this->reglas->reglasWoodyTrio($dinos);
-
-            } elseif ($recinto === 'prado-diferencia') {
-
-                $puntaje += $this->reglas->reglasPradoDiferencia($dinos);
-
-            } elseif ($recinto === 'rey-jungla') {
-
-                $puntaje += $this->reglas->reglasReyJungla($dinos);
-
-            } elseif ($recinto === 'isla-solitaria') {
-
-                $puntaje += $this->reglas->reglasIslaSolitaria($dinos);
-
-            } elseif ($recinto === 'rio') {
-
-                $puntaje += $this->reglas->reglasRio($dinos);
-
+                    case 'isla-solitaria':
+                        $puntaje += $this->reglas->reglasIslaSolitaria($dinos, $porRecinto);
+                        
+                    case 'rio':
+                        $puntaje += $this->reglas->reglasRio($dinos); 
+                        break;
+                }
             }
-        }
-
-        return $puntaje;
+            return $puntaje;
     }
+
 }
