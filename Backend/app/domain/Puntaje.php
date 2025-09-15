@@ -1,56 +1,64 @@
 <?php
 
-require_once 'Reglas.php';
+class Puntaje
+{
+    private static ?Puntaje $instance = null;
+
+    private ?Reglas $reglas;
 
 
-    class Puntaje{
+    private function __construct() {
 
-        public function calcularPuntaje(string $jugador, array $porRecinto): int
-        {
-            // $porRecitos =[
-            //             'bosque' => ['t-rex',        'triceratops', 't-rex'],
+        $this->reglas = Reglas::getInstance();
+    }
 
-            //             'rio' => ['brontosaurio', 'brontosaurio'],
+    public static function getInstance(): Puntaje
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
-            //             'cafeteria' => ['t-rex']
-
-            //             ]
-
-            $reglas = new Reglas();
-
+    public function calcularPuntaje(array $porRecinto1, array $porRecinto2): int
+    {
+        // $porRecinto = [
+        //     'bosque-semejanza' => ['T-rex', 'Triceratops', 'T-rex'],
+        //     'rio' => ['Diplodocus', 'Diplodocus'],
+        //     'pradera-amor' => ['T-rex']
+        // ]
+            foreach($porRecinto1 as $recinto => $dinos){
             $puntaje = 0;
+                switch($recinto){
 
-            foreach ($porRecinto as $recinto => $dinos) {
+                    case 'bosque-semejanza':
+                        $puntaje += $this->reglas->reglasBosqueSemejanza($dinos);
+                        break;
 
-                if($recinto === 'bosque')
-                {
-                    $puntaje += $this->reglas->reglasBosque($dinos);
+                    case 'prado-diferencia':
+                        $puntaje += $this->reglas->reglasPradoDiferencia($dinos);
+                        break;
 
-                }elseif ($recinto === 'pradera')
-                {
-                    $puntaje += $this->reglas->reglasPradera($dinos);
+                    case 'pradera-amor':
+                        $puntaje += $this->reglas->reglasPraderaDelAmor($dinos);
+                        break;
 
-                }elseif ($recinto === 'rio')
-                {
-                    $puntaje += $this->reglas->reglasRio($dinos);
+                    case 'woody-trio':
+                        $puntaje += $this->reglas->reglasTrioFrondoso($dinos);
+                        break;
 
-                }elseif ($recinto === 'cafeteria')
-                {
-                    $puntaje += $this->reglas->reglasCafeteria($dinos);
+                    case 'rey-jungla':
+                        $puntaje += $this->reglas->reglasReyDeLaSelva($porRecinto1, $porRecinto2);
 
-                }elseif ($recinto === 'izquierda')
-                {
-                    $puntaje += $this->reglas->reglasIzquierda($dinos);
-
-                }elseif ($recinto === 'derecha')
-                {
-                    $puntaje += $this->reglas->reglasDerecha($dinos);
-
+                    case 'isla-solitaria':
+                        $puntaje += $this->reglas->reglasIslaSolitaria($dinos, $porRecinto1);
+                        
+                    case 'rio':
+                        $puntaje += $this->reglas->reglasRio($dinos); 
+                        break;
                 }
             }
-
-            return $puntaje;
-
-        }
-
+            return $puntaje ?? 0;
     }
+
+}

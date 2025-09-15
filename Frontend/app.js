@@ -1,4 +1,4 @@
-// ==================== CONFIGURACIÓN GLOBAL ====================
+// CONFIGURACIÓN GLOBAL
 class AppState {
   constructor() {
     this.currentScreen = 'carga';
@@ -7,8 +7,6 @@ class AppState {
     this.players = [];
     this.jugador2Info = null;
     this.dadoSeleccionado = null;
-    this.tempNombres = null;
-    this.tempJugador2Info = null;
     this.modoSeguimiento = false;
     
     this.validationConfig = {
@@ -30,16 +28,23 @@ class AppState {
     this.setupRealTimeValidation();
     
     // Pantalla de carga inicial
-    setTimeout(() => this.showScreen('login'), 1000);
+    // Intentar recuperar sesión desde localStorage
+    const usuarioGuardado = localStorage.getItem('usuario');
+    if (usuarioGuardado) {
+      this.user = JSON.parse(usuarioGuardado);
+      this.showScreen('lobby');
+    } else {
+      setTimeout(() => this.showScreen('login'), 1000);
+    }
+
   }
 
-  // ==================== EVENTOS ====================
+  // EVENTOS
   bindEvents() {
     document.addEventListener('click', this.handleClick.bind(this));
     document.addEventListener('submit', this.handleSubmit.bind(this));
     document.addEventListener('keydown', this.handleKeydown.bind(this));
     
-    // Prevenir submit con Enter si el form no es válido
     document.addEventListener('keydown', e => {
       if (e.key === 'Enter' && e.target.matches('input:not([type="submit"])')) {
         const form = e.target.closest('form');
@@ -64,6 +69,7 @@ class AppState {
         this.showScreen('login');
       },
       'btn-logout': () => this.logout(),
+      'btn-salir-admin': () => this.logout(),
       'btn-jugar-app': () => {
         this.modoSeguimiento = false;
         this.showScreen('jugadores');
@@ -71,8 +77,18 @@ class AppState {
       'btn-modo-asistente': () => this.iniciarModoSeguimiento(),
       'btn-volver-jugadores': () => this.showScreen('lobby'),
       'btn-volver-seleccion': () => this.showScreen('jugadores'),
-      'btn-seleccionar-j1': () => this.iniciarPartidaConJugador(1),
-      'btn-seleccionar-j2': () => this.iniciarPartidaConJugador(2),
+      'btn-seleccionar-j1': () => {
+        if (!this.seleccionEnCurso) {
+          this.seleccionEnCurso = true;
+          this.iniciarPartidaConJugador(1);
+        }
+      },
+      'btn-seleccionar-j2': () => {
+        if (!this.seleccionEnCurso) {
+          this.seleccionEnCurso = true;
+          this.iniciarPartidaConJugador(2);
+        }
+      },
       'btn-seleccion-aleatoria': () => this.seleccionAleatoria(),
       'btn-empezar-turno': () => this.empezarTurnoSeguimiento(),
       'btn-comenzar-juego': () => this.comenzarJuego(),
@@ -106,7 +122,7 @@ class AppState {
     }
   }
 
-  // ==================== VALIDACIÓN EN TIEMPO REAL ====================
+  // VALIDACIÓN EN TIEMPO REAL
   setupRealTimeValidation() {
     document.addEventListener('input', e => {
       if (e.target.matches('#jugador-1, #jugador-2')) {
@@ -130,13 +146,11 @@ class AppState {
       this.showToast(`Nombre máximo ${max} caracteres`, 'warning');
     }
     
-    // Solo letras y espacios
     if (!/^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]*$/.test(value)) {
       input.value = value.replace(/[^a-zA-ZÀ-ÿ\u00f1\u00d1\s]/g, '');
       this.showToast('Solo se permiten letras y espacios', 'warning');
     }
     
-    // Evitar espacios múltiples
     if (/\s{2,}/.test(value)) {
       input.value = value.replace(/\s+/g, ' ');
     }
@@ -186,7 +200,7 @@ class AppState {
     }
   }
 
-  // ==================== ACTUALIZACIÓN BOTÓN COMENZAR ====================
+  // ACTUALIZACIÓN BOTÓN COMENZAR
   actualizarBotonComenzar() {
     const j1 = document.getElementById('jugador-1');
     const j2 = document.getElementById('jugador-2');
@@ -196,12 +210,11 @@ class AppState {
     
     const j1Valid = j1.value.trim().length >= this.validationConfig.playerName.min;
     const j2Valid = j2.value.trim().length >= this.validationConfig.playerName.min && 
-                   j2.value.trim().length <= this.validationConfig.playerName.max;
+                    j2.value.trim().length <= this.validationConfig.playerName.max;
     const namesAreDifferent = j1.value.trim().toLowerCase() !== j2.value.trim().toLowerCase();
     
     btn.disabled = !(j1Valid && j2Valid && namesAreDifferent);
     
-    // Actualizar texto del botón según el modo
     const btnText = btn.querySelector('.btn-text');
     if (btnText) {
       btnText.textContent = this.modoSeguimiento ? 'Modo seguimiento' : 'Jugar en la app';
@@ -215,7 +228,7 @@ class AppState {
     }
   }
 
-  // ==================== VALIDACIÓN DE FORMULARIOS ====================
+  // VALIDACIÓN DE FORMULARIOS
   validateLoginForm(username, password, form) {
     const validations = [
       [!username, '#login-username', 'Por favor ingresa tu usuario'],
@@ -239,8 +252,6 @@ class AppState {
       [!data.username, '#register-username', 'Por favor ingresa tu nombre de usuario'],
       [data.username.length < userMin || data.username.length > userMax, 
        '#register-username', `El usuario debe tener entre ${userMin} y ${userMax} caracteres`],
-      [!/^[a-zA-Z0-9_]+$/.test(data.username), 
-       '#register-username', 'El usuario solo puede contener letras, números y guión bajo'],
       [!data.email, '#register-email', 'Por favor ingresa tu email'],
       [!this.validateEmail(data.email), '#register-email', 'Ingresa un email válido'],
       [!data.birthdate, '#register-fecha', 'Por favor ingresa tu fecha de nacimiento'],
@@ -292,7 +303,7 @@ class AppState {
     return true;
   }
 
-  // ==================== UTILIDADES DE VALIDACIÓN ====================
+  // UTILIDADES DE VALIDACIÓN
   isFormValid(form) {
     const fields = form.querySelectorAll('input[required], input.form-input');
     return Array.from(fields).every(field => {
@@ -331,22 +342,34 @@ class AppState {
     return age < minAge;
   }
 
-  // ==================== MANEJO DE PANTALLAS ====================
+  // MANEJO DE PANTALLAS
   showScreen(screenName) {
-    // Ocultar todas las pantallas
+    const targetScreen = document.getElementById(`pantalla-${screenName}`);
+    if (!targetScreen) {
+      console.error(`Pantalla no encontrada: pantalla-${screenName}`);
+      return;
+    }
+
+    const loadingScreen = document.getElementById('pantalla-carga');
+    if (loadingScreen) {
+      loadingScreen.classList.add('hidden');
+    }
+
+    targetScreen.classList.remove('hidden');
+    targetScreen.style.opacity = '1';
+    targetScreen.style.transition = '';
+    
     document.querySelectorAll('.pantalla, .pantalla-inicio').forEach(s => {
-      s.style.display = 'none';
+      if (s !== targetScreen) {
+        s.classList.add('hidden');
+        s.style.opacity = '';
+        s.style.transition = '';
+      }
     });
     
-    // Mostrar la pantalla solicitada
-    const screen = document.getElementById(`pantalla-${screenName}`);
-    if (screen) {
-      screen.style.display = screenName === 'carga' ? 'flex' : 'block';
-      this.animateScreenElements(screen);
-    }
-    
+    this.animateScreenElements(targetScreen);
     this.currentScreen = screenName;
-    this.handleScreenSpecificSetup(screenName, screen);
+    this.handleScreenSpecificSetup(screenName, targetScreen);
   }
 
   animateScreenElements(screen) {
@@ -374,10 +397,9 @@ class AppState {
         }
         break;
       case 'partida':
-        // Asegurar que el tablero está visible
         const pantallaPartida = document.getElementById('pantalla-partida');
         if (pantallaPartida) {
-          pantallaPartida.style.display = 'block';
+          pantallaPartida.classList.remove('hidden');
         }
         break;
     }
@@ -455,7 +477,6 @@ class AppState {
       nombre.value = '';
     }
 
-    // Mostrar/ocultar campo de contraseña
     if (grupoPassword && passwordInput) {
       if (tipo === 'usuario') {
         grupoPassword.classList.remove('hidden');
@@ -471,13 +492,11 @@ class AppState {
   }
 
   setupSeleccionInicialEvents() {
-    // Limpiar eventos anteriores
     document.querySelectorAll('.jugador-opcion').forEach(opcion => {
       const newOpcion = opcion.cloneNode(true);
       opcion.parentNode.replaceChild(newOpcion, opcion);
     });
     
-    // Configurar nuevos eventos
     document.querySelectorAll('.jugador-opcion').forEach(opcion => {
       opcion.addEventListener('mouseenter', () => {
         opcion.style.transform = 'translateY(-5px)';
@@ -506,12 +525,16 @@ class AppState {
         
         // Iniciar partida
         const jugadorNum = opcion.id === 'opcion-jugador-2' ? 2 : 1;
-        setTimeout(() => this.iniciarPartidaConJugador(jugadorNum), 250);
+        
+        if (!this.seleccionEnCurso) {
+          this.seleccionEnCurso = true;
+          setTimeout(() => this.iniciarPartidaConJugador(jugadorNum), 250);
+        }
       });
     });
   }
 
-  // ==================== MODO SEGUIMIENTO ====================
+  // MODO SEGUIMIENTO
   iniciarModoSeguimiento() {
     this.modoSeguimiento = true;
     this.showScreen('jugadores');
@@ -537,7 +560,7 @@ class AppState {
     }, 100);
   }
 
-  // ==================== MANEJO DE JUGADORES ====================
+  // MANEJO DE JUGADORES
   handleJugadoresSubmit(form) {
     const j1 = form.querySelector('#jugador-1');
     const j2 = form.querySelector('#jugador-2');
@@ -559,17 +582,13 @@ class AppState {
   }
 
   mostrarSelectorQuienEmpieza(nombres, jugador2Info) {
-    this.tempNombres = nombres;
-    this.tempJugador2Info = jugador2Info;
     
-    // Actualizar nombres en la pantalla
     const n1 = document.querySelector('.nombre-jugador-1');
     const n2 = document.querySelector('.nombre-jugador-2');
     
     if (n1) n1.textContent = nombres[0].toUpperCase();
     if (n2) n2.textContent = nombres[1].toUpperCase();
     
-    // Actualizar avatar jugador 2
     const avatar = document.getElementById('avatar-seleccion-j2');
     if (avatar && jugador2Info) {
       avatar.src = jugador2Info.tipo === 'invitado' ? 
@@ -593,30 +612,27 @@ class AppState {
   }
 
   iniciarPartidaConJugador(primerJugador) {
-    // Verificar datos temporales
-    if (!this.tempNombres || !this.tempJugador2Info) {
-      const j1 = document.getElementById('jugador-1')?.value?.trim() || 'Jugador 1';
-      const j2 = document.getElementById('jugador-2')?.value?.trim() || 'Jugador 2';
-      
-      this.tempNombres = [j1, j2];
-      this.tempJugador2Info = {
-        nombre: j2,
-        tipo: document.querySelector('input[name="tipo-jugador-2"]:checked')?.value || 'invitado'
-      };
-    }
+    const j1 = document.getElementById('jugador-1')?.value?.trim() || 'Jugador 1';
+    const j2 = document.getElementById('jugador-2')?.value?.trim() || 'Jugador 2';
     
-    this.iniciarPartida(this.tempNombres, this.tempJugador2Info, primerJugador);
+    const nombres = [j1, j2];
+    const jugador2Info = {
+      nombre: j2,
+      tipo: document.querySelector('input[name="tipo-jugador-2"]:checked')?.value || 'invitado'
+    };
     
-    // Limpiar datos temporales
-    this.tempNombres = null;
-    this.tempJugador2Info = null;
+    this.iniciarPartida(nombres, jugador2Info, primerJugador);
+    
+    
+    setTimeout(() => {
+      this.seleccionEnCurso = false;
+    }, 1000);
   }
 
   iniciarPartida(nombres, jugador2Info, primerJugador) {
     this.players = nombres.slice(0, 2);
     this.jugador2Info = jugador2Info;
     
-    // Inicializar el juego
     if (window.JuegoManager?.inicializarPartida) {
       window.JuegoManager.inicializarPartida(nombres, jugador2Info, primerJugador, this.modoSeguimiento);
     } else {
@@ -624,7 +640,6 @@ class AppState {
     }
     
     if (this.modoSeguimiento) {
-      // Modo seguimiento: mostrar pantalla de turno
       const nombreJugador = nombres[primerJugador - 1];
       const avatarSrc = primerJugador === 1 ? 
         'img/foto_usuario-1.png' : 
@@ -632,7 +647,6 @@ class AppState {
       
       this.mostrarTurnoJugadorConSeleccion(nombreJugador, avatarSrc);
     } else {
-      // Modo normal: verificar restricción del primer turno
       if (window.estadoJuego?.turnoEnRonda === 1 && window.estadoJuego?.rondaActual === 1) {
         // Primer turno de la primera ronda: sin restricción
         this.mostrarPantallaSinRestriccion();
@@ -645,10 +659,8 @@ class AppState {
   }
 
   mostrarPantallaSinRestriccion() {
-    // Ir directo a la pantalla de partida sin dado
     this.showScreen('partida');
     
-    // Establecer "Sin restricción" en el footer
     const infoRestriccion = document.querySelector('.info-restriccion');
     const textoRestriccion = document.querySelector('.texto-restriccion');
     
@@ -660,7 +672,6 @@ class AppState {
       textoRestriccion.innerHTML = '<div>Sin restricción</div>';
     }
     
-    // Actualizar interfaz
     if (window.JuegoManager) {
       window.JuegoManager.actualizarInterfaz();
       window.RenderManager?.actualizarDinosauriosDisponibles();
@@ -668,7 +679,6 @@ class AppState {
   }
 
   comenzarJuego() {
-    // Verificar si es el primer turno
     if (window.estadoJuego?.turnoEnRonda === 1 && window.estadoJuego?.rondaActual === 1) {
       this.mostrarPantallaSinRestriccion();
     } else {
@@ -679,7 +689,7 @@ class AppState {
     }
   }
 
-  // ==================== ANIMACIÓN DE DADOS ====================
+  // ANIMACIÓN DE DADOS
   iniciarAnimacionDado() {
     const img = document.getElementById('dado-imagen');
     const cont = document.getElementById('dado-animado');
@@ -797,81 +807,109 @@ class AppState {
     if (desc) desc.textContent = config.descripcion;
   }
 
-  // ==================== MANEJO DE FORMULARIOS ====================
-  async handleLogin(form) {
-    const username = form.querySelector('#login-username').value.trim();
-    const password = form.querySelector('#login-password').value.trim();
-    
-    this.clearFormErrors(form);
-    
-    if (!this.validateLoginForm(username, password, form)) return;
-    
-    this.setLoading(true);
-    
-    try {
-      await this.delay(800);
-      
-      // Detectar si es administrador
-      const usernameCheck = username.toLowerCase();
-      const isAdmin = usernameCheck === 'admin';
-      
-      this.user = {
-        username: username,
-        name: username.toUpperCase(),
-        isAdmin: isAdmin
-      };
-      
-      // Dirigir a pantalla correspondiente
-      if (isAdmin) {
-        console.log('Usuario detectado como administrador:', username);
-        // Mostrar perfil de administrador
-        if (window.adminManager) {
-          console.log('AdminManager encontrado, mostrando perfil admin');
-          window.adminManager.mostrarPerfilAdmin(this.user);
-        } else {
-          console.error('AdminManager no encontrado');
-        }
-        this.showToast('¡Bienvenido, Administrador!', 'success');
-      } else {
-        console.log('Usuario normal:', username);
-        // Usuario normal va al lobby
-        this.showScreen('lobby');
-        this.showToast('¡Bienvenido de vuelta!', 'success');
-      }
-    } catch (error) {
-      this.showToast('Error al iniciar sesión', 'error');
-    } finally {
-      this.setLoading(false);
-    }
-  }
+  // MANEJO DE FORMULARIOS
+async handleLogin(form) {
+  const identificador = form.querySelector('#login-username').value.trim();
+  const password = form.querySelector('#login-password').value.trim();
 
-  async handleRegister(form) {
-    const formData = this.getRegisterFormData(form);
-    
-    this.clearFormErrors(form);
-    
-    if (!this.validateRegisterForm(formData, form)) return;
-    
-    this.setLoading(true);
-    
-    try {
-      await this.delay(2000);
-      
-      this.user = {
-        username: formData.username,
-        name: formData.username.toUpperCase(),
-        email: formData.email,
-        birthdate: formData.birthdate
-      };
-      
-      this.showScreen('lobby');
-      this.showToast('¡Cuenta creada exitosamente!', 'success');
-    } catch (error) {
-      this.showToast('Error al crear la cuenta', 'error');
-    } finally {
-      this.setLoading(false);
+  this.clearFormErrors(form);
+
+  if (!this.validateLoginForm(identificador, password, form)) return;
+
+  this.setLoading(true);
+
+  try {
+    const response = await fetch('http://localhost:8000/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ identificador, password })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      this.showToast(result.message || 'Credenciales inválidas', 'error');
+      return;
     }
+
+    this.user = {
+      id: result.user.id,
+      email: result.user.email,
+      username: result.user.nombreUsuario,
+      name: result.user.nombreUsuario.toUpperCase(),
+      isAdmin: result.user.esAdmin || false
+    };
+
+    localStorage.setItem('usuario', JSON.stringify(this.user));
+
+    if (this.user.isAdmin) {
+      window.adminManager?.mostrarPerfilAdmin(this.user);
+      this.showToast('¡Bienvenido, Administrador!', 'success');
+    } else {
+      this.showScreen('lobby');
+      this.showToast('¡Bienvenido de vuelta!', 'success');
+    }
+
+  } catch (error) {
+    console.error(error);
+    this.showToast('Error al conectar con el servidor', 'error');
+  } finally {
+    this.setLoading(false);
   }
+}
+
+
+
+async handleRegister(form) {
+  const formData = this.getRegisterFormData(form);
+
+  this.clearFormErrors(form);
+
+  if (!this.validateRegisterForm(formData, form)) return;
+
+  this.setLoading(true);
+
+try {
+  const response = await fetch('http://127.0.0.1:8000/registro', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      nombreUsuario: formData.username,
+      email: formData.email,
+      nacimiento: formData.birthdate, // 👈 CAMBIADO
+      password: formData.password,
+      passwordConfirm: formData.passwordConfirm
+    })
+  });
+
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      this.showToast(result.message || 'Error al registrarse', 'error');
+      return;
+    }
+
+    this.user = {
+      id: result.usuario.id,
+      email: result.usuario.email,
+      username: result.usuario.nombreUsuario,
+      name: result.usuario.nombreUsuario.toUpperCase()
+    };
+
+    localStorage.setItem('usuario', JSON.stringify(this.user));
+
+    this.showScreen('lobby');
+    this.showToast('¡Cuenta creada exitosamente!', 'success');
+  } catch (error) {
+    console.error(error);
+    this.showToast('Error al conectar con el servidor', 'error');
+  } finally {
+    this.setLoading(false);
+  }
+}
+
+
 
   getRegisterFormData(form) {
     return {
@@ -883,7 +921,7 @@ class AppState {
     };
   }
 
-  // ==================== CONFIGURACIÓN DE FORMULARIOS ====================
+  // CONFIGURACIÓN DE FORMULARIOS
   setupFormValidation() {
     document.querySelectorAll('.form-input').forEach(input => {
       input.addEventListener('input', () => {
@@ -1007,19 +1045,16 @@ class AppState {
     const fechaInput = document.querySelector('#register-fecha');
     if (!fechaInput) return;
     
-    // Establecer fecha máxima (hoy)
     const hoy = new Date();
     const yyyy = hoy.getFullYear();
     const mm = String(hoy.getMonth() + 1).padStart(2, '0');
     const dd = String(hoy.getDate()).padStart(2, '0');
     fechaInput.max = `${yyyy}-${mm}-${dd}`;
     
-    // Establecer fecha mínima (100 años atrás)
     const fechaMinima = new Date();
     fechaMinima.setFullYear(fechaMinima.getFullYear() - 100);
     fechaInput.min = `${fechaMinima.getFullYear()}-${String(fechaMinima.getMonth() + 1).padStart(2, '0')}-${String(fechaMinima.getDate()).padStart(2, '0')}`;
     
-    // Validar edad al cambiar
     fechaInput.addEventListener('change', () => {
       const birthDate = new Date(fechaInput.value);
       const today = new Date();
@@ -1034,12 +1069,11 @@ class AppState {
     });
   }
 
-  // ==================== SISTEMA DE TOASTS ====================
+  // SISTEMA DE TOASTS
   showToast(message, type = 'info', duration = 5000) {
     const container = document.getElementById('toast-container');
     if (!container) return;
     
-    // Evitar duplicados
     const existingToasts = Array.from(container.querySelectorAll('.toast'));
     const isDuplicate = existingToasts.some(toast => {
       const msgElement = toast.querySelector('.toast__message');
@@ -1077,7 +1111,6 @@ class AppState {
       </div>
     `;
     
-    // Eventos
     const closeBtn = toast.querySelector('.toast__close');
     closeBtn.addEventListener('click', () => this.removeToast(toast));
     
@@ -1105,7 +1138,7 @@ class AppState {
     });
   }
 
-  // ==================== UTILIDADES ====================
+  // UTILIDADES
   showFieldError(form, selector, message) {
     const field = form.querySelector(selector);
     if (field) {
@@ -1163,10 +1196,10 @@ class AppState {
     });
   }
 
-  // ==================== ACCIONES DE JUEGO ====================
+  // ACCIONES DE JUEGO
   siguienteRonda() {
-    if (window.JuegoManager?.prepararSiguienteRonda) {
-      window.JuegoManager.prepararSiguienteRonda();
+    if (window.JuegoManager?._prepararSiguienteRonda) {
+      window.JuegoManager._prepararSiguienteRonda();
     }
   }
 
@@ -1181,7 +1214,6 @@ class AppState {
     this.modoSeguimiento = false;
     this.showScreen('jugadores');
     
-    // Limpiar campos
     const j2 = document.getElementById('jugador-2');
     if (j2) j2.value = '';
     
@@ -1195,46 +1227,25 @@ class AppState {
     const confirmLogout = this.currentScreen === 'partida' ? 
       confirm('¿Estás seguro de que quieres cerrar sesión? Se perderá el progreso de la partida actual.') : 
       true;
-    
+
     if (!confirmLogout) return;
-    
-    // Limpiar estado
+
+    localStorage.removeItem('usuario');
+
     this.user = null;
     this.players = [];
     this.jugador2Info = null;
     this.dadoSeleccionado = null;
-
-    
-    this.tempNombres = null;
-    this.tempJugador2Info = null;
     this.modoSeguimiento = false;
-    
-    // Limpiar formularios
+
     document.querySelectorAll('form').forEach(form => form.reset());
-    
+
     this.showScreen('login');
     this.showToast('Sesión cerrada', 'info');
   }
 
-  // ==================== UTILIDADES AUXILIARES ====================
-  delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
 
-  getDebugInfo() {
-    return {
-      currentScreen: this.currentScreen,
-      user: this.user,
-      players: this.players,
-      loading: this.loading,
-      modoSeguimiento: this.modoSeguimiento,
-      tempData: {
-        nombres: this.tempNombres,
-        jugador2Info: this.tempJugador2Info
-      },
-      validationConfig: this.validationConfig
-    };
-  }
+
 
   resetAppState() {
     this.currentScreen = 'login';
@@ -1243,8 +1254,6 @@ class AppState {
     this.players = [];
     this.jugador2Info = null;
     this.dadoSeleccionado = null;
-    this.tempNombres = null;
-    this.tempJugador2Info = null;
     this.modoSeguimiento = false;
     
     this.hideToasts();
@@ -1255,44 +1264,19 @@ class AppState {
     });
   }
 
-  validateDOMIntegrity() {
-    const required = [
-      'pantalla-login',
-      'pantalla-registro',
-      'pantalla-lobby',
-      'pantalla-jugadores',
-      'pantalla-seleccion-inicial',
-      'pantalla-partida',
-      'toast-container'
-    ];
-    
-    const missing = required.filter(id => !document.getElementById(id));
-    
-    if (missing.length > 0) {
-      console.error('Elementos DOM faltantes:', missing);
-      return false;
-    }
-    
-    return true;
-  }
 }
 
-// ==================== INICIALIZACIÓN ====================
+// INICIALIZACIÓN
 if (!window.app) {
   document.addEventListener('DOMContentLoaded', () => {
     const tempApp = new AppState();
     
-    if (tempApp.validateDOMIntegrity()) {
-      window.app = tempApp;
-      window.adminManager = new AdminManager();
-      console.log('App inicializada correctamente');
-    } else {
-      console.error('Error: DOM incompleto, no se puede inicializar la aplicación');
-    }
+    window.app = tempApp;
+    window.adminManager = new AdminManager();
   });
 }
 
-// ==================== MANEJO DE ERRORES GLOBALES ====================
+// MANEJO DE ERRORES GLOBALES
 window.addEventListener('error', e => {
   console.error('Error global capturado:', e.error);
   if (window.app) {
@@ -1307,19 +1291,18 @@ window.addEventListener('unhandledrejection', e => {
   }
 });
 
-// ==================== ADMINISTRADOR ====================
+// ADMINISTRADOR
 class AdminManager {
   constructor() {
     this.currentUser = null;
-    this.usuariosData = []; // Simular datos de usuarios
     this.currentEditingUser = null;
     this.init();
   }
 
   init() {
     this.setupAdminEvents();
-    this.loadMockUsers(); // Cargar usuarios simulados
-    this.asegurarPopupOculto(); // Asegurar que el popup esté oculto al inicio
+    this.fetchUsers();
+    this.asegurarPopupOculto();
   }
 
   asegurarPopupOculto() {
@@ -1398,27 +1381,67 @@ class AdminManager {
     }
   }
 
-  loadMockUsers() {
-    // Datos simulados de usuarios
-    this.usuariosData = [
-      { id: 1, username: 'Anita', email: 'anita@example.com', birthdate: '1995-03-15', isAdmin: false },
-      { id: 2, username: 'Pepeking', email: 'pepe.alonzo@gmail.com', birthdate: '1998-05-23', isAdmin: false },
-      { id: 3, username: 'Pepita', email: 'pepita@example.com', birthdate: '1992-11-08', isAdmin: false },
-      { id: 4, username: 'Daniel-San', email: 'daniel@example.com', birthdate: '1990-07-12', isAdmin: false },
-      { id: 5, username: 'Joselito', email: 'jose@example.com', birthdate: '1993-01-30', isAdmin: false }
-    ];
+  async fetchUsers() {
+    console.log('Iniciando fetchUsers...');
+    
+    try {
+      const url = 'http://127.0.0.1:8000/getUsuarios';
+      console.log('Haciendo petición a:', url);
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      console.log('Status de respuesta:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error en respuesta:', errorText);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Datos recibidos:', data);
+
+      if (!data.success) {
+        throw new Error(data.message || 'No se pudieron obtener los usuarios');
+      }
+
+      // CAMBIO AQUÍ: Verificación mejorada
+      if (data && Array.isArray(data.usuarios)) {
+        this.usuariosData = data.usuarios;
+        console.log('✅ usuariosData asignado correctamente:', this.usuariosData);
+      } else {
+        console.error('❌ Datos de usuarios inválidos:', data);
+        this.usuariosData = [];
+      }
+
+      console.log('Usuarios cargados:', this.usuariosData.length);
+
+      // CAMBIO AQUÍ: Renderizar inmediatamente
+      if (document.getElementById('pantalla-listado-usuarios')?.classList.contains('hidden') === false) {
+        console.log('Renderizando lista inmediatamente...');
+        this.renderizarListaUsuarios();
+      }
+
+    } catch (error) {
+      console.error('Error completo:', error);
+      this.usuariosData = [];
+      throw error;
+    }
   }
 
   mostrarPerfilAdmin(usuario) {
     this.currentUser = usuario;
     
-    // Actualizar información del admin
     const adminUsername = document.getElementById('admin-username');
     if (adminUsername) {
       adminUsername.textContent = usuario.username;
     }
 
-    // Actualizar headers con info del admin
     document.querySelectorAll('.admin-name').forEach(el => {
       el.textContent = usuario.username;
     });
@@ -1426,13 +1449,37 @@ class AdminManager {
     this.mostrarPantalla('pantalla-admin');
   }
 
-  mostrarListadoUsuarios() {
-    this.renderizarListaUsuarios();
+  async mostrarListadoUsuarios() 
+  {
+    console.log('Iniciando mostrarListadoUsuarios...');
+    
+    // Mostrar pantalla primero con mensaje de carga
     this.mostrarPantalla('pantalla-listado-usuarios');
+    
+    const container = document.getElementById('lista-usuarios-admin');
+    if (container) {
+      container.innerHTML = '<div class="titulo-seccion">Cargando usuarios...</div>';
+    }
+    
+    try {
+      // Forzar carga de usuarios
+      await this.fetchUsers();
+      console.log('Usuarios cargados, renderizando lista...');
+      this.renderizarListaUsuarios();
+    } catch (error) {
+      console.error('Error al cargar usuarios:', error);
+      if (container) {
+        container.innerHTML = `
+          <div class="titulo-seccion">Error al cargar usuarios</div>
+          <div class="usuario-item">
+            <span>No se pudieron cargar los usuarios. Verifica la conexión con el servidor.</span>
+          </div>
+        `;
+      }
+    }
   }
 
   mostrarNuevoUsuario() {
-    // Limpiar formulario
     const form = document.getElementById('form-nuevo-usuario');
     if (form) form.reset();
     
@@ -1443,32 +1490,64 @@ class AdminManager {
     this.currentEditingUser = usuario;
     
     // Llenar formulario con datos del usuario
-    document.getElementById('edit-username').value = usuario.username;
+    document.getElementById('edit-username').value = usuario.nombreUsuario;
     document.getElementById('edit-email').value = usuario.email;
-    document.getElementById('edit-birthdate').value = usuario.birthdate;
-    document.getElementById('edit-password').value = '';
+    document.getElementById('edit-birthdate').value = usuario.nacimiento;
+    
+    // Limpiar password
+    const passwordField = document.getElementById('edit-password');
+    if (passwordField) passwordField.value = '';
 
     this.mostrarPantalla('pantalla-editar-usuario');
   }
 
   renderizarListaUsuarios(filtro = '') {
+    console.log('renderizarListaUsuarios llamado, usuariosData:', this.usuariosData);
+    
     const container = document.getElementById('lista-usuarios-admin');
-    if (!container) return;
+    if (!container) {
+      console.error('Container lista-usuarios-admin no encontrado');
+      return;
+    }
+
+    // Validación mejorada
+    if (!Array.isArray(this.usuariosData)) {
+      console.warn('usuariosData no es un array válido:', this.usuariosData);
+      container.innerHTML = `
+        <div class="titulo-seccion">Error</div>
+        <div class="usuario-item">
+          <span>Los datos de usuarios no están disponibles.</span>
+        </div>
+      `;
+      return;
+    }
 
     const usuariosFiltrados = this.usuariosData.filter(user => 
-      !user.isAdmin && user.username.toLowerCase().includes(filtro.toLowerCase())
+      !user.admin && user.nombreUsuario && user.nombreUsuario.toLowerCase().includes(filtro.toLowerCase())
     );
 
+    console.log(`Mostrando ${usuariosFiltrados.length} usuarios filtrados`);
+
+    if (usuariosFiltrados.length === 0) {
+      container.innerHTML = `
+        <div class="titulo-seccion">Usuarios registrados</div>
+        <div class="usuario-item">
+          <span>No se encontraron usuarios${filtro ? ' que coincidan con la búsqueda' : ''}.</span>
+        </div>
+      `;
+      return;
+    }
+
     container.innerHTML = `
-      <div class="titulo-seccion">Usuarios registrados</div>
+      <div class="titulo-seccion">Usuarios registrados (${usuariosFiltrados.length})</div>
       ${usuariosFiltrados.map(user => `
         <div class="usuario-item">
-          <span class="usuario-nombre">${user.username}</span>
+          <span class="usuario-nombre">${user.nombreUsuario}</span>
           <div class="usuario-acciones">
             <button class="btn-accion btn-editar" data-user-id="${user.id}" data-action="editar">
               <img src="img/lapiz.svg" alt="Editar">
             </button>
-            <button class="btn-accion btn-eliminar" data-user-id="${user.id}" data-username="${user.username}" data-action="eliminar">
+            <button class="btn-accion btn-eliminar" data-user-id="${user.id}" data-username="${user.nombreUsuario}" data-action="eliminar">
               <img src="img/Cruz.svg" alt="Eliminar">
             </button>
           </div>
@@ -1476,15 +1555,13 @@ class AdminManager {
       `).join('')}
     `;
 
-    // Agregar event listeners
     this.setupUserActionListeners();
-  }
+}
 
   setupUserActionListeners() {
     const container = document.getElementById('lista-usuarios-admin');
     if (!container) return;
 
-    // Usar delegación de eventos
     container.addEventListener('click', (e) => {
       const button = e.target.closest('[data-action]');
       if (!button) return;
@@ -1521,9 +1598,7 @@ class AdminManager {
       usernameSpan.textContent = username;
     }
     
-    // Asegurar que el popup esté visible
     popup.classList.remove('hidden');
-    popup.style.display = 'flex';
     popup.style.zIndex = '10000';
     popup.dataset.userId = userId;
     
@@ -1531,83 +1606,123 @@ class AdminManager {
     popup.offsetHeight;
   }
 
-  confirmarEliminarUsuario() {
+  async confirmarEliminarUsuario() {
     const popup = document.getElementById('popup-eliminar-usuario');
     const userId = parseInt(popup.dataset.userId);
     
-    // Eliminar usuario del array
-    this.usuariosData = this.usuariosData.filter(user => user.id !== userId);
-    
-    // Actualizar lista
-    this.renderizarListaUsuarios();
-    
-    // Cerrar popup
-    this.cerrarPopupEliminar();
-    
-    // Mostrar mensaje de éxito (opcional)
-    console.log('Usuario eliminado exitosamente');
+    try {
+      const response = await fetch('http://127.0.0.1:8000/eliminarUsuario', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: userId })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Error al eliminar usuario');
+      }
+
+      // Recargar usuarios desde el backend
+      await this.fetchUsers();
+      window.app?.showToast('Usuario eliminado correctamente', 'success');
+      
+    } catch (error) {
+      console.error('Error al eliminar usuario:', error);
+      window.app?.showToast('Error al eliminar usuario', 'error');
+    } finally {
+      this.cerrarPopupEliminar();
+    }
   }
 
   cerrarPopupEliminar() {
     const popup = document.getElementById('popup-eliminar-usuario');
     if (popup) {
       popup.classList.add('hidden');
-      popup.style.display = 'none';
     }
   }
 
-  handleEditarUsuario(e) {
+  async handleEditarUsuario(e) {
     e.preventDefault();
-    
+
     if (!this.currentEditingUser) return;
-    
-    const username = document.getElementById('edit-username').value;
-    const email = document.getElementById('edit-email').value;
-    const birthdate = document.getElementById('edit-birthdate').value;
-    const password = document.getElementById('edit-password').value;
-    
-    // Actualizar usuario en el array
-    const userIndex = this.usuariosData.findIndex(u => u.id === this.currentEditingUser.id);
-    if (userIndex !== -1) {
-      this.usuariosData[userIndex] = {
-        ...this.usuariosData[userIndex],
-        username,
-        email,
-        birthdate,
-        ...(password && { password }) // Solo actualizar password si se proporciona
+
+    const username = document.getElementById('edit-username').value.trim();
+    const email = document.getElementById('edit-email').value.trim();
+    const birthdate = document.getElementById('edit-birthdate').value.trim();
+    const password = document.getElementById('edit-password').value.trim();
+
+    try {
+      const payload = {
+        id: this.currentEditingUser.id,
+        nombreUsuario: username,
+        email: email,
+        nacimiento: birthdate
       };
+
+      // Solo incluir password si se proporcionó
+      if (password) {
+        payload.password = password;
+      }
+
+      const response = await fetch('http://127.0.0.1:8000/modificarUsuario', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Error al modificar el usuario');
+      }
+
+      // Recargar usuarios desde el backend actualizado
+      await this.fetchUsers();
+      this.mostrarListadoUsuarios();
+      window.app?.showToast('Usuario modificado correctamente', 'success');
+
+    } catch (error) {
+      console.error('Error al modificar usuario:', error);
+      window.app?.showToast('Error al modificar usuario', 'error');
     }
-    
-    console.log('Usuario actualizado:', this.usuariosData[userIndex]);
-    
-    // Volver al listado
-    this.mostrarListadoUsuarios();
   }
 
-  handleNuevoUsuario(e) {
+  async handleNuevoUsuario(e) {
     e.preventDefault();
     
-    const username = document.getElementById('new-username').value;
-    const email = document.getElementById('new-email').value;
-    const birthdate = document.getElementById('new-birthdate').value;
-    const password = document.getElementById('new-password').value;
+    const username = document.getElementById('new-username').value.trim();
+    const email = document.getElementById('new-email').value.trim();
+    const birthdate = document.getElementById('new-birthdate').value.trim();
+    const password = document.getElementById('new-password').value.trim();
     
-    // Crear nuevo usuario
-    const nuevoUsuario = {
-      id: Math.max(...this.usuariosData.map(u => u.id)) + 1,
-      username,
-      email,
-      birthdate,
-      password,
-      isAdmin: false
-    };
-    
-    this.usuariosData.push(nuevoUsuario);
-    
-    console.log('Nuevo usuario creado:', nuevoUsuario);
-    
-    // Volver al perfil admin
-    this.volverPerfilAdmin();
+    try {
+      const response = await fetch('http://127.0.0.1:8000/registroAdmin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombreUsuario: username,
+          email: email,
+          nacimiento: birthdate,
+          password: password,
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Error al crear usuario');
+      }
+
+      // Recargar usuarios desde el backend
+      await this.fetchUsers();
+      this.volverPerfilAdmin();
+      window.app?.showToast('Usuario creado correctamente', 'success');
+
+    } catch (error) {
+      console.error('Error al crear usuario:', error);
+      window.app?.showToast('Error al crear usuario', 'error');
+    }
   }
 
   volverPerfilAdmin() {
@@ -1616,24 +1731,21 @@ class AdminManager {
 
   salirModoAdmin() {
     this.currentUser = null;
-    this.mostrarPantalla('pantalla-login');
+    if (window.app) {
+      window.app.logout();
+    }
   }
 
   mostrarPantalla(pantallaId) {
-    // Ocultar todas las pantallas
     document.querySelectorAll('.pantalla').forEach(pantalla => {
       pantalla.classList.add('hidden');
-      pantalla.style.display = 'none';
     });
 
-    // Mostrar la pantalla solicitada
     const pantalla = document.getElementById(pantallaId);
     if (pantalla) {
       pantalla.classList.remove('hidden');
-      pantalla.style.display = 'flex';
     }
 
-    // Asegurar que el popup esté oculto al cambiar de pantalla
     this.asegurarPopupOculto();
   }
 }

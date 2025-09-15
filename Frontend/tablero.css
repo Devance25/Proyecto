@@ -1,6 +1,6 @@
 @import url("estilos.css");
 
-/* ==================== UTILIDADES CSS ==================== */
+/* UTILIDADES CSS */
 .flex-center {
   display: flex;
   align-items: center;
@@ -18,8 +18,7 @@
   flex-direction: column;
 }
 
-
-/* ==================== TABLERO BASE ==================== */
+/* TABLERO BASE */
 .tablero {
   background: url('img/bosque.jpg') center / cover no-repeat;
   width: 100%;
@@ -32,7 +31,7 @@
   padding: var(--space-sm);
 }
 
-/* ==================== GRILLA PRINCIPAL ==================== */
+/* GRILLA PRINCIPAL */
 .rejilla-partida {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -77,7 +76,7 @@
   box-sizing: border-box;
 }
 
-/* ==================== SISTEMA DE DROP ZONES ==================== */
+/* SISTEMA DE DROP ZONES */
 .cuadro::after,
 .rectangulo::after {
   content: '';
@@ -113,18 +112,13 @@
 }
 
 @keyframes pulse-blocked {
-  0% {
-    opacity: 0.6;
-  }
-
-  100% {
-    opacity: 1;
-  }
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
 }
 
-/* ==================== DINOSAURIOS ==================== */
+/* DINOSAURIOS */
 
-/* === Dinosaurios Colocados === */
+/* Dinosaurios colocados */
 .dinosaurio-colocado {
   position: absolute !important;
   width: 25px !important;
@@ -153,19 +147,17 @@
     transform: translate(-50%, -50%) scale(1.3);
     opacity: 0;
   }
-
   50% {
     transform: translate(-50%, -50%) scale(1.1);
     opacity: 0.8;
   }
-
   100% {
     transform: translate(-50%, -50%) scale(1);
     opacity: 1;
   }
 }
 
-/* === Dinosaurios Disponibles === */
+/* Dinosaurios disponibles */
 .dinosaurios-disponibles {
   position: absolute;
   bottom: calc(env(safe-area-inset-bottom, 0px) + var(--space-lg));
@@ -187,7 +179,22 @@
   overflow: hidden;
 }
 
-/* === Dinosaurios Base === */
+/* Mensaje cuando no hay dinosaurios */
+.mensaje-sin-dinosaurios {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-blanco);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  padding: var(--space-md);
+  min-height: 60px;
+}
+
+/* Dinosaurios base */
 .dino {
   width: auto;
   height: 35px;
@@ -211,7 +218,7 @@
 .dino.usado { opacity: 0.3; filter: grayscale(100%); pointer-events: none; }
 .dino.eliminado { display: none !important; visibility: hidden !important; opacity: 0 !important; transform: scale(0) !important; transition: all 0.2s ease-out; }
 
-/* ==================== MARCADORES DE JUGADOR ==================== */
+/* MARCADORES DE JUGADOR */
 .dinosaurio-j1 {
   border: 2px solid #FFD700;
   border-radius: 50%;
@@ -226,7 +233,7 @@
   background: rgba(135, 206, 235, 0.1);
 }
 
-/* === Estados de Dinosaurios === */
+/* Estados de dinosaurios */
 .dinosaurio-colocado[data-jugador="1"],
 .dinosaurio-colocado[data-jugador="2"] {
   filter: none;
@@ -237,7 +244,7 @@
   filter: grayscale(30%);
 }
 
-/* === Tooltips de Identificación === */
+/* Tooltips de identificación */
 .dinosaurio-colocado[data-jugador]::after {
   content: attr(data-jugador);
   position: absolute;
@@ -254,11 +261,9 @@
   transition: opacity 0.2s;
 }
 
-.dinosaurio-colocado[data-jugador]:hover::after {
-  opacity: 1;
-}
+.dinosaurio-colocado[data-jugador]:hover::after { opacity: 1; }
 
-/* === Indicadores de Turno === */
+/* Indicadores de turno */
 .info-jugador-base.turno-activo,
 .info-jugador.turno-activo,
 .info-jugador2.turno-activo {
@@ -267,15 +272,14 @@
   border-width: 3px !important;
 }
 
-/* Jugador 2 activo con color específico */
 .info-jugador2.turno-activo {
   box-shadow: 0 0 20px #87CEEB;
   border-color: #87CEEB !important;
 }
 
-/* ==================== INTERFAZ DE USUARIO ==================== */
+/* INTERFAZ DE USUARIO */
 
-/* === Header Superior === */
+/* Header Superior */
 .header-superior {
   position: fixed;
   top: 0;
@@ -290,7 +294,7 @@
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
 }
 
-/* === Información de Jugadores === */
+/* Información de Jugadores */
 .player-info,
 .info-jugador-base,
 .info-jugador,
@@ -324,16 +328,6 @@
   justify-content: center;
 }
 
-/* En tablet y mobile, hacer el texto horizontal */
-@media (max-width: 1024px) {
-  .info-texto {
-    flex-direction: row;
-    align-items: center;
-    gap: var(--space-sm);
-    flex-wrap: wrap;
-  }
-}
-
 .nombre-puntos {
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-base);
@@ -358,7 +352,7 @@
   white-space: nowrap;
 }
 
-/* === Botón Ver Mapa === */
+/* Botón Ver Mapa */
 .ver-mapa {
   cursor: pointer;
   transition: var(--transition-base);
@@ -383,7 +377,7 @@
   display: none;
 }
 
-/* === Botones de Información === */
+/* Botones de Información */
 .botones-info {
   display: flex;
   align-items: center;
@@ -391,18 +385,19 @@
   gap: var(--space-xs);
 }
 
-/* === Botones de Información === */
+
 .btn-como-jugar,
-.btn-datos-fisicos {
+.btn-datos-fisicos,
+.btn-cancelar-partida {
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: var(--transition-base);
-  border: 2px solid var(--color-dorado);
+  border: 2px solid var(--color-beige);
   border-radius: var(--border-radius-md);
   font-weight: var(--font-weight-semibold);
-  background: var(--color-dorado);
+  background: var(--color-beige);
   padding: var(--space-xs) var(--space-sm);
   color: var(--color-marron);
   white-space: nowrap;
@@ -410,8 +405,12 @@
   min-width: 0;
 }
 
+
 .btn-como-jugar:hover,
-.btn-datos-fisicos:hover { background: var(--color-dorado); filter: brightness(1.1); }
+.btn-datos-fisicos:hover { 
+  background: var(--color-dorado); 
+  filter: brightness(1.1); 
+}
 
 .icono-btn {
   width: 20px;
@@ -421,7 +420,7 @@
   object-fit: contain;
 }
 
-/* === Footer del Juego === */
+/* Footer del juego */
 .footer-juego {
   position: fixed;
   bottom: 0;
@@ -437,7 +436,7 @@
   flex-wrap: wrap;
 }
 
-/* === Restricciones === */
+/* Restricciones */
 .info-restriccion {
   display: flex;
   align-items: center;
@@ -467,7 +466,7 @@
   min-width: 0;
 }
 
-/* === Botón Siguiente Turno === */
+/* Botón siguiente turno */
 .boton-siguiente {
   cursor: pointer;
   transition: var(--transition-base);
@@ -498,35 +497,44 @@
 }
 
 @keyframes btnGlow {
-  0% {
-    box-shadow: 0 0 0 0 rgba(255, 165, 0, 0);
-  }
-
+  0% { box-shadow: 0 0 0 0 rgba(255, 165, 0, 0); }
   50% {
     box-shadow: 0 0 40px 8px rgba(255, 165, 0, 0.8),
       0 0 80px 16px rgba(255, 165, 0, 0.4),
       0 0 120px 24px rgba(255, 165, 0, 0.2);
   }
-
-  100% {
-    box-shadow: 0 0 0 0 rgba(255, 165, 0, 0);
-  }
+  100% { box-shadow: 0 0 0 0 rgba(255, 165, 0, 0); }
 }
 
-/* ==================== SISTEMA DE POPUPS ==================== */
+/* SISTEMA DE POPUPS */
 
-/* === Base de Popups === */
+/* Base de Popups */
 .popup-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
-  display: flex;
+  display: none;
+  visibility: hidden;
+  opacity: 0;
   align-items: center;
   justify-content: center;
   z-index: 2000;
   backdrop-filter: blur(5px);
   padding: var(--space-lg);
   box-sizing: border-box;
+}
+
+.popup-overlay:not(.hidden) {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Regla más específica para asegurar que se aplique */
+div.popup-overlay:not(.hidden) {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .popup {
@@ -536,9 +544,11 @@
   max-width: 700px;
   max-height: 80vh;
   overflow-y: auto;
+  overflow-x: hidden;
   position: relative;
   box-shadow: var(--shadow-elevation-3);
   width: 100%;
+  box-sizing: border-box;
 }
 
 .popup h2 {
@@ -574,24 +584,24 @@
   margin-bottom: var(--space-sm);
 }
 
-/* === Botón Cerrar Popup === */
+/* Botón cerrar popup */
 .popup-close {
   position: absolute;
-  top: var(--space-md);
-  right: var(--space-md);
+  top: var(--space-sm);
+  right: var(--space-sm);
   background: var(--color-marron);
   color: var(--color-blanco);
   border: none;
-  border-radius: var(--border-radius-md);
-  width: 30px;
-  height: 30px;
+  border-radius: var(--border-radius-circle);
+  width: 24px;
+  height: 24px;
   cursor: pointer;
-  font-size: var(--font-size-md);
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: var(--transition-base);
-  z-index: 10;
+  z-index: 2005;
 }
 
 .popup-close:hover {
@@ -604,9 +614,9 @@
   outline-offset: 2px;
 }
 
-/* ==================== POPUP ESPECÍFICOS ==================== */
+/* POPUP ESPECÍFICOS */
 
-/* === Popup de Pesos === */
+/* Popup de pesos */
 .tabla-pesos {
   width: 100%;
   border-collapse: collapse;
@@ -626,7 +636,7 @@
   font-weight: var(--font-weight-bold);
 }
 
-/* === Tabla de Masa por Recintos === */
+/* Tabla de masa por recintos */
 .tabla-masa-recintos {
   width: 100%;
   border-collapse: collapse;
@@ -652,7 +662,7 @@
   font-weight: var(--font-weight-bold);
 }
 
-/* === Totales de Física === */
+/* Totales de física */
 .totales-fisica {
   margin-top: var(--space-lg);
   padding: var(--space-md);
@@ -678,7 +688,7 @@
   line-height: 1.4;
 }
 
-/* === Popup Mapa del Oponente === */
+/* Popup mapa del oponente */
 .popup-mapa {
   background: var(--color-beige);
   border-radius: var(--border-radius-lg);
@@ -708,7 +718,7 @@
   margin-bottom: var(--space-md);
 }
 
-/* === Mini Tablero === */
+/* Mini tablero */
 .mini-tablero {
   margin-bottom: var(--space-lg);
   display: flex;
@@ -761,7 +771,7 @@
   pointer-events: none;
 }
 
-/* === Información de Puntos === */
+/* Información de puntos */
 .puntos-detalle {
   display: grid;
   grid-template-columns: 1fr;
@@ -788,37 +798,47 @@
   font-weight: var(--font-weight-bold);
 }
 
-/* === Popup de Descarte === */
+/* Popup de descarte */
 #dinosaurios-descarte {
   display: flex;
-  gap: 10px;
+  gap: var(--space-sm);
   flex-wrap: wrap;
   justify-content: center;
+  margin: var(--space-lg) 0;
+  padding: var(--space-md);
 }
 
 .dino-descarte {
   width: auto;
-  height: 45px;
+  height: 50px;
   cursor: pointer;
-  transition: transform .15s ease, filter .15s ease, outline-color .15s ease;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.dino-descarte:hover {
+  transform: translateY(-3px) scale(1.05);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
 .dino-descarte.seleccionado {
-  transform: translateY(-3px) scale(1.06);
-  outline: 2px solid var(--color-primario);
-  outline-offset: 4px;
-  border-radius: var(--border-radius-md);
-  filter: drop-shadow(0 6px 10px hsl(0deg 0% 0% / 50%));
+  transform: translateY(-5px) scale(1.1);
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.4));
+  outline: 3px solid var(--color-primario);
+  outline-offset: 3px;
+  border-radius: var(--border-radius-sm);
 }
 
-/* ==================== MODO SEGUIMIENTO - POPUPS ==================== */
+/* MODO SEGUIMIENTO - POPUPS */
 
-/* === Popup Selección de Dinosaurios === */
+/* Popup Selección de Dinosaurios */
 .seleccion-dinosaurios-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-lg);
   padding: var(--space-lg);
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .dino-selector {
@@ -889,9 +909,9 @@
   font-weight: var(--font-weight-semibold);
 }
 
-/* ==================== CONTENIDO INFORMATIVO - CONSOLIDADO ==================== */
+/* CONTENIDO INFORMATIVO - CONSOLIDADO */
 
-/* === Base para elementos informativos === */
+/* Base para elementos informativos */
 .info-item-base {
   display: flex;
   align-items: flex-start;
@@ -923,7 +943,7 @@
   line-height: 1.5;
 }
 
-/* === Recintos Info === */
+/* Recintos Info */
 .recintos-info {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -969,7 +989,7 @@
   font-weight: var(--font-weight-semibold);
 }
 
-/* === Consejos Interactivos === */
+/* Consejos Interactivos */
 .consejos-interactivos {
   display: flex;
   flex-direction: column;
@@ -1039,7 +1059,7 @@
   display: block;
 }
 
-/* === Alertas Importantes === */
+/* Alertas Importantes */
 .alertas-importantes {
   display: flex;
   flex-direction: column;
@@ -1103,23 +1123,12 @@
   font-weight: var(--font-weight-semibold);
 }
 
-.alerta-roja .alerta-texto strong {
-  color: var(--color-rojo);
-}
+.alerta-roja .alerta-texto strong { color: var(--color-rojo); }
+.alerta-verde .alerta-texto strong { color: var(--color-verde-claro); }
+.alerta-azul .alerta-texto strong { color: var(--color-azul); }
+.alerta-amarilla .alerta-texto strong { color: var(--color-amarillo); }
 
-.alerta-verde .alerta-texto strong {
-  color: var(--color-verde-claro);
-}
-
-.alerta-azul .alerta-texto strong {
-  color: var(--color-azul);
-}
-
-.alerta-amarilla .alerta-texto strong {
-  color: var(--color-amarillo);
-}
-
-/* ==================== POPUP REGLAS ==================== */
+/* POPUP REGLAS */
 .popup-reglas {
   max-height: 85vh;
   overflow-y: auto;
@@ -1142,7 +1151,7 @@
   line-height: 1.5;
 }
 
-/* === T-Rex Especial === */
+/* T-Rex Especial */
 .trex-info {
   display: flex;
   align-items: flex-start;
@@ -1177,7 +1186,7 @@
   color: var(--color-rojo);
 }
 
-/* === Reglas con Información === */
+/* Reglas con Información */
 .regla-item {
   display: flex;
   align-items: flex-start;
@@ -1219,7 +1228,7 @@
   display: block;
 }
 
-/* === Consejos y Estrategias === */
+/* Consejos y Estrategias */
 .consejos-estrategias {
   margin: var(--space-lg) 0;
 }
@@ -1248,7 +1257,7 @@
   color: #1976d2;
 }
 
-/* ==================== SISTEMA DE ALERTAS DE JUEGO ==================== */
+/* SISTEMA DE ALERTAS DE JUEGO */
 .alerta-juego {
   position: fixed;
   top: 20px;
@@ -1342,7 +1351,6 @@
     transform: translateX(100%);
     opacity: 0;
   }
-
   to {
     transform: translateX(0);
     opacity: 1;
@@ -1354,7 +1362,6 @@
     transform: translateX(0);
     opacity: 1;
   }
-
   to {
     transform: translateX(100%);
     opacity: 0;
@@ -1365,7 +1372,7 @@
   animation: slideOutRight 0.3s ease-in;
 }
 
-/* ==================== DADOS Y ANIMACIONES ==================== */
+/* DADOS Y ANIMACIONES */
 .contenedor-dado-animacion {
   position: fixed;
   top: 50%;
@@ -1405,6 +1412,9 @@
 .dado-texto {
   text-align: center;
   text-shadow: 0 2px 4px var(--color-negro);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  margin-top: var(--space-lg);
 }
 
 .popup-dado {
@@ -1482,7 +1492,7 @@
   padding: 0 var(--space-md);
 }
 
-/* === Caras del Dado === */
+/* Caras del Dado */
 .caras-dado {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -1490,7 +1500,7 @@
   margin: 15px 0;
 }
 
-/* === Popup Selección Cara del Dado === */
+/* Popup Selección Cara del Dado */
 .caras-dado-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -1545,20 +1555,22 @@
   line-height: 1.2;
 }
 
-/* === Popups Obligatorios === */
+/* Popups Obligatorios */
 .popup-overlay.obligatorio {
   background: rgba(0, 0, 0, 0.8);
+  padding: var(--space-xl) var(--space-lg);
 }
 
 .popup-overlay.obligatorio .popup {
   border: 3px solid var(--color-naranja);
   box-shadow: 0 0 20px var(--color-naranja);
+  overflow: visible;
 }
 
 .popup-overlay.obligatorio .popup::before {
   content: "⚠️ OBLIGATORIO";
   position: absolute;
-  top: -15px;
+  top: -20px;
   left: 50%;
   transform: translateX(-50%);
   background: var(--color-naranja);
@@ -1567,48 +1579,27 @@
   border-radius: var(--border-radius-pill);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
-  z-index: 10;
+  z-index: 2010;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* === Clases de Utilidad para Elementos Específicos === */
+/* Clases de Utilidad para Elementos Específicos */
 
-/* === Estados Dinámicos === */
+/* Estados Dinámicos */
 .dino-arrastreable {
   cursor: move;
   pointer-events: auto;
 }
 
-.restriccion-visible {
-  visibility: visible;
-}
-
-.restriccion-oculta {
-  visibility: hidden;
-}
-
-.icono-restriccion-mostrar {
-  display: block;
-}
-
-.icono-restriccion-ocultar {
-  display: none;
-}
-
-.total-correcto {
-  color: #4CAF50;
-}
-
-.pantalla-partida-visible {
-  display: block;
-}
-
-.ver-mapa-visible {
-  display: block;
-}
-
-.info-jugador-visible {
-  visibility: visible;
-}
+.restriccion-visible { visibility: visible; }
+.restriccion-oculta { visibility: hidden; }
+.icono-restriccion-mostrar { display: block; }
+.icono-restriccion-ocultar { display: none; }
+.total-correcto { color: #4CAF50; }
+.pantalla-partida-visible { display: block; }
+.ver-mapa-visible { display: block; }
+.info-jugador-visible { visibility: visible; }
 
 .texto-sin-restriccion {
   font-size: 0.8em;
@@ -1646,8 +1637,6 @@
   margin-top: var(--space-xl);
 }
 
-
-
 .cara-dado {
   display: flex;
   align-items: center;
@@ -1684,22 +1673,17 @@
   font-weight: 600;
 }
 
-/* ==================== ANIMACIONES DEL DADO ==================== */
+/* ANIMACIONES DEL DADO */
 @keyframes dadoBounce {
-
-  0%,
-  100% {
+  0%, 100% {
     transform: translateY(0) rotate(0deg);
   }
-
   25% {
     transform: translateY(-30px) rotate(45deg);
   }
-
   50% {
     transform: translateY(-40px) rotate(90deg);
   }
-
   75% {
     transform: translateY(-30px) rotate(135deg);
   }
@@ -1709,11 +1693,9 @@
   0% {
     transform: rotate(0) scale(1);
   }
-
   50% {
     transform: rotate(180deg) scale(1.05);
   }
-
   100% {
     transform: rotate(360deg) scale(1);
   }
@@ -1724,19 +1706,17 @@
     transform: scale(.3) rotate(270deg);
     opacity: 0;
   }
-
   50% {
     transform: scale(1.3) rotate(135deg);
     opacity: .7;
   }
-
   100% {
     transform: scale(1) rotate(0);
     opacity: 1;
   }
 }
 
-/* === Estados de Animación del Dado === */
+/* Estados de Animación del Dado */
 .dado-animado.spinning {
   animation: dadoSpin .25s linear infinite;
 }
@@ -1745,9 +1725,269 @@
   animation: dadoFinal 1s ease-out forwards;
 }
 
-/* ==================== MEDIA QUERIES - DESKTOP ==================== */
+/* RESPONSIVE DESIGN - MOBILE FIRST */
 
-/* === Desktop (1024px+) === */
+/* En tablet y mobile, hacer el texto horizontal */
+@media (max-width: 1024px) {
+  .info-texto {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .info-jugador-base {
+    width: 100%;
+    padding: var(--space-xs);
+  }
+
+  .info-jugador-base .avatar-circular {
+    width: 50px;
+    height: 50px;
+  }
+
+  .info-jugador-base.info-jugador2 .avatar-circular {
+    width: 35px;
+    height: 35px;
+  }
+
+  .info-jugador2 .info-texto {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .botones-info { 
+    width: 100%; 
+  }
+
+  .btn-como-jugar,
+  .btn-datos-fisicos {
+    flex: 1;
+    padding: var(--space-md) var(--space-lg);
+    font-size: var(--font-size-base);
+  }
+
+
+  .rejilla-partida {
+    width: 95vw;
+    height: 95vw;
+    top: 40%;
+  }
+
+  .dinosaurios-disponibles {
+    left: 5%;
+    right: 5%;
+    bottom: 140px;
+    top: auto;
+    transform: none;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: 1fr;
+    width: 90%;
+    border-radius: 60px;
+  }
+
+  .dino {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+  }
+
+  .info-restriccion {
+    flex: 1;
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-xs);
+    text-align: center;
+    height: auto;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .icono-restriccion-footer {
+    width: 30px;
+    height: 30px;
+    margin-right: var(--space-xs);
+    flex-shrink: 0;
+  }
+
+  .texto-restriccion {
+    font-size: var(--font-size-xs);
+    line-height: 1.1;
+    text-align: center;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .boton-siguiente {
+    flex: 1;
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--font-size-sm);
+    height: 50px;
+  }
+}
+
+/* Mobile muy pequeño (max-width: 480px) */
+@media (max-width: 480px) {
+  .footer-juego {
+    flex-direction: row;
+    gap: var(--space-xs);
+    padding: var(--space-xs);
+  }
+  
+  .info-restriccion {
+    flex: 1;
+    padding: var(--space-xs);
+    min-height: 40px;
+  }
+  
+  .icono-restriccion-footer {
+    width: 25px;
+    height: 25px;
+    margin-right: var(--space-xs);
+  }
+  
+  .texto-restriccion {
+    font-size: 10px;
+    line-height: 1.0;
+  }
+  
+  .boton-siguiente {
+    flex: 1;
+    padding: var(--space-sm);
+    font-size: var(--font-size-xs);
+    height: 40px;
+  }
+
+  .btn-como-jugar,
+  .btn-datos-fisicos {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-xs);
+    min-width: 0;
+    flex: 1;
+  }
+
+
+  .ver-mapa {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--font-size-xs);
+  }
+
+  .dino-descarte {
+    height: 45px;
+  }
+
+  .seleccion-dinosaurios-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+  }
+  
+  .dino-selector {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm);
+  }
+  
+  .dino-selector-img {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .dino-contador {
+    gap: var(--space-sm);
+  }
+  
+  .btn-contador {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+  }
+  
+  .popup {
+    margin: var(--space-sm);
+    padding: var(--space-md);
+    max-width: calc(100vw - 2 * var(--space-sm));
+  }
+  
+  .popup-close {
+    top: var(--space-sm);
+    right: var(--space-sm);
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    z-index: 1000;
+    background: var(--color-marron);
+    border: none;
+    box-shadow: none;
+  }
+}
+
+/* Responsive para popup de descarte */
+@media (max-width: 768px) {
+  #dinosaurios-descarte {
+    padding: var(--space-sm);
+    gap: var(--space-xs);
+  }
+  
+  .dino-descarte {
+    height: 45px;
+  }
+
+  .seleccion-dinosaurios-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+    padding: var(--space-md);
+  }
+  
+  .dino-selector {
+    padding: var(--space-sm);
+  }
+  
+  .dino-selector-img {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .btn-contador {
+    width: 25px;
+    height: 25px;
+    font-size: 14px;
+  }
+  
+  .popup-close {
+    top: var(--space-sm);
+    right: var(--space-sm);
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+    z-index: 1000;
+  }
+
+  .popup { margin: var(--space-sm); padding: var(--space-lg); max-height: 85vh; }
+  .popup h2 { font-size: var(--font-size-lg); }
+  .popup-mapa { width: 95vw; padding: var(--space-md); max-height: 90vh; }
+  .mini-dinosaurio { width: 10px; height: 10px; }
+  .punto-item { font-size: var(--font-size-xs); padding: var(--space-xs); }
+  .popup-reglas { max-height: 90vh; padding: var(--space-md); }
+  .info-item-base { padding: var(--space-sm); margin-bottom: var(--space-sm); }
+  .trex-imagen { width: 40px; height: 40px; margin-right: var(--space-md); }
+  .regla-icono { width: 20px; height: 20px; margin-right: var(--space-sm); }
+  .info-icon-base { width: 20px; height: 20px; margin-right: var(--space-sm); }
+  .popup-reglas h3 { font-size: var(--font-size-base); margin: var(--space-lg) 0 var(--space-sm) 0; }
+  .trex-texto, .alerta-texto, .regla-texto, .consejo-texto, .info-text-base { font-size: var(--font-size-sm); }
+  .dado-container { width: 200px; height: 200px; }
+  .popup-dado { width: 95%; max-width: 360px; }
+  .caras-dado-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-sm); padding: var(--space-sm); }
+  .cara-dado-opcion { padding: var(--space-sm); gap: var(--space-xs); }
+  .cara-dado-img { width: 50px; height: 50px; }
+  .cara-dado-texto { font-size: var(--font-size-xs); }
+}
+
+/* Desktop (1024px+) */
 @media (min-width: 1024px) {
   .tablero { padding: 0; }
 
@@ -1767,11 +2007,19 @@
     grid-template-rows: repeat(3, 1fr);
     padding: var(--space-lg);
     gap: var(--space-md);
+    width: max-content;
+    border-radius: var(--border-radius-md);
+  }
+  
+  .mensaje-sin-dinosaurios {
+    font-size: var(--font-size-base);
+    padding: var(--space-lg);
+    min-height: 80px;
   }
 
-  .dino { padding: 0; margin: 0; height: 40px; min-height: 40px; }
+  .dino { padding: 0; margin: 0; height: 40px; min-height: 40px; width: auto; }
 
-  /* === Dinosaurios Colocados en Desktop === */
+  /* Dinosaurios Colocados en Desktop */
   .dinosaurio-colocado {
     width: 35px !important;
   }
@@ -1786,7 +2034,13 @@
 
   .avatar-circular { width: 40px; height: 40px; }
 
-  /* === Jugador Activo en Desktop === */
+  .info-texto {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  /* Jugador Activo en Desktop */
   .info-jugador-base.turno-activo,
   .info-jugador.turno-activo,
   .info-jugador2.turno-activo {
@@ -1813,153 +2067,27 @@
   }
 }
 
-/* ==================== RESPONSIVE MOBILE ==================== */
+/* OPTIMIZACIONES Y UTILIDADES */
 
-/* === Mobile (max-width: 1024px) === */
-@media (max-width: 1024px) {
-  .info-jugador-base {
-    width: 100%;
-    padding: var(--space-xs);
-  }
-
-  .info-jugador-base .avatar-circular {
-    width: 50px;
-    height: 50px;
-  }
-
-  .info-jugador-base.info-jugador2 .avatar-circular {
-    width: 35px;
-    height: 35px;
-  }
-
-  .info-jugador2 .info-texto {
-    flex-direction: row;
-    align-items: center;
-    gap: var(--space-sm);
-    flex-wrap: wrap;
-  }
-
-  .botones-info {
-    width: 100%;
-  }
-
-  .btn-como-jugar,
-  .btn-datos-fisicos {
-    flex: 1;
-    padding: var(--space-md) var(--space-lg);
-    font-size: var(--font-size-base);
-  }
-
-  .rejilla-partida {
-    width: 95vw;
-    height: 95vw;
-    top: 40%;
-  }
-
-  .dinosaurios-disponibles {
-    left: 5%;
-    right: 5%;
-    bottom: 140px;
-    top: auto;
-    transform: none;
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: 1fr;
-    width: 90%;
-    border-radius: 60px;
-  }
-
-  .dino {
-    width: 50px;
-    height: 50px;
-    object-fit: contain;
-  }
-
-
-  .info-restriccion {
-    flex: 1;
-    padding: var(--space-xs);
-    font-size: var(--font-size-xs);
-    text-align: center;
-    height: 50px;
-  }
-
-  .icono-restriccion-footer {
-    width: 40px;
-    height: 40px;
-    margin-right: var(--space-xs);
-  }
-
-  .texto-restriccion {
-    font-size: var(--font-size-xs);
-    line-height: 1.2;
-    text-align: left;
-  }
-
-  .boton-siguiente {
-    flex: 1;
-    padding: var(--space-sm) var(--space-md);
-    font-size: var(--font-size-sm);
-    height: 50px;
-  }
-
-  .btn-como-jugar,
-  .btn-datos-fisicos {
-    padding: var(--space-xs) var(--space-sm);
-    font-size: var(--font-size-xs);
-    min-width: 0;
-    flex: 1;
-  }
-
-  .ver-mapa {
-    padding: var(--space-xs) var(--space-sm);
-    font-size: var(--font-size-xs);
-  }
-}
-
-
-/* === Mobile Small (max-width: 768px) === */
-@media (max-width: 768px) {
-  .popup { margin: var(--space-sm); padding: var(--space-lg); max-height: 85vh; }
-  .popup h2 { font-size: var(--font-size-lg); }
-  .popup-mapa { width: 95vw; padding: var(--space-md); max-height: 90vh; }
-  .mini-dinosaurio { width: 10px; height: 10px; }
-  .punto-item { font-size: var(--font-size-xs); padding: var(--space-xs); }
-  .popup-reglas { max-height: 90vh; padding: var(--space-md); }
-  .info-item-base { padding: var(--space-sm); margin-bottom: var(--space-sm); }
-  .trex-imagen { width: 40px; height: 40px; margin-right: var(--space-md); }
-  .regla-icono { width: 20px; height: 20px; margin-right: var(--space-sm); }
-  .info-icon-base { width: 20px; height: 20px; margin-right: var(--space-sm); }
-  .popup-reglas h3 { font-size: var(--font-size-base); margin: var(--space-lg) 0 var(--space-sm) 0; }
-  .trex-texto, .alerta-texto, .regla-texto, .consejo-texto, .info-text-base { font-size: var(--font-size-sm); }
-  .dado-container { width: 200px; height: 200px; }
-  .popup-dado { width: 95%; max-width: 360px; }
-  .caras-dado-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-sm); padding: var(--space-sm); }
-  .cara-dado-opcion { padding: var(--space-sm); gap: var(--space-xs); }
-  .cara-dado-img { width: 50px; height: 50px; }
-  .cara-dado-texto { font-size: var(--font-size-xs); }
-}
-
-/* ==================== OPTIMIZACIONES Y UTILIDADES ==================== */
-
-/* === Performance === */
+/* Performance */
 .dino,
 .btn-como-jugar,
 .btn-datos-fisicos,
 .ver-mapa,
 .boton-siguiente,
-.popup-close {
+.popup-close,
+.btn-cancelar-partida {
   will-change: transform;
   backface-visibility: hidden;
 }
 
-/* === Accesibilidad === */
+/* Accesibilidad */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-
   .dino:hover,
   .btn-como-jugar:hover,
   .btn-datos-fisicos:hover,
@@ -1969,56 +2097,48 @@
   }
 }
 
-/* === Touch Devices === */
+/* Touch devices */
 @media (hover: none) and (pointer: coarse) {
-
   .dino:hover,
   .btn-como-jugar:hover,
   .btn-datos-fisicos:hover,
   .ver-mapa:hover {
     transform: none;
   }
-
-  .dino:active {
-    transform: scale(0.95);
-  }
-
+  .dino:active { transform: scale(0.95); }
   .dino {
     touch-action: none;
-    /* Evita scroll durante drag */
     user-select: none;
     -webkit-user-select: none;
   }
-
   .dino.dragging {
     opacity: 0.3;
     transform: scale(0.9);
     transition: none;
   }
-
   .cuadro,
   .rectangulo {
     transition: background-color 0.2s ease;
   }
-
   .drop-zone-active {
     background: rgba(76, 175, 80, 0.3) !important;
     border: 2px solid #4CAF50 !important;
   }
-
   .drop-zone-invalid {
     background: rgba(244, 67, 54, 0.3) !important;
     border: 2px solid #f44336 !important;
   }
-
   .drop-zone-blocked {
     background: rgba(255, 152, 0, 0.3) !important;
     border: 2px solid #ff9800 !important;
   }
-
   .popup-close {
-    min-height: 44px;
-    min-width: 44px;
+    min-height: 32px;
+    min-width: 32px;
+    top: var(--space-sm);
+    right: var(--space-sm);
+    z-index: 1000;
+    border: none;
+    box-shadow: none;
   }
-
 }
