@@ -21,6 +21,102 @@ class AuthService
         return self::$instance;
     }
 
+    public function registrarUsuarioService(string $nombreUsuario, string $email, string $nacimiento, string $password, string $passwordConfirm): array
+    {
+        $nombreUsuario = trim($nombreUsuario);
+        $email = trim($email);
+        $nacimiento = trim($nacimiento);
+        $password = (string)$password;
+        $passwordConfirm = (string)$passwordConfirm;
+
+        if ($nombreUsuario === '' || $email === '' || $nacimiento === '' || $password === '' || $passwordConfirm === '') {
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'Todos los campos son requeridos.'
+            ];
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'Email inválido.'
+            ];
+        }
+
+        if (strlen($nombreUsuario) < 3) {
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'El username debe tener al menos 3 caracteres.'
+            ];
+        }
+
+        if (strlen($password) < 6) {
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'La contraseña debe tener al menos 6 caracteres.'
+            ];
+        }
+
+        if ($password !== $passwordConfirm) {
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'Las contraseñas no coinciden.'
+            ];
+        }
+
+        $usuarioExiste = $this->usuarioRepo->buscarPorNombreUsuarioRepo($nombreUsuario);
+        if ($usuarioExiste) {
+            return [
+                'success' => false, 
+                'code' => 'duplicate', 
+                'message' => 'El username ya está registrado.'
+            ];
+        }
+
+        $emailExiste = $this->usuarioRepo->buscarPorEmailRepo($email);
+        if ($emailExiste) {
+            return [
+                'success' => false, 
+                'code' => 'duplicate', 
+                'message' => 'El email ya está registrado.'
+            ];
+        }
+
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        if ($hash === false) {
+            return [
+                'success' => false, 
+                'code' => 'error', 
+                'message' => 'No se pudo procesar la contraseña.'
+            ];
+        }
+
+        $created = $this->usuarioRepo->registrarUsuarioRepo($nombreUsuario, $email, $nacimiento, $hash);
+        if ($created === false) {
+            return [
+                'success' => false, 
+                'code' => 'error', 
+                'message' => 'No se pudo crear el usuario.'
+            ];
+        }
+
+        return [
+            'success' => true,
+            'message' => 'Usuario creado exitosamente.',
+            'usuario' => [
+                'id' => (int)$created['id'],
+                'nombreUsuario' => $created['nombreUsuario'],
+                'email' => $created['email'],
+                'nacimiento' => $nacimiento
+            ],
+        ];
+    }
+
 
     public function registrarUsuarioAdminService(string $nombreUsuario, string $email, string $nacimiento,string $password): array
     {
