@@ -174,13 +174,14 @@ class PartidaService
         }
 
         //Descarta el dino de la bolsa.
+        //Descarta el dino de la bolsa.
         $descarte = $this->partidaRepo->descartarDinoRepo($partida_id, $jugador_id, $tipoDinoDescarte);
 
-        $this->partidaRepo->sumarTurnoRepo($partida_id);
 
-        $turnoActual = $this->partidaRepo->getTurnoActualRepo($partida_id);
-        
-        //Si el turno es del 1 al 5 Tira dado.
+        $turnoActual++;
+
+
+        //Si el turno es del 1 al 5 Tira dado
         if($turnoActual < 6){
 
             $this->partidaRepo->sumarTurnoRepo($partida_id);
