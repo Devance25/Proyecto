@@ -51,14 +51,14 @@ class Puntaje
                         $puntaje += $this->reglas->reglasReyDeLaSelva($porRecinto1, $porRecinto2);
 
                     case 'isla-solitaria':
-                        $puntaje += $this->reglas->reglasIslaSolitaria($dinos, $porRecinto);
+                        $puntaje += $this->reglas->reglasIslaSolitaria($dinos, $porRecinto1);
                         
                     case 'rio':
                         $puntaje += $this->reglas->reglasRio($dinos); 
                         break;
                 }
             }
-            return $puntaje;
+            return $puntaje ?? 0;
     }
 
 }

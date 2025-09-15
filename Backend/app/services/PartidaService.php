@@ -183,6 +183,8 @@ class PartidaService
         //Si el turno es del 1 al 5 Tira dado.
         if($turnoActual < 6){
 
+            $this->partidaRepo->sumarTurnoRepo($partida_id);
+
             $nombreTirador = $this->partidaRepo->getNombreJugadorRepo($jugador_id);
 
             $caraDadoActual = $this->partida->tirarDado();

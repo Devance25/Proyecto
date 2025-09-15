@@ -192,12 +192,12 @@ class Reglas
     }
 
     //==========================================================================================================================================================
-    public function reglasIslaSolitaria(array $dinos, array $porRecinto): int   //Recibe como parametro el dino de la isla y los demas recintos con sus respectivos dinos.
+    public function reglasIslaSolitaria(array $dinos, array $porRecinto1): int   //Recibe como parametro el dino de la isla y los demas recintos con sus respectivos dinos.
     {
         $dinoSolitario = $dinos[0];     //Guarda en la variable el dino 'solitario'
         $dinosEnTablero = [];           //Crea array para guardar a todos los dinos del tablero.
 
-        foreach($porRecinto as $recinto => $ejemplar){  //Extrae todos los dinos del tablero y 
+        foreach($porRecinto1 as $recinto => $ejemplar){  //Extrae todos los dinos del tablero y 
             foreach($ejemplar as $dino){                //los guarda en $dinosEnTablero
             $dinosEnTablero[] = $dino;
         }
