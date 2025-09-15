@@ -1230,7 +1230,8 @@ try {
 
     if (!confirmLogout) return;
 
-    localStorage.removeItem('usuario');
+    // Limpiar TODOS los datos del localStorage
+    localStorage.clear();
 
     this.user = null;
     this.players = [];
@@ -1255,6 +1256,9 @@ try {
     this.jugador2Info = null;
     this.dadoSeleccionado = null;
     this.modoSeguimiento = false;
+    
+    // Limpiar TODOS los datos del localStorage
+    localStorage.clear();
     
     this.hideToasts();
     

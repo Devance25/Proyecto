@@ -8,10 +8,10 @@
  *  - Singleton: comparte la misma conexión (mysqli) provista por Database.
  */
 
-class UserRepository
+class UsuarioRepository
 {
     /** Instancia única del repositorio. */
-    private static ?UserRepository $instance = null; // instancia única
+    private static ?UsuarioRepository $instance = null; // instancia única
 
     /** Conexión activa a MySQL (mysqli). */
     private mysqli $conn;
@@ -28,7 +28,7 @@ class UserRepository
     /**
      * Acceso global a la instancia única del repositorio.
      */
-    public static function getInstance(): ?UserRepository
+    public static function getInstance(): ?UsuarioRepository
     {
         if (self::$instance === null) {
             self::$instance = new self();
