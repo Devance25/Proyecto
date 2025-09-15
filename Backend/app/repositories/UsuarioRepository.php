@@ -40,7 +40,7 @@ class UsuarioRepository
 
 
     //INSERTS
-    public function registrarUsuarioRepo(string $nombreUsuario, string $email, string $nacimiento, string $hashedPassword)
+    public function registrarUsuarioRepo(string $nombreUsuario, string $email, string $nacimiento, string $hashedPassword): array | bool
     {
         $query = "INSERT INTO usuarios 
                             (nombre_usuario,
@@ -64,7 +64,9 @@ class UsuarioRepository
             return false;
         }
 
-        $insertId = $stmt->insert_id; // id autoincrement generado
+        $insertId = $stmt->insert_id;
+
+        // Cerrar la declaración
         $stmt->close();
 
         return [
@@ -122,7 +124,7 @@ class UsuarioRepository
 
 
     //GETS
-    public function buscarPorEmailRepo(string $email)
+    public function buscarPorEmailRepo(string $email): array | null
     {
         $query = "SELECT id,
                          nombre_usuario, 
@@ -167,7 +169,7 @@ class UsuarioRepository
     }
 
 
-    public function buscarPorNombreUsuarioRepo(string $nombreUsuario)
+    public function buscarPorNombreUsuarioRepo(string $nombreUsuario): array | null
     {
         $query = "SELECT id,
                          nombre_usuario, 
@@ -201,7 +203,7 @@ class UsuarioRepository
         if ($usuario) {
             return [
                 'id' => (int)$usuario['id'],
-                'nombreUsuario' => $usuario['nombre_usuario'], // 👈
+                'nombreUsuario' => $usuario['nombre_usuario'], 
                 'email' => $usuario['email'],
                 'nacimiento' => $usuario['nacimiento'],
                 'password' => $usuario['password'],
@@ -212,7 +214,7 @@ class UsuarioRepository
     }
 
 
-    public function buscarPorEmailONombreRepo(string $identificador)
+    public function buscarPorEmailONombreRepo(string $identificador): array | null
     {
         $query = "SELECT id, 
                          nombre_usuario, 
@@ -279,7 +281,7 @@ class UsuarioRepository
     }
 
 
-    public function getUsuariosRepo(): array
+    public function getUsuariosRepo(): array | null
     {
         $query = "SELECT id, nombre_usuario, email, nacimiento, admin FROM usuarios";
 
