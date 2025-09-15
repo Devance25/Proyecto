@@ -1,31 +1,33 @@
-/* VARIABLES GLOBALES (MOBILE FIRST) */
+/* ========================================
+   VARIABLES GLOBALES (MOBILE FIRST)
+   ======================================== */
 :root {
-  /* Colores principales */
-  --color-primario: #628107;
-  --color-primario-dark: #85b803;
-  --color-secundario: #94cc04;
-  --color-naranja: #ed7b00;
-  --color-naranja-dark: #cc6a00;
-  --color-naranja-light: #ffbb03;
-  --color-marron: #6e340b;
-  --color-marron-dark: #5a2c09;
-  --color-beige: #fff1c7;
-  --color-dorado: #ca9533;
+  /* Colores principales del tema Draftosaurus */
+  --color-primario: #628107;        /* Verde principal del juego */
+  --color-primario-dark: #85b803;  /* Verde oscuro para hover/active */
+  --color-secundario: #94cc04;     /* Verde secundario más claro */
+  --color-naranja: #ed7b00;        /* Naranja para elementos destacados */
+  --color-naranja-dark: #cc6a00;   /* Naranja oscuro para hover */
+  --color-naranja-light: #ffbb03;  /* Naranja claro para acentos */
+  --color-marron: #6e340b;         /* Marrón para texto y elementos */
+  --color-marron-dark: #5a2c09;    /* Marrón oscuro para contraste */
+  --color-beige: #fff1c7;          /* Beige para fondos suaves */
+  --color-dorado: #ca9533;         /* Dorado para elementos premium */
 
-  /* Colores base */
-  --color-blanco: #fff;
-  --color-negro: #000;
-  --color-gris: #f0f0f0;
-  --color-gris-claro: #999;
-  --color-superficie: #2d2d2d;
+  /* Colores base del sistema */
+  --color-blanco: #fff;            /* Blanco puro para fondos y texto */
+  --color-negro: #000;             /* Negro puro para texto y contraste */
+  --color-gris: #f0f0f0;          /* Gris claro para fondos neutros */
+  --color-gris-claro: #999;        /* Gris medio para texto secundario */
+  --color-superficie: #2d2d2d;     /* Gris oscuro para superficies */
 
-  /* Colores de estado */
-  --color-azul: #3498db;
-  --color-verde-claro: #27ae60;
-  --color-amarillo: #f39c12;
-  --color-rojo: #e74c3c;
+  /* Colores de estado para feedback visual */
+  --color-azul: #3498db;           /* Azul para información */
+  --color-verde-claro: #27ae60;    /* Verde para éxito */
+  --color-amarillo: #f39c12;       /* Amarillo para advertencias */
+  --color-rojo: #e74c3c;           /* Rojo para errores */
 
-  /* Gradientes */
+  /* Gradientes para efectos visuales */
   --gradiente-verde: linear-gradient(135deg, var(--color-primario), var(--color-secundario));
   --gradiente-verde-hover: linear-gradient(135deg, var(--color-primario-dark), var(--color-secundario));
   --gradiente-naranja: linear-gradient(135deg, var(--color-naranja), var(--color-naranja-light));
@@ -36,123 +38,135 @@
   --gradiente-progreso: linear-gradient(to right, var(--color-naranja), var(--color-naranja-light));
 
   /* Espaciado - Mobile First */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 12px;
-  --space-lg: 16px;
-  --space-xl: 20px;
-  --space-2xl: 24px;
-  --space-3xl: 32px;
+  --space-xs: 4px;     /* Espaciado extra pequeño */
+  --space-sm: 8px;     /* Espaciado pequeño */
+  --space-md: 12px;    /* Espaciado medio */
+  --space-lg: 16px;    /* Espaciado grande */
+  --space-xl: 20px;    /* Espaciado extra grande */
+  --space-2xl: 24px;   /* Espaciado doble extra grande */
+  --space-3xl: 32px;   /* Espaciado triple extra grande */
 
   /* Tipografía - Mobile First */
   --font-primary: 'Ubuntu', sans-serif;
   --font-display: 'Oswald', sans-serif;
-  --font-size-xxs: 10px;
-  --font-size-xs: 12px;
-  --font-size-sm: 13px;
-  --font-size-base: 14px;
-  --font-size-md: 16px;
-  --font-size-lg: 18px;
-  --font-size-xl: 20px;
-  --font-size-2xl: 22px;
-  --font-size-3xl: 24px;
-  --font-weight-light: 300;
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 700;
+  --font-size-xxs: 10px;            /* Tamaño extra extra pequeño */
+  --font-size-xs: 12px;            /* Tamaño extra pequeño */
+  --font-size-sm: 13px;            /* Tamaño pequeño */
+  --font-size-base: 14px;          /* Tamaño base del sistema */
+  --font-size-md: 16px;            /* Tamaño medio */
+  --font-size-lg: 18px;            /* Tamaño grande */
+  --font-size-xl: 20px;            /* Tamaño extra grande */
+  --font-size-2xl: 22px;           /* Tamaño doble extra grande */
+  --font-size-3xl: 24px;           /* Tamaño triple extra grande */
+  --font-weight-light: 300;        /* Peso de fuente ligero */
+  --font-weight-normal: 400;       /* Peso de fuente normal */
+  --font-weight-medium: 500;       /* Peso de fuente medio */
+  --font-weight-semibold: 600;     /* Peso de fuente semi-negrita */
+  --font-weight-bold: 700;         /* Peso de fuente negrita */
 
-  /* Sombras */
-  --shadow-button: inset 0 -5px 0 rgba(0, 0, 0, 0.25);
-  --shadow-container: 0 3px 0 #2c1204;
-  --shadow-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12);
-  --shadow-elevation-2: 0 3px 6px rgba(0, 0, 0, 0.16);
-  --shadow-elevation-3: 0 10px 20px rgba(0, 0, 0, 0.19);
+  /* Sombras para efectos de profundidad */
+  --shadow-button: inset 0 -5px 0 rgba(0, 0, 0, 0.25);     /* Sombra interna para botones */
+  --shadow-container: 0 3px 0 #2c1204;                    /* Sombra para contenedores */
+  --shadow-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.12);    /* Elevación nivel 1 */
+  --shadow-elevation-2: 0 3px 6px rgba(0, 0, 0, 0.16);    /* Elevación nivel 2 */
+  --shadow-elevation-3: 0 10px 20px rgba(0, 0, 0, 0.19);  /* Elevación nivel 3 */
 
   /* Bordes y transiciones */
-  --border-radius-sm: 6px;
-  --border-radius-md: 10px;
-  --border-radius-lg: 15px;
-  --border-radius-circle: 50%;
-  --border-radius-pill: 999px;
-  --transition-fast: 0.15s ease;
-  --transition-base: 0.3s ease;
-  --transition-slow: 0.5s ease;
+  --border-radius-sm: 6px;         /* Radio de borde pequeño */
+  --border-radius-md: 10px;        /* Radio de borde medio */
+  --border-radius-lg: 15px;        /* Radio de borde grande */
+  --border-radius-circle: 50%;     /* Radio de borde circular */
+  --border-radius-pill: 999px;      /* Radio de borde píldora */
+  --transition-fast: 0.15s ease;    /* Transición rápida */
+  --transition-base: 0.3s ease;     /* Transición base */
+  --transition-slow: 0.5s ease;     /* Transición lenta */
 
   /* Tamaños - Mobile First */
-  --container-max-width: 100%;
-  --container-padding: var(--space-md);
-  --button-height-sm: 36px;
-  --button-height-md: 44px;
-  --button-height-lg: 48px;
-  --avatar-size-sm: 32px;
-  --avatar-size-md: 40px;
-  --avatar-size-lg: 50px;
-  --avatar-size-xl: 80px;
+  --container-max-width: 100%;     /* Ancho máximo de contenedores */
+  --container-padding: var(--space-md);  /* Padding base de contenedores */
+  --button-height-sm: 36px;        /* Altura de botones pequeños */
+  --button-height-md: 44px;        /* Altura de botones medianos */
+  --button-height-lg: 48px;        /* Altura de botones grandes */
+  --avatar-size-sm: 32px;          /* Tamaño de avatar pequeño */
+  --avatar-size-md: 40px;          /* Tamaño de avatar mediano */
+  --avatar-size-lg: 50px;          /* Tamaño de avatar grande */
+  --avatar-size-xl: 80px;          /* Tamaño de avatar extra grande */
 
-  /* Z-indexes */
-  --z-ui: 100;
-  --z-popup: 2000;
+  /* Z-indexes para capas */
+  --z-ui: 100;                     /* Capa de interfaz de usuario */
+  --z-popup: 2000;                 /* Capa de popups y modales */
 }
 
-/* RESET GLOBAL */
+/* ========================================
+   RESET GLOBAL
+   ======================================== */
+/* Reset básico para normalizar estilos entre navegadores */
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+  box-sizing: border-box;    /* Incluye padding y border en el cálculo del tamaño */
+  margin: 0;                 /* Elimina márgenes por defecto */
+  padding: 0;                /* Elimina padding por defecto */
 }
 
+/* Configuración base del documento HTML */
 html {
-  scroll-behavior: smooth;
-  font-size: 14px;
+  scroll-behavior: smooth;    /* Scroll suave para navegación */
+  font-size: 14px;            /* Tamaño base de fuente para rem */
 }
 
+/* Configuración base del cuerpo del documento */
 body {
-  min-height: 100vh;
-  min-height: 100dvh;
-  width: 100%;
-  font-family: var(--font-primary);
-  font-size: var(--font-size-base);
-  background: var(--color-negro);
-  color: var(--color-blanco);
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  touch-action: manipulation;
+  min-height: 100vh;          /* Altura mínima de viewport */
+  min-height: 100dvh;         /* Altura mínima de viewport dinámico */
+  width: 100%;                /* Ancho completo */
+  font-family: var(--font-primary);     /* Fuente principal del sistema */
+  font-size: var(--font-size-base);     /* Tamaño de fuente base */
+  background: var(--color-negro);       /* Fondo negro para el juego */
+  color: var(--color-blanco);          /* Texto blanco para contraste */
+  overflow-x: hidden;         /* Oculta scroll horizontal */
+  overflow-y: auto;           /* Permite scroll vertical */
+  -webkit-font-smoothing: antialiased;  /* Suavizado de fuentes en WebKit */
+  -moz-osx-font-smoothing: grayscale;   /* Suavizado de fuentes en Firefox */
+  touch-action: manipulation; /* Optimización para dispositivos táctiles */
 }
 
-/* PANTALLAS BASE */
+/* ========================================
+   PANTALLAS BASE
+   ======================================== */
+/* Estilos base para todas las pantallas del juego */
 .pantalla,
 .pantalla-inicio {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  position: fixed;            /* Posicionamiento fijo para pantallas completas */
+  top: 0;                     /* Posición superior */
+  left: 0;                    /* Posición izquierda */
+  width: 100vw;               /* Ancho completo del viewport */
+  height: 100vh;              /* Altura completa del viewport */
+  display: flex;              /* Layout flexbox */
+  flex-direction: column;     /* Dirección vertical */
+  background-size: cover;     /* Fondo cubre toda la pantalla */
+  background-position: center; /* Fondo centrado */
+  background-repeat: no-repeat; /* Sin repetición del fondo */
 }
 
+/* Pantalla de inicio con centrado */
 .pantalla-inicio {
-  align-items: center;
-  justify-content: center;
-  padding: 0;
+  align-items: center;        /* Centrado horizontal */
+  justify-content: center;    /* Centrado vertical */
+  padding: 0;                  /* Sin padding */
 }
 
+/* Fondo específico para la pantalla de inicio */
 .fondo-inicio {
   background: url('img/Fondo_inicial.jpg') center/cover no-repeat;
 }
 
+/* Fondo para interfaces con overlay */
 .fondo-interfaz {
   background: var(--gradiente-overlay), url('img/fondo-base.jpg') center/cover no-repeat;
 }
 
+/* Fondo para interfaces con overlay más oscuro */
 .fondo-interfaz-oscuro {
   background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
     url('img/fondo-base.jpg') center/cover no-repeat;
@@ -165,7 +179,9 @@ body {
   z-index: 1;
 }
 
-/* TIPOGRAFÍA */
+/* ========================================
+   TIPOGRAFÍA
+   ======================================== */
 .texto {
   font-family: var(--font-primary);
   margin: 0;
@@ -229,7 +245,9 @@ body {
   margin: 1px 0 0;
 }
 
-/* ELEMENTOS COMUNES */
+/* ========================================
+   ELEMENTOS COMUNES
+   ======================================== */
 .logo {
   width: 100%;
   max-width: 220px;
@@ -243,7 +261,9 @@ body {
   margin: 0 auto;
 }
 
-/* CONTENEDORES */
+/* ========================================
+   CONTENEDORES
+   ======================================== */
 .container {
   max-width: var(--container-max-width);
   margin: 0 auto;
@@ -290,7 +310,9 @@ body {
   transform: translate(-50%, -50%);
 }
 
-/* PANTALLA DE CARGA */
+/* ========================================
+   PANTALLA DE CARGA
+   ======================================== */
 #pantalla-carga {
   display: flex;
   flex-direction: column;
@@ -325,7 +347,9 @@ body {
   font-size: var(--font-size-sm);
 }
 
-/* BARRA DE PROGRESO */
+/* ========================================
+   BARRA DE PROGRESO
+   ======================================== */
 .progress {
   box-sizing: content-box;
   width: 100%;
@@ -360,7 +384,9 @@ body {
   animation: animar-carga 2s forwards;
 }
 
-/* SISTEMA DE BOTONES */
+/* ========================================
+   SISTEMA DE BOTONES
+   ======================================== */
 .btn {
   display: flex;
   justify-content: center;
@@ -439,7 +465,9 @@ body {
 
 
 
-/* BOTONES ESPECIALES */
+/* ========================================
+   BOTONES ESPECIALES
+   ======================================== */
 .botones-idioma {
   position: absolute;
   top: var(--space-md);
@@ -515,7 +543,9 @@ body {
   right: var(--space-md);
 }
 
-/* SISTEMA DE AVATARES */
+/* ========================================
+   SISTEMA DE AVATARES
+   ======================================== */
 .avatar,
 .jugador-avatar,
 .avatar-turno,
@@ -577,7 +607,9 @@ body {
   background-repeat: no-repeat;
 }
 
-/* Marco universal para avatares */
+/* ========================================
+   MARCO UNIVERSAL PARA AVATARES
+   ======================================== */
 .avatar::after,
 .jugador-avatar::after,
 .avatar-turno::after,
@@ -602,7 +634,9 @@ body {
   background-size: 100%;
 }
 
-/* PERFIL Y ESTADÍSTICAS */
+/* ========================================
+   PERFIL Y ESTADÍSTICAS
+   ======================================== */
 .perfil-lobby {
   display: flex;
   flex-direction: column;
@@ -660,7 +694,9 @@ body {
   line-height: 1.2;
 }
 
-/* FORMULARIOS */
+/* ========================================
+   FORMULARIOS
+   ======================================== */
 .form-group {
   display: flex;
   align-items: center;
@@ -776,7 +812,9 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   min-height: 60px;
 }
 
-/* RADIO BUTTONS */
+/* ========================================
+   RADIO BUTTONS
+   ======================================== */
 .tipo-jugador-selector {
   width: 100%;
   padding: var(--space-sm) 0;
@@ -856,7 +894,9 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   transform: scale(.95);
 }
 
-/* VALIDACIÓN Y FEEDBACK */
+/* ========================================
+   VALIDACIÓN Y FEEDBACK
+   ======================================== */
 .character-counter {
   font-size: 0.75rem;
   color: var(--color-marron);
@@ -889,7 +929,9 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   color: var(--color-verde-claro);
 }
 
-/* SELECCIÓN INICIAL */
+/* ========================================
+   SELECCIÓN INICIAL
+   ======================================== */
 .seleccion-jugadores {
   display: flex;
   flex-direction: column;
@@ -942,7 +984,9 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   box-shadow: 0 0 20px rgba(98, 129, 7, .4);
 }
 
-/* INTERFAZ DE TURNO */
+/* ========================================
+   INTERFAZ DE TURNO
+   ======================================== */
 .contenedor-turno-jugador {
   position: fixed;
   top: 50%;
@@ -982,7 +1026,9 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   font-size: var(--font-size-md);
 }
 
-/* PANTALLAS DE RESULTADOS */
+/* ========================================
+   PANTALLAS DE RESULTADOS
+   ======================================== */
 .contenedor-resumen,
 .contenedor-final {
   position: fixed;
@@ -1110,7 +1156,9 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   line-height: 1.4;
 }
 
-/* PODIO */
+/* ========================================
+   PODIO
+   ======================================== */
 
 .podio {
   width: 90%;
@@ -1245,7 +1293,9 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   margin: 0 0 var(--space-xs) 0;
 }
 
-/* SISTEMA DE TOASTS */
+/* ========================================
+   SISTEMA DE TOASTS
+   ======================================== */
 .toast-container {
   position: fixed;
   top: var(--space-md);
@@ -1321,7 +1371,9 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   color: var(--color-negro);
 }
 
-/* ANIMACIONES */
+/* ========================================
+   ANIMACIONES
+   ======================================== */
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -1459,7 +1511,9 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   }
 }
 
-/* Clases de animación */
+/* ========================================
+   CLASES DE ANIMACIÓN
+   ======================================== */
 .fade-in {
   animation: fadeIn .4s ease-out forwards;
 }
@@ -1469,7 +1523,9 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
 }
 
 
-/* UTILIDADES */
+/* ========================================
+   UTILIDADES
+   ======================================== */
 body .hidden {
   display: none;
 }
@@ -1506,7 +1562,9 @@ body .hidden {
   border: 0;
 }
 
-/* FOOTER */
+/* ========================================
+   FOOTER
+   ======================================== */
 .footer {
   text-align: center;
   font-size: var(--font-size-base);
@@ -1525,7 +1583,9 @@ body .hidden {
   color: var(--color-marron);
 }
 
-/* ACCESIBILIDAD */
+/* ========================================
+   ACCESIBILIDAD
+   ======================================== */
 .keyboard-nav *:focus {
   outline: 2px solid var(--color-azul) !important;
   outline-offset: 2px;
@@ -1536,9 +1596,11 @@ body .hidden {
   outline-offset: 2px;
 }
 
-/* TOOLTIPS */
+/* ========================================
+   TOOLTIPS
+   ======================================== */
 
-/* Tooltip universal (click) */
+/* Tooltip universal (click) - Sistema de tooltips nativo */
 .tooltip-click {
   position: absolute;
   bottom: calc(100% + 10px);
@@ -1587,7 +1649,9 @@ body .hidden {
   border-bottom-color: rgba(0, 0, 0, 0.9);
 }
 
-/* RESPONSIVE DESIGN - MOBILE FIRST */
+/* ========================================
+   RESPONSIVE DESIGN - MOBILE FIRST
+   ======================================== */
 
 /* Small devices (landscape phones, 480px and up) */
 @media (min-width: 480px) {
@@ -1906,7 +1970,9 @@ body .hidden {
   }
 }
 
-/* Reduced motion accessibility */
+/* ========================================
+   REDUCED MOTION ACCESSIBILITY
+   ======================================== */
 @media (prefers-reduced-motion: reduce) {
 
   *,

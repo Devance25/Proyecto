@@ -1,37 +1,45 @@
 @import url("estilos.css");
 
-/* UTILIDADES CSS */
+/* ========================================
+   UTILIDADES CSS
+   ======================================== */
+/* Clases de utilidad para layout flexbox */
 .flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex;              /* Layout flexbox */
+  align-items: center;        /* Centrado vertical */
+  justify-content: center;    /* Centrado horizontal */
 }
 
 .flex-between {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: flex;              /* Layout flexbox */
+  align-items: center;        /* Centrado vertical */
+  justify-content: space-between; /* Espaciado entre elementos */
 }
 
 .flex-column {
-  display: flex;
-  flex-direction: column;
+  display: flex;              /* Layout flexbox */
+  flex-direction: column;     /* Dirección vertical */
 }
 
-/* TABLERO BASE */
+/* ========================================
+   TABLERO BASE
+   ======================================== */
+/* Contenedor principal del tablero de juego */
 .tablero {
-  background: url('img/bosque.jpg') center / cover no-repeat;
-  width: 100%;
-  min-height: 100dvh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  padding: var(--space-sm);
+  background: url('img/bosque.jpg') center / cover no-repeat; /* Fondo del bosque */
+  width: 100%;                /* Ancho completo */
+  min-height: 100dvh;        /* Altura mínima de viewport dinámico */
+  display: flex;              /* Layout flexbox */
+  align-items: center;        /* Centrado vertical */
+  justify-content: center;    /* Centrado horizontal */
+  position: relative;         /* Posicionamiento relativo */
+  overflow: hidden;           /* Oculta contenido que se desborda */
+  padding: var(--space-sm);   /* Espaciado pequeño */
 }
 
-/* GRILLA PRINCIPAL */
+/* ========================================
+   GRILLA PRINCIPAL
+   ======================================== */
 .rejilla-partida {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -76,7 +84,9 @@
   box-sizing: border-box;
 }
 
-/* SISTEMA DE DROP ZONES */
+/* ========================================
+   SISTEMA DE DROP ZONES
+   ======================================== */
 .cuadro::after,
 .rectangulo::after {
   content: '';
@@ -116,9 +126,11 @@
   100% { opacity: 1; }
 }
 
-/* DINOSAURIOS */
+/* ========================================
+   DINOSAURIOS
+   ======================================== */
 
-/* Dinosaurios colocados */
+/* Dinosaurios colocados en el tablero */
 .dinosaurio-colocado {
   position: absolute !important;
   width: 25px !important;
@@ -157,7 +169,7 @@
   }
 }
 
-/* Dinosaurios disponibles */
+/* Dinosaurios disponibles en la mano del jugador */
 .dinosaurios-disponibles {
   position: absolute;
   bottom: calc(env(safe-area-inset-bottom, 0px) + var(--space-lg));
@@ -179,7 +191,7 @@
   overflow: hidden;
 }
 
-/* Mensaje cuando no hay dinosaurios */
+/* Mensaje cuando no hay dinosaurios disponibles */
 .mensaje-sin-dinosaurios {
   grid-column: 1 / -1;
   grid-row: 1 / -1;
@@ -194,7 +206,7 @@
   min-height: 60px;
 }
 
-/* Dinosaurios base */
+/* Dinosaurios base del juego */
 .dino {
   width: auto;
   height: 35px;
@@ -218,7 +230,9 @@
 .dino.usado { opacity: 0.3; filter: grayscale(100%); pointer-events: none; }
 .dino.eliminado { display: none !important; visibility: hidden !important; opacity: 0 !important; transform: scale(0) !important; transition: all 0.2s ease-out; }
 
-/* MARCADORES DE JUGADOR */
+/* ========================================
+   MARCADORES DE JUGADOR
+   ======================================== */
 .dinosaurio-j1 {
   border: 2px solid #FFD700;
   border-radius: 50%;
@@ -233,7 +247,7 @@
   background: rgba(135, 206, 235, 0.1);
 }
 
-/* Estados de dinosaurios */
+/* Estados visuales de dinosaurios */
 .dinosaurio-colocado[data-jugador="1"],
 .dinosaurio-colocado[data-jugador="2"] {
   filter: none;
@@ -244,7 +258,7 @@
   filter: grayscale(30%);
 }
 
-/* Tooltips de identificación */
+/* Tooltips de identificación de dinosaurios */
 .dinosaurio-colocado[data-jugador]::after {
   content: attr(data-jugador);
   position: absolute;
@@ -263,7 +277,7 @@
 
 .dinosaurio-colocado[data-jugador]:hover::after { opacity: 1; }
 
-/* Indicadores de turno */
+/* Indicadores de turno del jugador */
 .info-jugador-base.turno-activo,
 .info-jugador.turno-activo,
 .info-jugador2.turno-activo {
@@ -277,9 +291,11 @@
   border-color: #87CEEB !important;
 }
 
-/* INTERFAZ DE USUARIO */
+/* ========================================
+   INTERFAZ DE USUARIO
+   ======================================== */
 
-/* Header Superior */
+/* Header Superior del tablero */
 .header-superior {
   position: fixed;
   top: 0;
@@ -294,7 +310,7 @@
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
 }
 
-/* Información de Jugadores */
+/* Información de Jugadores en el tablero */
 .player-info,
 .info-jugador-base,
 .info-jugador,
@@ -352,7 +368,7 @@
   white-space: nowrap;
 }
 
-/* Botón Ver Mapa */
+/* Botón Ver Mapa del juego */
 .ver-mapa {
   cursor: pointer;
   transition: var(--transition-base);
@@ -372,12 +388,12 @@
   color: var(--color-blanco);
 }
 
-/* Ocultar Ver Mapa en el footer para que ambos elementos se vean iguales */
+/* Ocultar Ver Mapa en el footer para mantener consistencia visual */
 .footer-juego .ver-mapa {
   display: none;
 }
 
-/* Botones de Información */
+/* Botones de Información del juego */
 .botones-info {
   display: flex;
   align-items: center;
@@ -420,7 +436,9 @@
   object-fit: contain;
 }
 
-/* Footer del juego */
+/* ========================================
+   FOOTER DEL JUEGO
+   ======================================== */
 .footer-juego {
   position: fixed;
   bottom: 0;
@@ -436,7 +454,7 @@
   flex-wrap: wrap;
 }
 
-/* Restricciones */
+/* Restricciones de interacción */
 .info-restriccion {
   display: flex;
   align-items: center;
@@ -506,9 +524,11 @@
   100% { box-shadow: 0 0 0 0 rgba(255, 165, 0, 0); }
 }
 
-/* SISTEMA DE POPUPS */
+/* ========================================
+   SISTEMA DE POPUPS
+   ======================================== */
 
-/* Base de Popups */
+/* Base de Popups del juego */
 .popup-overlay {
   position: fixed;
   inset: 0;
@@ -530,7 +550,7 @@
   opacity: 1 !important;
 }
 
-/* Regla más específica para asegurar que se aplique */
+/* Regla más específica para asegurar que se aplique correctamente */
 div.popup-overlay:not(.hidden) {
   display: flex !important;
   visibility: visible !important;
@@ -614,9 +634,11 @@ div.popup-overlay:not(.hidden) {
   outline-offset: 2px;
 }
 
-/* POPUP ESPECÍFICOS */
+/* ========================================
+   POPUP ESPECÍFICOS
+   ======================================== */
 
-/* Popup de pesos */
+/* Popup de pesos de dinosaurios */
 .tabla-pesos {
   width: 100%;
   border-collapse: collapse;
@@ -718,7 +740,7 @@ div.popup-overlay:not(.hidden) {
   margin-bottom: var(--space-md);
 }
 
-/* Mini tablero */
+/* Mini tablero del oponente */
 .mini-tablero {
   margin-bottom: var(--space-lg);
   display: flex;
@@ -771,7 +793,7 @@ div.popup-overlay:not(.hidden) {
   pointer-events: none;
 }
 
-/* Información de puntos */
+/* Información de puntos del jugador */
 .puntos-detalle {
   display: grid;
   grid-template-columns: 1fr;
@@ -798,7 +820,7 @@ div.popup-overlay:not(.hidden) {
   font-weight: var(--font-weight-bold);
 }
 
-/* Popup de descarte */
+/* Popup de descarte de dinosaurios */
 #dinosaurios-descarte {
   display: flex;
   gap: var(--space-sm);
@@ -829,7 +851,9 @@ div.popup-overlay:not(.hidden) {
   border-radius: var(--border-radius-sm);
 }
 
-/* MODO SEGUIMIENTO - POPUPS */
+/* ========================================
+   MODO SEGUIMIENTO - POPUPS
+   ======================================== */
 
 /* Popup Selección de Dinosaurios */
 .seleccion-dinosaurios-grid {
@@ -909,7 +933,9 @@ div.popup-overlay:not(.hidden) {
   font-weight: var(--font-weight-semibold);
 }
 
-/* CONTENIDO INFORMATIVO - CONSOLIDADO */
+/* ========================================
+   CONTENIDO INFORMATIVO - CONSOLIDADO
+   ======================================== */
 
 /* Base para elementos informativos */
 .info-item-base {
@@ -943,7 +969,7 @@ div.popup-overlay:not(.hidden) {
   line-height: 1.5;
 }
 
-/* Recintos Info */
+/* Información de Recintos */
 .recintos-info {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -989,7 +1015,7 @@ div.popup-overlay:not(.hidden) {
   font-weight: var(--font-weight-semibold);
 }
 
-/* Consejos Interactivos */
+/* Consejos Interactivos del juego */
 .consejos-interactivos {
   display: flex;
   flex-direction: column;
@@ -1059,7 +1085,7 @@ div.popup-overlay:not(.hidden) {
   display: block;
 }
 
-/* Alertas Importantes */
+/* Alertas Importantes del juego */
 .alertas-importantes {
   display: flex;
   flex-direction: column;
@@ -1128,7 +1154,9 @@ div.popup-overlay:not(.hidden) {
 .alerta-azul .alerta-texto strong { color: var(--color-azul); }
 .alerta-amarilla .alerta-texto strong { color: var(--color-amarillo); }
 
-/* POPUP REGLAS */
+/* ========================================
+   POPUP REGLAS
+   ======================================== */
 .popup-reglas {
   max-height: 85vh;
   overflow-y: auto;
@@ -1151,7 +1179,7 @@ div.popup-overlay:not(.hidden) {
   line-height: 1.5;
 }
 
-/* T-Rex Especial */
+/* T-Rex Especial - Reglas específicas */
 .trex-info {
   display: flex;
   align-items: flex-start;
@@ -1186,7 +1214,7 @@ div.popup-overlay:not(.hidden) {
   color: var(--color-rojo);
 }
 
-/* Reglas con Información */
+/* Reglas con Información detallada */
 .regla-item {
   display: flex;
   align-items: flex-start;
@@ -1228,7 +1256,7 @@ div.popup-overlay:not(.hidden) {
   display: block;
 }
 
-/* Consejos y Estrategias */
+/* Consejos y Estrategias del juego */
 .consejos-estrategias {
   margin: var(--space-lg) 0;
 }
@@ -1257,7 +1285,9 @@ div.popup-overlay:not(.hidden) {
   color: #1976d2;
 }
 
-/* SISTEMA DE ALERTAS DE JUEGO */
+/* ========================================
+   SISTEMA DE ALERTAS DE JUEGO
+   ======================================== */
 .alerta-juego {
   position: fixed;
   top: 20px;
@@ -1372,7 +1402,9 @@ div.popup-overlay:not(.hidden) {
   animation: slideOutRight 0.3s ease-in;
 }
 
-/* DADOS Y ANIMACIONES */
+/* ========================================
+   DADOS Y ANIMACIONES
+   ======================================== */
 .contenedor-dado-animacion {
   position: fixed;
   top: 50%;
