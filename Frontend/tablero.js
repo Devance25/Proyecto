@@ -17,16 +17,17 @@ const CONFIG = {
     'triceratops': { disponible: 'img/dino-triceratops.png', colocado: 'img/dino-triceratops-arriba.png' },
     'diplodocus': { disponible: 'img/dino-diplodocus.png', colocado: 'img/dino-diplodocus-arriba.png' },
     'stegosaurus': { disponible: 'img/dino-stegosaurus.png', colocado: 'img/dino-stegosaurus-arriba.png' },
-    'parasaurolophus': { disponible: 'img/dino-parasaurolophus.png', colocado: 'img/dino-parasaurolophus-arriba.png' }
+    'parasaurolophus': { disponible: 'img/dino-parasaurolophus.png', colocado: 'img/dino-parasaurolophus-arriba.png' },
+    'pterodáctilo': { disponible: 'img/dino-velociraptor.png', colocado: 'img/dino-velociraptor-arriba.png' }
   },
   
   // Cuánto pesan aproximadamente los dinosaurios en kilogramos
   // Se usan para calcular los pesos que aparecen en el juego
-  MASAS_DINOSAURIOS: { 't-rex': 7000, 'triceratops': 7000, 'diplodocus': 15000, 'stegosaurus': 5000, 'parasaurolophus': 2500 },
+  MASAS_DINOSAURIOS: { 't-rex': 7000, 'triceratops': 7000, 'diplodocus': 15000, 'stegosaurus': 5000, 'parasaurolophus': 2500, 'pterodáctilo': 2000 },
   
   // Reglas básicas del juego
   GRAVEDAD: 9.8, // Número que se usa para calcular el peso de los dinosaurios
-  TIPOS_DINOSAURIOS: ['t-rex', 'triceratops', 'diplodocus', 'stegosaurus', 'parasaurolophus'],
+  TIPOS_DINOSAURIOS: ['t-rex', 'triceratops', 'diplodocus', 'stegosaurus', 'parasaurolophus', 'pterodáctilo'],
   DINOSAURIOS_POR_RONDA: 6, // Cuántos dinosaurios recibe cada jugador al empezar una ronda
   MAX_DINOSAURIOS_POOL: 8, // Máximo de dinosaurios de cada tipo en todo el juego
   TOTAL_RONDAS: 5, // Cuántas rondas tiene una partida completa
@@ -2588,7 +2589,8 @@ const JuegoManager = {
       'triceratops': 'Triceratops',
       'diplodocus': 'Diplodocus',
       'stegosaurus': 'Stegosaurus',
-      'parasaurolophus': 'Parasaurolophus'
+      'parasaurolophus': 'Parasaurolophus',
+      'pterodáctilo': 'Pterodáctilo'
     };
     return nombres[tipo] || tipo;
   },
