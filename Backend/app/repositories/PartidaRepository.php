@@ -22,7 +22,10 @@ class PartidaRepository
 
 
     //INSERTS
-    public function crearPartidaRepo(int $jugador1_id, int $jugador2_id) : int
+    public function crearPartidaRepo(
+        int $jugador1_id, 
+        int $jugador2_id
+        ) : int
     {
         $query = "INSERT INTO partidas 
                              (jugador1_id, 
@@ -35,15 +38,29 @@ class PartidaRepository
         $stmt = $this->conn->prepare($query);
     
         if (!$stmt) {
-            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            throw new Exception(
+                "Error preparando la consulta: " . $this->conn->error
+            );
         }
 
-        if (!$stmt->bind_param("iii", $jugador1_id, $jugador2_id, $jugador1_id)) {
-            throw new Exception("Error en bind_param: " . $stmt->error);
+        if (!$stmt->bind_param("iii", 
+                    $jugador1_id, 
+                    $jugador2_id, 
+                    $jugador1_id
+                    )) {
+            throw new Exception(
+                "Error en bind_param: " . $stmt->error
+            );
         }
     
         if (!$stmt->execute()) {
-            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            //  Detecta duplicado
+            if ($this->conn->errno === 1062) {
+                return 0; // señal de duplicado
+            }
+            throw new Exception(
+                "Error ejecutando la consulta: " . $stmt->error
+            );
         }
 
         $partida_id = $this->conn->insert_id;
@@ -55,7 +72,11 @@ class PartidaRepository
 
 
 
-    public function crearBolsaRepo(int $partida_id, int $jugador_id, array $bolsaDinos): array
+    public function crearBolsaRepo(
+        int $partida_id, 
+        int $jugador_id, 
+        array $bolsaDinos
+        ): array
     {
         foreach ($bolsaDinos as $dino) {
 
@@ -69,15 +90,24 @@ class PartidaRepository
             $stmt = $this->conn->prepare($query);
 
             if (!$stmt) {
-                throw new Exception("Error preparando la consulta: " . $this->conn->error);
+                throw new Exception(
+                    "Error preparando la consulta: " . $this->conn->error
+                );
             }
 
-            if (!$stmt->bind_param("iis", $partida_id, $jugador_id, $dino)) {
-                throw new Exception("Error en bind_param: " . $stmt->error);
+            if (!$stmt->bind_param("iis", 
+                    $partida_id, 
+                    $jugador_id, 
+                    $dino)) {
+                throw new Exception(
+                    "Error en bind_param: " . $stmt->error
+                );
             }
 
             if (!$stmt->execute()) {
-                throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+                throw new Exception(
+                    "Error ejecutando la consulta: " . $stmt->error
+                );
             }
 
             $stmt->close();
@@ -94,7 +124,12 @@ class PartidaRepository
 
 
 
-    public function colocarDinosaurioRepo(int $jugador_id, string $recinto, string $tipo_dino, int $partida_id): array
+    public function colocarDinosaurioRepo(
+        int $jugador_id, 
+        string $recinto, 
+        string $tipo_dino, 
+        int $partida_id
+        ): array
     {
         $query = "INSERT INTO recintos_partida
                               (partida_id,
@@ -106,15 +141,26 @@ class PartidaRepository
         $stmt = $this->conn->prepare($query);
 
         if (!$stmt) {
-            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            throw new Exception(
+                "Error preparando la consulta: " . $this->conn->error
+            );
         }
 
-        if (!$stmt->bind_param("iiss", $partida_id, $jugador_id, $recinto, $tipo_dino)) {
-            throw new Exception("Error en bind_param: " . $stmt->error);
+        if (!$stmt->bind_param("iiss", 
+                $partida_id, 
+                $jugador_id, 
+                $recinto, 
+                $tipo_dino
+                )) {
+            throw new Exception(
+                "Error en bind_param: " . $stmt->error
+            );
         }
 
         if (!$stmt->execute()) {
-            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            throw new Exception(
+                "Error ejecutando la consulta: " . $stmt->error
+            );
         }
 
         $stmt->close();
@@ -133,7 +179,11 @@ class PartidaRepository
 
 
     //UPDATES
-    public function tirarDadoRepo(int $partida_id, string $caraDadoActual, int $tirador_id): void
+    public function tirarDadoRepo(
+        int $partida_id, 
+        string $caraDadoActual, 
+        int $tirador_id
+        ): void
     {
         $query = "UPDATE partidas 
                      SET cara_dado_actual = ?, 
@@ -142,15 +192,25 @@ class PartidaRepository
 
         $stmt = $this->conn->prepare($query);
         if (!$stmt) {
-            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            throw new Exception(
+                "Error preparando la consulta: " . $this->conn->error
+            );
         }
 
-        if (!$stmt->bind_param("sii", $caraDadoActual, $tirador_id, $partida_id)) {
-            throw new Exception("Error en bind_param: " . $stmt->error);
+        if (!$stmt->bind_param("sii", 
+                $caraDadoActual, 
+                $tirador_id, 
+                $partida_id
+                )) {
+            throw new Exception(
+                "Error en bind_param: " . $stmt->error
+            );
         }
 
         if (!$stmt->execute()) {
-            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            throw new Exception(
+                "Error ejecutando la consulta: " . $stmt->error
+            );
         }
 
         $stmt->close();
@@ -158,7 +218,9 @@ class PartidaRepository
 
 
 
-    public function sumarTurnoRepo(int $id): void
+    public function sumarTurnoRepo(
+        int $id
+        ): void
     {
         $query = "UPDATE partidas
                      SET turno = turno + 1
@@ -167,15 +229,23 @@ class PartidaRepository
         $stmt = $this->conn->prepare($query);
 
         if (!$stmt) {
-            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            throw new Exception(
+                "Error preparando la consulta: " . $this->conn->error
+            );
         }
 
-        if (!$stmt->bind_param("i", $id)) {
-            throw new Exception("Error en bind_param: " . $stmt->error);
+        if (!$stmt->bind_param("i", 
+                $id
+                )) {
+            throw new Exception(
+                "Error en bind_param: " . $stmt->error
+            );
         }
 
         if (!$stmt->execute()) {
-            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            throw new Exception(
+                "Error ejecutando la consulta: " . $stmt->error
+            );
         }
 
         $stmt->close();
@@ -184,7 +254,9 @@ class PartidaRepository
 
 
 
-    public function sumarRondaRepo(int $id): void
+    public function sumarRondaRepo(
+        int $id
+        ): int
     {
         $query = "UPDATE partidas
                      SET ronda = ronda + 1
@@ -193,51 +265,79 @@ class PartidaRepository
         $stmt = $this->conn->prepare($query);
 
         if (!$stmt) {
-            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            throw new Exception(
+                "Error preparando la consulta: " . $this->conn->error
+            );
         }
 
-        if (!$stmt->bind_param("i", $id)) {
-            throw new Exception("Error en bind_param: " . $stmt->error);
+        if (!$stmt->bind_param("i", 
+                $id
+                )) {
+            throw new Exception(
+                "Error en bind_param: " . $stmt->error
+            );
         }
 
         if (!$stmt->execute()) {
-            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            throw new Exception(
+                "Error ejecutando la consulta: " . $stmt->error
+            );
         }
 
+        $ronda = $stmt->affected_rows;
+
         $stmt->close();
+
+        return $ronda;
 
     }    
 
 
 
-    public function resetTurnosRepo(int $id): void
+    public function resetTurnosRepo(
+        int $id
+        ): int
     {
         $query = "UPDATE partidas
-                     SET turno = 1
-                   WHERE id = ?";
+                    SET turno = 1
+                WHERE id = ?";
         
         $stmt = $this->conn->prepare($query);
 
         if (!$stmt) {
-            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            throw new Exception(
+                "Error preparando la consulta: " . $this->conn->error
+            );
         }
 
-        if (!$stmt->bind_param("i", $id)) {
-            throw new Exception("Error en bind_param: " . $stmt->error);
+        if (!$stmt->bind_param("i", 
+                $id
+                )) {
+            throw new Exception(
+                "Error en bind_param: " . $stmt->error
+            );
         }
 
         if (!$stmt->execute()) {
-            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            throw new Exception(
+                "Error ejecutando la consulta: " . $stmt->error
+            );
         }
+
+        $turno = $stmt->affected_rows;
 
         $stmt->close();
 
+        return $turno;
     }
+
     
     
 
 
-    public function sumarPartidaJugadaRepo(int $usuario_id) : array
+    public function sumarPartidaJugadaRepo(
+        int $usuario_id
+        ) : array
     {
         $query = "UPDATE ranking_usuarios
                      SET partidas_jugadas = partidas_jugadas + 1
@@ -246,19 +346,27 @@ class PartidaRepository
         $stmt = $this->conn->prepare($query);
 
         if (!$stmt) {
-            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            throw new Exception(
+                "Error preparando la consulta: " . $this->conn->error
+            );
         }
 
         if (!$stmt->bind_param("i", $usuario_id)) {
-            throw new Exception("Error en bind_param: " . $stmt->error);
+            throw new Exception(
+                "Error en bind_param: " . $stmt->error
+            );
         }
 
         if (!$stmt->execute()) {
-            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            throw new Exception(
+                "Error ejecutando la consulta: " . $stmt->error
+            );
         }
 
         if ($stmt->affected_rows === 0) {
-            throw new Exception("No se encontró ranking para el usuario $usuario_id");
+            throw new Exception(
+                "No se encontró ranking para el usuario $usuario_id"
+            );
         }
 
         $stmt->close();
@@ -271,7 +379,9 @@ class PartidaRepository
 
 
 
-    public function sumarPartidaGanadaRepo(int $usuario_id) : array
+    public function sumarPartidaGanadaRepo(
+        int $usuario_id
+        ) : array
     {
         $query = "UPDATE ranking_usuarios
                      SET partidas_ganadas = partidas_ganadas + 1
@@ -280,70 +390,119 @@ class PartidaRepository
         $stmt = $this->conn->prepare($query);
 
         if (!$stmt) {
-            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            throw new Exception(
+                "Error preparando la consulta: " . $this->conn->error
+            );
         }
 
         if (!$stmt->bind_param("i", $usuario_id)) {
-            throw new Exception("Error en bind_param: " . $stmt->error);
+            throw new Exception(
+                "Error en bind_param: " . $stmt->error
+            );
         }
 
         if (!$stmt->execute()) {
-            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            throw new Exception(
+                "Error ejecutando la consulta: " . $stmt->error
+            );
         }
 
         // Chequear filas afectadas
         if ($stmt->affected_rows === 0) {
-            throw new Exception("No se encontró ranking para el usuario $usuario_id");
+            throw new Exception("
+            No se encontró ranking para el usuario $usuario_id."
+            );
         }
 
         $stmt->close();
 
         return [
             'success' => true,
-            'message' => "Partida ganada sumada al ranking del usuario $usuario_id"
+            'message' => "Partida ganada sumada al ranking del usuario $usuario_id."
         ];
     }
 
     
 
 
-    public function finalizarPartidaRepo(int $partida_id, int $puntajeJugador1, int $puntajeJugador2, ?int $ganador_id) : void
+    public function finalizarPartidaRepo(
+        int $partida_id, 
+        int $puntajeJugador1, 
+        int $puntajeJugador2, 
+        ?int $ganador_id
+    ): void
     {
-        $query = "UPDATE partidas 
-                     SET puntaje_jugador1 = ?,
-                         puntaje_jugador2 = ?,
-                               ganador_id = ?,
-                                   estado = 'finalizada',
-                            finalizado_el = NOW() 
-                   WHERE id = ?";
+        if ($ganador_id === null) {
 
-        $stmt = $this->conn->prepare($query);
-        if (!$stmt) {
-            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            // Caso empate → seteamos NULL explícito en la query
+            $query = "UPDATE partidas 
+                         SET puntaje_jugador1 = ?,
+                             puntaje_jugador2 = ?,
+                             ganador_id = NULL,
+                             estado = 'finalizada',
+                             finalizado_el = NOW() 
+                       WHERE id = ?";
+
+            $stmt = $this->conn->prepare($query);
+
+            if (!$stmt) {
+                throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            }
+    
+            if (!$stmt->bind_param("iii", $puntajeJugador1, $puntajeJugador2, $partida_id)) {
+                throw new Exception("Error en bind_param: " . $stmt->error);
+            }
+
+        } else {
+
+            // Caso con ganador → bind normal
+            $query = "UPDATE partidas 
+                         SET puntaje_jugador1 = ?,
+                             puntaje_jugador2 = ?,
+                             ganador_id = ?,
+                             estado = 'finalizada',
+                             finalizado_el = NOW() 
+                       WHERE id = ?";
+
+            $stmt = $this->conn->prepare($query);
+
+            if (!$stmt) {
+                throw new Exception(
+                    "Error preparando la consulta: " . $this->conn->error
+                );
+            }
+    
+            if (!$stmt->bind_param("iiii", $puntajeJugador1, $puntajeJugador2, $ganador_id, $partida_id)) {
+                throw new Exception(
+                    "Error en bind_param: " . $stmt->error
+                );
+            }
         }
-
-        if (!$stmt->bind_param("iiii", $puntajeJugador1, $puntajeJugador2, $ganador_id, $partida_id)) {
-        throw new Exception("Error en bind_param: " . $stmt->error);
-        }
-
+    
         if (!$stmt->execute()) {
-        throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            throw new Exception(
+                "Error ejecutando la consulta: " . $stmt->error)
+                ;
         }
-
+    
         if ($stmt->affected_rows === 0) {
-        throw new Exception("No se encontró la partida con id = $partida_id o ya estaba finalizada");
+            throw new Exception(
+                "No se encontró la partida con id = $partida_id o ya estaba finalizada"
+            );
         }
-
+    
         $stmt->close();
-
     }
+    
 
 
 
 
 
     //GETS
-    public function getCaraDadoActualRepo(int $id): string
+    public function getCaraDadoActualRepo(
+        int $id
+        ): string
     {
         $query = "SELECT cara_dado_actual 
                   FROM partidas 
@@ -364,7 +523,9 @@ class PartidaRepository
 
 
 
-    public function getTiradorActualRepo(int $id): int
+    public function getTiradorActualRepo(
+        int $id
+        ): int
     {
         $query = "SELECT tirador_actual_id 
                   FROM partidas 
@@ -385,7 +546,9 @@ class PartidaRepository
 
 
 
-    public function getTurnoActualRepo(int $id): int
+    public function getTurnoActualRepo(
+        int $id
+        ): int
     {
         $query = "SELECT turno 
                   FROM partidas 
@@ -394,15 +557,21 @@ class PartidaRepository
         $stmt = $this->conn->prepare($query);
 
         if (!$stmt) {
-            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            throw new Exception(
+                "Error preparando la consulta: " . $this->conn->error
+            );
         }
 
         if (!$stmt->bind_param("i", $id)) {
-            throw new Exception("Error en bind_param: " . $stmt->error);
+            throw new Exception(
+                "Error en bind_param: " . $stmt->error
+            );
         }
 
         if (!$stmt->execute()) {
-            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            throw new Exception(
+                "Error ejecutando la consulta: " . $stmt->error
+            );
         }
 
         $stmt->bind_result($turno);
@@ -412,7 +581,9 @@ class PartidaRepository
         $stmt->close();
 
         if (!isset($turno)) {
-            throw new Exception("No se encontró la partida con ID: $id");
+            throw new Exception(
+                "No se encontró la partida con ID: $id"
+            );
         }
 
         return $turno;
@@ -420,7 +591,9 @@ class PartidaRepository
 
 
 
-    public function getRondaActualRepo(int $id): int
+    public function getRondaActualRepo(
+        int $id
+        ): int
     {
         $query = "SELECT ronda 
                   FROM partidas 
@@ -429,15 +602,21 @@ class PartidaRepository
         $stmt = $this->conn->prepare($query);
 
         if (!$stmt) {
-            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            throw new Exception(
+                "Error preparando la consulta: " . $this->conn->error
+            );
         }
 
         if (!$stmt->bind_param("i", $id)) {
-            throw new Exception("Error en bind_param: " . $stmt->error);
+            throw new Exception(
+                "Error en bind_param: " . $stmt->error
+            );
         }
 
         if (!$stmt->execute()) {
-            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            throw new Exception(
+                "Error ejecutando la consulta: " . $stmt->error
+            );
         }
 
         $stmt->bind_result($ronda);
@@ -447,7 +626,9 @@ class PartidaRepository
         $stmt->close();
 
         if (!isset($ronda)) {
-            throw new Exception("No se encontró la partida con ID: $id");
+            throw new Exception(
+                "No se encontró la partida con ID: $id."
+            );
         }
 
         return $ronda;
@@ -455,7 +636,9 @@ class PartidaRepository
 
 
 
-    public function getPartidaRepo(int $id): bool
+    public function getPartidaRepo(
+        int $id
+        ): bool
     {
         $query = "SELECT 1 
                   FROM partidas 
@@ -466,7 +649,9 @@ class PartidaRepository
         $stmt = $this->conn->prepare($query);
 
         if (!$stmt) {
-           throw new Exception("Error preparando verificación de partida: " . $this->conn->error);
+           throw new Exception(
+            "Error preparando verificación de partida: " . $this->conn->error
+            );
         }
 
         $stmt->bind_param("i", $id);
@@ -483,8 +668,44 @@ class PartidaRepository
     }
 
 
+    public function getEstadoPartidaRepo(
+        int $id
+        ): ?string
+    {
+        $query = "SELECT estado 
+                  FROM partidas 
+                  WHERE id = ? 
+                  LIMIT 1
+                  ";
 
-    public function getNombreJugadorRepo(int $id): string
+        $stmt = $this->conn->prepare($query);
+
+        if (!$stmt) {
+           throw new Exception(
+            "Error preparando consulta de estado de partida: " . $this->conn->error
+            );
+        }
+
+        $stmt->bind_param("i", $id);
+
+        if (!$stmt->execute()) {
+            throw new Exception(
+                "Error ejecutando consulta de estado de partida: " . $stmt->error
+            );
+        }
+
+        $stmt->bind_result($estado);
+        $stmt->fetch();
+        $stmt->close();
+
+        return $estado; // Devuelve el estado o null si no existe la partida
+    }
+
+
+
+    public function getNombreJugadorRepo(
+        int $id
+        ): string
     {
         $query = "SELECT nombre_usuario 
                   FROM usuarios 
@@ -493,15 +714,21 @@ class PartidaRepository
         $stmt = $this->conn->prepare($query);
 
         if (!$stmt) {
-            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            throw new Exception(
+                "Error preparando la consulta: " . $this->conn->error
+            );
         }
 
         if (!$stmt->bind_param("i", $id)) {
-            throw new Exception("Error en bind_param: " . $stmt->error);
+            throw new Exception(
+                "Error en bind_param: " . $stmt->error
+            );
         }
 
         if (!$stmt->execute()) {
-            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            throw new Exception(
+                "Error ejecutando la consulta: " . $stmt->error
+            );
         }
 
         $stmt->bind_result($nombreUsuario);
@@ -509,7 +736,9 @@ class PartidaRepository
         $stmt->close();
 
         if (!isset($nombreUsuario)) {
-            throw new Exception("No se encontró el usuario con ID: $id");
+            throw new Exception(
+                "No se encontró el usuario con ID: $id"
+            );
         }
 
         return $nombreUsuario;
@@ -517,7 +746,9 @@ class PartidaRepository
 
 
 
-    public function getJugador1IdRepo(int $partida_id): int
+    public function getJugador1IdRepo(
+        int $partida_id
+        ): int
     {
         $query = "SELECT jugador1_id 
                   FROM partidas 
@@ -526,15 +757,21 @@ class PartidaRepository
         $stmt = $this->conn->prepare($query);
 
         if (!$stmt) {
-            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            throw new Exception(
+                "Error preparando la consulta: " . $this->conn->error)
+                ;
         }
 
         if (!$stmt->bind_param("i", $partida_id)) {
-            throw new Exception("Error en bind_param: " . $stmt->error);
+            throw new Exception(
+                "Error en bind_param: " . $stmt->error
+            );
         }
 
         if (!$stmt->execute()) {
-            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            throw new Exception(
+                "Error ejecutando la consulta: " . $stmt->error
+            );
         }
 
         $stmt->bind_result($jugador1_id);
@@ -542,7 +779,9 @@ class PartidaRepository
         $stmt->close();
 
         if ($jugador1_id === null) {
-            throw new Exception("No se encontró la partida con ID: $partida_id");
+            throw new Exception(
+                "No se encontró la partida con ID: $partida_id.")
+                ;
         }
 
         return $jugador1_id;
@@ -550,7 +789,9 @@ class PartidaRepository
 
 
 
-    public function getJugador2IdRepo(int $partida_id): int
+    public function getJugador2IdRepo(
+        int $partida_id
+        ): int
     {
         $query = "SELECT jugador2_id 
                   FROM partidas 
@@ -559,15 +800,21 @@ class PartidaRepository
         $stmt = $this->conn->prepare($query);
 
         if (!$stmt) {
-            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            throw new Exception(
+                "Error preparando la consulta: " . $this->conn->error
+            );
         }
 
         if (!$stmt->bind_param("i", $partida_id)) {
-            throw new Exception("Error en bind_param: " . $stmt->error);
+            throw new Exception(
+                "Error en bind_param: " . $stmt->error
+            );
         }
 
         if (!$stmt->execute()) {
-            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            throw new Exception(
+                "Error ejecutando la consulta: " . $stmt->error
+            );
         }
 
         $stmt->bind_result($jugador2_id);
@@ -575,7 +822,9 @@ class PartidaRepository
         $stmt->close();
 
         if ($jugador2_id === null) {
-            throw new Exception("No se encontró la partida con ID: $partida_id");
+            throw new Exception(
+                "No se encontró la partida con ID: $partida_id.")
+                ;
         }
 
         return $jugador2_id;
@@ -584,7 +833,10 @@ class PartidaRepository
 
                                                         
 
-    public function getBolsa(int $partida_id, int $jugador_id): array
+    public function getBolsa(
+        int $partida_id, 
+        int $jugador_id
+        ): array
     {
         $query = "SELECT dino 
                     FROM bolsas 
@@ -595,15 +847,21 @@ class PartidaRepository
         $stmt = $this->conn->prepare($query);
 
         if (!$stmt) {
-            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            throw new Exception(
+                "Error preparando la consulta: " . $this->conn->error
+            );
         }
 
         if (!$stmt->bind_param("ii", $partida_id, $jugador_id)) {
-            throw new Exception("Error en bind_param: " . $stmt->error);
+            throw new Exception(
+                "Error en bind_param: " . $stmt->error
+            );
         }
 
         if (!$stmt->execute()) {
-            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            throw new Exception(
+                "Error ejecutando la consulta: " . $stmt->error
+            );
         }
 
         $result = $stmt->get_result();
@@ -616,7 +874,9 @@ class PartidaRepository
         $stmt->close();
 
         if (empty($dinos)) {
-            throw new Exception("La bolsa del jugador está vacía.");
+            throw new Exception(
+                "La bolsa del jugador está vacía."
+            );
         }
 
         return $dinos;
@@ -624,7 +884,10 @@ class PartidaRepository
 
 
 
-    public function getColocacionesRepo(int $partida_id, int $jugador_id): array
+    public function getColocacionesRepo(
+        int $partida_id, 
+        int $jugador_id
+        ): array
     {
         $query = "SELECT recinto, tipo_dino 
                   FROM recintos_partida 
@@ -634,15 +897,21 @@ class PartidaRepository
         $stmt = $this->conn->prepare($query);
 
         if (!$stmt) {
-            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            throw new Exception(
+                "Error preparando la consulta: " . $this->conn->error
+            );
         }
 
         if (!$stmt->bind_param("ii", $partida_id, $jugador_id)) {
-            throw new Exception("Error en bind_param: " . $stmt->error);
+            throw new Exception(
+                "Error en bind_param: " . $stmt->error
+            );
         }
 
         if (!$stmt->execute()) {
-            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            throw new Exception(
+                "Error ejecutando la consulta: " . $stmt->error
+            );
         }
 
         $result = $stmt->get_result();
@@ -664,7 +933,11 @@ class PartidaRepository
 
 
     //DELETS
-    public function descartarDinoRepo(int $partida_id, int $jugador_id, string $dino): array
+    public function descartarDinoRepo(
+        int $partida_id, 
+        int $jugador_id, 
+        string $dino
+        ): array
     {
         $query = "DELETE FROM bolsas 
                   WHERE partida_id = ?
@@ -676,15 +949,21 @@ class PartidaRepository
         $stmt = $this->conn->prepare($query);
 
         if (!$stmt) {
-            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            throw new Exception(
+                "Error preparando la consulta: " . $this->conn->error
+            );
         }
 
         if (!$stmt->bind_param("isi", $partida_id, $dino, $jugador_id)) {
-            throw new Exception("Error en bind_param: " . $stmt->error);
+            throw new Exception(
+                "Error en bind_param: " . $stmt->error
+            );
         }
 
         if (!$stmt->execute()) {
-            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            throw new Exception(
+                "Error ejecutando la consulta: " . $stmt->error
+            );
         }
 
         $filasEliminadas = $stmt->affected_rows;

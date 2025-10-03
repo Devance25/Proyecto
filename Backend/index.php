@@ -15,6 +15,9 @@ require_once 'app/domain/Partida.php';
 require_once 'app/domain/Puntaje.php';
 require_once 'app/domain/Reglas.php';
 
+require_once 'app/DTO/PartidaDTO.php';
+
+
 $origin = 'http://127.0.0.1:5500';
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: $origin");
@@ -41,7 +44,10 @@ try {
 
     switch ($resource) { 
 
-        //AuthController
+// ============================================================================
+// Endpoints para manejo de registro, login de usuarios y funciones de administracion
+// ============================================================================
+
         case 'login':
             if ($method === 'POST') {
                 $authController->loginController();
@@ -118,7 +124,11 @@ try {
 
 
 
-        //PartidaController
+// ============================================================================
+// Endpoints para manejo de partidas
+// ============================================================================
+        
+        //  Modo de juego digital completo
         case 'crearPartida':
             if ($method === 'POST') {
                 $partidaController->crearPartidaController();
@@ -170,6 +180,45 @@ try {
             ]);
             break;
 
+        
+        //  Modo de seguimiento
+        case 'crearPartidaSeguimiento':
+            if ($method === 'POST') {
+                $partidaController->crearPartidaSeguimientoController();
+                break;
+            }
+            http_response_code(405);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
+            break;
+
+        
+        case 'crearBolsaSeguimiento':
+            if ($method === 'POST') {
+                $partidaController->crearBolsaSeguimientoController();
+                break;
+            }
+            http_response_code(405);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
+            break;
+
+
+        case 'turnoSeguimiento':
+            if ($method === 'POST') {
+                $partidaController->turnoSeguimientoController();
+                break;
+            }
+            http_response_code(405);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
+            break;
 
 
 

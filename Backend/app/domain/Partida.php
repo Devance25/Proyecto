@@ -33,7 +33,6 @@ class Partida {
 
 
 
-
     public function crearBolsa(): array
     {
         $bolsaDinos = []; //bolsa de 60 dinos, que mueva los dinos de la bolsa main a la bosla creada
@@ -47,4 +46,36 @@ class Partida {
 
         return $bolsaDinos;
     }
+
+
+
+    public function agruparPorRecinto(array $colocacionesJugador): array
+    {
+        $porRecintoJugador = [];
+
+        foreach($colocacionesJugador as $c)
+        {
+            $recinto = $c['recinto'];
+            $tipoDino = $c['tipo_dino'];
+            $porRecintoJugador[$recinto][] = $tipoDino;
+        }
+
+        return $porRecintoJugador;
+
+    }
+
+
+
+    public function determinarGanador(int $jugador1_id, int $jugador2_id, int $puntajeJugador1, int $puntajeJugador2): ?int
+    {   
+        if ($puntajeJugador1 > $puntajeJugador2) {
+            return $jugador1_id;
+        } elseif ($puntajeJugador2 > $puntajeJugador1) {
+            return $jugador2_id;
+        } else {
+            return null;
+        }
+
+    }
+
 }
