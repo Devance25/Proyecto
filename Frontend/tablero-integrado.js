@@ -1,4 +1,14 @@
-/* CONFIGURACIÓN CENTRALIZADA */
+// ============================================================================
+// CONFIGURACIÓN CENTRALIZADA DEL JUEGO
+// ============================================================================
+
+/**
+ * CONFIGURACIÓN GLOBAL - DRAFTOSAURUS DIGITAL
+ * 
+ * Esta configuración es transversal a ambos modos de juego:
+ * - MODO JUEGO DIGITAL COMPLETO: Usa esta configuración para generar automáticamente
+ * - MODO SEGUIMIENTO: Usa esta configuración para validar selecciones manuales
+ */
 const CONFIG = {
   // Dinosaurios
   IMAGENES_DINOSAURIOS: {
@@ -127,7 +137,18 @@ const CONFIG = {
   }
 };
 
-/* REGLAS DE RECINTOS */
+// ============================================================================
+// REGLAS DE RECINTOS (TRANSVERSAL - Común a ambos modos)
+// ============================================================================
+
+/**
+ * REGLAS DE RECINTOS - DRAFTOSAURUS DIGITAL
+ * 
+ * Define las reglas de puntuación y validación para cada recinto.
+ * Estas reglas son transversales a ambos modos de juego:
+ * - MODO JUEGO DIGITAL COMPLETO: Usa estas reglas para calcular puntajes automáticamente
+ * - MODO SEGUIMIENTO: Usa estas reglas para validar colocaciones manuales
+ */
 const REGLAS_RECINTOS = {
   'bosque-semejanza': {
     validar: (recinto, nuevoDino) => recinto.length === 0 || recinto.every(d => d === nuevoDino),
@@ -184,7 +205,19 @@ const REGLAS_RECINTOS = {
   }
 };
 
-/* UTILIDADES */
+// ============================================================================
+// UTILIDADES GENERALES (TRANSVERSAL - Común a ambos modos)
+// ============================================================================
+
+/**
+ * UTILIDADES GENERALES - DRAFTOSAURUS DIGITAL
+ * 
+ * Funciones de utilidad que son transversales a ambos modos de juego:
+ * - Manipulación de arrays
+ * - Manejo de popups
+ * - Creación de elementos DOM
+ * - Validaciones comunes
+ */
 const Utils = {
   mezclarArray: (arr) => {
     const copia = [...arr];
@@ -231,7 +264,19 @@ const Utils = {
   }
 };
 
-/* ESTADO DEL JUEGO */
+// ============================================================================
+// ESTADO DEL JUEGO (TRANSVERSAL - Común a ambos modos)
+// ============================================================================
+
+/**
+ * ESTADO DEL JUEGO - DRAFTOSAURUS DIGITAL
+ * 
+ * Maneja el estado global del juego que es transversal a ambos modos:
+ * - MODO JUEGO DIGITAL COMPLETO: Estado controlado automáticamente por el sistema
+ * - MODO SEGUIMIENTO: Estado controlado manualmente por el usuario
+ * 
+ * Ambos modos comparten la misma estructura de estado pero con diferentes flujos de control
+ */
 class EstadoJuego {
   constructor() { this.reset(); }
 
@@ -350,7 +395,21 @@ class EstadoJuego {
 
 const estadoJuego = new EstadoJuego();
 
-/* LÓGICA DEL JUEGO */
+// ============================================================================
+// LÓGICA DEL JUEGO (TRANSVERSAL - Común a ambos modos)
+// ============================================================================
+
+/**
+ * LÓGICA DEL JUEGO - DRAFTOSAURUS DIGITAL
+ * 
+ * Contiene la lógica central del juego que es transversal a ambos modos:
+ * - Validación de colocaciones
+ * - Cálculo de puntajes
+ * - Aplicación de restricciones del dado
+ * - Manejo de pesos y masas
+ * 
+ * Esta lógica es compartida entre ambos modos de juego
+ */
 const GameLogic = {
   puedeColocarDinosaurio(recinto, tipoDino) {
     if (estadoJuego.yaColocoEnTurno) return false;
@@ -507,7 +566,21 @@ const GameLogic = {
   }
 };
 
-/* RENDERIZADO */
+// ============================================================================
+// SISTEMA DE RENDERIZADO (TRANSVERSAL - Común a ambos modos)
+// ============================================================================
+
+/**
+ * SISTEMA DE RENDERIZADO - DRAFTOSAURUS DIGITAL
+ * 
+ * Maneja la visualización del tablero y dinosaurios que es transversal a ambos modos:
+ * - Renderizado del tablero
+ * - Actualización de dinosaurios disponibles
+ * - Creación de elementos visuales
+ * - Manejo de posiciones
+ * 
+ * Ambos modos comparten la misma interfaz visual
+ */
 const RenderManager = {
   renderizarTablero() {
     // INTERFAZ UNIFICADA: Siempre usar la misma lógica de renderizado
@@ -633,7 +706,21 @@ const RenderManager = {
   }
 };
 
-/* DRAG & DROP */
+// ============================================================================
+// SISTEMA DE DRAG & DROP (TRANSVERSAL - Común a ambos modos)
+// ============================================================================
+
+/**
+ * SISTEMA DE DRAG & DROP - DRAFTOSAURUS DIGITAL
+ * 
+ * Maneja la interacción de arrastrar y soltar dinosaurios que es transversal a ambos modos:
+ * - Arrastre de dinosaurios disponibles
+ * - Corrección de dinosaurios colocados
+ * - Soporte táctil para dispositivos móviles
+ * - Validación visual de zonas de drop
+ * 
+ * Ambos modos comparten la misma interfaz de interacción
+ */
 const DragDropManager = {
   dinosaurioArrastrado: null,
   esCorreccion: false,
@@ -1016,7 +1103,21 @@ const DragDropManager = {
   }
 };
 
-/* SISTEMA DE POPUPS */
+// ============================================================================
+// SISTEMA DE POPUPS (TRANSVERSAL - Común a ambos modos)
+// ============================================================================
+
+/**
+ * SISTEMA DE POPUPS - DRAFTOSAURUS DIGITAL
+ * 
+ * Maneja la visualización de popups que es transversal a ambos modos:
+ * - Popup de reglas del juego
+ * - Popup de pesos y masas
+ * - Popup de descarte de dinosaurios
+ * - Manejo de eventos de cierre
+ * 
+ * Ambos modos comparten el mismo sistema de popups
+ */
 const PopupManager = {
   mostrarReglas: () => Utils.togglePopup(document.getElementById('popup-reglas'), true),
   mostrarPesos: () => { GameLogic.actualizarPesos(); Utils.togglePopup(document.getElementById('popup-pesos'), true); },
@@ -1076,7 +1177,20 @@ const PopupManager = {
   }
 };
 
-/* SISTEMA DE MAPAS */
+// ============================================================================
+// SISTEMA DE MAPAS (TRANSVERSAL - Común a ambos modos)
+// ============================================================================
+
+/**
+ * SISTEMA DE MAPAS - DRAFTOSAURUS DIGITAL
+ * 
+ * Maneja la visualización del mapa del oponente que es transversal a ambos modos:
+ * - Renderizado del mini tablero del oponente
+ * - Cálculo de puntuación del oponente
+ * - Visualización de dinosaurios colocados
+ * 
+ * Ambos modos comparten la misma funcionalidad de mapas
+ */
 const MapaOponente = {
   mostrar() {
     const oponente = estadoJuego.getOponente();
@@ -1166,7 +1280,21 @@ const MapaOponente = {
   }
 };
 
-/* MODO SEGUIMIENTO */
+// ============================================================================
+// MODO SEGUIMIENTO (ESPECÍFICO - Solo para modo seguimiento)
+// ============================================================================
+
+/**
+ * MODO SEGUIMIENTO - DRAFTOSAURUS DIGITAL
+ * 
+ * Maneja específicamente el modo seguimiento para seguir partidas físicas reales:
+ * - Selección manual de dinosaurios por el usuario
+ * - Selección manual del resultado del dado
+ * - Validación de selecciones del usuario
+ * - Gestión de turnos en modo seguimiento
+ * 
+ * Esta funcionalidad es específica del modo seguimiento y no se usa en modo digital completo
+ */
 const ModoSeguimiento = {
   MAX_DINOSAURIOS: 6, dinosauriosSeleccionados: [], eventListeners: new Map(),
 
@@ -1294,7 +1422,7 @@ const ModoSeguimiento = {
     }
   },
 
-  _confirmarSeleccionDinosaurios() {
+  async _confirmarSeleccionDinosaurios() {
     const dinosaurios = [];
 
     document.querySelectorAll('.dino-selector').forEach(selector => {
@@ -1315,6 +1443,41 @@ const ModoSeguimiento = {
     } else {
       estadoJuego.dinosauriosRondaJ2 = [...dinosaurios];
       if (estadoJuego.turnosCompletadosJ2 === 0) estadoJuego.descartadosJ2 = [];
+    }
+
+    // ============================================================================
+    // ENVIAR BOLSA AL BACKEND EN MODO SEGUIMIENTO
+    // ============================================================================
+    if (estadoJuego.modoSeguimiento && window.app?.partidaInfo?.id) {
+      try {
+        const jugadorId = jugadorNum === 1 ? 
+          (window.app?.jugador1Info?.id) : 
+          (window.app?.jugador2Info?.id);
+
+        const response = await fetch('http://127.0.0.1:8000/crearBolsaSeguimiento', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            partida_id: window.app.partidaInfo.id,
+            jugador_id: jugadorId,
+            dinos: dinosaurios
+          })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          console.error('Error al crear bolsa en backend:', result);
+          window.app?.showToast?.('Error al guardar bolsa en el servidor', 'error');
+          return;
+        }
+
+        console.log('Bolsa creada en backend:', result);
+      } catch (error) {
+        console.error('Error al enviar bolsa al backend:', error);
+        window.app?.showToast?.('Error de conexión con el servidor', 'error');
+        return;
+      }
     }
 
     estadoJuego.getJugadorActual().dinosauriosDisponibles = [...dinosaurios];
@@ -1370,12 +1533,57 @@ const ModoSeguimiento = {
     Utils.togglePopup(popup, true);
   },
 
-  _seleccionarCaraDado(cara) {
+  async _seleccionarCaraDado(cara) {
     document.querySelectorAll('.cara-dado-opcion').forEach(c => c.classList.remove('seleccionada'));
     cara.classList.add('seleccionada');
 
     const caraSeleccionada = parseInt(cara.dataset.cara);
     estadoJuego.dadoNumero = caraSeleccionada;
+
+    // ============================================================================
+    // ENVIAR RESULTADO DEL DADO AL BACKEND EN MODO SEGUIMIENTO
+    // ============================================================================
+    if (estadoJuego.modoSeguimiento && window.app?.partidaInfo?.id) {
+      try {
+        const jugadorId = estadoJuego.jugadorActual === 1 ? 
+          (window.app?.jugador1Info?.id) : 
+          (window.app?.jugador2Info?.id);
+
+        const caraDadoBackend = JuegoManager.obtenerCaraDadoDesdeNumero(caraSeleccionada);
+
+        const response = await fetch('http://127.0.0.1:8000/turnoSeguimiento', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            partida_id: window.app.partidaInfo.id,
+            jugador_id: jugadorId,
+            recinto: estadoJuego.recintoColocadoEnTurno || '',
+            tipoDino: estadoJuego.dinosaurioColocadoEnTurno || '',
+            tipoDinoDescarte: estadoJuego.dinosaurioDescartadoEnTurno || '',
+            caraDado: caraDadoBackend
+          })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          console.error('Error al procesar turno en backend:', result);
+          window.app?.showToast?.('Error al procesar turno en el servidor', 'error');
+          return;
+        }
+
+        console.log('Turno procesado en backend:', result);
+        
+        // Sincronizar con la respuesta del backend
+        if (result.data) {
+          JuegoManager.sincronizarConBackend(result.data);
+        }
+      } catch (error) {
+        console.error('Error al enviar turno al backend:', error);
+        window.app?.showToast?.('Error de conexión con el servidor', 'error');
+        return;
+      }
+    }
 
     setTimeout(() => {
       this._procesarDadoSeleccionado(caraSeleccionada);
@@ -1404,7 +1612,22 @@ const ModoSeguimiento = {
   }
 };
 
-/* GESTOR PRINCIPAL */
+// ============================================================================
+// GESTOR PRINCIPAL DEL JUEGO (TRANSVERSAL - Común a ambos modos)
+// ============================================================================
+
+/**
+ * GESTOR PRINCIPAL DEL JUEGO - DRAFTOSAURUS DIGITAL
+ * 
+ * Coordina todas las operaciones del juego que son transversales a ambos modos:
+ * - Inicialización de partidas
+ * - Procesamiento de turnos
+ * - Manejo de rondas
+ * - Cálculo de puntajes
+ * - Gestión de interfaz
+ * 
+ * Este gestor funciona tanto para modo digital completo como para modo seguimiento
+ */
 const JuegoManager = {
   dinoSeleccionadoDescarte: null, tipoSeleccionadoDescarte: null,
 
@@ -2276,7 +2499,21 @@ const JuegoManager = {
   }
 };
 
-/* FUNCIONES PARA REGLAS INTERACTIVAS */
+// ============================================================================
+// FUNCIONES DE REGLAS INTERACTIVAS (TRANSVERSAL - Común a ambos modos)
+// ============================================================================
+
+/**
+ * FUNCIONES DE REGLAS INTERACTIVAS - DRAFTOSAURUS DIGITAL
+ * 
+ * Funciones que manejan la interacción con las reglas del juego que son transversales a ambos modos:
+ * - Mostrar detalles de consejos
+ * - Alertas contextuales del juego
+ * - Consejos estratégicos
+ * - Alertas de restricciones del dado
+ * 
+ * Estas funciones son compartidas entre ambos modos de juego
+ */
 
 function mostrarDetalleConsejo(elemento) {
   document.querySelectorAll('.consejo-item').forEach(item => {
@@ -2397,7 +2634,21 @@ function mostrarConsejoEstrategia(tipo) {
   }
 }
 
-/* INICIALIZACIÓN */
+// ============================================================================
+// INICIALIZACIÓN DEL JUEGO (TRANSVERSAL - Común a ambos modos)
+// ============================================================================
+
+/**
+ * INICIALIZACIÓN DEL JUEGO - DRAFTOSAURUS DIGITAL
+ * 
+ * Configuración inicial que es transversal a ambos modos de juego:
+ * - Configuración de event listeners
+ * - Inicialización de sistemas
+ * - Configuración de funciones globales
+ * - Manejo de errores globales
+ * 
+ * Esta inicialización es compartida entre ambos modos
+ */
 document.addEventListener('DOMContentLoaded', () => {
   const btnSiguiente = document.getElementById('btn-siguiente-turno');
   if (btnSiguiente) {
@@ -2479,7 +2730,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.tooltip-click').forEach(tooltip => tooltip.remove());
   }
 
-  // FASE 7: Envía datos al backend con manejo robusto de errores y logging completo
+  // ============================================================================
+  // COMUNICACIÓN CON BACKEND (TRANSVERSAL - Común a ambos modos)
+  // ============================================================================
+  
+  /**
+   * Envía datos del turno al backend con manejo robusto de errores
+   * Esta función es transversal a ambos modos de juego
+   */
   async function enviarTurnoAlBackend() {
     if (estadoJuego.sincronizandoConBackend) {
       return null;
@@ -2506,9 +2764,21 @@ document.addEventListener('DOMContentLoaded', () => {
         tipoDinoDescarte: estadoJuego.dinosaurioDescartadoEnTurno
       };
 
+      // Solo agregar caraDado en modo seguimiento
+      if (estadoJuego.modoSeguimiento) {
+        requestData.caraDado = JuegoManager.obtenerCaraDadoDesdeNumero(estadoJuego.dadoNumero);
+      }
+
       console.log('Enviando turno al backend:', requestData);
 
-      const response = await fetch('http://127.0.0.1:8000/turno', {
+      // ============================================================================
+      // DISCRIMINACIÓN DE ENDPOINTS SEGÚN EL MODO DE JUEGO
+      // ============================================================================
+      const endpoint = estadoJuego.modoSeguimiento ? 
+        'http://127.0.0.1:8000/turnoSeguimiento' : 
+        'http://127.0.0.1:8000/turno';
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(requestData)
@@ -2578,8 +2848,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // FASE 1: Sincroniza el estado local con los datos que devuelve el backend, detecta fin de ronda/partida
-  // FASE 6: Sincroniza estado local y detecta automáticamente fin de ronda/partida desde backend
+  /**
+   * Sincroniza el estado local con los datos que devuelve el backend
+   * Detecta automáticamente fin de ronda/partida desde backend
+   * Esta función es transversal a ambos modos de juego
+   */
   function sincronizarConBackend(backendData) {
     const estadoMapeado = mapearBackendAEstadoLocal(backendData);
     Object.assign(estadoJuego, estadoMapeado);
@@ -2602,7 +2875,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // No llamar actualizarInterfaz aquí para no interferir con la restricción
   }
 
-  // FASE 1: Guarda el estado actual del juego en localStorage para persistencia
+  /**
+   * Guarda el estado actual del juego en localStorage para persistencia
+   * Esta función es transversal a ambos modos de juego
+   */
   function actualizarLocalStorage() {
     const datosActualizados = {
       jugador1: window.app?.jugador1Info || {},
@@ -2617,7 +2893,10 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('datosJuego', JSON.stringify(datosActualizados));
   }
 
-  // FASE 1: Convierte la respuesta del backend al formato que entiende el estado local del frontend
+  /**
+   * Convierte la respuesta del backend al formato que entiende el estado local del frontend
+   * Esta función es transversal a ambos modos de juego
+   */
   function mapearBackendAEstadoLocal(backendResponse) {
     
     const mapeado = {
@@ -2672,6 +2951,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // ============================================================================
+  // EXPOSICIÓN DE FUNCIONES GLOBALES (TRANSVERSAL - Común a ambos modos)
+  // ============================================================================
+  
   // Exponer funciones globales
   Object.assign(window, {
     JuegoManager, estadoJuego, ModoSeguimiento, RenderManager,
@@ -2700,6 +2983,10 @@ document.addEventListener('DOMContentLoaded', () => {
     enviarTurnoAlBackend
   });
 
+  // ============================================================================
+  // CONFIGURACIÓN ESPECÍFICA DEL MODO SEGUIMIENTO
+  // ============================================================================
+  
   if (window.app) {
     window.app.empezarTurnoSeguimiento = function () {
       window.app.showScreen('partida');

@@ -37,7 +37,14 @@ class Partida {
     {
         $bolsaDinos = []; //bolsa de 60 dinos, que mueva los dinos de la bolsa main a la bosla creada
         
-        $dino = ['t-rex', 'triceratops', 'stegosaurus', 'parasaurolophus', 'diplodocus', 'pterodáctilo'];
+        $dino = [
+            't-rex', 
+            'triceratops', 
+            'stegosaurus', 
+            'parasaurolophus', 
+            'diplodocus', 
+            'pterodáctilo'
+        ];
 
         for($i = 0; $i < 6; $i++)
         {

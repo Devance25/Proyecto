@@ -1,15 +1,47 @@
-// CONFIGURACIÓN GLOBAL
+// ============================================================================
+// CONFIGURACIÓN GLOBAL Y ESTADO DE LA APLICACIÓN
+// ============================================================================
+
+/**
+ * CLASE PRINCIPAL DE LA APLICACIÓN - DRAFTOSAURUS DIGITAL
+ * 
+ * Esta clase maneja el estado global de la aplicación y coordina entre los dos modos:
+ * 
+ * 1. MODO JUEGO DIGITAL COMPLETO (modoSeguimiento = false):
+ *    - El sistema genera automáticamente las bolsas de dinosaurios
+ *    - El sistema tira el dado automáticamente
+ *    - Endpoints: /crearPartida, /turno, /finalizarRonda
+ * 
+ * 2. MODO SEGUIMIENTO (modoSeguimiento = true):
+ *    - El usuario selecciona manualmente los dinosaurios
+ *    - El usuario selecciona manualmente el resultado del dado
+ *    - Endpoints: /crearPartidaSeguimiento, /crearBolsaSeguimiento, /turnoSeguimiento
+ * 
+ * 3. FUNCIONES TRANSVERSALES:
+ *    - Autenticación, validaciones, UI común
+ */
 class AppState {
   constructor() {
+    // ============================================================================
+    // CONFIGURACIÓN DE PANTALLAS Y ESTADO GENERAL
+    // ============================================================================
     this.currentScreen = 'carga';
     this.user = null;
     this.loading = false;
     this.players = [];
-    this.jugador1Info = null; // NUEVO: Información del jugador 1
-    this.jugador2Info = null;
-    this.partidaInfo = null; // NUEVO: Información de la partida creada
+    
+    // ============================================================================
+    // INFORMACIÓN DE JUGADORES Y PARTIDA
+    // ============================================================================
+    this.jugador1Info = null; // Información del jugador 1
+    this.jugador2Info = null; // Información del jugador 2
+    this.partidaInfo = null;  // Información de la partida creada
     this.dadoSeleccionado = null;
-    this.modoSeguimiento = false;
+    
+    // ============================================================================
+    // CONTROL DE MODOS DE JUEGO
+    // ============================================================================
+    this.modoSeguimiento = false; // false = Digital Completo, true = Seguimiento
     
     this.validationConfig = {
       username: { min: 3, max: 15 },
@@ -76,7 +108,9 @@ class AppState {
     this.partidaInfo = null;
   }
 
-  // EVENTOS
+  // ============================================================================
+  // SISTEMA DE EVENTOS Y MANEJO DE INTERACCIONES
+  // ============================================================================
   bindEvents() {
     document.addEventListener('click', this.handleClick.bind(this));
     document.addEventListener('submit', this.handleSubmit.bind(this));
@@ -97,6 +131,9 @@ class AppState {
     if (!target) return;
     
     const actions = {
+      // ============================================================================
+      // EVENTOS TRANSVERSALES (Comunes a ambos modos)
+      // ============================================================================
       'link-registro': () => {
         e.preventDefault();
         this.showScreen('registro');
@@ -107,13 +144,20 @@ class AppState {
       },
       'btn-logout': () => this.logout(),
       'btn-salir-admin': () => this.logout(),
-      'btn-jugar-app': () => {
-        this.modoSeguimiento = false;
-        this.showScreen('jugadores');
-      },
-      'btn-modo-asistente': () => this.iniciarModoSeguimiento(),
       'btn-volver-jugadores': () => this.showScreen('lobby'),
       'btn-volver-seleccion': () => this.showScreen('jugadores'),
+      'btn-siguiente-ronda': () => this.siguienteRonda(),
+      'btn-revancha': () => this.revancha(),
+      'btn-nueva-partida': () => this.nuevaPartida(),
+      'btn-volver-inicio-final': () => this.showScreen('lobby'),
+      
+      // ============================================================================
+      // EVENTOS ESPECÍFICOS DE MODO JUEGO DIGITAL COMPLETO
+      // ============================================================================
+      'btn-jugar-app': () => {
+        this.modoSeguimiento = false; // Activar modo digital completo
+        this.showScreen('jugadores');
+      },
       'btn-seleccionar-j1': () => {
         if (!this.seleccionEnCurso) {
           this.seleccionEnCurso = true;
@@ -127,12 +171,13 @@ class AppState {
         }
       },
       'btn-seleccion-aleatoria': () => this.seleccionAleatoria(),
-      'btn-empezar-turno': () => this.empezarTurnoSeguimiento(),
       'btn-comenzar-juego': () => this.comenzarJuego(),
-      'btn-siguiente-ronda': () => this.siguienteRonda(),
-      'btn-revancha': () => this.revancha(),
-      'btn-nueva-partida': () => this.nuevaPartida(),
-      'btn-volver-inicio-final': () => this.showScreen('lobby')
+      
+      // ============================================================================
+      // EVENTOS ESPECÍFICOS DE MODO SEGUIMIENTO
+      // ============================================================================
+      'btn-modo-asistente': () => this.iniciarModoSeguimiento(),
+      'btn-empezar-turno': () => this.empezarTurnoSeguimiento()
     };
     
     if (actions[target.id]) {
@@ -159,7 +204,9 @@ class AppState {
     }
   }
 
-  // VALIDACIÓN EN TIEMPO REAL
+  // ============================================================================
+  // SISTEMA DE VALIDACIÓN EN TIEMPO REAL (TRANSVERSAL)
+  // ============================================================================
   setupRealTimeValidation() {
     document.addEventListener('input', e => {
       if (e.target.matches('#jugador-1, #jugador-2')) {
@@ -571,7 +618,14 @@ class AppState {
     });
   }
 
-  // MODO SEGUIMIENTO
+  // ============================================================================
+  // FUNCIONES ESPECÍFICAS DE MODO SEGUIMIENTO
+  // ============================================================================
+  
+  /**
+   * Inicia el modo seguimiento para seguir partidas físicas reales
+   * En este modo el usuario selecciona manualmente dinosaurios y dados
+   */
   iniciarModoSeguimiento() {
     this.modoSeguimiento = true;
     this.showScreen('jugadores');
@@ -597,7 +651,14 @@ class AppState {
     }, 100);
   }
 
-  // MANEJO DE JUGADORES - MODIFICADO para soportar login de jugador 2
+  // ============================================================================
+  // MANEJO DE JUGADORES (TRANSVERSAL - Común a ambos modos)
+  // ============================================================================
+  
+  /**
+   * Procesa el formulario de selección de jugadores
+   * Funciona tanto para modo digital completo como modo seguimiento
+   */
   async handleJugadoresSubmit(form) {
     const j1 = form.querySelector('#jugador-1');
     const j2 = form.querySelector('#jugador-2');
@@ -739,7 +800,15 @@ class AppState {
     }, 1000);
   }
 
-  // MODIFICADO: Crear partida en backend si ambos son usuarios registrados
+  // ============================================================================
+  // INICIALIZACIÓN DE PARTIDA (TRANSVERSAL - Común a ambos modos)
+  // ============================================================================
+  
+  /**
+   * Inicia una nueva partida
+   * Crea partida en backend si ambos jugadores son usuarios registrados
+   * Funciona tanto para modo digital completo como modo seguimiento
+   */
   async iniciarPartida(nombres, jugador2Info, primerJugador) {
     this.players = nombres.slice(0, 2);
     this.jugador2Info = jugador2Info;
@@ -767,7 +836,14 @@ class AppState {
     // NUEVO: Crear partida en backend si ambos son usuarios registrados
     if (this.jugador1Info?.id && this.jugador2Info?.id) {
       try {
-        const response = await fetch('http://127.0.0.1:8000/crearPartida', {
+        // ============================================================================
+        // DISCRIMINACIÓN DE ENDPOINTS SEGÚN EL MODO DE JUEGO
+        // ============================================================================
+        const endpoint = this.modoSeguimiento ? 
+          'http://127.0.0.1:8000/crearPartidaSeguimiento' : 
+          'http://127.0.0.1:8000/crearPartida';
+        
+        const response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1119,7 +1195,14 @@ class AppState {
     if (desc) desc.textContent = config.descripcion;
   }
 
-  // MANEJO DE FORMULARIOS - MODIFICADO para guardar jugador1Info
+  // ============================================================================
+  // MANEJO DE FORMULARIOS DE AUTENTICACIÓN (TRANSVERSAL)
+  // ============================================================================
+  
+  /**
+   * Procesa el formulario de login
+   * Guarda información del usuario para ambos modos de juego
+   */
   async handleLogin(form) {
     const identificador = form.querySelector('#login-username').value.trim();
     const password = form.querySelector('#login-password').value.trim();
@@ -1537,7 +1620,14 @@ class AppState {
     });
   }
 
-  // ACCIONES DE JUEGO
+  // ============================================================================
+  // ACCIONES DE JUEGO (TRANSVERSAL - Común a ambos modos)
+  // ============================================================================
+  
+  /**
+   * Avanza a la siguiente ronda del juego
+   * Funciona tanto para modo digital completo como modo seguimiento
+   */
   siguienteRonda() {
     if (window.JuegoManager?._prepararSiguienteRonda) {
       window.JuegoManager._prepararSiguienteRonda();
@@ -1564,7 +1654,10 @@ class AppState {
     this.updatePlayerType('invitado');
   }
 
-  // MODIFICADO: Limpiar también datos del juego
+  /**
+   * Cierra la sesión del usuario y limpia todos los datos
+   * Funciona para ambos modos de juego
+   */
   logout() {
     const confirmLogout = this.currentScreen === 'partida' ? 
       confirm('¿Estás seguro de que quieres cerrar sesión? Se perderá el progreso de la partida actual.') : 
@@ -1634,7 +1727,20 @@ window.addEventListener('unhandledrejection', e => {
   }
 });
 
-// ADMINISTRADOR
+// ============================================================================
+// ADMINISTRADOR (TRANSVERSAL - Funcionalidad de administración)
+// ============================================================================
+
+/**
+ * CLASE ADMINISTRADOR - DRAFTOSAURUS DIGITAL
+ * 
+ * Maneja todas las funciones de administración del sistema:
+ * - Gestión de usuarios
+ * - Creación, edición y eliminación de usuarios
+ * - Visualización de estadísticas
+ * 
+ * Esta funcionalidad es transversal a ambos modos de juego
+ */
 class AdminManager {
   constructor() {
     this.currentUser = null;
