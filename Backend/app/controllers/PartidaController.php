@@ -17,24 +17,35 @@ class PartidaController
     // Controlador de creacion de partida
     public function crearPartidaController()
     {
-        $raw = file_get_contents("php://input");
-        $data = json_decode($raw, true);
+        try{
+            $raw = file_get_contents("php://input");
+            $data = json_decode($raw, true);
 
-        if (!is_array($data)) {
-            http_response_code(400);
+            if (!is_array($data)) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'JSON inválido.',
+                    'httpCode' => 400
+                ]);
+                return;
+            }
+
+            $dto = new CrearPartidaDTO($data);
+            $response = $this->partidaService->crearPartidaService($dto);
+
+
+            http_response_code($response->httpCode);
+            echo json_encode($response->toArray());
+
+        }catch (Exception $e) {
+            http_response_code(500);
             echo json_encode([
                 'success' => false,
-                'message' => 'JSON inválido.'
+                'message' => 'Error interno del servidor: ' . $e->getMessage(),
+                'httpCode' => 500
             ]);
-            return;
         }
-
-        $dto = new CrearPartidaDTO($data);
-        $response = $this->partidaService->crearPartidaService($dto);
-
-
-        http_response_code($response->httpCode);
-        echo json_encode($response->toArray());
     }
 
 
@@ -49,98 +60,25 @@ class PartidaController
                 http_response_code(400);
                 echo json_encode([
                     'success' => false,
-                    'message' => 'JSON inválido.'
+                    'message' => 'JSON inválido.',
+                    'httpCode' => 400
                 ]);
                 return;
             }
 
-            $partida_id = isset($data['partida_id']) ? (int)$data['partida_id'] : 0;
+            $dto = new TurnoDTO($data);
+            $response = $this->partidaService->turnoService($dto);
 
-            $jugador_id = isset($data['jugador_id']) ? (int)$data['jugador_id'] : 0;
-
-            if ($partida_id <= 0 || $jugador_id <= 0) {
-                http_response_code(400);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'ID de partida y jugador son requeridos.'
-                ]);
-                return;
-            }
-
-
-            if (empty(trim($data['recinto'] ?? ''))) {
-                echo json_encode([
-                    'success' => false,
-                    'code' => 'invalid',
-                    'message' => 'Falta recinto.'
-                ]);
-                return;
-            }
-
-            $recinto = trim((string)$data['recinto']);
-
-
-
-            if (empty(trim($data['tipoDino'] ?? ''))) {
-                echo json_encode([
-                    'success' => false,
-                    'code' => 'invalid',
-                    'message' => 'Falta tipo de dinosaurio.'
-                ]);
-                return;
-            }
-
-            $tipoDino = trim((string)$data['tipoDino']);
-
-
-
-            if (empty(trim($data['tipoDinoDescarte'] ?? ''))) {
-                echo json_encode([
-                    'success' => false,
-                    'code' => 'invalid',
-                    'message' => 'Falta tipo de dinosaurio.'
-                ]);
-                return;
-            }
-
-            $tipoDinoDescarte = trim((string)$data['tipoDinoDescarte']);
-
-
-
-            $result = $this->partidaService->turnoService($jugador_id, $recinto, $tipoDino, $tipoDinoDescarte, $partida_id);
-
-            if (!is_array($result) || !array_key_exists('success', $result)) {
-                http_response_code(500);
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Error interno del servidor controller.'
-                ]);
-                return;
-            }
-
-            if ($result['success'] === true) {
-                http_response_code(200);
-            } else {
-                $code = isset($result['code']) ? $result['code'] : 'error';
-                if ($code === 'invalid') {
-                    http_response_code(400);
-                } elseif ($code === 'duplicate') {
-                    http_response_code(409);
-                } else {
-                    http_response_code(500);
-                }
-            }
-
-            echo json_encode($result);
+        
+            http_response_code($response->httpCode);
+            echo json_encode($response->toArray());
 
         } catch (Exception $e) {
             http_response_code(500);
             echo json_encode([
                 'success' => false,
-                'message' => 'Error interno del servidor controller: ' . $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine()
+                'message' => 'Error interno del servidor: ' . $e->getMessage(),
+                'httpCode' => 500
             ]);
         }
     }
@@ -157,7 +95,8 @@ class PartidaController
             http_response_code(400);
             echo json_encode([
                 'success' => false,
-                'message' => 'JSON inválido.'
+                'message' => 'JSON inválido.',
+                'httpCode' => 400
             ]);
             return;
         }
@@ -172,7 +111,8 @@ class PartidaController
             http_response_code(400);
             echo json_encode([
                 'success' => false,
-                'message' => 'ID de partida es requerido.'
+                'message' => 'ID de partida es requerido.',
+                'httpCode' => 400
             ]);
         return;
         }
@@ -184,7 +124,8 @@ class PartidaController
             http_response_code(500);
             echo json_encode([
                 'success' => false,
-                'message' => 'Error interno del servidor.'
+                'message' => 'Error interno del servidor.',
+                'httpCode' => 500
             ]);
             return;
         }
@@ -214,27 +155,38 @@ class PartidaController
 
     public function finalizarPartidaController()
     {
-        $raw = file_get_contents("php://input");
-        $data = json_decode($raw, true);
+        try{
+            $raw = file_get_contents("php://input");
+            $data = json_decode($raw, true);
 
-        //  Valida que el body sea un JSON válido.
-        if (!is_array($data)) {
-            http_response_code(400);
+            //  Valida que el body sea un JSON válido.
+            if (!is_array($data)) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'JSON inválido.',
+                    'httpCode' => 400
+                ]);
+                return;
+            }
+            //  Crea el DTO con los datos de la request.
+            $dto = new FinalizarPartidaDTO($data);
+
+            //  Llama al service que procesa la lógica de negocio.
+            $response = $this->partidaService->finalizarPartidaService($dto);
+
+            //  Devuelve la respuesta como JSON con el código HTTP correspondiente.
+            http_response_code($response->httpCode);
+            echo json_encode($response->toArray());
+            
+        }catch (Exception $e) {
+            http_response_code(500);
             echo json_encode([
                 'success' => false,
-                'message' => 'JSON inválido.'
+                'message' => 'Error interno del servidor: ' . $e->getMessage(),
+                'httpCode' => 500
             ]);
-            return;
         }
-        //  Crea el DTO con los datos de la request.
-        $dto = new FinalizarPartidaDTO($data);
-
-        //  Llama al service que procesa la lógica de negocio.
-        $response = $this->partidaService->finalizarPartidaService($dto);
-
-        //  Devuelve la respuesta como JSON con el código HTTP correspondiente.
-        http_response_code($response->httpCode);
-        echo json_encode($response->toArray());
     }
 }
 

@@ -16,7 +16,8 @@ class CrearPartidaSeguimientoDTO
     public ?int    $partida_id = null;
     public int     $httpCode   = 200;
 
-    public function __construct(array $data)
+    public function __construct(
+        array $data)
     {
         $this->jugador1_id = (int)($data['jugador1_id'] ?? 0);
         $this->jugador2_id = (int)($data['jugador2_id'] ?? 0);
@@ -37,12 +38,12 @@ class CrearPartidaSeguimientoDTO
     // Para convertir fácilmente a JSON
     public function toArray(): array {
         return [
-            'success'    => $this->success,
-            'message'    => $this->message,
-            'partida_id' => $this->partida_id,
+            'success'     => $this->success,
+            'message'     => $this->message,
+            'partida_id'  => $this->partida_id,
             'jugador1_id' => $this->jugador1_id,
             'jugador2_id' => $this->jugador2_id,
-            'httpCode'   => $this->httpCode
+            'httpCode'    => $this->httpCode
         ];
     }
 }
@@ -57,7 +58,7 @@ class CrearBolsaSeguimientoDTO
     //  Variables para la response.
     public ?bool   $success;
     public ?string $message;
-    public  int    $httpCode = 200;
+    public int     $httpCode = 200;
 
     public function __construct(
         array $data
@@ -70,12 +71,10 @@ class CrearBolsaSeguimientoDTO
     public function fillResponse(
          bool   $success,
          string $message,
-        ?array  $dinos      = [],
-         int    $httpCode   = 200
+         int    $httpCode = 200
     ) {
         $this->success    = $success;
         $this->message    = $message;
-        $this->dinos      = array_map('strval', $dinos); // Normaliza a string
         $this->httpCode   = $httpCode;
     }
 

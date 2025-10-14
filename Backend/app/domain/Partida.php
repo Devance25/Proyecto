@@ -43,7 +43,7 @@ class Partida {
             'stegosaurus', 
             'parasaurolophus', 
             'diplodocus', 
-            'pterodáctilo'
+            'pterodactilo'
         ];
 
         for($i = 0; $i < 6; $i++)

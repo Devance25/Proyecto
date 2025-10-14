@@ -17,24 +17,34 @@ class PartidaSeguimientoController
 
     public function crearPartidaSeguimientoController()
     {
-        $raw = file_get_contents("php://input");
-        $data = json_decode($raw, true);
+        try{
+            $raw = file_get_contents("php://input");
+            $data = json_decode($raw, true);
 
-        if (!is_array($data)) {
-            http_response_code(400);
+            if (!is_array($data)) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'JSON inválido.',
+                    'httpCode' => 400
+                ]);
+                return;
+            }
+
+            $dto = new CrearPartidaSeguimientoDTO($data);
+            $response = $this->partidaSeguimientoService->crearPartidaSeguimientoService($dto);
+
+            http_response_code($response->httpCode);
+            echo json_encode($response->toArray());
+            
+        }catch (Exception $e) {
+            http_response_code(500);
             echo json_encode([
                 'success' => false,
-                'message' => 'JSON inválido.'
-                ]);
-            return;
+                'message' => 'Error interno del servidor: ' . $e->getMessage(),
+                'httpCode' => 500
+            ]);
         }
-
-        $dto = new CrearPartidaSeguimientoDTO($data);
-        $response = $this->partidaSeguimientoService->crearPartidaSeguimientoService($dto);
-
-        http_response_code($response->httpCode);
-        echo json_encode($response->toArray());
-        
     }
 
 
@@ -42,23 +52,34 @@ class PartidaSeguimientoController
     // Controlador de creacion de bolsa de dinos
     public function crearBolsaSeguimientoController()
     {
-        $raw = file_get_contents("php://input");
-        $data = json_decode($raw, true);
+        try{
+            $raw = file_get_contents("php://input");
+            $data = json_decode($raw, true);
 
-        if (!is_array($data)) {
-            http_response_code(400);
+            if (!is_array($data)) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'JSON inválido.',
+                    'httpCode' => 400
+                ]);
+                return;
+            }
+
+            $dto = new CrearBolsaSeguimientoDTO($data);
+            $response = $this->partidaSeguimientoService->crearBolsaSeguimientoService($dto);
+
+            http_response_code($response->httpCode);
+            echo json_encode($response->toArray());
+            
+        }catch (Exception $e) {
+            http_response_code(500);
             echo json_encode([
                 'success' => false,
-                'message' => 'JSON inválido.'
-                ]);
-            return;
+                'message' => 'Error interno del servidor: ' . $e->getMessage(),
+                'httpCode' => 500
+            ]);
         }
-
-        $dto = new CrearBolsaSeguimientoDTO($data);
-        $response = $this->partidaSeguimientoService->crearBolsaSeguimientoService($dto);
-
-        http_response_code($response->httpCode);
-        echo json_encode($response->toArray());
             
     }
 
@@ -66,24 +87,34 @@ class PartidaSeguimientoController
 
     public function turnoSeguimientoController()
     {
-        $raw = file_get_contents("php://input");
-        $data = json_decode($raw, true);
+        try {
+            $raw = file_get_contents("php://input");
+            $data = json_decode($raw, true);
 
-        if (!is_array($data)) {
-            http_response_code(400);
+            if (!is_array($data)) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'JSON inválido.',
+                    'httpCode' => 400
+                ]);
+                return;
+            }
+
+            $dto = new TurnoSeguimientoDTO($data);
+            $response = $this->partidaSeguimientoService->turnoSeguimientoService($dto);
+
+            http_response_code($response->httpCode);
+            echo json_encode($response->toArray());
+            
+        }catch (Exception $e) {
+            http_response_code(500);
             echo json_encode([
                 'success' => false,
-                'message' => 'JSON inválido.'
-                ]);
-            return;
+                'message' => 'Error interno del servidor: ' . $e->getMessage(),
+                'httpCode' => 500
+            ]);
         }
-
-        $dto = new TurnoSeguimientoDTO($data);
-        $response = $this->partidaSeguimientoService->turnoSeguimientoService($dto);
-
-        http_response_code($response->httpCode);
-        echo json_encode($response->toArray());
-            
     }
 
 }

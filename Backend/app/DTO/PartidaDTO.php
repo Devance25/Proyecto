@@ -36,7 +36,7 @@ class CrearPartidaDTO
         $this->message       = $message;
         $this->partida_id    = $partida_id;
         $this->bolsaJugador1 = $bolsaJugador1;
-        $this->bolsaJugador1 = $bolsaJugador2;
+        $this->bolsaJugador2 = $bolsaJugador2;
         $this->httpCode      = $httpCode;
     }
 
@@ -49,7 +49,7 @@ class CrearPartidaDTO
             'jugador1_id'   => $this->jugador1_id,
             'jugador2_id'   => $this->jugador2_id,
             'bolsaJugador1' => $this->bolsaJugador1,
-            'bolsaJugador1' => $this->bolsaJugador2,
+            'bolsaJugador2' => $this->bolsaJugador2,
             'httpCode'      => $this->httpCode
         ];
     }
@@ -99,8 +99,8 @@ class TurnoDTO{
         $this->turno           = $turno;
         $this->ronda           = $ronda;
         $this->caraDado        = $caraDado;
-        $this->puntajeJugador1 = $puntaje_jugador1;
-        $this->puntajeJugador2 = $puntaje_jugador2;
+        $this->puntaje_jugador1 = $puntaje_jugador1;
+        $this->puntaje_jugador2 = $puntaje_jugador2;
         $this->httpCode        = $httpCode;
     }
 
@@ -126,10 +126,8 @@ class CalcularPuntajesDTO
 
     public function __construct(
         int $partida_id
-        )
-    {
+    ){
         $this->partida_id = $partida_id;
-
     }
 
     public function fillResponse(
@@ -163,21 +161,21 @@ class FinalizarPartidaDTO
 
     // Método para "completar" cuando se usa como response
     public function fillResponse(
-        bool $success,
+        bool   $success,
         string $message,
-        ?int $ganador_id,
-        ?bool $empate,
-        ?int $puntaje_jugador1,
-        ?int $puntaje_jugador2,
-        int $httpCode = 200
+        ?int   $ganador_id,
+        ?bool  $empate,
+        ?int   $puntaje_jugador1,
+        ?int   $puntaje_jugador2,
+        int    $httpCode = 200
     ): void {
-        $this->success = $success;
-        $this->message = $message;
-        $this->ganador_id = $ganador_id;
-        $this->empate = $empate;
+        $this->success          = $success;
+        $this->message          = $message;
+        $this->ganador_id       = $ganador_id;
+        $this->empate           = $empate;
         $this->puntaje_jugador1 = $puntaje_jugador1;
         $this->puntaje_jugador2 = $puntaje_jugador2;
-        $this->httpCode = $httpCode;
+        $this->httpCode         = $httpCode;
     }
 
     public function toArray(): array
