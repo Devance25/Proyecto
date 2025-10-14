@@ -24,7 +24,13 @@ class Partida {
 
     public function tirarDado(): string
     {
-        $caras = ['bosque', 'roca', 'baño', 'cafeteria', 'no-trex', 'vacio'];
+        $caras = ['bosque',
+                  'roca', 
+                  'baño', 
+                  'cafeteria', 
+                  'no-trex', 
+                  'vacio'
+                ];
 
         $this->caraDado = $caras[array_rand($caras)];
 

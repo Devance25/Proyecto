@@ -90,9 +90,9 @@ class TurnoDTO{
         ?int    $turno,
         ?int    $ronda,
         ?string $caraDado,
+        int     $httpCode,
         ?int    $puntaje_jugador1 = null,
-        ?int    $puntaje_jugador2 = null,
-        int     $httpCode
+        ?int    $puntaje_jugador2 = null
     ) {
         $this->success         = $success;
         $this->message         = $message;
@@ -104,7 +104,24 @@ class TurnoDTO{
         $this->httpCode        = $httpCode;
     }
 
-
+    public function toArray(): array
+    {
+        return [
+            'success'          => $this->success,
+            'message'          => $this->message,
+            'partida_id'       => $this->partida_id,
+            'jugador_id'       => $this->jugador_id,
+            'recinto'          => $this->recinto,
+            'tipoDino'         => $this->tipoDino,
+            'tipoDinoDescarte' => $this->tipoDinoDescarte,
+            'turno'            => $this->turno,
+            'ronda'            => $this->ronda,
+            'caraDado'         => $this->caraDado,
+            'puntaje_jugador1' => $this->puntaje_jugador1,
+            'puntaje_jugador2' => $this->puntaje_jugador2,
+            'httpCode'         => $this->httpCode,
+        ];
+    }
 
 }
 

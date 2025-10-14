@@ -144,9 +144,9 @@ class PartidaService
                     null,                                   //  turno
                     null,                                   //  ronda
                     null,                                   //  caraDado
+                    404,                                    //  httpCode
                     null,                                   //  puntaje_jugador1
-                    null,                                   //  puntaje_jugador2
-                    404                                     //  httpCode
+                    null                                    //  puntaje_jugador2
                 );
                 return $dto;
         }
@@ -161,9 +161,9 @@ class PartidaService
                     null,                                   //  turno
                     null,                                   //  ronda
                     null,                                   //  caraDado
+                    404,                                    //  httpCode
                     null,                                   //  puntaje_jugador1
-                    null,                                   //  puntaje_jugador2
-                    404                                     //  httpCode
+                    null                                    //  puntaje_jugador2
                 );
                 return $dto;
         }
@@ -180,9 +180,9 @@ class PartidaService
                     null,                                   //  turno
                     null,                                   //  ronda
                     null,                                   //  caraDado
+                    400,                                    //  httpCode
                     null,                                   //  puntaje_jugador1
-                    null,                                   //  puntaje_jugador2
-                    400                                     //  httpCode
+                    null                                    //  puntaje_jugador2
                 );
                 return $dto;
         }
@@ -199,9 +199,9 @@ class PartidaService
                     null,                                   //  turno
                     null,                                   //  ronda
                     null,                                   //  caraDado
+                    404,                                    //  httpCode
                     null,                                   //  puntaje_jugador1
-                    null,                                   //  puntaje_jugador2
-                    404                                     //  httpCode
+                    null                                    //  puntaje_jugador2
                 );
                 return $dto;
         }
@@ -230,7 +230,7 @@ class PartidaService
 
 
         // Debug logging
-        error_log("DEBUG - jugador_id recibido: $jugador_id");
+        error_log("DEBUG - jugador_id recibido: " . $dto->jugador_id);
         error_log("DEBUG - jugador1_id de BD: $jugador1_id");
         error_log("DEBUG - jugador2_id de BD: $jugador2_id");
         error_log("DEBUG - turnoActual: $turnoActual, rondaActual: $rondaActual");
@@ -262,9 +262,9 @@ class PartidaService
                 $turnoActual,                           //  turno
                 $rondaActual,                           //  ronda
                 $caraDadoActual,                        //  caraDado
+                404,                                    //  httpCode
                 null,                                   //  puntaje_jugador1
-                null,                                   //  puntaje_jugador2
-                404                                     //  httpCode
+                null                                    //  puntaje_jugador2
             );
             return $dto;
         }
@@ -281,9 +281,9 @@ class PartidaService
                 $turnoActual,                           //  turno
                 $rondaActual,                           //  ronda
                 $caraDadoActual,                        //  caraDado
+                404,                                    //  httpCode
                 null,                                   //  puntaje_jugador1
-                null,                                   //  puntaje_jugador2
-                404                                     //  httpCode
+                null                                    //  puntaje_jugador2
             );
             return $dto;
         }
@@ -307,9 +307,9 @@ class PartidaService
                         $turnoActual,                    //  turno
                         $rondaActual,                    //  ronda
                         $caraDadoActual,                 //  caraDado
+                        404,                             //  httpCode
                         null,                            //  puntaje_jugador1
-                        null,                            //  puntaje_jugador2
-                        404                              //  httpCode
+                        null                             //  puntaje_jugador2
                     );
                     return $dto;
             }
@@ -330,14 +330,13 @@ class PartidaService
                 $dto->fillResponse(
                     false,                           //  success
                     "El jugador no tiene en su 
-                    bolsa el dinosaurio $tipoDino 
-                    para colocar en $recinto.",      //  message
+                    bolsa el dinosaurio {$dto->tipoDino} para colocar en {$dto->recinto}.",      //  message
                     $turnoActual,                    //  turno
                     $rondaActual,                    //  ronda
                     $caraDadoActual,                 //  caraDado
+                    404,                             //  httpCode
                     null,                            //  puntaje_jugador1
-                    null,                            //  puntaje_jugador2
-                    404                              //  httpCode
+                    null                             //  puntaje_jugador2
                 );
                 return $dto;
         }
@@ -378,9 +377,9 @@ class PartidaService
                     $turnoActual,                    //  turno
                     $rondaActual,                    //  ronda
                     $caraDadoActual,                 //  caraDado
+                    404,                             //  httpCode
                     null,                            //  puntaje_jugador1
-                    null,                            //  puntaje_jugador2
-                    404                              //  httpCode
+                    null                             //  puntaje_jugador2
                 );
                 return $dto;
         }
@@ -401,7 +400,7 @@ class PartidaService
         if($turnoActual < 6){
 
             //  Suma un turno.
-            $this->partidaRepo->sumarTurnoRepo($dto->$partida_id);
+            $this->partidaRepo->sumarTurnoRepo($dto->partida_id);
             
             //  Tira dado en backend.
             $caraDadoActual = $this->partida->tirarDado();
@@ -445,9 +444,9 @@ class PartidaService
             $turnoActual,                               // turno
             $rondaActual,                               // ronda
             $caraDadoActual,                            // caraDado
+            201,                                        // httpCode
             $puntajeJugador1,                           // puntaje_jugador1
-            $puntajeJugador2,                           // puntaje_jugador2
-            201                                         // httpCode
+            $puntajeJugador2                            // puntaje_jugador2
         );
 
         return $dto;
