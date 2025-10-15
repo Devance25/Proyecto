@@ -39,25 +39,19 @@ class Partida {
 
 
 
-    public function crearBolsa(): array
-    {
-        $bolsaDinos = []; //bolsa de 60 dinos, que mueva los dinos de la bolsa main a la bosla creada
-        
-        $dino = [
-            't-rex', 
-            'triceratops', 
-            'stegosaurus', 
-            'parasaurolophus', 
-            'diplodocus', 
-            'pterodactilo'
-        ];
+    //  Funcion que sirve para creae las bolsas de los jugadores
+    public function crearBolsa(array $bolsa_general): array
+    {   
+        //  Array donde se guardan los dinos de la bolsa para el jugaror
+        $bolsa_jugador = [];
 
+        //  Bucle que itera sobre la bolsa general con un random y guarda 6 dinos en la bolsa del jugador
         for($i = 0; $i < 6; $i++)
         {
-            $bolsaDinos[] = $dino[array_rand($dino)];
+            $bolsa_jugador[] = $bolsa_general[array_rand($bolsa_general)];
         }
 
-        return $bolsaDinos;
+        return $bolsa_jugador;
     }
 
 
@@ -89,6 +83,32 @@ class Partida {
             return null;
         }
 
+    }
+
+}
+
+
+class BolsaGeneral
+{
+    public array $bolsa_general;
+
+    public function __construct()
+    {
+        $this->bolsa_general = [
+            't-rex','t-rex','t-rex','t-rex','t-rex','t-rex','t-rex','t-rex',
+            'triceratops','triceratops','triceratops','triceratops','triceratops','triceratops','triceratops','triceratops',
+            'stegosaurus','stegosaurus','stegosaurus','stegosaurus','stegosaurus','stegosaurus','stegosaurus','stegosaurus',
+            'parasaurolophus','parasaurolophus','parasaurolophus','parasaurolophus','parasaurolophus','parasaurolophus','parasaurolophus','parasaurolophus',
+            'diplodocus','diplodocus','diplodocus','diplodocus','diplodocus','diplodocus','diplodocus','diplodocus',
+            'pterodactilo','pterodactilo','pterodactilo','pterodactilo','pterodactilo','pterodactilo','pterodactilo','pterodactilo'
+        ];
+    }
+
+    public function removerDinos(array $dinos): void
+    {
+        $this->bolsa_general = array_values(
+            array_diff($this->bolsa_general, $dinos)
+        );
     }
 
 }

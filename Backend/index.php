@@ -174,6 +174,7 @@ try {
 // ============================================================================
 // Endpoints de modo seguimiento
 // ============================================================================
+        
         case 'crearPartidaSeguimiento':
             if ($method === 'POST') {
                 $partidaSeguimientoController->crearPartidaSeguimientoController();

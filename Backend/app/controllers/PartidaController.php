@@ -84,66 +84,39 @@ class PartidaController
     }
 
 
-
-
+    
     public function finalizarRondaController()
     {
-        $raw = file_get_contents("php://input");
-        $data = json_decode($raw, true);
+        try{
+            $raw = file_get_contents("php://input");
+            $data = json_decode($raw, true);
 
-        if (!is_array($data)) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'JSON inválido.',
-                'httpCode' => 400
-            ]);
-            return;
-        }
+            if (!is_array($data)) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'JSON inválido.',
+                    'httpCode' => 400
+                ]);
+                return;
+            }
+
+            $dto = new RondaDTO($data);
+            $response = $this->partidaService->finalizarRondaService($dto);
+
         
-        if (isset($data['partida_id'])) {
-            $partida_id = (int)$data['partida_id'];
-        } else {  
-            $partida_id = 0;
-        }
-
-        if ($partida_id <= 0) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'ID de partida es requerido.',
-                'httpCode' => 400
-            ]);
-        return;
-        }
-
-        $result = $this->partidaService->finalizarRondaService($partida_id);
-
-        if (!is_array($result) || !array_key_exists('success', $result)) 
-        {
+            http_response_code($response->httpCode);
+            echo json_encode($response->toArray());
+        
+        } catch (Exception $e) {
             http_response_code(500);
             echo json_encode([
                 'success' => false,
-                'message' => 'Error interno del servidor.',
+                'message' => 'Error interno del servidor: ' . $e->getMessage(),
                 'httpCode' => 500
             ]);
-            return;
         }
 
-        if ($result['success'] === true) {
-            http_response_code(200);
-        } else {
-            $code = isset($result['code']) ? $result['code'] : 'error';
-            if ($code === 'invalid') {
-                http_response_code(400); 
-            } elseif ($code === 'duplicate') {
-                http_response_code(409); 
-            } else {
-                http_response_code(500); 
-            }
-        }
-
-        echo json_encode($result);
     }
 
 

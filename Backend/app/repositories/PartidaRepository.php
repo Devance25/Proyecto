@@ -122,6 +122,48 @@ class PartidaRepository
 
     }
 
+    public function crearBolsaGeneralRepo(
+        int $partida_id,
+        array $bolsa_general
+        ): void
+    {
+        foreach ($bolsa_general as $dino) {
+
+            $query = "INSERT INTO bolsas
+                                 (partida_id,
+                                  bolsa_general,
+                                  dino
+                                  )
+                      VALUES (?, true, ?)";
+
+            $stmt = $this->conn->prepare($query);
+
+            if (!$stmt) {
+                throw new Exception(
+                    "Error preparando la consulta: " . $this->conn->error
+                );
+            }
+
+            if (!$stmt->bind_param("is", 
+                    $partida_id, 
+                    $dino)) {
+                throw new Exception(
+                    "Error en bind_param: " . $stmt->error
+                );
+            }
+
+            if (!$stmt->execute()) {
+                throw new Exception(
+                    "Error ejecutando la consulta: " . $stmt->error
+                );
+            }
+
+            $stmt->close();
+
+        }   
+
+    }
+
 
 
     public function colocarDinosaurioRepo(
@@ -927,6 +969,39 @@ class PartidaRepository
     
     }
 
+    public function getBolsaGeneralRepo(int $partida_id): array
+    {
+        $query = "SELECT dino 
+                  FROM bolsas 
+                  WHERE partida_id = ?
+                  AND bolsa_general = true";
+    
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+        }
+    
+        if (!$stmt->bind_param("i", $partida_id)) {
+            throw new Exception("Error en bind_param: " . $stmt->error);
+        }
+    
+        if (!$stmt->execute()) {
+            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+        }
+    
+        $result = $stmt->get_result();
+        $bolsa_general = [];
+    
+        while ($row = $result->fetch_assoc()) {
+            $bolsa_general[] = $row['dino'];
+        }
+    
+        $stmt->close();
+    
+        return $bolsa_general;
+    }
+    
+
 
 
 
@@ -983,5 +1058,37 @@ class PartidaRepository
             ];
     }
 
+
+
+    public function removerDinosBolsaGeneralRepo(
+        int   $partida_id, 
+        array $bolsa_jugador
+    ): void
+    {
+        foreach ($bolsa_jugador as $dino) {
+    
+            $query = "DELETE FROM bolsas
+                      WHERE       partida_id = ?
+                      AND         bolsa_general = true
+                      AND         dino = ?
+                      ";
+    
+            $stmt = $this->conn->prepare($query);
+            if (!$stmt) {
+                throw new Exception("Error preparando la consulta: " . $this->conn->error);
+            }
+    
+            if (!$stmt->bind_param("is", $partida_id, $dino)) {
+                throw new Exception("Error en bind_param: " . $stmt->error);
+            }
+    
+            if (!$stmt->execute()) {
+                throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+            }
+    
+            $stmt->close();
+        }
+    }
+    
 
 }

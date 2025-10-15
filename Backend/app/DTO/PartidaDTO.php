@@ -94,14 +94,90 @@ class TurnoDTO{
         ?int    $puntaje_jugador1 = null,
         ?int    $puntaje_jugador2 = null
     ) {
-        $this->success         = $success;
-        $this->message         = $message;
-        $this->turno           = $turno;
-        $this->ronda           = $ronda;
-        $this->caraDado        = $caraDado;
+        $this->success          = $success;
+        $this->message          = $message;
+        $this->turno            = $turno;
+        $this->ronda            = $ronda;
+        $this->caraDado         = $caraDado;
         $this->puntaje_jugador1 = $puntaje_jugador1;
         $this->puntaje_jugador2 = $puntaje_jugador2;
-        $this->httpCode        = $httpCode;
+        $this->httpCode         = $httpCode;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'success'          => $this->success,
+            'message'          => $this->message,
+            'partida_id'       => $this->partida_id,
+            'jugador_id'       => $this->jugador_id,
+            'recinto'          => $this->recinto,
+            'tipoDino'         => $this->tipoDino,
+            'tipoDinoDescarte' => $this->tipoDinoDescarte,
+            'turno'            => $this->turno,
+            'ronda'            => $this->ronda,
+            'caraDado'         => $this->caraDado,
+            'puntaje_jugador1' => $this->puntaje_jugador1,
+            'puntaje_jugador2' => $this->puntaje_jugador2,
+            'httpCode'         => $this->httpCode,
+        ];
+    }
+
+}
+
+class RondaDTO{
+    
+    //  Variables de la request
+    public int    $partida_id;
+    public int    $jugador_id;
+    public string $recinto;
+    public string $tipoDino;
+    public string $tipoDinoDescarte;
+
+    //  Variables de la response
+    public ?bool   $success          = null;
+    public ?string $message          = null;
+    public ?int    $turno            = null;
+    public ?int    $ronda            = null;
+    public ?string $caraDado         = null;
+    public ?int    $puntaje_jugador1 = null;
+    public ?int    $puntaje_jugador2 = null;
+    public ?array  $bolsa_jugador1   = null;
+    public ?array  $bolsa_jugador2   = null;
+    public int     $httpCode         = 200;
+
+    public function __construct(array $data)
+    {
+        $this->partida_id       = (int)   ($data['partida_id']       ??  0);
+        $this->jugador_id       = (int)   ($data['jugador_id']       ??  0);
+        $this->recinto          = (string)($data['recinto']          ?? '');
+        $this->tipoDino         = (string)($data['tipoDino']         ?? '');
+        $this->tipoDinoDescarte = (string)($data['tipoDinoDescarte'] ?? '');
+    }
+
+
+    public function fillResponse(
+        ?bool   $success,
+        ?string $message,
+        ?int    $turno,
+        ?int    $ronda,
+        ?string $caraDado,
+        int     $httpCode,
+        ?int    $puntaje_jugador1 = null,
+        ?int    $puntaje_jugador2 = null,
+        ?array  $bolsa_jugador1   = null,
+        ?array  $bolsa_jugador2   = null
+    ) {
+        $this->success          = $success;
+        $this->message          = $message;
+        $this->turno            = $turno;
+        $this->ronda            = $ronda;
+        $this->caraDado         = $caraDado;
+        $this->puntaje_jugador1 = $puntaje_jugador1;
+        $this->puntaje_jugador2 = $puntaje_jugador2;
+        $this->bolsa_jugador1   = $bolsa_jugador1;
+        $this->bolsa_jugador2   = $bolsa_jugador2;
+        $this->httpCode         = $httpCode;
     }
 
     public function toArray(): array
@@ -138,8 +214,8 @@ class CalcularPuntajesDTO
     public int $partida_id;
 
     //  Variables para el response
-    public ?int $puntajeJugador1 = null;
-    public ?int $puntajeJugador2 = null;
+    public ?int $puntaje_jugador1 = null;
+    public ?int $puntaje_jugador2 = null;
 
     public function __construct(
         int $partida_id
@@ -148,11 +224,11 @@ class CalcularPuntajesDTO
     }
 
     public function fillResponse(
-        ?int $puntajeJugador1,
-        ?int $puntajeJugador2
+        ?int $puntaje_jugador1,
+        ?int $puntaje_jugador2
     ): void {
-        $this->puntajeJugador1 = $puntajeJugador1;
-        $this->puntajeJugador2 = $puntajeJugador2;
+        $this->puntaje_jugador1 = $puntaje_jugador1;
+        $this->puntaje_jugador2 = $puntaje_jugador2;
     }
 }
 
