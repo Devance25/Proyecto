@@ -83,9 +83,10 @@ class PartidaRepository
             $query = "INSERT INTO bolsas
                                  (partida_id,
                                   jugador_id,
+                                  bolsa_general,
                                   dino
                                   )
-                      VALUES (?, ?, ?)";
+                      VALUES (?, ?, false, ?)";
 
             $stmt = $this->conn->prepare($query);
 
@@ -884,6 +885,7 @@ class PartidaRepository
                     FROM bolsas 
                    WHERE partida_id = ? 
                      AND jugador_id = ?
+                     AND bolsa_general = false
                      ";
 
         $stmt = $this->conn->prepare($query);
@@ -914,6 +916,7 @@ class PartidaRepository
         }
 
         $stmt->close();
+        
 
         if (empty($dinos)) {
             throw new Exception(
@@ -1018,6 +1021,7 @@ class PartidaRepository
                   WHERE partida_id = ?
                   AND   dino = ?
                   AND   jugador_id = ?
+                  AND   bolsa_general = false
                   LIMIT 1
                   ";
 

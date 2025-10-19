@@ -40,7 +40,7 @@ class Partida {
 
 
     //  Funcion que sirve para creae las bolsas de los jugadores
-    public function crearBolsa(array $bolsa_general): array
+    public function crearBolsa(array &$bolsa_general): array
     {   
         //  Array donde se guardan los dinos de la bolsa para el jugaror
         $bolsa_jugador = [];
@@ -48,7 +48,17 @@ class Partida {
         //  Bucle que itera sobre la bolsa general con un random y guarda 6 dinos en la bolsa del jugador
         for($i = 0; $i < 6; $i++)
         {
-            $bolsa_jugador[] = $bolsa_general[array_rand($bolsa_general)];
+            //  Selecciona un índice aleatorio
+            $indice_aleatorio = array_rand($bolsa_general);
+            
+            //  Agrega el dinosaurio a la bolsa del jugador
+            $bolsa_jugador[] = $bolsa_general[$indice_aleatorio];
+            
+            //  Remueve el dinosaurio de la bolsa general
+            unset($bolsa_general[$indice_aleatorio]);
+            
+            //  Reindexa el array para evitar huecos
+            $bolsa_general = array_values($bolsa_general);
         }
 
         return $bolsa_jugador;

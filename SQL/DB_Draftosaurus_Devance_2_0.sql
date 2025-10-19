@@ -74,7 +74,7 @@ CREATE TABLE recintos_partida (
     partida_id      INT NOT NULL,
     jugador_id      INT NOT NULL,
     recinto         ENUM('bosque-semejanza','pradera-amor','woody-trio','prado-diferencia','rey-jungla','isla-solitaria','rio') DEFAULT NULL,
-    tipo_dino       ENUM('t-rex','triceratops','stegosaurus','parasaurolophus','diplodocus','pterodáctilo') DEFAULT NULL,
+    tipo_dino       ENUM('t-rex','triceratops','stegosaurus','parasaurolophus','diplodocus','pterodactilo') DEFAULT NULL,
     colocado_el     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_recintos_partida_partida FOREIGN KEY (partida_id) REFERENCES partidas(id) ON DELETE CASCADE,
@@ -88,7 +88,7 @@ CREATE TABLE bolsas (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     partida_id  INT NOT NULL,
     jugador_id  INT NOT NULL,
-    dino        ENUM('t-rex','triceratops','stegosaurus','parasaurolophus','diplodocus','pterodáctilo') NOT NULL,
+    dino        ENUM('t-rex','triceratops','stegosaurus','parasaurolophus','diplodocus','pterodactilo') NOT NULL,
 
     INDEX idx_bolsa_partida (partida_id),
 

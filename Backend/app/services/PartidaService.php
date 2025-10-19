@@ -91,19 +91,16 @@ class PartidaService
             $bolsa_general = new BolsaGeneral;
 
             //  Crea una bolsa con 6 dinos de forma aleatoria.
-            $bolsa1 = $this->partida->crearBolsa($bolsa_general);
-
-            //  Remueve los dinos que fueron asignados a bolsa1 de la bolsa general.
-            $bolsa_general->removerDinos($bolsa1);
+            //  IMPORTANTE: Ahora crearBolsa remueve automáticamente los dinosaurios de la bolsa general
+            $bolsa1 = $this->partida->crearBolsa($bolsa_general->bolsa_general);
 
             //  Crea una bolsa con 6 dinos de forma aleatoria.
-            $bolsa2 = $this->partida->crearBolsa($bolsa_general);
-
-            //  Remueve los dinos que fueron asignados a bolsa1 de la bolsa general.
-            $bolsa_general->removerDinos($bolsa2);
+            //  IMPORTANTE: Ahora crearBolsa remueve automáticamente los dinosaurios de la bolsa general
+            $bolsa2 = $this->partida->crearBolsa($bolsa_general->bolsa_general);
 
             //  Crea la bolsa general en la base de datos para el resto de la partida.
-            $this->crearBolsaGeneralRepo($partida_id, $bolsa_general->bolsa_general);
+            //  IMPORTANTE: Esto se hace DESPUÉS de remover dinosaurios para guardar solo lo que queda
+            $this->partidaRepo->crearBolsaGeneralRepo($partida_id, $bolsa_general->bolsa_general);
 
 
             $bolsaJugador1 = $this->partidaRepo->crearBolsaRepo(
@@ -270,8 +267,8 @@ class PartidaService
         }
 
         //  Valida que el jugador 1 sea siempre quien comienza la partida.
-        if($turnoActual === 1 && 
-           $rondaActual === 1 || $rondaActual === 3 && 
+        if((($turnoActual === 1 && $rondaActual === 1) || 
+           ($rondaActual === 3)) && 
            $dto->jugador_id !== $jugador1_id
         ){
             $dto->fillResponse(
@@ -288,8 +285,8 @@ class PartidaService
         }
 
         //  Valida que el jugador 2 sea siempre quien comienza la segunda ronda.
-        if($turnoActual === 1 && 
-           $rondaActual === 2 || $rondaActual === 4 && 
+        if((($turnoActual === 1 && $rondaActual === 2) || 
+           ($rondaActual === 4)) && 
            $dto->jugador_id !== $jugador2_id
         ){
             $dto->fillResponse(
@@ -420,8 +417,8 @@ class PartidaService
         $puntajes = $this->calcularPuntajesService($calcularPuntajesDTO);
 
         //  Separa los puntajes de cada jugador.
-        $puntajeJugador1 = $puntajes->puntajeJugador1;
-        $puntajeJugador2 = $puntajes->puntajeJugador2;
+        $puntajeJugador1 = $puntajes->puntaje_jugador1;
+        $puntajeJugador2 = $puntajes->puntaje_jugador2;
 
         //  Retorna turno procesado exitosamente.
         $dto->fillResponse(
@@ -481,7 +478,7 @@ class PartidaService
 
         //  Valida que existan los datos requeridos
         if ($dto->recinto === '' ||
-            $dto->tipoDino === '' || 
+            $dto->tipoDino === '' ||
             $dto->tipoDinoDescarte === ''
             ) {
                 $dto->fillResponse(
@@ -821,8 +818,8 @@ class PartidaService
         $puntajes = $this->calcularPuntajesService($calcularPuntajesDTO);
     
         //  Separa los puntajes de cada jugador.
-        $puntajeJugador1 = $puntajes->puntajeJugador1;
-        $puntajeJugador2 = $puntajes->puntajeJugador2;
+        $puntajeJugador1 = $puntajes->puntaje_jugador1;
+        $puntajeJugador2 = $puntajes->puntaje_jugador2;
     
         //  Evalua los puntajes y determina el ganador de la partida.
         $ganador_id = $this->partida->determinarGanador(

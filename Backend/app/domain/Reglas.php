@@ -173,7 +173,7 @@ class Reglas
         foreach($porRecinto1 as $recinto=>$dinos){
             
             $conteoDinos1 = array_count_values($dinos);
-            $conteoTipoRey1 += $conteoDinos1[$reyDeLaSelva];
+            $conteoTipoRey1 += isset($conteoDinos1[$reyDeLaSelva]) ? $conteoDinos1[$reyDeLaSelva] : 0;
         }
 
         $conteoDinos2 = 0;
@@ -181,7 +181,7 @@ class Reglas
         foreach($porRecinto2 as $recinto=>$dinos){
 
             $conteoDinos2 = array_count_values($dinos);
-            $conteoTipoRey2 += $conteoDinos2[$reyDeLaSelva];
+            $conteoTipoRey2 += isset($conteoDinos2[$reyDeLaSelva]) ? $conteoDinos2[$reyDeLaSelva] : 0;
         }
         if($conteoTipoRey1 >= $conteoTipoRey2){
             return 7;

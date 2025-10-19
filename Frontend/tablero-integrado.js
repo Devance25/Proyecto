@@ -17,14 +17,14 @@ const CONFIG = {
     'diplodocus': { disponible: 'img/dino-diplodocus.png', colocado: 'img/dino-diplodocus-arriba.png' },
     'stegosaurus': { disponible: 'img/dino-stegosaurus.png', colocado: 'img/dino-stegosaurus-arriba.png' },
     'parasaurolophus': { disponible: 'img/dino-parasaurolophus.png', colocado: 'img/dino-parasaurolophus-arriba.png' },
-    'pterodáctilo': { disponible: 'img/dino-velociraptor.png', colocado: 'img/dino-velociraptor-arriba.png' }
+    'pterodactilo': { disponible: 'img/dino-velociraptor.png', colocado: 'img/dino-velociraptor-arriba.png' }
   },
 
   // Pesos y masas de dinosaurios
-  MASAS_DINOSAURIOS: { 't-rex': 7000, 'triceratops': 7000, 'diplodocus': 15000, 'stegosaurus': 5000, 'parasaurolophus': 2500, 'pterodáctilo': 2000 }, // kg
+  MASAS_DINOSAURIOS: { 't-rex': 7000, 'triceratops': 7000, 'diplodocus': 15000, 'stegosaurus': 5000, 'parasaurolophus': 2500, 'pterodactilo': 2000 }, // kg
 
   GRAVEDAD: 9.8, // m/s²
-  TIPOS_DINOSAURIOS: ['t-rex', 'triceratops', 'diplodocus', 'stegosaurus', 'parasaurolophus', 'pterodáctilo'],
+  TIPOS_DINOSAURIOS: ['t-rex', 'triceratops', 'diplodocus', 'stegosaurus', 'parasaurolophus', 'pterodactilo'],
   DINOSAURIOS_POR_RONDA: 6,
   MAX_DINOSAURIOS_POOL: 8,
   TOTAL_RONDAS: 5,
@@ -93,36 +93,36 @@ const CONFIG = {
       tipo: 'no-t-rex',
       titulo: 'No T-Rex',
       imagen: 'dado-no-trex',
-      descripcion: 'Solo el Rey de la Jungla',
-      recintosBloqueados: ['rey-jungla']
+      descripcion: 'Bloquea recintos que contengan T-Rex',
+      recintosBloqueados: [] // Se calcula dinámicamente
     },
     3: {
       tipo: 'lado-cafeteria',
       titulo: 'Lado Cafetería',
       imagen: 'dado-cafe',
-      descripcion: 'Bosque de la Semejanza, Trío Frondoso, Pradera del Amor',
-      recintosBloqueados: ['bosque-semejanza', 'woody-trio', 'pradera-amor']
+      descripcion: 'Rey de la Jungla, Prado de la Diferencia, Isla Solitaria',
+      recintosBloqueados: ['rey-jungla', 'prado-diferencia', 'isla-solitaria']
     },
     4: {
       tipo: 'lado-banos',
       titulo: 'Lado Baños',
       imagen: 'dado-banos',
-      descripcion: 'Rey de la Jungla, Prado de la Diferencia, Isla Solitaria',
-      recintosBloqueados: ['rey-jungla', 'prado-diferencia', 'isla-solitaria']
+      descripcion: 'Bosque de la Semejanza, Trío Frondoso, Pradera del Amor',
+      recintosBloqueados: ['bosque-semejanza', 'woody-trio', 'pradera-amor']
     },
     5: {
       tipo: 'bosque',
       titulo: 'Bosque',
       imagen: 'dado-bosque',
-      descripcion: 'Trío Frondoso, Bosque de la Semejanza, Rey de la Jungla',
-      recintosBloqueados: ['woody-trio', 'bosque-semejanza', 'rey-jungla']
+      descripcion: 'Prado de la Diferencia, Isla Solitaria, Pradera del Amor',
+      recintosBloqueados: ['prado-diferencia', 'isla-solitaria', 'pradera-amor']
     },
     6: {
       tipo: 'rocas',
       titulo: 'Rocas / Pradera',
       imagen: 'dado-rocas',
-      descripcion: 'Prado de la Diferencia, Isla Solitaria, Pradera del Amor',
-      recintosBloqueados: ['prado-diferencia', 'isla-solitaria', 'pradera-amor']
+      descripcion: 'Bosque de la Semejanza, Rey de la Jungla, Trío Frondoso',
+      recintosBloqueados: ['bosque-semejanza', 'rey-jungla', 'woody-trio']
     }
   },
 
@@ -183,11 +183,15 @@ const REGLAS_RECINTOS = {
     descripcion: 'Todos los dinosaurios diferentes. Puntos: 1, 3, 6, 10, 15, 21'
   },
   'rey-jungla': {
-    validar: (recinto, nuevoDino) => nuevoDino === 't-rex',
-    maxDinos: 6,
-    puntos: (recinto) => recinto.length * 7,
-    nombre: 'Recinto del T-Rex',
-    descripcion: 'Solo T-Rex permitidos. 7 puntos por cada T-Rex'
+    validar: () => true, // Permite cualquier tipo de dinosaurio
+    maxDinos: 1,
+    puntos: (recinto) => {
+      // Por ahora, simplificado: 7 puntos si hay 1 dinosaurio
+      // La lógica completa de comparación con el oponente se implementará después
+      return recinto.length === 1 ? 7 : 0;
+    },
+    nombre: 'Rey de la Jungla',
+    descripcion: 'Solo 1 dinosaurio. 7 puntos si tienes más de esa especie que el oponente'
   },
   'isla-solitaria': {
     validar: () => true,
@@ -432,6 +436,19 @@ const GameLogic = {
     // Si no hay restricción actual, no hay bloqueos
     if (!estadoJuego.restriccionActual) return false;
 
+    // Caso especial: no-trex - bloquea recintos que contengan t-rex
+    if (estadoJuego.restriccionActual === 'no-t-rex') {
+      const jugadorActual = estadoJuego.getJugadorActual();
+      const dinosEnRecinto = jugadorActual.recintos[recinto] || [];
+      return dinosEnRecinto.includes('t-rex');
+    }
+
+    // Caso especial: huella libre - solo permite recintos vacíos
+    if (estadoJuego.restriccionActual === 'huella-libre') {
+      const jugadorActual = estadoJuego.getJugadorActual();
+      return jugadorActual.recintos[recinto] && jugadorActual.recintos[recinto].length > 0;
+    }
+
     // Buscar la configuración de la restricción actual
     const restriccionConfig = Object.values(CONFIG.RESTRICCIONES_DADO)
       .find(r => r.tipo === estadoJuego.restriccionActual);
@@ -532,9 +549,12 @@ const GameLogic = {
   },
 
   actualizarPuntos() {
+    // Calcular puntos localmente solo para el popup de colocación
+    // El puntaje general del jugador viene del backend
     const todosJugadores = estadoJuego.getTodosJugadores();
-    estadoJuego.jugador1.puntosRonda = this.calcularPuntos(estadoJuego.jugador1.recintos, estadoJuego.jugador1, todosJugadores);
-    estadoJuego.jugador2.puntosRonda = this.calcularPuntos(estadoJuego.jugador2.recintos, estadoJuego.jugador2, todosJugadores);
+    
+    estadoJuego.jugador1.puntosRonda = GameLogic.calcularPuntos(estadoJuego.jugador1.recintos, estadoJuego.jugador1, todosJugadores);
+    estadoJuego.jugador2.puntosRonda = GameLogic.calcularPuntos(estadoJuego.jugador2.recintos, estadoJuego.jugador2, todosJugadores);
   },
 
   actualizarPesos() {
@@ -685,7 +705,6 @@ const RenderManager = {
     jugador.dinosauriosDisponibles.forEach((tipo, index) => {
       // Verificar que el tipo de dinosaurio esté definido en la configuración
       if (!CONFIG.IMAGENES_DINOSAURIOS[tipo]) {
-        console.warn(`Tipo de dinosaurio no encontrado en configuración: ${tipo}`);
         return; // Saltar este dinosaurio si no está definido
       }
       
@@ -1783,8 +1802,13 @@ const JuegoManager = {
       window.app.showScreen('dado-animacion');
       setTimeout(() => window.app.iniciarAnimacionDado(), 400);
 
-      // Enviar al backend
-      const backendResponse = await enviarTurnoAlBackend();
+      // Determinar qué endpoint usar según el estado del botón
+      let backendResponse;
+      if (btn.textContent === 'Finalizar ronda') {
+        backendResponse = await JuegoManager.enviarFinalizarRondaAlBackend();
+      } else {
+        backendResponse = await enviarTurnoAlBackend();
+      }
 
       if (backendResponse) {
         // Procesar respuesta del backend
@@ -1803,11 +1827,124 @@ const JuegoManager = {
     }
   },
 
+  // Función para enviar finalizar ronda al backend con datos válidos del localStorage
+  async enviarFinalizarRondaAlBackend() {
+    if (estadoJuego.sincronizandoConBackend) {
+      return null;
+    }
+
+    estadoJuego.sincronizandoConBackend = true;
+
+    // Deshabilitar botón durante request
+    const btn = document.getElementById('btn-siguiente-turno');
+    if (btn) btn.disabled = true;
+
+    try {
+      // Obtener datos del localStorage
+      const datosJuego = JSON.parse(localStorage.getItem('datosJuego') || '{}');
+      
+      // Usar datos reales del último turno para finalizar la ronda
+      const requestData = {
+        partida_id: estadoJuego.partidaId,
+        jugador_id: estadoJuego.jugadorActual === 1 ? 
+          (window.app?.jugador1Info?.id || 1) : 
+          (window.app?.jugador2Info?.id || 2),
+        recinto: estadoJuego.recintoColocadoEnTurno || 'woody-trio',
+        tipoDino: estadoJuego.dinosaurioColocadoEnTurno || 'stegosaurus',
+        tipoDinoDescarte: estadoJuego.dinosaurioDescartadoEnTurno || 'stegosaurus'
+      };
+
+      console.log('DEBUG - Enviando finalizar ronda:', requestData);
+
+      const endpoint = window.app?.getEndpoint('finalizarRonda') || 'http://127.0.0.1:8000/finalizarRonda';
+      
+      console.log('DEBUG - Endpoint:', endpoint);
+      console.log('DEBUG - Antes del fetch');
+      
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestData)
+        });
+
+        console.log('DEBUG - Después del fetch');
+        console.log('DEBUG - Response status:', response.status);
+        console.log('DEBUG - Response headers:', response.headers);
+        
+        const responseText = await response.text();
+        console.log('DEBUG - Response text:', responseText);
+        
+        let result;
+        try {
+          result = JSON.parse(responseText);
+          console.log('DEBUG - Parsed JSON:', result);
+        } catch (parseError) {
+          console.error('DEBUG - Error parsing JSON:', parseError);
+          throw new Error('Respuesta no es JSON válido: ' + responseText);
+        }
+
+        // Verificar status HTTP
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        // VALIDACIÓN ROBUSTA DE RESPUESTA
+        if (!result || typeof result !== 'object') {
+          throw new Error('Respuesta inválida del servidor');
+        }
+
+        if (!result.success) {
+          const mensajes = {
+            'invalid': 'Movimiento inválido',
+            'duplicate': 'Acción ya realizada',
+            'error': 'Error interno del servidor'
+          };
+
+          const mensaje = mensajes[result.code] || result.message || 'Error desconocido';
+          mostrarAlertaJuego(mensaje, 'error', 4000);
+          return null;
+        }
+
+        // VALIDAR CAMPOS REQUERIDOS EN RESPUESTA
+        if (!result.turno || !result.ronda) {
+          mostrarAlertaJuego('Respuesta incompleta del servidor', 'warning', 3000);
+        }
+
+        estadoJuego.sincronizandoConBackend = false;
+        return result;
+
+      } catch (fetchError) {
+        console.error('DEBUG - Error en fetch:', fetchError);
+        throw fetchError;
+      }
+
+    } catch (error) {
+      // Diferentes tipos de errores
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        mostrarAlertaJuego('Error de conexión - Verifica tu internet', 'error', 5000);
+      } else if (error.message.includes('HTTP')) {
+        mostrarAlertaJuego('Error del servidor - Intenta nuevamente', 'error', 4000);
+      } else {
+        mostrarAlertaJuego('Error inesperado - Contacta soporte', 'error', 5000);
+      }
+
+      estadoJuego.sincronizandoConBackend = false;
+      return null;
+
+    } finally {
+      // Siempre rehabilitar botón
+      if (btn) {
+        btn.disabled = false;
+        JuegoManager.actualizarBotonSiguiente();
+      }
+    }
+  },
+
   // FASE 7: Procesa respuesta del backend con validaciones adicionales
   procesarRespuestaBackend(backendResponse) {
     // VALIDACIÓN ADICIONAL
     if (!backendResponse) {
-      console.error('No se recibió respuesta válida del backend');
       mostrarAlertaJuego('Error procesando respuesta del servidor', 'error', 3000);
       return;
     }
@@ -1878,9 +2015,10 @@ const JuegoManager = {
     if (partida) partida.classList.add('pantalla-partida-visible');
 
     RenderManager.actualizarDinosauriosDisponibles();
-    // No llamar actualizarInterfaz aquí para no interferir con la restricción
     RenderManager.renderizarTablero();
-    // No llamar actualizarBotonSiguiente aquí para no interferir con la restricción
+    
+    // Actualizar interfaz al final del procesamiento del turno
+    JuegoManager.actualizarInterfaz();
   },
 
   // FASE 5: Procesa cara del dado que viene del backend (como string "1"-"6")
@@ -1961,7 +2099,12 @@ const JuegoManager = {
       const restriccionConfig = Object.values(CONFIG.RESTRICCIONES_DADO).find(r => r.tipo === tipo);
       let mensaje = `<div>Restricción Actual</div><div>${titulo}</div>`;
 
-      if (restriccionConfig && restriccionConfig.recintosBloqueados.length > 0) {
+      // Casos especiales que se calculan dinámicamente
+      if (estadoJuego.restriccionActual === 'no-t-rex') {
+        mensaje += `<div class="texto-restriccion-bloqueados">Bloquea recintos con T-Rex</div>`;
+      } else if (estadoJuego.restriccionActual === 'huella-libre') {
+        mensaje += `<div class="texto-restriccion-bloqueados">Solo recintos vacíos</div>`;
+      } else if (restriccionConfig && restriccionConfig.recintosBloqueados.length > 0) {
         mensaje += `<div class="texto-restriccion-bloqueados">Recintos bloqueados: ${restriccionConfig.recintosBloqueados.length}</div>`;
       } else {
         mensaje += `<div class="texto-sin-restriccion">Todos los recintos disponibles</div>`;
@@ -2033,7 +2176,6 @@ const JuegoManager = {
     jugador.dinosauriosDisponibles.forEach((tipo, index) => {
       // Verificar que el tipo de dinosaurio esté definido en la configuración
       if (!CONFIG.IMAGENES_DINOSAURIOS[tipo]) {
-        console.warn(`Tipo de dinosaurio no encontrado en configuración: ${tipo}`);
         return; // Saltar este dinosaurio si no está definido
       }
       
@@ -2122,7 +2264,6 @@ const JuegoManager = {
     // Validar que el botón solo tenga textos válidos
     const textosValidos = ['Arrastra un dinosaurio', 'Descarta dinosaurio', 'Tirar dado', 'Finalizar ronda', 'Finalizar partida'];
     if (!textosValidos.includes(btn.textContent)) {
-      console.warn('⚠️ Texto inválido en botón:', btn.textContent, '- Reseteando a estado por defecto');
       btn.textContent = 'Arrastra un dinosaurio';
       btn.disabled = true;
     }
@@ -2169,22 +2310,24 @@ const JuegoManager = {
 
   actualizarInterfaz() {
     
-    // Si hay una restricción activa, no actualizar la interfaz para evitar interferencias
-    if (estadoJuego.restriccionActual && estadoJuego.restriccionActual !== 'huella-libre') {
-      return;
-    }
-
     const jugador = estadoJuego.getJugadorActual();
     const oponente = estadoJuego.getOponente();
 
-    const textoJugador = document.querySelector('.texto-jugador');
-    if (textoJugador) {
-      textoJugador.textContent = jugador.nombre.toUpperCase();
+    // Actualizar el elemento original que muestra "NOMBRE - X PUNTOS"
+    const nombrePuntos = document.querySelector('.nombre-puntos:not(.texto-jugador)');
+    if (nombrePuntos) {
+      nombrePuntos.textContent = `${oponente.nombre.toUpperCase()} - ${parseInt(oponente.puntos) || 0} PUNTOS`;
     }
 
-    const nombrePuntos = document.querySelector('.nombre-puntos');
-    if (nombrePuntos) {
-      nombrePuntos.textContent = `${oponente.nombre.toUpperCase()} - ${parseInt(oponente.puntosRonda) || 0} PUNTOS`;
+    // Actualizar el elemento original para el jugador actual
+    const textoJugador = document.querySelector('.texto-jugador');
+    if (textoJugador) {
+      textoJugador.textContent = `${jugador.nombre.toUpperCase()} - ${parseInt(jugador.puntos) || 0} PUNTOS`;
+    }
+
+    // Si hay una restricción activa, no actualizar el resto de la interfaz para evitar interferencias
+    if (estadoJuego.restriccionActual && estadoJuego.restriccionActual !== 'huella-libre') {
+      return;
     }
 
     const infoJugador2 = document.querySelector('.info-jugador2');
@@ -2215,17 +2358,25 @@ const JuegoManager = {
     const avatarJugador1Bottom = document.querySelector('.info-jugador .avatar-circular');
 
     if (estadoJuego.jugadorActual === 1) {
-      if (avatarJugador1Bottom) avatarJugador1Bottom.src = 'img/foto_usuario-1.png';
+      // Jugador 1 está jugando: Jugador 1 abajo, Jugador 2 arriba
+      if (avatarJugador1Bottom) {
+        avatarJugador1Bottom.src = window.app?.jugador1Info?.tipo === 'invitado' ?
+          'img/invitado.png' : 'img/foto_usuario-1.png';
+      }
       if (avatarJugador2Top) {
         avatarJugador2Top.src = window.app?.jugador2Info?.tipo === 'invitado' ?
           'img/invitado.png' : 'img/foto_usuario-2.png';
       }
     } else {
+      // Jugador 2 está jugando: Jugador 2 abajo, Jugador 1 arriba
       if (avatarJugador1Bottom) {
         avatarJugador1Bottom.src = window.app?.jugador2Info?.tipo === 'invitado' ?
           'img/invitado.png' : 'img/foto_usuario-2.png';
       }
-      if (avatarJugador2Top) avatarJugador2Top.src = 'img/foto_usuario-1.png';
+      if (avatarJugador2Top) {
+        avatarJugador2Top.src = window.app?.jugador1Info?.tipo === 'invitado' ?
+          'img/invitado.png' : 'img/foto_usuario-1.png';
+      }
     }
 
     const iconoRestriccion = document.querySelector('.icono-restriccion-footer');
@@ -2270,15 +2421,12 @@ const JuegoManager = {
   },
 
   _calcularPuntosRonda() {
+    // Los puntos generales vienen del backend, no se calculan localmente
+    // Solo calculamos puntosRonda para el popup de colocación
     const todosJugadores = estadoJuego.getTodosJugadores();
 
-    const puntosRondaJ1 = GameLogic.calcularPuntos(estadoJuego.jugador1.recintos, estadoJuego.jugador1, todosJugadores);
-    const puntosRondaJ2 = GameLogic.calcularPuntos(estadoJuego.jugador2.recintos, estadoJuego.jugador2, todosJugadores);
-
-    estadoJuego.jugador1.puntosRonda = puntosRondaJ1;
-    estadoJuego.jugador2.puntosRonda = puntosRondaJ2;
-    estadoJuego.jugador1.puntos += puntosRondaJ1;
-    estadoJuego.jugador2.puntos += puntosRondaJ2;
+    estadoJuego.jugador1.puntosRonda = GameLogic.calcularPuntos(estadoJuego.jugador1.recintos, estadoJuego.jugador1, todosJugadores);
+    estadoJuego.jugador2.puntosRonda = GameLogic.calcularPuntos(estadoJuego.jugador2.recintos, estadoJuego.jugador2, todosJugadores);
   },
 
   // FASE 6: Muestra resumen de ronda usando puntajes que vienen del backend
@@ -2872,7 +3020,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Turno normal: actualizar localStorage
     actualizarLocalStorage();
-    // No llamar actualizarInterfaz aquí para no interferir con la restricción
+    // NO actualizar interfaz aquí - se hará al final del procesamiento del turno
   }
 
   /**
@@ -2906,6 +3054,16 @@ document.addEventListener('DOMContentLoaded', () => {
       restriccionActual: estadoJuego.restriccionActual,
       dadoNumero: backendResponse.caraDado ? JuegoManager.mapearCaraDadoBackend(backendResponse.caraDado) : estadoJuego.dadoNumero
     };
+
+    // Actualizar puntos desde el backend
+    if (backendResponse.puntaje_jugador1 !== undefined) {
+      estadoJuego.jugador1.puntos = backendResponse.puntaje_jugador1;
+      console.log('DEBUG - Actualizando puntos jugador1:', backendResponse.puntaje_jugador1);
+    }
+    if (backendResponse.puntaje_jugador2 !== undefined) {
+      estadoJuego.jugador2.puntos = backendResponse.puntaje_jugador2;
+      console.log('DEBUG - Actualizando puntos jugador2:', backendResponse.puntaje_jugador2);
+    }
     
     return mapeado;
   }

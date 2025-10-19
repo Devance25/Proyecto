@@ -43,6 +43,35 @@ class AppState {
     // ============================================================================
     this.modoSeguimiento = false; // false = Digital Completo, true = Seguimiento
     
+    // ============================================================================
+    // CONFIGURACIÓN DE ENDPOINTS POR MODO
+    // ============================================================================
+    this.CONFIG_MODOS = {
+      DIGITAL_COMPLETO: {
+        nombre: 'Digital Completo',
+        modoSeguimiento: false,
+        descripcion: 'El sistema maneja automáticamente las bolsas y el dado',
+        endpoints: {
+          crearPartida: 'http://127.0.0.1:8000/crearPartida',
+          turno: 'http://127.0.0.1:8000/turno',
+          finalizarRonda: 'http://127.0.0.1:8000/finalizarRonda',
+          finalizarPartida: 'http://127.0.0.1:8000/finalizarPartida'
+        }
+      },
+      SEGUIMIENTO: {
+        nombre: 'Seguimiento',
+        modoSeguimiento: true,
+        descripcion: 'Para seguir partidas físicas reales',
+        endpoints: {
+          crearPartida: 'http://127.0.0.1:8000/crearPartidaSeguimiento',
+          crearBolsa: 'http://127.0.0.1:8000/crearBolsaSeguimiento',
+          turno: 'http://127.0.0.1:8000/turnoSeguimiento',
+          finalizarRonda: 'http://127.0.0.1:8000/finalizarRonda',
+          finalizarPartida: 'http://127.0.0.1:8000/finalizarPartida'
+        }
+      }
+    };
+    
     this.validationConfig = {
       username: { min: 3, max: 15 },
       playerName: { min: 2, max: 12 },
@@ -73,6 +102,53 @@ class AppState {
     } else {
       setTimeout(() => this.showScreen('login'), 1000);
     }
+  }
+
+  // ============================================================================
+  // MÉTODOS DE CONFIGURACIÓN DE ENDPOINTS
+  // ============================================================================
+  
+  /**
+   * Obtiene el modo actual de juego
+   */
+  getModoActual() {
+    return this.modoSeguimiento ? 'SEGUIMIENTO' : 'DIGITAL_COMPLETO';
+  }
+
+  /**
+   * Obtiene la configuración del modo actual
+   */
+  getConfigModo() {
+    return this.CONFIG_MODOS[this.getModoActual()];
+  }
+
+  /**
+   * Obtiene el endpoint para una acción específica
+   */
+  getEndpoint(accion) {
+    const config = this.getConfigModo();
+    return config?.endpoints?.[accion] || null;
+  }
+
+  /**
+   * Establece el modo de juego
+   */
+  setModo(modo) {
+    this.modoSeguimiento = modo === 'SEGUIMIENTO';
+  }
+
+  /**
+   * Verifica si está en modo seguimiento
+   */
+  esModoSeguimiento() {
+    return this.modoSeguimiento;
+  }
+
+  /**
+   * Verifica si está en modo digital completo
+   */
+  esModoDigitalCompleto() {
+    return !this.modoSeguimiento;
   }
 
   // NUEVO: Métodos para manejar datos en localStorage
@@ -301,7 +377,7 @@ class AppState {
     
     const btnText = btn.querySelector('.btn-text');
     if (btnText) {
-      btnText.textContent = this.modoSeguimiento ? 'Modo seguimiento' : 'Jugar en la app';
+      btnText.textContent = this.esModoSeguimiento() ? 'Modo seguimiento' : 'Jugar en la app';
     }
     
     // Visual feedback
@@ -627,7 +703,7 @@ class AppState {
    * En este modo el usuario selecciona manualmente dinosaurios y dados
    */
   iniciarModoSeguimiento() {
-    this.modoSeguimiento = true;
+    this.setModo('SEGUIMIENTO');
     this.showScreen('jugadores');
     this.showToast('Modo seguimiento activado', 'success');
   }
@@ -839,9 +915,7 @@ class AppState {
         // ============================================================================
         // DISCRIMINACIÓN DE ENDPOINTS SEGÚN EL MODO DE JUEGO
         // ============================================================================
-        const endpoint = this.modoSeguimiento ? 
-          'http://127.0.0.1:8000/crearPartidaSeguimiento' : 
-          'http://127.0.0.1:8000/crearPartida';
+        const endpoint = this.getEndpoint('crearPartida');
         
         const response = await fetch(endpoint, {
           method: 'POST',
@@ -857,7 +931,7 @@ class AppState {
         if (response.ok && result.success) {
           // NUEVO: Guardar información completa de la partida creada
           this.partidaInfo = {
-            id: result.partida.id,
+            id: result.partida_id,
             jugador1_id: this.jugador1Info.id,
             jugador2_id: this.jugador2Info.id,
             estado: 'activa',
@@ -868,15 +942,14 @@ class AppState {
             creado_el: new Date().toISOString(),
             // Información de bolsas de ambos jugadores desde el backend
             bolsas: {
-              jugador1: result.jugadores[0].bolsa.bolsaDinos,
-              jugador2: result.jugadores[1].bolsa.bolsaDinos
+              jugador1: result.bolsaJugador1?.bolsaDinos || [],
+              jugador2: result.bolsaJugador2?.bolsaDinos || []
             }
           };
           
           // NUEVO: Guardar todos los datos (jugadores + partida)
           this.guardarDatosJuego();
           
-          console.log('Partida creada en backend:', result);
           this.showToast('Partida creada exitosamente', 'success');
         } else {
           console.log('Error al crear partida, continuando en modo local:', result.message);
@@ -895,7 +968,7 @@ class AppState {
       console.error('JuegoManager no disponible');
     }
     
-    if (this.modoSeguimiento) {
+    if (this.esModoSeguimiento()) {
       const nombreJugador = nombres[primerJugador - 1];
       const avatarSrc = primerJugador === 1 ? 
         'img/foto_usuario-1.png' : 
@@ -1642,7 +1715,7 @@ class AppState {
   }
 
   nuevaPartida() {
-    this.modoSeguimiento = false;
+    this.setModo('DIGITAL_COMPLETO');
     this.showScreen('jugadores');
     
     const j2 = document.getElementById('jugador-2');
@@ -1674,7 +1747,7 @@ class AppState {
     this.jugador2Info = null;
     this.partidaInfo = null; // NUEVO
     this.dadoSeleccionado = null;
-    this.modoSeguimiento = false;
+    this.setModo('DIGITAL_COMPLETO');
 
     document.querySelectorAll('form').forEach(form => form.reset());
 
@@ -1691,7 +1764,7 @@ class AppState {
     this.jugador2Info = null;
     this.partidaInfo = null; // NUEVO
     this.dadoSeleccionado = null;
-    this.modoSeguimiento = false;
+    this.setModo('DIGITAL_COMPLETO');
     
     this.hideToasts();
     
