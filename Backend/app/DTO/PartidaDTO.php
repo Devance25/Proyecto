@@ -195,6 +195,8 @@ class RondaDTO{
             'caraDado'         => $this->caraDado,
             'puntaje_jugador1' => $this->puntaje_jugador1,
             'puntaje_jugador2' => $this->puntaje_jugador2,
+            'bolsa_jugador1'   => $this->bolsa_jugador1,
+            'bolsa_jugador2'   => $this->bolsa_jugador2,
             'httpCode'         => $this->httpCode,
         ];
     }

@@ -862,12 +862,7 @@ class AppState {
     const nombres = [j1, j2];
     
     // MODIFICADO: Usar los datos ya guardados en lugar de crear objeto básico
-    const jugador2Info = this.jugador2Info || {
-      nombre: j2,
-      tipo: 'invitado',
-      username: j2,
-      name: j2.toUpperCase()
-    };
+    const jugador2Info = this.jugador2Info;
     
     this.iniciarPartida(nombres, jugador2Info, primerJugador);
     
@@ -895,8 +890,8 @@ class AppState {
       [this.players[0], this.players[1]] = [this.players[1], this.players[0]];
       
       // Intercambiar jugador1Info y jugador2Info
-      const tempJugador1 = { ...this.jugador1Info };
-      this.jugador1Info = { ...this.jugador2Info };
+      const tempJugador1 = this.jugador1Info ? { ...this.jugador1Info } : null;
+      this.jugador1Info = this.jugador2Info ? { ...this.jugador2Info } : null;
       this.jugador2Info = tempJugador1;
       
       // Actualizar nombres después del intercambio
@@ -942,8 +937,8 @@ class AppState {
             creado_el: new Date().toISOString(),
             // Información de bolsas de ambos jugadores desde el backend
             bolsas: {
-              jugador1: result.bolsaJugador1?.bolsaDinos || [],
-              jugador2: result.bolsaJugador2?.bolsaDinos || []
+              jugador1: result.bolsaJugador1 || [],
+              jugador2: result.bolsaJugador2 || []
             }
           };
           

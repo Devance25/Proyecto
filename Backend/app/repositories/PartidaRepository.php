@@ -115,11 +115,7 @@ class PartidaRepository
 
         }   
 
-        return [
-            'success'    => true,
-            'jugador'    => $jugador_id,
-            'bolsaDinos' => $bolsaDinos,
-        ];
+        return $bolsaDinos;
 
     }
 
@@ -1075,7 +1071,8 @@ class PartidaRepository
                       WHERE       partida_id = ?
                       AND         bolsa_general = true
                       AND         dino = ?
-                      ";
+                      LIMIT       1"
+                      ;
     
             $stmt = $this->conn->prepare($query);
             if (!$stmt) {

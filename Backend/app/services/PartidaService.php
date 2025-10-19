@@ -91,18 +91,25 @@ class PartidaService
             $bolsa_general = new BolsaGeneral;
 
             //  Crea una bolsa con 6 dinos de forma aleatoria.
-            //  IMPORTANTE: Ahora crearBolsa remueve automáticamente los dinosaurios de la bolsa general
             $bolsa1 = $this->partida->crearBolsa($bolsa_general->bolsa_general);
 
+            //  Remueve los dinos utilizados para crear la bolsa 1 de la bolsa general
+            $bolsa_general->removerDinos($bolsa1);
+
             //  Crea una bolsa con 6 dinos de forma aleatoria.
-            //  IMPORTANTE: Ahora crearBolsa remueve automáticamente los dinosaurios de la bolsa general
             $bolsa2 = $this->partida->crearBolsa($bolsa_general->bolsa_general);
 
+            //  Remueve los dinos utilizados para crear la bolsa 2 de la bolsa general
+            $bolsa_general->removerDinos($bolsa2);
+
+            // Antes de la línea 106, agrega:
+            error_log("DEBUG - Bolsa general antes de guardar: " . json_encode($bolsa_general->bolsa_general));
+            error_log("DEBUG - Cantidad de dinosaurios: " . count($bolsa_general->bolsa_general));
+
             //  Crea la bolsa general en la base de datos para el resto de la partida.
-            //  IMPORTANTE: Esto se hace DESPUÉS de remover dinosaurios para guardar solo lo que queda
             $this->partidaRepo->crearBolsaGeneralRepo($partida_id, $bolsa_general->bolsa_general);
 
-
+            //  Guarda las bolsas creadas en la base de datos
             $bolsaJugador1 = $this->partidaRepo->crearBolsaRepo(
                 $partida_id,
                 $dto->jugador1_id, 
@@ -399,6 +406,8 @@ class PartidaService
 
         //  Suma un turno.
         $this->partidaRepo->sumarTurnoRepo($dto->partida_id);
+
+        $turnoActual += 1;
             
         //  Tira dado en backend.
          $caraDadoActual = $this->partida->tirarDado();
@@ -541,7 +550,7 @@ class PartidaService
             $dto->jugador_id
         );
 
-        // Convierte los arrays indexados de arrays asociativos a arrays asociativos de arrays indexados.
+        //  Convierte los arrays indexados de arrays asociativos a arrays asociativos de arrays indexados.
         $porRecintoJugador = $this->partida->agruparPorRecinto($colocacionesJugador);
 
         //  Utilizamos el resultado del dado y las colocaciones del jugador para aplicar restricciones
@@ -648,7 +657,9 @@ class PartidaService
         );
 
         //  Setea 'ronda += 1'.
-        $rondaActual = $this->partidaRepo->sumarRondaRepo($dto->partida_id);
+        $rondaActual += 1; 
+        
+        $this->partidaRepo->sumarRondaRepo($dto->partida_id);
 
         //  Resetea los turnos ('turno = 6' => 'tunro = 1').
         $turnoActual = $this->partidaRepo->resetTurnosRepo($dto->partida_id);
@@ -671,16 +682,25 @@ class PartidaService
         //  Remueve los dinos que fueron asignados a bolsa2 de la bolsa general en la base de datos.
         $this->partidaRepo->removerDinosBolsaGeneralRepo($dto->partida_id, $bolsa2);
 
-        $bolsaJugador1 = $this->partidaRepo->crearBolsaRepo(
+        $bolsa_jugador1 = $this->partidaRepo->crearBolsaRepo(
             $dto->partida_id,
-            $dto->jugador1_id, 
+            $dto->jugador_id,
             $bolsa1
         );
-        $bolsaJugador2 = $this->partidaRepo->crearBolsaRepo(
-            $dto->partida_id, 
-            $dto->jugador2_id, 
-            $bolsa2
-        );
+
+        if($dto->jugador_id !== $jugador2_id){
+            $bolsa_jugador2 = $this->partidaRepo->crearBolsaRepo(
+                $dto->partida_id, 
+                $jugador2_id, 
+                $bolsa2
+            );
+        }else{
+            $bolsa_jugador2 = $this->partidaRepo->crearBolsaRepo(
+                $dto->partida_id, 
+                $jugador1_id, 
+                $bolsa2
+            );
+        }
 
         //  Crea una dto de calcular puntajes.
         $calcularPuntajesDTO = new CalcularPuntajesDTO($dto->partida_id);
@@ -695,7 +715,7 @@ class PartidaService
         //  Retorna turno procesado exitosamente.
         $dto->fillResponse(
             true,                                       //  success
-            "Jugada procesada exitosamente.",           //  message
+            "Ronda procesada exitosamente.",           //  message
             $turnoActual,                               //  turno
             $rondaActual,                               //  ronda
             $caraDadoActual,                            //  caraDado

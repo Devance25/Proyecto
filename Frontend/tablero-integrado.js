@@ -1671,7 +1671,7 @@ const JuegoManager = {
     estadoJuego.jugador1.nombre = jugadores[0] || 'Jugador 1';
     estadoJuego.jugador2.nombre = jugadores[1] || 'Jugador 2';
 
-    if (window.app) window.app.jugador2Info = jugador2Info || { tipo: 'invitado' };
+    if (window.app) window.app.jugador2Info = jugador2Info;
 
     if (modoSeguimiento) {
       estadoJuego.turnoEnRonda = 1;
@@ -1798,14 +1798,27 @@ const JuegoManager = {
     if (window.app?.showScreen) {
       this.limpiarIndicadoresTurno();
 
-      // Mostrar animación de dado mientras se envía al backend
-      window.app.showScreen('dado-animacion');
-      setTimeout(() => window.app.iniciarAnimacionDado(), 400);
+      // Mostrar animación de dado mientras se envía al backend (solo si no es finalizar ronda)
+      if (btn.textContent !== 'Finalizar ronda') {
+        window.app.showScreen('dado-animacion');
+        setTimeout(() => window.app.iniciarAnimacionDado(), 400);
+      }
 
       // Determinar qué endpoint usar según el estado del botón
       let backendResponse;
       if (btn.textContent === 'Finalizar ronda') {
         backendResponse = await JuegoManager.enviarFinalizarRondaAlBackend();
+        // Procesar fin de ronda usando la lógica original del frontend
+        if (backendResponse && backendResponse.success) {
+          this.procesarRespuestaBackend(backendResponse);
+          // Llamar a la función original de finalizar ronda para mostrar resumen
+          // Pasar los puntajes del backend
+          const puntajesBackend = {
+            jugador1: backendResponse.puntaje_jugador1,
+            jugador2: backendResponse.puntaje_jugador2
+          };
+          this._finalizarRonda(puntajesBackend);
+        }
       } else {
         backendResponse = await enviarTurnoAlBackend();
       }
@@ -1986,40 +1999,6 @@ const JuegoManager = {
     }
   },
 
-  // FASE 4: Procesa la respuesta del backend y actualiza el estado del juego
-  procesarRespuestaBackend(backendResponse) {
-    // Sincronizar estado con backend
-    sincronizarConBackend(backendResponse);
-
-    // Cambiar turno localmente después de sincronizar
-    estadoJuego.cambiarTurno();
-
-    // FASE 5: Procesar dado del backend
-    if (backendResponse.caraDado) {
-      // El backend devuelve nombres de caras, necesitamos mapearlos a números
-      const numeroDado = this.mapearCaraDadoBackend(backendResponse.caraDado);
-      console.log(`Cara del dado del backend: "${backendResponse.caraDado}" -> número: ${numeroDado}`);
-      
-      // Actualizar el dado en app-js-integrado.js también
-      if (window.app?.actualizarDadoDesdeBackend) {
-        window.app.actualizarDadoDesdeBackend(backendResponse.caraDado);
-      }
-      
-      this.procesarResultadoDado(numeroDado);
-    } else if (estadoJuego.esPrimerTurnoAbsoluto()) {
-      this.establecerSinRestriccion();
-    }
-
-    // Mostrar pantalla de partida
-    const partida = document.getElementById('pantalla-partida');
-    if (partida) partida.classList.add('pantalla-partida-visible');
-
-    RenderManager.actualizarDinosauriosDisponibles();
-    RenderManager.renderizarTablero();
-    
-    // Actualizar interfaz al final del procesamiento del turno
-    JuegoManager.actualizarInterfaz();
-  },
 
   // FASE 5: Procesa cara del dado que viene del backend (como string "1"-"6")
   procesarResultadoDado(numeroDado) {
@@ -2410,11 +2389,11 @@ const JuegoManager = {
     GameLogic.actualizarPuntos();
   },
 
-  _finalizarRonda() {
+  _finalizarRonda(puntajesBackend = null) {
     this._calcularPuntosRonda();
 
     if (estadoJuego.rondaActual < CONFIG.TOTAL_RONDAS) {
-      this._mostrarResumenRonda();
+      this._mostrarResumenRonda(puntajesBackend);
     } else {
       this._mostrarPantallaFinal();
     }
@@ -2467,6 +2446,20 @@ const JuegoManager = {
       const elem = document.getElementById(id);
       if (elem) elem.textContent = valor;
     });
+
+    // Actualizar avatares dinámicamente
+    const avatarJugador1 = document.getElementById('avatar-resumen-j1');
+    const avatarJugador2 = document.getElementById('avatar-resumen-j2');
+    
+    if (avatarJugador1) {
+      avatarJugador1.style.backgroundImage = window.app?.jugador1Info?.tipo === 'invitado' ?
+        'url("img/invitado.png")' : 'url("img/foto_usuario-1.png")';
+    }
+    
+    if (avatarJugador2) {
+      avatarJugador2.style.backgroundImage = window.app?.jugador2Info?.tipo === 'invitado' ?
+        'url("img/invitado.png")' : 'url("img/foto_usuario-2.png")';
+    }
   },
 
   _prepararSiguienteRonda() {
@@ -3046,6 +3039,24 @@ document.addEventListener('DOMContentLoaded', () => {
    * Esta función es transversal a ambos modos de juego
    */
   function mapearBackendAEstadoLocal(backendResponse) {
+    // Mostrar respuesta del backend en el mismo orden que la devuelve
+    console.log('Backend Response:', {
+      success: backendResponse.success,
+      message: backendResponse.message,
+      partida_id: backendResponse.partida_id,
+      jugador_id: backendResponse.jugador_id,
+      recinto: backendResponse.recinto,
+      tipoDino: backendResponse.tipoDino,
+      tipoDinoDescarte: backendResponse.tipoDinoDescarte,
+      turno: backendResponse.turno,
+      ronda: backendResponse.ronda,
+      caraDado: backendResponse.caraDado,
+      puntaje_jugador1: backendResponse.puntaje_jugador1,
+      puntaje_jugador2: backendResponse.puntaje_jugador2,
+      bolsa_jugador1: backendResponse.bolsa_jugador1,
+      bolsa_jugador2: backendResponse.bolsa_jugador2,
+      httpCode: backendResponse.httpCode
+    });
     
     const mapeado = {
       turnoEnRonda: backendResponse.turno || estadoJuego.turnoEnRonda,
@@ -3058,11 +3069,40 @@ document.addEventListener('DOMContentLoaded', () => {
     // Actualizar puntos desde el backend
     if (backendResponse.puntaje_jugador1 !== undefined) {
       estadoJuego.jugador1.puntos = backendResponse.puntaje_jugador1;
-      console.log('DEBUG - Actualizando puntos jugador1:', backendResponse.puntaje_jugador1);
     }
     if (backendResponse.puntaje_jugador2 !== undefined) {
       estadoJuego.jugador2.puntos = backendResponse.puntaje_jugador2;
-      console.log('DEBUG - Actualizando puntos jugador2:', backendResponse.puntaje_jugador2);
+    }
+
+    // Actualizar bolsas desde el backend SOLO si vienen bolsas nuevas
+    console.log('DEBUG - Bolsa jugador1 recibida:', backendResponse.bolsa_jugador1);
+    console.log('DEBUG - Bolsa jugador2 recibida:', backendResponse.bolsa_jugador2);
+    
+    if (backendResponse.bolsa_jugador1 && Array.isArray(backendResponse.bolsa_jugador1)) {
+      estadoJuego.jugador1.dinosauriosDisponibles = [...backendResponse.bolsa_jugador1];
+      console.log('DEBUG - Bolsa jugador1 actualizada:', estadoJuego.jugador1.dinosauriosDisponibles);
+      
+      // Actualizar también la variable bolsas en partidaInfo
+      if (window.app?.partidaInfo?.bolsas) {
+        window.app.partidaInfo.bolsas.jugador1 = [...backendResponse.bolsa_jugador1];
+      }
+    }
+    
+    if (backendResponse.bolsa_jugador2 && Array.isArray(backendResponse.bolsa_jugador2)) {
+      estadoJuego.jugador2.dinosauriosDisponibles = [...backendResponse.bolsa_jugador2];
+      console.log('DEBUG - Bolsa jugador2 actualizada:', estadoJuego.jugador2.dinosauriosDisponibles);
+      
+      // Actualizar también la variable bolsas en partidaInfo
+      if (window.app?.partidaInfo?.bolsas) {
+        window.app.partidaInfo.bolsas.jugador2 = [...backendResponse.bolsa_jugador2];
+      }
+    }
+    
+    // Solo actualizar interfaz visual si se actualizaron las bolsas
+    if ((backendResponse.bolsa_jugador1 && Array.isArray(backendResponse.bolsa_jugador1)) || 
+        (backendResponse.bolsa_jugador2 && Array.isArray(backendResponse.bolsa_jugador2))) {
+      RenderManager.actualizarDinosauriosDisponibles();
+      console.log('DEBUG - partidaInfo.bolsas actualizada:', window.app?.partidaInfo?.bolsas);
     }
     
     return mapeado;
