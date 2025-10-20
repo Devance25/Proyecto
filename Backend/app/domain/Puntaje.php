@@ -27,8 +27,10 @@ class Puntaje
         //     'rio' => ['Diplodocus', 'Diplodocus'],
         //     'pradera-amor' => ['T-rex']
         // ]
+
+        $puntaje = 0;
             foreach($porRecinto1 as $recinto => $dinos){
-            $puntaje = 0;
+            
                 switch($recinto){
 
                     case 'bosque-semejanza':
@@ -49,9 +51,11 @@ class Puntaje
 
                     case 'rey-jungla':
                         $puntaje += $this->reglas->reglasReyDeLaSelva($porRecinto1, $porRecinto2);
+                        break;
 
                     case 'isla-solitaria':
                         $puntaje += $this->reglas->reglasIslaSolitaria($dinos, $porRecinto1);
+                        break;
                         
                     case 'rio':
                         $puntaje += $this->reglas->reglasRio($dinos); 

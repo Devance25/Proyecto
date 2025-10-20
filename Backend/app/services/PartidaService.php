@@ -746,31 +746,34 @@ class PartidaService
 
 
         // Utilizado los IDs de los jugadores trae sus colocaicones(devuelve un array indexado de arrays asociativos).
-        $colocacionesJugador1 = $this->partidaRepo->getColocacionesRepo(
+        $colocaciones_jugador1 = $this->partidaRepo->getColocacionesRepo(
             $dto->partida_id,
             $jugador1_id
         );
-        $colocacionesJugador2 = $this->partidaRepo->getColocacionesRepo(
+        $colocaciones_jugador2 = $this->partidaRepo->getColocacionesRepo(
             $dto->partida_id, 
             $jugador2_id
         );
 
         // Convierte los arrays indexados de arrays asociativos a arrays asociativos de arrays indexados.
-        $porRecintoJugador1 = $this->partida->agruparPorRecinto($colocacionesJugador1);
-        $porRecintoJugador2 = $this->partida->agruparPorRecinto($colocacionesJugador2);
+        $por_recinto_jugador1 = $this->partida->agruparPorRecinto($colocaciones_jugador1);
+        $por_recinto_jugador2 = $this->partida->agruparPorRecinto($colocaciones_jugador2);
         
         //  Calcula los puntajes de los jugadores.
-        $puntajeJugador1 = $this->puntaje->calcularPuntaje(
-            $porRecintoJugador1, 
-            $porRecintoJugador2
+        $puntaje_jugador1 = $this->puntaje->calcularPuntaje(
+            $por_recinto_jugador1, 
+            $por_recinto_jugador2
         );
-        $puntajeJugador2 = $this->puntaje->calcularPuntaje(
-            $porRecintoJugador2, 
-            $porRecintoJugador1
+        $puntaje_jugador2 = $this->puntaje->calcularPuntaje(
+            $por_recinto_jugador1, 
+            $por_recinto_jugador2
         );
 
+        //  Guarda los puntajes en la base de datos
+        $this->partidaRepo->setPuntajesRepo($dto->partida_id, $puntaje_jugador1, $puntaje_jugador2);
+
         //  Completa el DTO de calcular puntajes con los puntajes de los jugadores.
-        $dto->fillResponse($puntajeJugador1, $puntajeJugador2);
+        $dto->fillResponse($puntaje_jugador1, $puntaje_jugador2);
 
         
         //  Retorna los puntajes de los jugadores.

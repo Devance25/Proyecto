@@ -370,22 +370,21 @@ class EstadoJuego {
   }
 
   esFinDeRonda() {
-    // En el turno 6 no se tira dado, se finaliza la ronda
-    if (this.turnoEnRonda >= 6) {
+    // Si estamos en turno 7 (después de procesar el turno 6), es fin de ronda
+    if (this.turnoEnRonda >= 7) {
       return true;
     }
     
-    if (!this.modoSeguimiento) {
-      return this.jugador1.dinosauriosDisponibles.length === 0 &&
-        this.jugador2.dinosauriosDisponibles.length === 0;
-    }
-
-    if (this.esPrimerTurnoDeRonda()) return false;
-
+    // Verificar si ambos jugadores ya no tienen dinosaurios (han colocado sus 3 dinosaurios)
     const sinDinosaurios = this.jugador1.dinosauriosDisponibles.length === 0 &&
       this.jugador2.dinosauriosDisponibles.length === 0;
-
-    return sinDinosaurios;
+    
+    // Si no hay dinosaurios disponibles, es fin de ronda
+    if (sinDinosaurios) {
+      return true;
+    }
+    
+    return false;
   }
 
   esPrimerTurnoDeRonda() { return this.turnoEnRonda === 1; }
@@ -840,7 +839,6 @@ const DragDropManager = {
   },
 
   _handleDragStart(e) {
-
     if (Utils.hayPopupAbierto() || estadoJuego.yaColocoEnTurno) {
       e.preventDefault();
       return;
@@ -1690,6 +1688,12 @@ const JuegoManager = {
   },
 
   _iniciarRonda() {
+    // Evitar doble inicialización de la misma ronda
+    if (estadoJuego.ultimaRondaInicializada === estadoJuego.rondaActual) {
+      return;
+    }
+    estadoJuego.ultimaRondaInicializada = estadoJuego.rondaActual;
+    
     if (!estadoJuego.modoSeguimiento) this._repartirDinosaurios();
     this._configurarTurnoInicial();
   },
@@ -1717,9 +1721,40 @@ const JuegoManager = {
       const bolsaJugador2 = window.app.partidaInfo.bolsas.jugador2;
       
       if (Array.isArray(bolsaJugador1) && Array.isArray(bolsaJugador2)) {
-        // Usar las bolsas específicas del backend
-        estadoJuego.jugador1.dinosauriosDisponibles = [...bolsaJugador1];
-        estadoJuego.jugador2.dinosauriosDisponibles = [...bolsaJugador2];
+        console.log('DEBUG _repartirDinosaurios - bolsas recibidas del backend:', {
+          bolsaJugador1,
+          bolsaJugador2,
+          'jugador1Info.id': window.app?.jugador1Info?.id,
+          'partidaInfo.jugador1_id': window.app?.partidaInfo?.jugador1_id
+        });
+        
+        // IMPORTANTE: Mapear bolsas basándose en quién REALMENTE está en cada posición de la ronda actual
+        // estadoJuego.jugador1 = quien comienza esta ronda (primerJugador)
+        // estadoJuego.jugador2 = el otro jugador
+        
+        // En rondas impares: jugador1 (frontend) = jugador que empezó la partida
+        // En rondas pares: jugador1 (frontend) = el otro jugador
+        
+        // Determinar el ID real del jugador que está en la posición jugador1 del frontend
+        const idRealJugador1Frontend = estadoJuego.primerJugador === 1 ? 
+          (window.app?.jugador1Info?.id || 1) : 
+          (window.app?.jugador2Info?.id || 2);
+        
+        const idRealJugador2Frontend = estadoJuego.primerJugador === 1 ? 
+          (window.app?.jugador2Info?.id || 2) : 
+          (window.app?.jugador1Info?.id || 1);
+        
+        // Asignar bolsas según los IDs reales
+        if (idRealJugador1Frontend === window.app?.partidaInfo?.jugador1_id) {
+          estadoJuego.jugador1.dinosauriosDisponibles = [...bolsaJugador1];
+          estadoJuego.jugador2.dinosauriosDisponibles = [...bolsaJugador2];
+        } else {
+          estadoJuego.jugador1.dinosauriosDisponibles = [...bolsaJugador2];
+          estadoJuego.jugador2.dinosauriosDisponibles = [...bolsaJugador1];
+        }
+        
+        // Actualizar la interfaz visual con las nuevas bolsas
+        RenderManager.actualizarDinosauriosDisponibles();
         
       } else {
         console.warn('Las bolsas del backend no son arrays válidos, generando dinosaurios aleatorios');
@@ -1810,7 +1845,44 @@ const JuegoManager = {
         backendResponse = await JuegoManager.enviarFinalizarRondaAlBackend();
         // Procesar fin de ronda usando la lógica original del frontend
         if (backendResponse && backendResponse.success) {
-          this.procesarRespuestaBackend(backendResponse);
+          // NO llamar procesarRespuestaBackend aquí, solo actualizar partidaInfo.bolsas
+          // para que estén disponibles cuando se inicie la siguiente ronda
+          if (backendResponse.bolsa_jugador1 && backendResponse.bolsa_jugador2) {
+            if (window.app?.partidaInfo) {
+              // IMPORTANTE: Crear un objeto NUEVO para que las referencias no se compartan
+              window.app.partidaInfo.bolsas = {
+                jugador1: [...backendResponse.bolsa_jugador1],
+                jugador2: [...backendResponse.bolsa_jugador2]
+              };
+              console.log('DEBUG - Bolsas guardadas en partidaInfo:', window.app.partidaInfo.bolsas);
+            }
+          }
+          
+          // Actualizar ronda y turno desde el backend
+          if (backendResponse.ronda !== undefined) {
+            estadoJuego.rondaActual = backendResponse.ronda;
+          }
+          if (backendResponse.turno !== undefined) {
+            estadoJuego.turnoEnRonda = backendResponse.turno;
+          }
+          
+          // Actualizar puntos desde el backend
+          const esJugador1Frontend = (window.app?.jugador1Info?.id || 1) === (window.app?.partidaInfo?.jugador1_id || 1);
+          if (backendResponse.puntaje_jugador1 !== undefined) {
+            if (esJugador1Frontend) {
+              estadoJuego.jugador1.puntos = backendResponse.puntaje_jugador1;
+            } else {
+              estadoJuego.jugador2.puntos = backendResponse.puntaje_jugador1;
+            }
+          }
+          if (backendResponse.puntaje_jugador2 !== undefined) {
+            if (esJugador1Frontend) {
+              estadoJuego.jugador2.puntos = backendResponse.puntaje_jugador2;
+            } else {
+              estadoJuego.jugador1.puntos = backendResponse.puntaje_jugador2;
+            }
+          }
+          
           // Llamar a la función original de finalizar ronda para mostrar resumen
           // Pasar los puntajes del backend
           const puntajesBackend = {
@@ -1818,18 +1890,22 @@ const JuegoManager = {
             jugador2: backendResponse.puntaje_jugador2
           };
           this._finalizarRonda(puntajesBackend);
+        } else {
+          // Error: volver a pantalla de partida
+          window.app.showScreen('partida');
+          mostrarAlertaJuego('Error al procesar fin de ronda. Intenta nuevamente.', 'error', 3000);
         }
       } else {
         backendResponse = await enviarTurnoAlBackend();
-      }
-
-      if (backendResponse) {
-        // Procesar respuesta del backend
-        this.procesarRespuestaBackend(backendResponse);
-      } else {
-        // Error: volver a pantalla de partida
-        window.app.showScreen('partida');
-        mostrarAlertaJuego('Error al procesar turno. Intenta nuevamente.', 'error', 3000);
+        
+        if (backendResponse) {
+          // Procesar respuesta del backend
+          this.procesarRespuestaBackend(backendResponse);
+        } else {
+          // Error: volver a pantalla de partida
+          window.app.showScreen('partida');
+          mostrarAlertaJuego('Error al procesar turno. Intenta nuevamente.', 'error', 3000);
+        }
       }
     } else {
       // Fallback para modo sin app
@@ -1867,12 +1943,7 @@ const JuegoManager = {
         tipoDinoDescarte: estadoJuego.dinosaurioDescartadoEnTurno || 'stegosaurus'
       };
 
-      console.log('DEBUG - Enviando finalizar ronda:', requestData);
-
       const endpoint = window.app?.getEndpoint('finalizarRonda') || 'http://127.0.0.1:8000/finalizarRonda';
-      
-      console.log('DEBUG - Endpoint:', endpoint);
-      console.log('DEBUG - Antes del fetch');
       
       try {
         const response = await fetch(endpoint, {
@@ -1881,21 +1952,7 @@ const JuegoManager = {
           body: JSON.stringify(requestData)
         });
 
-        console.log('DEBUG - Después del fetch');
-        console.log('DEBUG - Response status:', response.status);
-        console.log('DEBUG - Response headers:', response.headers);
-        
-        const responseText = await response.text();
-        console.log('DEBUG - Response text:', responseText);
-        
-        let result;
-        try {
-          result = JSON.parse(responseText);
-          console.log('DEBUG - Parsed JSON:', result);
-        } catch (parseError) {
-          console.error('DEBUG - Error parsing JSON:', parseError);
-          throw new Error('Respuesta no es JSON válido: ' + responseText);
-        }
+        const result = await response.json();
 
         // Verificar status HTTP
         if (!response.ok) {
@@ -1967,8 +2024,10 @@ const JuegoManager = {
       // Sincronizar estado con backend PRIMERO
       sincronizarConBackend(backendResponse);
 
-      // Cambiar turno localmente después de sincronizar
-      estadoJuego.cambiarTurno();
+      // Cambiar turno localmente después de sincronizar (solo si no es fin de ronda)
+      if (!estadoJuego.esFinDeRonda()) {
+        estadoJuego.cambiarTurno();
+      }
 
       // Procesar dado del backend DESPUÉS de cambiar turno
       if (backendResponse.caraDado) {
@@ -1983,6 +2042,11 @@ const JuegoManager = {
         if (window.app?.actualizarDadoDesdeBackend) {
           window.app.actualizarDadoDesdeBackend(backendResponse.caraDado);
         }
+      } else {
+        // Si no hay caraDado (null), limpiar restricción
+        estadoJuego.restriccionActual = null;
+        estadoJuego.dadoNumero = null;
+        estadoJuego.tituloRestriccion = null;
       }
 
       // Mostrar pantalla de partida
@@ -2428,8 +2492,7 @@ const JuegoManager = {
 
       this._actualizarResumenRonda();
 
-      const btnSiguiente = document.getElementById('btn-siguiente-ronda');
-      if (btnSiguiente) btnSiguiente.onclick = () => this._prepararSiguienteRonda();
+      // NO asignar onclick aquí - ya está manejado por app-js-integrado.js
     }
   },
 
@@ -2463,27 +2526,60 @@ const JuegoManager = {
   },
 
   _prepararSiguienteRonda() {
-
-    estadoJuego.rondaActual++;
-
+    // Evitar doble ejecución
+    if (estadoJuego.preparandoRonda) {
+      console.log('DEBUG _prepararSiguienteRonda - YA SE ESTÁ PREPARANDO, saliendo');
+      return;
+    }
+    estadoJuego.preparandoRonda = true;
+    
+    // Vaciar las bolsas INMEDIATAMENTE para que no se puedan arrastrar dinosaurios viejos
+    estadoJuego.jugador1.dinosauriosDisponibles = [];
+    estadoJuego.jugador2.dinosauriosDisponibles = [];
+    
+    // Actualizar interfaz para mostrar bolsas vacías
+    RenderManager.actualizarDinosauriosDisponibles();
+    
+    console.log('DEBUG _prepararSiguienteRonda - ANTES de limpiar:', {
+      dinosaurioColocadoEnTurno: estadoJuego.dinosaurioColocadoEnTurno,
+      recintoColocadoEnTurno: estadoJuego.recintoColocadoEnTurno,
+      dinosaurioDescartadoEnTurno: estadoJuego.dinosaurioDescartadoEnTurno
+    });
+    
+    // rondaActual viene del backend, pero turnoEnRonda necesita resetearse
+    estadoJuego.turnoEnRonda = 1;
+    // Resetear el flag para permitir que _iniciarRonda se ejecute
+    estadoJuego.ultimaRondaInicializada = null;
+    
     // Alternar quién empieza cada ronda:
-    // Ronda 1: Jugador original
-    // Ronda 2: El otro jugador  
-    // Ronda 3: Jugador original
-    // Ronda 4: El otro jugador
     const quienEmpezoRonda1 = estadoJuego.primerJugadorOriginal || 1;
     const esRondaImpar = estadoJuego.rondaActual % 2 === 1;
     estadoJuego.primerJugador = esRondaImpar ? quienEmpezoRonda1 : (quienEmpezoRonda1 === 1 ? 2 : 1);
     estadoJuego.jugadorActual = estadoJuego.primerJugador;
-    estadoJuego.turnoEnRonda = 1;
 
     Object.assign(estadoJuego, {
       turnosCompletadosJ1: 0, turnosCompletadosJ2: 0, descartadosJ1: [], descartadosJ2: [],
-      dinosauriosRondaJ1: [], dinosauriosRondaJ2: [], dinosauriosDescartados: []
+      dinosauriosRondaJ1: [], dinosauriosRondaJ2: [], dinosauriosDescartados: [],
+      // Limpiar datos del turno anterior
+      dinosaurioColocadoEnTurno: null,
+      recintoColocadoEnTurno: null,
+      dinosaurioDescartadoEnTurno: null,
+      yaColocoEnTurno: false,
+      yaDescarto: false,
+      puedePasarTurno: false,
+      // Limpiar restricción del dado de la ronda anterior
+      restriccionActual: null,
+      dadoNumero: null,
+      tituloRestriccion: null
     });
 
-    estadoJuego.jugador1.dinosauriosDisponibles = [];
-    estadoJuego.jugador2.dinosauriosDisponibles = [];
+    console.log('DEBUG _prepararSiguienteRonda - DESPUÉS de limpiar:', {
+      dinosaurioColocadoEnTurno: estadoJuego.dinosaurioColocadoEnTurno,
+      recintoColocadoEnTurno: estadoJuego.recintoColocadoEnTurno,
+      dinosaurioDescartadoEnTurno: estadoJuego.dinosaurioDescartadoEnTurno
+    });
+
+    // NO limpiar las bolsas aquí - _repartirDinosaurios las sobrescribirá con copias frescas
 
 
     if (estadoJuego.modoSeguimiento) {
@@ -2499,8 +2595,12 @@ const JuegoManager = {
       }
     } else {
       this._iniciarRonda();
+      // Mostrar pantalla DESPUÉS de inicializar para que se muestren los dinosaurios correctos
       window.app?.showScreen?.('partida');
     }
+    
+    // Resetear el flag al final
+    estadoJuego.preparandoRonda = false;
   },
 
   // FASE 6: Muestra pantalla final usando datos que vienen del backend
@@ -2910,6 +3010,8 @@ document.addEventListener('DOMContentLoaded', () => {
         requestData.caraDado = JuegoManager.obtenerCaraDadoDesdeNumero(estadoJuego.dadoNumero);
       }
 
+      console.log('DEBUG enviarTurnoAlBackend - ronda:', estadoJuego.rondaActual, 'turno:', estadoJuego.turnoEnRonda);
+      console.log('DEBUG - Bolsa actual del jugador:', jugadorActual.dinosauriosDisponibles);
       console.log('Enviando turno al backend:', requestData);
 
       // ============================================================================
@@ -3067,20 +3169,38 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Actualizar puntos desde el backend
+    // IMPORTANTE: El backend devuelve puntajes basados en los IDs fijos de la partida (jugador1_id, jugador2_id)
+    // pero el frontend usa posiciones relativas (estadoJuego.jugador1, estadoJuego.jugador2) que pueden cambiar
     if (backendResponse.puntaje_jugador1 !== undefined) {
-      estadoJuego.jugador1.puntos = backendResponse.puntaje_jugador1;
+      const esJugador1Frontend = (window.app?.jugador1Info?.id || 1) === (window.app?.partidaInfo?.jugador1_id || 1);
+      if (esJugador1Frontend) {
+        estadoJuego.jugador1.puntos = backendResponse.puntaje_jugador1;
+      } else {
+        estadoJuego.jugador2.puntos = backendResponse.puntaje_jugador1;
+      }
     }
     if (backendResponse.puntaje_jugador2 !== undefined) {
-      estadoJuego.jugador2.puntos = backendResponse.puntaje_jugador2;
+      const esJugador1Frontend = (window.app?.jugador1Info?.id || 1) === (window.app?.partidaInfo?.jugador1_id || 1);
+      if (esJugador1Frontend) {
+        estadoJuego.jugador2.puntos = backendResponse.puntaje_jugador2;
+      } else {
+        estadoJuego.jugador1.puntos = backendResponse.puntaje_jugador2;
+      }
     }
 
     // Actualizar bolsas desde el backend SOLO si vienen bolsas nuevas
-    console.log('DEBUG - Bolsa jugador1 recibida:', backendResponse.bolsa_jugador1);
-    console.log('DEBUG - Bolsa jugador2 recibida:', backendResponse.bolsa_jugador2);
+    // IMPORTANTE: El backend devuelve bolsas basadas en los IDs fijos de la partida (jugador1_id, jugador2_id)
+    // pero el frontend usa posiciones relativas (estadoJuego.jugador1, estadoJuego.jugador2) que pueden cambiar
     
     if (backendResponse.bolsa_jugador1 && Array.isArray(backendResponse.bolsa_jugador1)) {
-      estadoJuego.jugador1.dinosauriosDisponibles = [...backendResponse.bolsa_jugador1];
-      console.log('DEBUG - Bolsa jugador1 actualizada:', estadoJuego.jugador1.dinosauriosDisponibles);
+      // Determinar qué jugador del frontend corresponde al jugador1_id del backend
+      const esJugador1Frontend = (window.app?.jugador1Info?.id || 1) === (window.app?.partidaInfo?.jugador1_id || 1);
+      
+      if (esJugador1Frontend) {
+        estadoJuego.jugador1.dinosauriosDisponibles = [...backendResponse.bolsa_jugador1];
+      } else {
+        estadoJuego.jugador2.dinosauriosDisponibles = [...backendResponse.bolsa_jugador1];
+      }
       
       // Actualizar también la variable bolsas en partidaInfo
       if (window.app?.partidaInfo?.bolsas) {
@@ -3089,8 +3209,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     if (backendResponse.bolsa_jugador2 && Array.isArray(backendResponse.bolsa_jugador2)) {
-      estadoJuego.jugador2.dinosauriosDisponibles = [...backendResponse.bolsa_jugador2];
-      console.log('DEBUG - Bolsa jugador2 actualizada:', estadoJuego.jugador2.dinosauriosDisponibles);
+      // Determinar qué jugador del frontend corresponde al jugador2_id del backend
+      const esJugador1Frontend = (window.app?.jugador1Info?.id || 1) === (window.app?.partidaInfo?.jugador1_id || 1);
+      
+      if (esJugador1Frontend) {
+        estadoJuego.jugador2.dinosauriosDisponibles = [...backendResponse.bolsa_jugador2];
+      } else {
+        estadoJuego.jugador1.dinosauriosDisponibles = [...backendResponse.bolsa_jugador2];
+      }
       
       // Actualizar también la variable bolsas en partidaInfo
       if (window.app?.partidaInfo?.bolsas) {
@@ -3102,7 +3228,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if ((backendResponse.bolsa_jugador1 && Array.isArray(backendResponse.bolsa_jugador1)) || 
         (backendResponse.bolsa_jugador2 && Array.isArray(backendResponse.bolsa_jugador2))) {
       RenderManager.actualizarDinosauriosDisponibles();
-      console.log('DEBUG - partidaInfo.bolsas actualizada:', window.app?.partidaInfo?.bolsas);
     }
     
     return mapeado;

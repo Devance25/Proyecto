@@ -256,6 +256,44 @@ class PartidaRepository
     }
 
 
+    public function setPuntajesRepo(
+        int $partida_id, 
+        int $puntaje_jugador1, 
+        int $puntaje_jugador2
+        ): void
+    {
+        $query = "UPDATE partidas 
+                     SET puntaje_jugador1 = ?, 
+                         puntaje_jugador2 = ? 
+                   WHERE id = ?";
+
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            throw new Exception(
+                "Error preparando la consulta: " . $this->conn->error
+            );
+        }
+
+        if (!$stmt->bind_param("iii", 
+                $puntaje_jugador1, 
+                $puntaje_jugador2, 
+                $partida_id
+                )) {
+            throw new Exception(
+                "Error en bind_param: " . $stmt->error
+            );
+        }
+
+        if (!$stmt->execute()) {
+            throw new Exception(
+                "Error ejecutando la consulta: " . $stmt->error
+            );
+        }
+
+        $stmt->close();
+    }
+
+
 
     public function sumarTurnoRepo(
         int $id
@@ -999,7 +1037,58 @@ class PartidaRepository
     
         return $bolsa_general;
     }
+
+    public function getPuntajeJugador1Repo(int $partida_id): ?int
+    {
+        $query = "SELECT puntaje_jugador1 
+                  FROM partidas 
+                  WHERE id = ?";
+        
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+        }
+        
+        if (!$stmt->bind_param("i", $partida_id)) {
+            throw new Exception("Error en bind_param: " . $stmt->error);
+        }
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+        }
+        
+        $stmt->bind_result($puntaje);
+        $stmt->fetch();
+        $stmt->close();
+        
+        return $puntaje;
+    }
     
+    public function getPuntajeJugador2Repo(int $partida_id): ?int
+    {
+        $query = "SELECT puntaje_jugador2 
+                  FROM partidas 
+                  WHERE id = ?";
+        
+        $stmt = $this->conn->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+        }
+        
+        if (!$stmt->bind_param("i", $partida_id)) {
+            throw new Exception("Error en bind_param: " . $stmt->error);
+        }
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+        }
+        
+        $stmt->bind_result($puntaje);
+        $stmt->fetch();
+        $stmt->close();
+        
+        return $puntaje;
+    }
 
 
 

@@ -166,6 +166,11 @@ class Reglas
     //==========================================================================================================================================================
     public function reglasReyDeLaSelva(array $porRecinto1, array $porRecinto2): int
     {
+        // Verificar que existe el recinto rey-jungla y tiene elementos
+        if (!isset($porRecinto1['rey-jungla']) || empty($porRecinto1['rey-jungla'])) {
+            return 0;
+        }
+
         $reyDeLaSelva = $porRecinto1['rey-jungla'][0];
         $conteoDinos1 = 0;
         $conteoTipoRey1 = 0;
@@ -194,6 +199,10 @@ class Reglas
     //==========================================================================================================================================================
     public function reglasIslaSolitaria(array $dinos, array $porRecinto1): int   //Recibe como parametro el dino de la isla y los demas recintos con sus respectivos dinos.
     {
+        // Verificar que hay dinosaurios en la isla solitaria
+        if (empty($dinos)) {
+            return 0;
+        }
         $dinoSolitario = $dinos[0];     //Guarda en la variable el dino 'solitario'
         $dinosEnTablero = [];           //Crea array para guardar a todos los dinos del tablero.
 
