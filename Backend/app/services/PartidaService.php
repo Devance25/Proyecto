@@ -273,10 +273,10 @@ class PartidaService
             return $response;
         }
 
-        //  Valida que el jugador 1 sea siempre quien comienza la partida.
-        if((($turnoActual === 1 && $rondaActual === 1) || 
-           ($rondaActual === 3)) && 
-           $dto->jugador_id !== $jugador1_id
+        //  Valida que el jugador 1 sea siempre quien comienza la partida y la ronda 3.
+        if($turnoActual === 1 && 
+          ($rondaActual === 1 || $rondaActual === 3) && 
+            $dto->jugador_id !== $jugador1_id
         ){
             $dto->fillResponse(
                 false,                                  //  success
@@ -292,9 +292,9 @@ class PartidaService
         }
 
         //  Valida que el jugador 2 sea siempre quien comienza la segunda ronda.
-        if((($turnoActual === 1 && $rondaActual === 2) || 
-           ($rondaActual === 4)) && 
-           $dto->jugador_id !== $jugador2_id
+        if($turnoActual === 1 && 
+          ($rondaActual === 2 || $rondaActual === 4) && 
+            $dto->jugador_id !== $jugador2_id
         ){
             $dto->fillResponse(
                 false,                                  //  success
