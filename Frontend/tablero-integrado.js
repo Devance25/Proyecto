@@ -1833,8 +1833,8 @@ const JuegoManager = {
     if (window.app?.showScreen) {
       this.limpiarIndicadoresTurno();
 
-      // Mostrar animación de dado mientras se envía al backend (solo si no es finalizar ronda)
-      if (btn.textContent !== 'Finalizar ronda') {
+      // Mostrar animación de dado mientras se envía al backend (solo si no es finalizar ronda ni partida)
+      if (btn.textContent !== 'Finalizar ronda' && btn.textContent !== 'Finalizar partida') {
         window.app.showScreen('dado-animacion');
         setTimeout(() => window.app.iniciarAnimacionDado(), 400);
       }
@@ -1894,6 +1894,22 @@ const JuegoManager = {
           // Error: volver a pantalla de partida
           window.app.showScreen('partida');
           mostrarAlertaJuego('Error al procesar fin de ronda. Intenta nuevamente.', 'error', 3000);
+        }
+      } else if (btn.textContent === 'Finalizar partida') {
+        backendResponse = await JuegoManager.enviarFinalizarPartidaAlBackend();
+        if (backendResponse && backendResponse.success) {
+          // Procesar fin de partida - mostrar pantalla final con puntajes del backend
+          const puntajesBackend = {
+            puntajes: {
+              jugador1: backendResponse.puntaje_jugador1,
+              jugador2: backendResponse.puntaje_jugador2
+            }
+          };
+          this._mostrarPantallaFinal(puntajesBackend);
+        } else {
+          // Error: volver a pantalla de partida
+          window.app.showScreen('partida');
+          mostrarAlertaJuego('Error al procesar fin de partida. Intenta nuevamente.', 'error', 3000);
         }
       } else {
         backendResponse = await enviarTurnoAlBackend();
@@ -1979,6 +1995,100 @@ const JuegoManager = {
         // VALIDAR CAMPOS REQUERIDOS EN RESPUESTA
         if (!result.turno || !result.ronda) {
           mostrarAlertaJuego('Respuesta incompleta del servidor', 'warning', 3000);
+        }
+
+        estadoJuego.sincronizandoConBackend = false;
+        return result;
+
+      } catch (fetchError) {
+        console.error('DEBUG - Error en fetch:', fetchError);
+        throw fetchError;
+      }
+
+    } catch (error) {
+      // Diferentes tipos de errores
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        mostrarAlertaJuego('Error de conexión - Verifica tu internet', 'error', 5000);
+      } else if (error.message.includes('HTTP')) {
+        mostrarAlertaJuego('Error del servidor - Intenta nuevamente', 'error', 4000);
+      } else {
+        mostrarAlertaJuego('Error inesperado - Contacta soporte', 'error', 5000);
+      }
+
+      estadoJuego.sincronizandoConBackend = false;
+      return null;
+
+    } finally {
+      // Siempre rehabilitar botón
+      if (btn) {
+        btn.disabled = false;
+        JuegoManager.actualizarBotonSiguiente();
+      }
+    }
+  },
+
+  // Función para enviar finalizar partida al backend con datos válidos del localStorage
+  async enviarFinalizarPartidaAlBackend() {
+    if (estadoJuego.sincronizandoConBackend) {
+      return null;
+    }
+
+    estadoJuego.sincronizandoConBackend = true;
+
+    // Deshabilitar botón durante request
+    const btn = document.getElementById('btn-siguiente-turno');
+    if (btn) btn.disabled = true;
+
+    try {
+      // Obtener datos del localStorage
+      const datosJuego = JSON.parse(localStorage.getItem('datosJuego') || '{}');
+      
+      // Usar datos reales del último turno para finalizar la partida
+      const requestData = {
+        partida_id: estadoJuego.partidaId,
+        jugador_id: estadoJuego.jugadorActual === 1 ? 
+          (window.app?.jugador1Info?.id || 1) : 
+          (window.app?.jugador2Info?.id || 2),
+        recinto: estadoJuego.recintoColocadoEnTurno || 'woody-trio',
+        tipoDino: estadoJuego.dinosaurioColocadoEnTurno || 'stegosaurus',
+        tipoDinoDescarte: estadoJuego.dinosaurioDescartadoEnTurno || 'stegosaurus'
+      };
+
+      const endpoint = window.app?.getEndpoint('finalizarPartida') || 'http://127.0.0.1:8000/finalizarPartida';
+      
+      console.log('Enviando finalizar partida al backend:', requestData);
+      
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestData)
+        });
+
+        console.log('Response status:', response.status);
+        const result = await response.json();
+        console.log('Respuesta del backend (finalizar partida):', result);
+
+        // Verificar status HTTP
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        // VALIDACIÓN ROBUSTA DE RESPUESTA
+        if (!result || typeof result !== 'object') {
+          throw new Error('Respuesta inválida del servidor');
+        }
+
+        if (!result.success) {
+          const mensajes = {
+            'invalid': 'Movimiento inválido',
+            'duplicate': 'Acción ya realizada',
+            'error': 'Error interno del servidor'
+          };
+
+          const mensaje = mensajes[result.code] || result.message || 'Error desconocido';
+          mostrarAlertaJuego(mensaje, 'error', 4000);
+          return null;
         }
 
         estadoJuego.sincronizandoConBackend = false;
@@ -2604,7 +2714,7 @@ const JuegoManager = {
   },
 
   // FASE 6: Muestra pantalla final usando datos que vienen del backend
-  _mostrarPantallaFinal(backendData) {
+  _mostrarPantallaFinal(backendData = {}) {
     if (window.app?.showScreen) {
       this.limpiarIndicadoresTurno();
       window.app.showScreen('resultados');
