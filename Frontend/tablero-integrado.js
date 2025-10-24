@@ -2481,16 +2481,40 @@ const JuegoManager = {
     const jugador = estadoJuego.getJugadorActual();
     const oponente = estadoJuego.getOponente();
 
-    // Actualizar el elemento original que muestra "NOMBRE - X PUNTOS"
-    const nombrePuntos = document.querySelector('.nombre-puntos:not(.texto-jugador)');
-    if (nombrePuntos) {
-      nombrePuntos.textContent = `${oponente.nombre.toUpperCase()} - ${parseInt(oponente.puntos) || 0} PUNTOS`;
+    // Actualizar nombre del oponente (arriba) - solo nombre, sin puntos
+    const nombreOponente = document.querySelector('.nombre-puntos:not(.texto-jugador)');
+    if (nombreOponente) {
+      nombreOponente.textContent = oponente.nombre.toUpperCase();
     }
 
-    // Actualizar el elemento original para el jugador actual
-    const textoJugador = document.querySelector('.texto-jugador');
-    if (textoJugador) {
-      textoJugador.textContent = `${jugador.nombre.toUpperCase()} - ${parseInt(jugador.puntos) || 0} PUNTOS`;
+    // Actualizar nombre del jugador actual (abajo) - solo nombre, sin puntos
+    const nombreJugador = document.querySelector('.texto-jugador');
+    if (nombreJugador) {
+      nombreJugador.textContent = jugador.nombre.toUpperCase();
+    }
+
+    // Actualizar puntos usando los datos del BACKEND (estadoJuego.jugador1.puntos / jugador2.puntos)
+    // Estos se actualizan en mapearBackendAEstadoLocal() con puntaje_jugador1 y puntaje_jugador2 del backend
+    // Solo mostrar puntos del jugador de abajo (jugador actual)
+    const puntosJugador1Elem = document.getElementById('puntos-jugador1');
+    const puntosJugador2Elem = document.getElementById('puntos-jugador2');
+
+    if (estadoJuego.jugadorActual === 1) {
+      // Jugador 1 está jugando: Jugador 1 abajo (mostrar puntos), Jugador 2 arriba (ocultar puntos)
+      if (puntosJugador1Elem) {
+        puntosJugador1Elem.textContent = `${parseInt(estadoJuego.jugador1.puntos) || 0} PUNTOS`;
+      }
+      if (puntosJugador2Elem) {
+        puntosJugador2Elem.textContent = ''; // Ocultar puntos del oponente
+      }
+    } else {
+      // Jugador 2 está jugando: Jugador 2 abajo (mostrar puntos), Jugador 1 arriba (ocultar puntos)
+      if (puntosJugador1Elem) {
+        puntosJugador1Elem.textContent = `${parseInt(estadoJuego.jugador2.puntos) || 0} PUNTOS`;
+      }
+      if (puntosJugador2Elem) {
+        puntosJugador2Elem.textContent = ''; // Ocultar puntos del oponente
+      }
     }
 
     // Si hay una restricción activa, no actualizar el resto de la interfaz para evitar interferencias
