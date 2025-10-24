@@ -122,7 +122,13 @@ class AuthService
     }
 
 
-    public function registrarUsuarioService(string $nombreUsuario, string $email, string $nacimiento, string $password, string $passwordConfirm): array
+    public function registrarUsuarioService(
+    string $nombreUsuario, 
+    string $email, 
+    string $nacimiento, 
+    string $password, 
+    string $passwordConfirm
+    ): array
     {
         $nombreUsuario = trim($nombreUsuario);
         $email = trim($email);

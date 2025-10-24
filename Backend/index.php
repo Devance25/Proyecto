@@ -170,6 +170,18 @@ try {
             ]);
             break;
 
+            case 'finalizarPartida':
+                if ($method === 'POST') {
+                    $partidaController->finalizarPartidaController();
+                    break;
+                }
+                http_response_code(405);
+                echo json_encode([
+                    'success' => false, 
+                    'message' => 'Método no permitido.'
+                ]);
+                break;
+
         
 // ============================================================================
 // Endpoints de modo seguimiento

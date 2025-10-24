@@ -27,7 +27,7 @@ const CONFIG = {
   TIPOS_DINOSAURIOS: ['t-rex', 'triceratops', 'diplodocus', 'stegosaurus', 'parasaurolophus', 'pterodactilo'],
   DINOSAURIOS_POR_RONDA: 6,
   MAX_DINOSAURIOS_POOL: 8,
-  TOTAL_RONDAS: 5,
+  TOTAL_RONDAS: 4,
 
   // Posiciones
   POSICIONES_DINOSAURIOS: [
@@ -442,8 +442,12 @@ const GameLogic = {
       return dinosEnRecinto.includes('t-rex');
     }
 
-    // Caso especial: huella libre - solo permite recintos vacíos
+    // Caso especial: huella libre - solo permite recintos vacíos (excepto el río)
     if (estadoJuego.restriccionActual === 'huella-libre') {
+      // El río siempre está disponible con huella libre (es el descarte forzado)
+      if (recinto === 'rio') {
+        return false; // No bloquear el río
+      }
       const jugadorActual = estadoJuego.getJugadorActual();
       return jugadorActual.recintos[recinto] && jugadorActual.recintos[recinto].length > 0;
     }
@@ -2433,12 +2437,21 @@ const JuegoManager = {
       btn.disabled = true;
     } else {
       // Después de colocar y descartar, siempre es "Tirar dado" o finalizar
-      if (estadoJuego.esFinDeRonda()) {
-        // Es el 6to turno de la ronda
-        if (estadoJuego.rondaActual < CONFIG.TOTAL_RONDAS) {
-          btn.textContent = 'Finalizar ronda';
-        } else {
+      const esFinDeRonda = estadoJuego.esFinDeRonda();
+      console.log('DEBUG actualizarBotonSiguiente:', {
+        esFinDeRonda,
+        rondaActual: estadoJuego.rondaActual,
+        turnoEnRonda: estadoJuego.turnoEnRonda,
+        evaluacion: `${estadoJuego.rondaActual} === 4 && ${estadoJuego.turnoEnRonda} === 6 = ${estadoJuego.rondaActual === 4 && estadoJuego.turnoEnRonda === 6}`
+      });
+      
+      if (esFinDeRonda) {
+        // Es fin de ronda (turno 6 completado o más)
+        // Solo finalizar partida si estamos en ronda 4 Y en el turno 6 o más
+        if (estadoJuego.rondaActual === 4 && estadoJuego.turnoEnRonda >= 6) {
           btn.textContent = 'Finalizar partida';
+        } else {
+          btn.textContent = 'Finalizar ronda';
         }
         btn.disabled = false;
       } else {
@@ -2566,10 +2579,11 @@ const JuegoManager = {
   _finalizarRonda(puntajesBackend = null) {
     this._calcularPuntosRonda();
 
-    if (estadoJuego.rondaActual < CONFIG.TOTAL_RONDAS) {
-      this._mostrarResumenRonda(puntajesBackend);
-    } else {
+    // Solo finalizar partida si estamos en ronda 4 Y en el turno 6 o más
+    if (estadoJuego.rondaActual === 4 && estadoJuego.turnoEnRonda >= 6) {
       this._mostrarPantallaFinal();
+    } else {
+      this._mostrarResumenRonda(puntajesBackend);
     }
   },
 
