@@ -237,7 +237,11 @@ class CalcularPuntajesDTO
 class FinalizarPartidaDTO
 {
     //  Variable para la request
-    public int $partida_id;
+    public int    $partida_id;
+    public int    $jugador_id;
+    public string $recinto;
+    public string $tipoDino;
+    public string $tipoDinoDescarte;
 
     //  Variables para el response
     public ?bool   $success         = null;
@@ -251,7 +255,11 @@ class FinalizarPartidaDTO
     // Constructor: recibe solo lo que hace falta para la request
     public function __construct(array $data)
     {
-        $this->partida_id = (int)($data['partida_id'] ?? 0);
+        $this->partida_id       = (int)   ($data['partida_id']       ??  0);
+        $this->jugador_id       = (int)   ($data['jugador_id']       ??  0);
+        $this->recinto          = (string)($data['recinto']          ?? '');
+        $this->tipoDino         = (string)($data['tipoDino']         ?? '');
+        $this->tipoDinoDescarte = (string)($data['tipoDinoDescarte'] ?? '');
     }
 
     // Método para "completar" cuando se usa como response
