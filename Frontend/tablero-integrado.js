@@ -482,7 +482,7 @@ const GameLogic = {
 
     this.actualizarPuntos();
     this.actualizarPesos();
-    JuegoManager.actualizarInterfaz();
+    // No actualizar interfaz aquí - los avatares no deben cambiar al colocar
 
     setTimeout(() => {
       RenderManager.actualizarDinosauriosDisponibles();
@@ -2141,6 +2141,8 @@ const JuegoManager = {
       // Cambiar turno localmente después de sincronizar (solo si no es fin de ronda)
       if (!estadoJuego.esFinDeRonda()) {
         estadoJuego.cambiarTurno();
+        // Actualizar interfaz después de cambiar turno para reflejar los avatares correctos
+        this.actualizarInterfaz();
       }
 
       // Procesar dado del backend DESPUÉS de cambiar turno
