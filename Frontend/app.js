@@ -1,13 +1,76 @@
-// CONFIGURACIÓN GLOBAL
+// ============================================================================
+// CONFIGURACIÓN GLOBAL Y ESTADO DE LA APLICACIÓN
+// ============================================================================
+
+/**
+ * CLASE PRINCIPAL DE LA APLICACIÓN - DRAFTOSAURUS DIGITAL
+ * 
+ * Esta clase maneja el estado global de la aplicación y coordina entre los dos modos:
+ * 
+ * 1. MODO JUEGO DIGITAL COMPLETO (modoSeguimiento = false):
+ *    - El sistema genera automáticamente las bolsas de dinosaurios
+ *    - El sistema tira el dado automáticamente
+ *    - Endpoints: /crearPartida, /turno, /finalizarRonda
+ * 
+ * 2. MODO SEGUIMIENTO (modoSeguimiento = true):
+ *    - El usuario selecciona manualmente los dinosaurios
+ *    - El usuario selecciona manualmente el resultado del dado
+ *    - Endpoints: /crearPartidaSeguimiento, /crearBolsaSeguimiento, /turnoSeguimiento
+ * 
+ * 3. FUNCIONES TRANSVERSALES:
+ *    - Autenticación, validaciones, UI común
+ */
 class AppState {
   constructor() {
+    // ============================================================================
+    // CONFIGURACIÓN DE PANTALLAS Y ESTADO GENERAL
+    // ============================================================================
     this.currentScreen = 'carga';
     this.user = null;
     this.loading = false;
     this.players = [];
-    this.jugador2Info = null;
+    
+    // ============================================================================
+    // INFORMACIÓN DE JUGADORES Y PARTIDA
+    // ============================================================================
+    this.jugador1Info = null; // Información del jugador 1
+    this.jugador2Info = null; // Información del jugador 2
+    this.partidaInfo = null;  // Información de la partida creada
     this.dadoSeleccionado = null;
-    this.modoSeguimiento = false;
+    
+    // ============================================================================
+    // CONTROL DE MODOS DE JUEGO
+    // ============================================================================
+    this.modoSeguimiento = false; // false = Digital Completo, true = Seguimiento
+    
+    // ============================================================================
+    // CONFIGURACIÓN DE ENDPOINTS POR MODO
+    // ============================================================================
+    this.CONFIG_MODOS = {
+      DIGITAL_COMPLETO: {
+        nombre: 'Digital Completo',
+        modoSeguimiento: false,
+        descripcion: 'El sistema maneja automáticamente las bolsas y el dado',
+        endpoints: {
+          crearPartida: 'http://127.0.0.1:8000/crearPartida',
+          turno: 'http://127.0.0.1:8000/turno',
+          finalizarRonda: 'http://127.0.0.1:8000/finalizarRonda',
+          finalizarPartida: 'http://127.0.0.1:8000/finalizarPartida'
+        }
+      },
+      SEGUIMIENTO: {
+        nombre: 'Seguimiento',
+        modoSeguimiento: true,
+        descripcion: 'Para seguir partidas físicas reales',
+        endpoints: {
+          crearPartida: 'http://127.0.0.1:8000/crearPartidaSeguimiento',
+          crearBolsa: 'http://127.0.0.1:8000/crearBolsaSeguimiento',
+          turno: 'http://127.0.0.1:8000/turnoSeguimiento',
+          finalizarRonda: 'http://127.0.0.1:8000/finalizarRonda',
+          finalizarPartida: 'http://127.0.0.1:8000/finalizarPartida'
+        }
+      }
+    };
     
     this.validationConfig = {
       username: { min: 3, max: 15 },
@@ -28,18 +91,102 @@ class AppState {
     this.setupRealTimeValidation();
     
     // Pantalla de carga inicial
-    // Intentar recuperar sesión desde localStorage
-    const usuarioGuardado = localStorage.getItem('usuario');
-    if (usuarioGuardado) {
-      this.user = JSON.parse(usuarioGuardado);
+    // MODIFICADO: Intentar recuperar sesión desde localStorage
+    const datosJuego = this.recuperarDatosJuego();
+    if (datosJuego && datosJuego.jugador1) {
+      this.user = datosJuego.jugador1;
+      this.jugador1Info = datosJuego.jugador1;
+      this.jugador2Info = datosJuego.jugador2 || null;
+      this.partidaInfo = datosJuego.partida || null;
       this.showScreen('lobby');
     } else {
       setTimeout(() => this.showScreen('login'), 1000);
     }
-
   }
 
-  // EVENTOS
+  // ============================================================================
+  // MÉTODOS DE CONFIGURACIÓN DE ENDPOINTS
+  // ============================================================================
+  
+  /**
+   * Obtiene el modo actual de juego
+   */
+  getModoActual() {
+    return this.modoSeguimiento ? 'SEGUIMIENTO' : 'DIGITAL_COMPLETO';
+  }
+
+  /**
+   * Obtiene la configuración del modo actual
+   */
+  getConfigModo() {
+    return this.CONFIG_MODOS[this.getModoActual()];
+  }
+
+  /**
+   * Obtiene el endpoint para una acción específica
+   */
+  getEndpoint(accion) {
+    const config = this.getConfigModo();
+    return config?.endpoints?.[accion] || null;
+  }
+
+  /**
+   * Establece el modo de juego
+   */
+  setModo(modo) {
+    this.modoSeguimiento = modo === 'SEGUIMIENTO';
+  }
+
+  /**
+   * Verifica si está en modo seguimiento
+   */
+  esModoSeguimiento() {
+    return this.modoSeguimiento;
+  }
+
+  /**
+   * Verifica si está en modo digital completo
+   */
+  esModoDigitalCompleto() {
+    return !this.modoSeguimiento;
+  }
+
+  // NUEVO: Métodos para manejar datos en localStorage
+  recuperarDatosJuego() {
+    try {
+      const datosGuardados = localStorage.getItem('datosJuego');
+      return datosGuardados ? JSON.parse(datosGuardados) : null;
+    } catch (error) {
+      console.error('Error al recuperar datos del juego:', error);
+      return null;
+    }
+  }
+
+  guardarDatosJuego() {
+    try {
+      const datosJuego = {
+        jugador1: this.jugador1Info,
+        jugador2: this.jugador2Info,
+        partida: this.partidaInfo,
+        fechaGuardado: new Date().toISOString()
+      };
+      localStorage.setItem('datosJuego', JSON.stringify(datosJuego));
+      console.log('Datos del juego guardados:', datosJuego);
+    } catch (error) {
+      console.error('Error al guardar datos del juego:', error);
+    }
+  }
+
+  limpiarDatosJuego() {
+    localStorage.removeItem('datosJuego');
+    this.jugador1Info = null;
+    this.jugador2Info = null;
+    this.partidaInfo = null;
+  }
+
+  // ============================================================================
+  // SISTEMA DE EVENTOS Y MANEJO DE INTERACCIONES
+  // ============================================================================
   bindEvents() {
     document.addEventListener('click', this.handleClick.bind(this));
     document.addEventListener('submit', this.handleSubmit.bind(this));
@@ -60,6 +207,9 @@ class AppState {
     if (!target) return;
     
     const actions = {
+      // ============================================================================
+      // EVENTOS TRANSVERSALES (Comunes a ambos modos)
+      // ============================================================================
       'link-registro': () => {
         e.preventDefault();
         this.showScreen('registro');
@@ -70,13 +220,20 @@ class AppState {
       },
       'btn-logout': () => this.logout(),
       'btn-salir-admin': () => this.logout(),
-      'btn-jugar-app': () => {
-        this.modoSeguimiento = false;
-        this.showScreen('jugadores');
-      },
-      'btn-modo-asistente': () => this.iniciarModoSeguimiento(),
       'btn-volver-jugadores': () => this.showScreen('lobby'),
       'btn-volver-seleccion': () => this.showScreen('jugadores'),
+      'btn-siguiente-ronda': () => this.siguienteRonda(),
+      'btn-revancha': () => this.revancha(),
+      'btn-nueva-partida': () => this.nuevaPartida(),
+      'btn-volver-inicio-final': () => this.showScreen('lobby'),
+      
+      // ============================================================================
+      // EVENTOS ESPECÍFICOS DE MODO JUEGO DIGITAL COMPLETO
+      // ============================================================================
+      'btn-jugar-app': () => {
+        this.modoSeguimiento = false; // Activar modo digital completo
+        this.showScreen('jugadores');
+      },
       'btn-seleccionar-j1': () => {
         if (!this.seleccionEnCurso) {
           this.seleccionEnCurso = true;
@@ -90,12 +247,13 @@ class AppState {
         }
       },
       'btn-seleccion-aleatoria': () => this.seleccionAleatoria(),
-      'btn-empezar-turno': () => this.empezarTurnoSeguimiento(),
       'btn-comenzar-juego': () => this.comenzarJuego(),
-      'btn-siguiente-ronda': () => this.siguienteRonda(),
-      'btn-revancha': () => this.revancha(),
-      'btn-nueva-partida': () => this.nuevaPartida(),
-      'btn-volver-inicio-final': () => this.showScreen('lobby')
+      
+      // ============================================================================
+      // EVENTOS ESPECÍFICOS DE MODO SEGUIMIENTO
+      // ============================================================================
+      'btn-modo-asistente': () => this.iniciarModoSeguimiento(),
+      'btn-empezar-turno': () => this.empezarTurnoSeguimiento()
     };
     
     if (actions[target.id]) {
@@ -122,7 +280,9 @@ class AppState {
     }
   }
 
-  // VALIDACIÓN EN TIEMPO REAL
+  // ============================================================================
+  // SISTEMA DE VALIDACIÓN EN TIEMPO REAL (TRANSVERSAL)
+  // ============================================================================
   setupRealTimeValidation() {
     document.addEventListener('input', e => {
       if (e.target.matches('#jugador-1, #jugador-2')) {
@@ -217,7 +377,7 @@ class AppState {
     
     const btnText = btn.querySelector('.btn-text');
     if (btnText) {
-      btnText.textContent = this.modoSeguimiento ? 'Modo seguimiento' : 'Jugar en la app';
+      btnText.textContent = this.esModoSeguimiento() ? 'Modo seguimiento' : 'Jugar en la app';
     }
     
     // Visual feedback
@@ -534,9 +694,16 @@ class AppState {
     });
   }
 
-  // MODO SEGUIMIENTO
+  // ============================================================================
+  // FUNCIONES ESPECÍFICAS DE MODO SEGUIMIENTO
+  // ============================================================================
+  
+  /**
+   * Inicia el modo seguimiento para seguir partidas físicas reales
+   * En este modo el usuario selecciona manualmente dinosaurios y dados
+   */
   iniciarModoSeguimiento() {
-    this.modoSeguimiento = true;
+    this.setModo('SEGUIMIENTO');
     this.showScreen('jugadores');
     this.showToast('Modo seguimiento activado', 'success');
   }
@@ -560,11 +727,19 @@ class AppState {
     }, 100);
   }
 
-  // MANEJO DE JUGADORES
-  handleJugadoresSubmit(form) {
+  // ============================================================================
+  // MANEJO DE JUGADORES (TRANSVERSAL - Común a ambos modos)
+  // ============================================================================
+  
+  /**
+   * Procesa el formulario de selección de jugadores
+   * Funciona tanto para modo digital completo como modo seguimiento
+   */
+  async handleJugadoresSubmit(form) {
     const j1 = form.querySelector('#jugador-1');
     const j2 = form.querySelector('#jugador-2');
     const tipoJugador = form.querySelector('input[name="tipo-jugador-2"]:checked');
+    const passwordJ2 = form.querySelector('#password-jugador-2');
     
     // Sanitizar nombres
     if (j1) j1.value = this.sanitizePlayerName(j1.value);
@@ -573,16 +748,85 @@ class AppState {
     if (!this.validatePlayersForm(j1, j2)) return;
     
     const nombres = [j1.value.trim(), j2.value.trim()];
-    const jugador2Info = {
-      nombre: j2.value.trim(),
-      tipo: tipoJugador ? tipoJugador.value : 'invitado'
-    };
+    const tipoSeleccionado = tipoJugador ? tipoJugador.value : 'invitado';
     
-    this.mostrarSelectorQuienEmpieza(nombres, jugador2Info);
+    // NUEVO: Manejar diferentes tipos de jugador 2
+    if (tipoSeleccionado === 'usuario') {
+      // Intentar logear al jugador 2 como usuario existente
+      await this.loginJugador2(j2.value.trim(), passwordJ2?.value?.trim(), nombres);
+    } else {
+      // Jugador 2 como invitado
+      const jugador2Info = {
+        nombre: j2.value.trim(),
+        tipo: 'invitado',
+        username: j2.value.trim(),
+        name: j2.value.trim().toUpperCase()
+      };
+      
+      this.jugador2Info = jugador2Info;
+      this.guardarDatosJuego(); // NUEVO: Guardar datos actualizados
+      
+      this.mostrarSelectorQuienEmpieza(nombres, jugador2Info);
+    }
+  }
+
+  // NUEVO: Método para logear al jugador 2
+  async loginJugador2(username, password, nombres) {
+    if (!password) {
+      this.showToast('Ingresa la contraseña del jugador 2', 'error');
+      return;
+    }
+
+    this.setLoading(true);
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identificador: username, password })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        this.showToast('Credenciales inválidas para el jugador 2', 'error');
+        return;
+      }
+
+      // NUEVO: Guardar datos del jugador 2 con estructura de BD
+      this.jugador2Info = {
+        id: result.user.id,
+        email: result.user.email,
+        username: result.user.nombreUsuario,
+        name: result.user.nombreUsuario.toUpperCase(),
+        nacimiento: result.user.nacimiento,
+        tipo: 'usuario',
+        partidasJugadas: result.user.partidasJugadas || 0,
+        partidasGanadas: result.user.partidasGanadas || 0
+      };
+
+      // NUEVO: Verificar que no sea el mismo usuario
+      if (this.jugador1Info?.id === this.jugador2Info.id) {
+        this.showToast('El jugador 2 debe ser diferente al jugador 1', 'error');
+        this.jugador2Info = null;
+        return;
+      }
+
+      // NUEVO: Guardar ambos jugadores
+      this.guardarDatosJuego();
+
+      this.showToast('Jugador 2 logueado correctamente', 'success');
+      this.mostrarSelectorQuienEmpieza(nombres, this.jugador2Info);
+
+    } catch (error) {
+      console.error('Error al logear jugador 2:', error);
+      this.showToast('Error al conectar con el servidor', 'error');
+    } finally {
+      this.setLoading(false);
+    }
   }
 
   mostrarSelectorQuienEmpieza(nombres, jugador2Info) {
-    
     const n1 = document.querySelector('.nombre-jugador-1');
     const n2 = document.querySelector('.nombre-jugador-2');
     
@@ -616,30 +860,110 @@ class AppState {
     const j2 = document.getElementById('jugador-2')?.value?.trim() || 'Jugador 2';
     
     const nombres = [j1, j2];
-    const jugador2Info = {
-      nombre: j2,
-      tipo: document.querySelector('input[name="tipo-jugador-2"]:checked')?.value || 'invitado'
-    };
+    
+    // MODIFICADO: Usar los datos ya guardados en lugar de crear objeto básico
+    const jugador2Info = this.jugador2Info;
     
     this.iniciarPartida(nombres, jugador2Info, primerJugador);
-    
     
     setTimeout(() => {
       this.seleccionEnCurso = false;
     }, 1000);
   }
 
-  iniciarPartida(nombres, jugador2Info, primerJugador) {
+  // ============================================================================
+  // INICIALIZACIÓN DE PARTIDA (TRANSVERSAL - Común a ambos modos)
+  // ============================================================================
+  
+  /**
+   * Inicia una nueva partida
+   * Crea partida en backend si ambos jugadores son usuarios registrados
+   * Funciona tanto para modo digital completo como modo seguimiento
+   */
+  async iniciarPartida(nombres, jugador2Info, primerJugador) {
     this.players = nombres.slice(0, 2);
     this.jugador2Info = jugador2Info;
     
+    // NUEVO: Si el jugador 2 empieza, intercambiar los datos para mantener consistencia
+    if (primerJugador === 2) {
+      // Intercambiar nombres en el array
+      [this.players[0], this.players[1]] = [this.players[1], this.players[0]];
+      
+      // Intercambiar jugador1Info y jugador2Info
+      const tempJugador1 = this.jugador1Info ? { ...this.jugador1Info } : null;
+      this.jugador1Info = this.jugador2Info ? { ...this.jugador2Info } : null;
+      this.jugador2Info = tempJugador1;
+      
+      // Actualizar nombres después del intercambio
+      nombres = [this.players[0], this.players[1]];
+      jugador2Info = this.jugador2Info;
+      
+      // Ahora el que empieza es siempre el jugador 1
+      primerJugador = 1;
+      
+      console.log('Intercambio realizado - Jugador 2 elegido empezará como Jugador 1');
+    }
+    
+    // NUEVO: Crear partida en backend si ambos son usuarios registrados
+    if (this.jugador1Info?.id && this.jugador2Info?.id) {
+      try {
+        // ============================================================================
+        // DISCRIMINACIÓN DE ENDPOINTS SEGÚN EL MODO DE JUEGO
+        // ============================================================================
+        const endpoint = this.getEndpoint('crearPartida');
+        
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jugador1_id: this.jugador1Info.id,
+            jugador2_id: this.jugador2Info.id
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          // NUEVO: Guardar información completa de la partida creada
+          this.partidaInfo = {
+            id: result.partida_id,
+            jugador1_id: this.jugador1Info.id,
+            jugador2_id: this.jugador2Info.id,
+            estado: 'activa',
+            turno: 1,
+            ronda: 1,
+            cara_dado_actual: 'vacio',
+            tirador_actual_id: primerJugador === 1 ? this.jugador1Info.id : this.jugador2Info.id,
+            creado_el: new Date().toISOString(),
+            // Información de bolsas de ambos jugadores desde el backend
+            bolsas: {
+              jugador1: result.bolsaJugador1 || [],
+              jugador2: result.bolsaJugador2 || []
+            }
+          };
+          
+          // NUEVO: Guardar todos los datos (jugadores + partida)
+          this.guardarDatosJuego();
+          
+          this.showToast('Partida creada exitosamente', 'success');
+        } else {
+          console.log('Error al crear partida, continuando en modo local:', result.message);
+        }
+      } catch (error) {
+        console.error('Error al crear partida, continuando en modo local:', error);
+      }
+    } else {
+      console.log('Partida local (uno o ambos jugadores son invitados)');
+    }
+    
+    // Continuar con la lógica original del juego
     if (window.JuegoManager?.inicializarPartida) {
       window.JuegoManager.inicializarPartida(nombres, jugador2Info, primerJugador, this.modoSeguimiento);
     } else {
       console.error('JuegoManager no disponible');
     }
     
-    if (this.modoSeguimiento) {
+    if (this.esModoSeguimiento()) {
       const nombreJugador = nombres[primerJugador - 1];
       const avatarSrc = primerJugador === 1 ? 
         'img/foto_usuario-1.png' : 
@@ -648,10 +972,8 @@ class AppState {
       this.mostrarTurnoJugadorConSeleccion(nombreJugador, avatarSrc);
     } else {
       if (window.estadoJuego?.turnoEnRonda === 1 && window.estadoJuego?.rondaActual === 1) {
-        // Primer turno de la primera ronda: sin restricción
         this.mostrarPantallaSinRestriccion();
       } else {
-        // Otros turnos: lanzar dado
         this.showScreen('dado-animacion');
         setTimeout(() => this.iniciarAnimacionDado(), 400);
       }
@@ -742,8 +1064,14 @@ class AppState {
     const cont = document.getElementById('dado-animado');
     const texto = document.querySelector('.dado-texto');
     
-    this.dadoSeleccionado = Math.floor(Math.random() * dados.length) + 1;
-    img.src = dados[this.dadoSeleccionado - 1];
+    // NO sobrescribir dadoSeleccionado - ya fue configurado por el backend
+    if (this.dadoSeleccionado) {
+      img.src = dados[this.dadoSeleccionado - 1];
+    } else {
+      // Fallback solo si no hay valor del backend
+      this.dadoSeleccionado = Math.floor(Math.random() * dados.length) + 1;
+      img.src = dados[this.dadoSeleccionado - 1];
+    }
     
     cont.classList.remove('spinning');
     cont.classList.add('final');
@@ -751,6 +1079,134 @@ class AppState {
     if (texto) texto.textContent = '¡Dado lanzado!';
     
     setTimeout(() => this.mostrarResultadoDado(this.dadoSeleccionado), 800);
+  }
+
+  // Actualizar dado desde el backend
+  actualizarDadoDesdeBackend(caraDado) {
+    // Mapear nombre de cara del backend a número del frontend
+    const mapeo = {
+      'bosque': 5,        // Bosque
+      'roca': 6,          // Rocas / Pradera  
+      'baño': 4,          // Lado Baños
+      'cafeteria': 3,     // Lado Cafetería
+      'no-trex': 2,       // No T-Rex
+      'vacio': 1          // Huella (libre)
+    };
+    
+    this.dadoSeleccionado = mapeo[caraDado] || 1;
+    console.log(`Dado actualizado desde backend: "${caraDado}" -> ${this.dadoSeleccionado}`);
+    
+    // Simular la animación del dado girando (sin mostrar modal de resultado)
+    this.simularAnimacionDadoSinModal();
+  }
+
+  // Simular la animación del dado girando
+  simularAnimacionDado() {
+    const img = document.querySelector('#dado-animado img');
+    const cont = document.getElementById('dado-animado');
+    const texto = document.querySelector('.dado-texto');
+    
+    if (!img || !cont) {
+      console.warn('Elementos del dado no encontrados, mostrando resultado directamente');
+      this.mostrarResultadoDado(this.dadoSeleccionado);
+      return;
+    }
+
+    // Mostrar pantalla de dado
+    this.showScreen('dado-animacion');
+    
+    // Configurar animación
+    cont.classList.remove('spinning', 'final');
+    cont.classList.add('spinning');
+    
+    if (texto) texto.textContent = '¡Dado girando...!';
+    
+    // Array de imágenes para la animación
+    const dados = [
+      'img/dado-huella.png',
+      'img/dado-no-trex.png', 
+      'img/dado-cafe.png',
+      'img/dado-banos.png',
+      'img/dado-bosque.png',
+      'img/dado-rocas.png'
+    ];
+    
+    // Animar el dado cambiando imágenes rápidamente
+    let animacionCount = 0;
+    const animacionInterval = setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * dados.length);
+      img.src = dados[randomIndex];
+      animacionCount++;
+      
+      if (animacionCount >= 15) { // ~3 segundos con interval de 200ms
+        clearInterval(animacionInterval);
+        
+        // Mostrar la cara final
+        img.src = dados[this.dadoSeleccionado - 1];
+        cont.classList.remove('spinning');
+        cont.classList.add('final');
+        
+        if (texto) texto.textContent = '¡Dado lanzado!';
+        
+        // Mostrar resultado después de un breve delay
+        setTimeout(() => this.mostrarResultadoDado(this.dadoSeleccionado), 800);
+      }
+    }, 200);
+  }
+
+  // Simular la animación del dado girando sin mostrar modal de resultado
+  simularAnimacionDadoSinModal() {
+    const img = document.querySelector('#dado-animado img');
+    const cont = document.getElementById('dado-animado');
+    const texto = document.querySelector('.dado-texto');
+    
+    if (!img || !cont) {
+      console.warn('Elementos del dado no encontrados');
+      return;
+    }
+
+    // Mostrar pantalla de dado
+    this.showScreen('dado-animacion');
+    
+    // Configurar animación
+    cont.classList.remove('spinning', 'final');
+    cont.classList.add('spinning');
+    
+    if (texto) texto.textContent = '¡Dado girando...!';
+    
+    // Array de imágenes para la animación
+    const dados = [
+      'img/dado-huella.png',
+      'img/dado-no-trex.png', 
+      'img/dado-cafe.png',
+      'img/dado-banos.png',
+      'img/dado-bosque.png',
+      'img/dado-rocas.png'
+    ];
+    
+    // Animar el dado cambiando imágenes rápidamente
+    let animacionCount = 0;
+    const animacionInterval = setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * dados.length);
+      img.src = dados[randomIndex];
+      animacionCount++;
+      
+      if (animacionCount >= 15) { // ~3 segundos con interval de 200ms
+        clearInterval(animacionInterval);
+        
+        // Mostrar la cara final
+        img.src = dados[this.dadoSeleccionado - 1];
+        cont.classList.remove('spinning');
+        cont.classList.add('final');
+        
+        if (texto) texto.textContent = '¡Dado lanzado!';
+        
+        // Después de la animación, mostrar el popup del dado para que el usuario presione "Continuar"
+        setTimeout(() => {
+          this.mostrarResultadoDado(this.dadoSeleccionado);
+        }, 800);
+      }
+    }, 200);
   }
 
   mostrarResultadoDado(dadoNumero) {
@@ -772,7 +1228,7 @@ class AppState {
       },
       4: {
         titulo: 'Lado Baños',
-        descripcion: 'Recintos disponibles: Rey de la Jungla, Prado de la Diferencia, Isla Solitaria. Los recintos del lado derecho del tablero están abiertos. Si no podés cumplir, poné el dinosaurio en el río.',
+        descripcion: 'Recintos bloqueados: Rey de la Jungla, Prado de la Diferencia, Isla Solitaria. Podés colocar en cualquier otro recinto: Bosque de la Semejanza, Trío Frondoso, Pradera del Amor o el Río.',
         imagen: 'img/dado-banos.png'
       },
       5: {
@@ -807,109 +1263,146 @@ class AppState {
     if (desc) desc.textContent = config.descripcion;
   }
 
-  // MANEJO DE FORMULARIOS
-async handleLogin(form) {
-  const identificador = form.querySelector('#login-username').value.trim();
-  const password = form.querySelector('#login-password').value.trim();
+  // ============================================================================
+  // MANEJO DE FORMULARIOS DE AUTENTICACIÓN (TRANSVERSAL)
+  // ============================================================================
+  
+  /**
+   * Procesa el formulario de login
+   * Guarda información del usuario para ambos modos de juego
+   */
+  async handleLogin(form) {
+    const identificador = form.querySelector('#login-username').value.trim();
+    const password = form.querySelector('#login-password').value.trim();
 
-  this.clearFormErrors(form);
+    this.clearFormErrors(form);
 
-  if (!this.validateLoginForm(identificador, password, form)) return;
+    if (!this.validateLoginForm(identificador, password, form)) return;
 
-  this.setLoading(true);
+    this.setLoading(true);
 
-  try {
-    const response = await fetch('http://localhost:8000/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ identificador, password })
-    });
+    try {
+      const response = await fetch('http://127.0.0.1:8000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identificador, password })
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    if (!response.ok || !result.success) {
-      this.showToast(result.message || 'Credenciales inválidas', 'error');
-      return;
+      if (!response.ok || !result.success) {
+        this.showToast(result.message || 'Credenciales inválidas', 'error');
+        return;
+      }
+
+      // MODIFICADO: Guardar tanto en user como en jugador1Info
+      this.user = {
+        id: result.user.id,
+        email: result.user.email,
+        username: result.user.nombreUsuario,
+        name: result.user.nombreUsuario.toUpperCase(),
+        isAdmin: result.user.esAdmin || false
+      };
+
+      // NUEVO: Guardar información completa del jugador 1
+      this.jugador1Info = {
+        id: result.user.id,
+        email: result.user.email,
+        username: result.user.nombreUsuario,
+        name: result.user.nombreUsuario.toUpperCase(),
+        nacimiento: result.user.nacimiento,
+        tipo: 'usuario',
+        partidasJugadas: result.user.partidasJugadas || 0,
+        partidasGanadas: result.user.partidasGanadas || 0,
+        isAdmin: result.user.esAdmin || false
+      };
+
+      // NUEVO: Guardar datos del juego
+      this.guardarDatosJuego();
+
+      // Mantener compatibilidad con localStorage anterior
+      localStorage.setItem('usuario', JSON.stringify(this.user));
+
+      if (this.user.isAdmin) {
+        window.adminManager?.mostrarPerfilAdmin(this.user);
+        this.showToast('¡Bienvenido, Administrador!', 'success');
+      } else {
+        this.showScreen('lobby');
+        this.showToast('¡Bienvenido de vuelta!', 'success');
+      }
+
+    } catch (error) {
+      console.error(error);
+      this.showToast('Error al conectar con el servidor', 'error');
+    } finally {
+      this.setLoading(false);
     }
+  }
 
-    this.user = {
-      id: result.user.id,
-      email: result.user.email,
-      username: result.user.nombreUsuario,
-      name: result.user.nombreUsuario.toUpperCase(),
-      isAdmin: result.user.esAdmin || false
-    };
+  async handleRegister(form) {
+    const formData = this.getRegisterFormData(form);
 
-    localStorage.setItem('usuario', JSON.stringify(this.user));
+    this.clearFormErrors(form);
 
-    if (this.user.isAdmin) {
-      window.adminManager?.mostrarPerfilAdmin(this.user);
-      this.showToast('¡Bienvenido, Administrador!', 'success');
-    } else {
+    if (!this.validateRegisterForm(formData, form)) return;
+
+    this.setLoading(true);
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/registro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombreUsuario: formData.username,
+          email: formData.email,
+          nacimiento: formData.birthdate,
+          password: formData.password,
+          passwordConfirm: formData.passwordConfirm
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        this.showToast(result.message || 'Error al registrarse', 'error');
+        return;
+      }
+
+      // MODIFICADO: Guardar tanto en user como en jugador1Info
+      this.user = {
+        id: result.usuario.id,
+        email: result.usuario.email,
+        username: result.usuario.nombreUsuario,
+        name: result.usuario.nombreUsuario.toUpperCase()
+      };
+
+      // NUEVO: Guardar información completa del jugador 1
+      this.jugador1Info = {
+        id: result.usuario.id,
+        email: result.usuario.email,
+        username: result.usuario.nombreUsuario,
+        name: result.usuario.nombreUsuario.toUpperCase(),
+        nacimiento: result.usuario.nacimiento,
+        tipo: 'usuario',
+        partidasJugadas: 0,
+        partidasGanadas: 0
+      };
+
+      // NUEVO: Guardar datos del juego
+      this.guardarDatosJuego();
+
+      // Mantener compatibilidad con localStorage anterior
+      localStorage.setItem('usuario', JSON.stringify(this.user));
+
       this.showScreen('lobby');
-      this.showToast('¡Bienvenido de vuelta!', 'success');
+      this.showToast('¡Cuenta creada exitosamente!', 'success');
+    } catch (error) {
+      console.error(error);
+      this.showToast('Error al conectar con el servidor', 'error');
+    } finally {
+      this.setLoading(false);
     }
-
-  } catch (error) {
-    console.error(error);
-    this.showToast('Error al conectar con el servidor', 'error');
-  } finally {
-    this.setLoading(false);
   }
-}
-
-
-
-async handleRegister(form) {
-  const formData = this.getRegisterFormData(form);
-
-  this.clearFormErrors(form);
-
-  if (!this.validateRegisterForm(formData, form)) return;
-
-  this.setLoading(true);
-
-try {
-  const response = await fetch('http://127.0.0.1:8000/registro', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      nombreUsuario: formData.username,
-      email: formData.email,
-      nacimiento: formData.birthdate, // 👈 CAMBIADO
-      password: formData.password,
-      passwordConfirm: formData.passwordConfirm
-    })
-  });
-
-
-    const result = await response.json();
-
-    if (!response.ok || !result.success) {
-      this.showToast(result.message || 'Error al registrarse', 'error');
-      return;
-    }
-
-    this.user = {
-      id: result.usuario.id,
-      email: result.usuario.email,
-      username: result.usuario.nombreUsuario,
-      name: result.usuario.nombreUsuario.toUpperCase()
-    };
-
-    localStorage.setItem('usuario', JSON.stringify(this.user));
-
-    this.showScreen('lobby');
-    this.showToast('¡Cuenta creada exitosamente!', 'success');
-  } catch (error) {
-    console.error(error);
-    this.showToast('Error al conectar con el servidor', 'error');
-  } finally {
-    this.setLoading(false);
-  }
-}
-
-
 
   getRegisterFormData(form) {
     return {
@@ -1161,7 +1654,6 @@ try {
       });
   } 
 
-
   clearFieldError(input) {
     input.classList.remove('error');
     input.setAttribute('aria-invalid', 'false');
@@ -1196,7 +1688,14 @@ try {
     });
   }
 
-  // ACCIONES DE JUEGO
+  // ============================================================================
+  // ACCIONES DE JUEGO (TRANSVERSAL - Común a ambos modos)
+  // ============================================================================
+  
+  /**
+   * Avanza a la siguiente ronda del juego
+   * Funciona tanto para modo digital completo como modo seguimiento
+   */
   siguienteRonda() {
     if (window.JuegoManager?._prepararSiguienteRonda) {
       window.JuegoManager._prepararSiguienteRonda();
@@ -1211,7 +1710,7 @@ try {
   }
 
   nuevaPartida() {
-    this.modoSeguimiento = false;
+    this.setModo('DIGITAL_COMPLETO');
     this.showScreen('jugadores');
     
     const j2 = document.getElementById('jugador-2');
@@ -1223,6 +1722,10 @@ try {
     this.updatePlayerType('invitado');
   }
 
+  /**
+   * Cierra la sesión del usuario y limpia todos los datos
+   * Funciona para ambos modos de juego
+   */
   logout() {
     const confirmLogout = this.currentScreen === 'partida' ? 
       confirm('¿Estás seguro de que quieres cerrar sesión? Se perderá el progreso de la partida actual.') : 
@@ -1231,12 +1734,15 @@ try {
     if (!confirmLogout) return;
 
     localStorage.removeItem('usuario');
+    this.limpiarDatosJuego(); // NUEVO: Limpiar datos del juego
 
     this.user = null;
     this.players = [];
+    this.jugador1Info = null; // NUEVO
     this.jugador2Info = null;
+    this.partidaInfo = null; // NUEVO
     this.dadoSeleccionado = null;
-    this.modoSeguimiento = false;
+    this.setModo('DIGITAL_COMPLETO');
 
     document.querySelectorAll('form').forEach(form => form.reset());
 
@@ -1244,17 +1750,16 @@ try {
     this.showToast('Sesión cerrada', 'info');
   }
 
-
-
-
   resetAppState() {
     this.currentScreen = 'login';
     this.user = null;
     this.loading = false;
     this.players = [];
+    this.jugador1Info = null; // NUEVO
     this.jugador2Info = null;
+    this.partidaInfo = null; // NUEVO
     this.dadoSeleccionado = null;
-    this.modoSeguimiento = false;
+    this.setModo('DIGITAL_COMPLETO');
     
     this.hideToasts();
     
@@ -1263,7 +1768,6 @@ try {
       this.clearFormErrors(form);
     });
   }
-
 }
 
 // INICIALIZACIÓN
@@ -1291,7 +1795,20 @@ window.addEventListener('unhandledrejection', e => {
   }
 });
 
-// ADMINISTRADOR
+// ============================================================================
+// ADMINISTRADOR (TRANSVERSAL - Funcionalidad de administración)
+// ============================================================================
+
+/**
+ * CLASE ADMINISTRADOR - DRAFTOSAURUS DIGITAL
+ * 
+ * Maneja todas las funciones de administración del sistema:
+ * - Gestión de usuarios
+ * - Creación, edición y eliminación de usuarios
+ * - Visualización de estadísticas
+ * 
+ * Esta funcionalidad es transversal a ambos modos de juego
+ */
 class AdminManager {
   constructor() {
     this.currentUser = null;
@@ -1301,7 +1818,6 @@ class AdminManager {
 
   init() {
     this.setupAdminEvents();
-    this.fetchUsers();
     this.asegurarPopupOculto();
   }
 
@@ -1410,7 +1926,7 @@ class AdminManager {
         throw new Error(data.message || 'No se pudieron obtener los usuarios');
       }
 
-      // CAMBIO AQUÍ: Verificación mejorada
+      // Verificación mejorada
       if (data && Array.isArray(data.usuarios)) {
         this.usuariosData = data.usuarios;
         console.log('✅ usuariosData asignado correctamente:', this.usuariosData);
@@ -1421,7 +1937,7 @@ class AdminManager {
 
       console.log('Usuarios cargados:', this.usuariosData.length);
 
-      // CAMBIO AQUÍ: Renderizar inmediatamente
+      // Renderizar inmediatamente
       if (document.getElementById('pantalla-listado-usuarios')?.classList.contains('hidden') === false) {
         console.log('Renderizando lista inmediatamente...');
         this.renderizarListaUsuarios();
@@ -1449,8 +1965,7 @@ class AdminManager {
     this.mostrarPantalla('pantalla-admin');
   }
 
-  async mostrarListadoUsuarios() 
-  {
+  async mostrarListadoUsuarios() {
     console.log('Iniciando mostrarListadoUsuarios...');
     
     // Mostrar pantalla primero con mensaje de carga
@@ -1556,7 +2071,7 @@ class AdminManager {
     `;
 
     this.setupUserActionListeners();
-}
+  }
 
   setupUserActionListeners() {
     const container = document.getElementById('lista-usuarios-admin');
