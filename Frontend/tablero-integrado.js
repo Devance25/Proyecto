@@ -1468,14 +1468,23 @@ const ModoSeguimiento = {
 
     // ============================================================================
     // ENVIAR BOLSA AL BACKEND EN MODO SEGUIMIENTO
+    // Solo enviar en turnos específicos:
+    // - Turno 1 de cada ronda: Jugador 1 envía su bolsa
+    // - Turno 2 de cada ronda: Jugador 2 envía su bolsa
     // ============================================================================
-    if (estadoJuego.modoSeguimiento && window.app?.partidaInfo?.id) {
+    const debeEnviarBolsa = estadoJuego.modoSeguimiento && 
+                            ((estadoJuego.turnoEnRonda === 1 && jugadorNum === 1) ||
+                             (estadoJuego.turnoEnRonda === 2 && jugadorNum === 2));
+
+    if (debeEnviarBolsa && window.app?.partidaInfo?.id) {
       try {
         const jugadorId = jugadorNum === 1 ? 
           (window.app?.jugador1Info?.id) : 
           (window.app?.jugador2Info?.id);
 
-        const response = await fetch('http://127.0.0.1:8000/crearBolsaSeguimiento', {
+        const endpoint = window.app?.getEndpoint('crearBolsa') || 'http://127.0.0.1:8000/crearBolsaSeguimiento';
+        
+        const response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -1508,7 +1517,16 @@ const ModoSeguimiento = {
     RenderManager.actualizarDinosauriosDisponibles();
     JuegoManager.actualizarInterfaz();
 
-    if (estadoJuego.necesitaRestriccion()) {
+    // En modo seguimiento, SIEMPRE mostrar el popup del dado para que el usuario seleccione
+    if (estadoJuego.modoSeguimiento) {
+      window.app?.showScreen?.('partida');
+      RenderManager.actualizarDinosauriosDisponibles();
+      JuegoManager.actualizarInterfaz();
+      JuegoManager.actualizarBotonSiguiente();
+      RenderManager.renderizarTablero();
+      setTimeout(() => DragDropManager.init(), 100);
+      // El popup del dado se mostrará DESPUÉS de colocar y descartar
+    } else if (estadoJuego.necesitaRestriccion()) {
       setTimeout(() => this._mostrarPopupSeleccionDado(), 100);
     } else {
       estadoJuego.yaColocoEnTurno = false;
@@ -1562,48 +1580,41 @@ const ModoSeguimiento = {
     estadoJuego.dadoNumero = caraSeleccionada;
 
     // ============================================================================
-    // ENVIAR RESULTADO DEL DADO AL BACKEND EN MODO SEGUIMIENTO
+    // EN MODO SEGUIMIENTO: NO ENVIAR EL TURNO AQUÍ
+    // El turno se enviará cuando el usuario presione "Tirar dado"
+    // Solo guardamos el valor del dado y habilitamos el botón
     // ============================================================================
-    if (estadoJuego.modoSeguimiento && window.app?.partidaInfo?.id) {
-      try {
-        const jugadorId = estadoJuego.jugadorActual === 1 ? 
-          (window.app?.jugador1Info?.id) : 
-          (window.app?.jugador2Info?.id);
-
-        const caraDadoBackend = JuegoManager.obtenerCaraDadoDesdeNumero(caraSeleccionada);
-
-        const response = await fetch('http://127.0.0.1:8000/turnoSeguimiento', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            partida_id: window.app.partidaInfo.id,
-            jugador_id: jugadorId,
-            recinto: estadoJuego.recintoColocadoEnTurno || '',
-            tipoDino: estadoJuego.dinosaurioColocadoEnTurno || '',
-            tipoDinoDescarte: estadoJuego.dinosaurioDescartadoEnTurno || '',
-            caraDado: caraDadoBackend
-          })
-        });
-
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-          console.error('Error al procesar turno en backend:', result);
-          window.app?.showToast?.('Error al procesar turno en el servidor', 'error');
-          return;
-        }
-
-        console.log('Turno procesado en backend:', result);
-        
-        // Sincronizar con la respuesta del backend
-        if (result.data) {
-          JuegoManager.sincronizarConBackend(result.data);
-        }
-      } catch (error) {
-        console.error('Error al enviar turno al backend:', error);
-        window.app?.showToast?.('Error de conexión con el servidor', 'error');
-        return;
+    if (estadoJuego.modoSeguimiento) {
+      // Habilitar el botón "Enviar turno"
+      const btn = document.getElementById('btn-siguiente-turno');
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Enviar turno';
+        console.log('Botón configurado como "Enviar turno" habilitado');
       }
+      
+      // Cerrar el popup del dado
+      const popup = document.getElementById('popup-seleccion-dado');
+      popup.classList.remove('obligatorio');
+      Utils.togglePopup(popup, false);
+      
+      // Procesar el dado para actualizar las restricciones visuales
+      this._procesarDadoSeleccionado(caraSeleccionada);
+      
+      // Marcar que ya no puede seguir jugando (los flags previenen nuevas acciones)
+      estadoJuego.yaColocoEnTurno = true;
+      estadoJuego.yaDescarto = true;
+      estadoJuego.puedePasarTurno = true;
+      
+      console.log('Flags configurados:', {
+        yaColocoEnTurno: estadoJuego.yaColocoEnTurno,
+        yaDescarto: estadoJuego.yaDescarto,
+        dadoNumero: estadoJuego.dadoNumero,
+        'btn.textContent': btn?.textContent,
+        'btn.disabled': btn?.disabled
+      });
+      
+      return; // No continuar con la lógica del modo digital
     }
 
     setTimeout(() => {
@@ -1617,6 +1628,11 @@ const ModoSeguimiento = {
   _procesarDadoSeleccionado(numeroDado) {
     const restriccion = CONFIG.RESTRICCIONES_DADO[numeroDado];
     if (restriccion) JuegoManager.establecerRestriccion(restriccion.tipo, restriccion.titulo);
+
+    // En modo seguimiento, NO resetear los flags ni deshabilitar el botón
+    if (estadoJuego.modoSeguimiento) {
+      return;
+    }
 
     estadoJuego.yaColocoEnTurno = false;
     estadoJuego.puedePasarTurno = false;
@@ -2401,6 +2417,11 @@ const JuegoManager = {
     estadoJuego.puedePasarTurno = true;
     this.actualizarBotonSiguiente();
     RenderManager.actualizarDinosauriosDisponibles();
+    
+    // En modo seguimiento, mostrar popup del dado DESPUÉS de colocar y descartar
+    if (estadoJuego.modoSeguimiento && estadoJuego.yaColocoEnTurno && estadoJuego.yaDescarto) {
+      setTimeout(() => ModoSeguimiento._mostrarPopupSeleccionDado(), 200);
+    }
   },
 
   _habilitarBotonSiguiente() {
@@ -2421,7 +2442,7 @@ const JuegoManager = {
 
 
     // Validar que el botón solo tenga textos válidos
-    const textosValidos = ['Arrastra un dinosaurio', 'Descarta dinosaurio', 'Tirar dado', 'Finalizar ronda', 'Finalizar partida'];
+    const textosValidos = ['Arrastra un dinosaurio', 'Descarta dinosaurio', 'Tirar dado', 'Enviar turno', 'Finalizar ronda', 'Finalizar partida'];
     if (!textosValidos.includes(btn.textContent)) {
       btn.textContent = 'Arrastra un dinosaurio';
       btn.disabled = true;
@@ -2437,6 +2458,9 @@ const JuegoManager = {
     } else if (!estadoJuego.yaDescarto) {
       btn.textContent = 'Descarta dinosaurio';
       btn.disabled = true;
+    } else if (estadoJuego.modoSeguimiento && estadoJuego.dadoNumero && btn.textContent === 'Enviar turno') {
+      // En modo seguimiento, si ya seleccionó el dado, mantener "Enviar turno" habilitado
+      btn.disabled = false;
     } else {
       // Después de colocar y descartar, siempre es "Tirar dado" o finalizar
       const esFinDeRonda = estadoJuego.esFinDeRonda();
@@ -2549,25 +2573,63 @@ const JuegoManager = {
     const avatarJugador2Top = document.getElementById('avatar-jugador2-top');
     const avatarJugador1Bottom = document.querySelector('.info-jugador .avatar-circular');
 
-    if (estadoJuego.jugadorActual === 1) {
-      // Jugador 1 está jugando: Jugador 1 abajo, Jugador 2 arriba
-      if (avatarJugador1Bottom) {
-        avatarJugador1Bottom.src = window.app?.jugador1Info?.tipo === 'invitado' ?
-          'img/invitado.png' : 'img/foto_usuario-1.png';
+    // Usar la MISMA lógica que los nombres: jugador (abajo) y oponente (arriba)
+    // jugador y oponente ya están definidos arriba en actualizarInterfaz()
+    
+    // Obtener el ID del backend para el jugador actual (abajo)
+    const jugadorId = jugador === estadoJuego.jugador1 ? 
+      (window.app?.jugador1Info?.id) : 
+      (window.app?.jugador2Info?.id);
+    
+    // Obtener el ID del backend para el oponente (arriba)
+    const oponenteId = oponente === estadoJuego.jugador1 ? 
+      (window.app?.jugador1Info?.id) : 
+      (window.app?.jugador2Info?.id);
+    
+    // Determinar si cada uno es jugador1_id o jugador2_id del backend
+    const esJugador1BackendAbajo = jugadorId === (window.app?.partidaInfo?.jugador1_id);
+    const esJugador1BackendArriba = oponenteId === (window.app?.partidaInfo?.jugador1_id);
+    
+    console.log('DEBUG AVATARES:', {
+      'jugador.nombre': jugador.nombre,
+      'oponente.nombre': oponente.nombre,
+      jugadorId,
+      oponenteId,
+      'jugador1Info.id': window.app?.jugador1Info?.id,
+      'jugador2Info.id': window.app?.jugador2Info?.id,
+      'partidaInfo.jugador1_id': window.app?.partidaInfo?.jugador1_id,
+      'partidaInfo.jugador2_id': window.app?.partidaInfo?.jugador2_id,
+      esJugador1BackendAbajo,
+      esJugador1BackendArriba,
+      imagenAbajo: esJugador1BackendAbajo ? 'foto_usuario-1.png' : 'foto_usuario-2.png',
+      imagenArriba: esJugador1BackendArriba ? 'foto_usuario-1.png' : 'foto_usuario-2.png'
+    });
+    
+    // Avatar de abajo (jugador actual) - debe seguir al mismo jugador que el nombre
+    if (avatarJugador1Bottom) {
+      const infoJugadorAbajo = (window.app?.jugador1Info?.id === jugadorId) ?
+        window.app?.jugador1Info :
+        window.app?.jugador2Info;
+      
+      if (infoJugadorAbajo?.tipo === 'invitado') {
+        avatarJugador1Bottom.src = 'img/invitado.png';
+      } else {
+        // INVERTIR: jugador1_id usa foto_usuario-2.png, jugador2_id usa foto_usuario-1.png
+        avatarJugador1Bottom.src = esJugador1BackendAbajo ? 'img/foto_usuario-2.png' : 'img/foto_usuario-1.png';
       }
-      if (avatarJugador2Top) {
-        avatarJugador2Top.src = window.app?.jugador2Info?.tipo === 'invitado' ?
-          'img/invitado.png' : 'img/foto_usuario-2.png';
-      }
-    } else {
-      // Jugador 2 está jugando: Jugador 2 abajo, Jugador 1 arriba
-      if (avatarJugador1Bottom) {
-        avatarJugador1Bottom.src = window.app?.jugador2Info?.tipo === 'invitado' ?
-          'img/invitado.png' : 'img/foto_usuario-2.png';
-      }
-      if (avatarJugador2Top) {
-        avatarJugador2Top.src = window.app?.jugador1Info?.tipo === 'invitado' ?
-          'img/invitado.png' : 'img/foto_usuario-1.png';
+    }
+
+    // Avatar de arriba (oponente) - debe seguir al mismo jugador que el nombre
+    if (avatarJugador2Top) {
+      const infoJugadorArriba = (window.app?.jugador1Info?.id === oponenteId) ?
+        window.app?.jugador1Info :
+        window.app?.jugador2Info;
+      
+      if (infoJugadorArriba?.tipo === 'invitado') {
+        avatarJugador2Top.src = 'img/invitado.png';
+      } else {
+        // INVERTIR: jugador1_id usa foto_usuario-2.png, jugador2_id usa foto_usuario-1.png
+        avatarJugador2Top.src = esJugador1BackendArriba ? 'img/foto_usuario-2.png' : 'img/foto_usuario-1.png';
       }
     }
 
@@ -2706,6 +2768,9 @@ const JuegoManager = {
     const esRondaImpar = estadoJuego.rondaActual % 2 === 1;
     estadoJuego.primerJugador = esRondaImpar ? quienEmpezoRonda1 : (quienEmpezoRonda1 === 1 ? 2 : 1);
     estadoJuego.jugadorActual = estadoJuego.primerJugador;
+    
+    // Actualizar interfaz para reflejar el cambio de jugador
+    this.actualizarInterfaz();
 
     Object.assign(estadoJuego, {
       turnosCompletadosJ1: 0, turnosCompletadosJ2: 0, descartadosJ1: [], descartadosJ2: [],
@@ -3158,6 +3223,10 @@ document.addEventListener('DOMContentLoaded', () => {
       // Solo agregar caraDado en modo seguimiento
       if (estadoJuego.modoSeguimiento) {
         requestData.caraDado = JuegoManager.obtenerCaraDadoDesdeNumero(estadoJuego.dadoNumero);
+        console.log('DEBUG - caraDado para backend:', {
+          dadoNumero: estadoJuego.dadoNumero,
+          caraDado: requestData.caraDado
+        });
       }
 
       console.log('DEBUG enviarTurnoAlBackend - ronda:', estadoJuego.rondaActual, 'turno:', estadoJuego.turnoEnRonda);

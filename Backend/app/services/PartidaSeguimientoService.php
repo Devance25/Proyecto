@@ -247,10 +247,14 @@ class PartidaSeguimientoService
         $caraDadoActual = null;
 
         //  Si el turno no es el primero, treamos del repo el resultado del dado actual, es decir, lo que tiro el jugador anterior
+        //  Si es el turno 1, usamos el dado que viene del frontend
         if($turnoActual > 1){
             $caraDadoActual = $this->partidaRepo->getCaraDadoActualRepo(
                 $dto->partida_id
             );
+        } else {
+            // Turno 1: usar el dado que viene del frontend
+            $caraDadoActual = $dto->caraDado;
         }
         
 
@@ -271,7 +275,7 @@ class PartidaSeguimientoService
         
 
         // Debug logging
-        error_log("DEBUG - jugador_id recibido: $jugador_id");
+        error_log("DEBUG - jugador_id recibido: " . $dto->jugador_id);
         error_log("DEBUG - jugador1_id de BD: $jugador1_id");
         error_log("DEBUG - jugador2_id de BD: $jugador2_id");
         error_log("DEBUG - turnoActual: $turnoActual, rondaActual: $rondaActual");
@@ -474,8 +478,8 @@ class PartidaSeguimientoService
         $puntajes = $this->calcularPuntajesService($calcularPuntajesDTO);
 
         //  Separa los puntajes de cada jugador.
-        $puntajeJugador1 = $puntajes->puntajeJugador1;
-        $puntajeJugador2 = $puntajes->puntajeJugador2;
+        $puntajeJugador1 = $puntajes->puntaje_jugador1 ?? 0;
+        $puntajeJugador2 = $puntajes->puntaje_jugador2 ?? 0;
 
         //  Retorna turno procesado exitosamente.
         $dto->fillResponse(
