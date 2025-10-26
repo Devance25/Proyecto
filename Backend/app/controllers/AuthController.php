@@ -15,7 +15,7 @@ class AuthController
 
 
 
-
+/*============================================================================================================*/
     public function registroController()
     {
         // Lee el cuerpo crudo de la petición y lo intenta parsear como JSON
@@ -33,8 +33,6 @@ class AuthController
         }
         
         $dto = new RegistroDTO($data);
-
-        $validacionErrores = [];
 
         // Delegamos la creación al servicio
         $result = $this->authService->registrarUsuarioService($dto);
@@ -64,8 +62,9 @@ class AuthController
 
         echo json_encode($result);
     }
+/*============================================================================================================*/
 
-
+/*============================================================================================================*/
     public function registroAdminController()
     {
         // Lee el cuerpo crudo de la petición y lo intenta parsear como JSON
@@ -225,51 +224,9 @@ class AuthController
             return;
         }
 
-        $identificador = $data['identificador'] ?? ($data['email'] ?? ($data['nombreUsuario'] ?? null));
-        $password = $data['password'] ?? null;
+        $dto = new LoginDTO($data);
 
-        if (!$identificador || !$password) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Identificador (email o username) y contraseña son requeridos.'
-            ]);
-            return;
-        }
-
-        $identificador = trim((string)$identificador);
-        $password = (string)$password;
-
-        if ($identificador === '' || $password === '') {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Identificador y contraseña no pueden estar vacíos.'
-            ]);
-            return;
-        }
-
-        $validacionErrores = [];
-
-        if (strlen($identificador) < 3) {
-            $validacionErrores[] = 'El identificador debe tener al menos 3 caracteres.';
-        }
-
-        if (strlen($password) < 6) {
-            $validacionErrores[] = 'La contraseña debe tener al menos 6 caracteres.';
-        }
-
-        if (!empty($validacionErrores)) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => implode(' ', $validacionErrores)
-            ]);
-            return;
-        }
-
-
-        $result = $this->authService->loginService($identificador, $password);
+        $result = $this->authService->loginService($dto);
 
         if (!is_array($result) || !array_key_exists('success', $result)) {
             http_response_code(500);

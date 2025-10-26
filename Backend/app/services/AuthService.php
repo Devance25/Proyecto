@@ -268,10 +268,10 @@ class AuthService
 
 
 
-    private function verificarCredencialesService(string $identificador, string $plainPassword)
+    private function verificarCredencialesService(LoginDTO $dto)
     {
 
-        $usuario = $this->usuarioRepo->buscarPorEmailONombreRepo($identificador);
+        $usuario = $this->usuarioRepo->buscarPorEmailONombreRepo($dto->identificador);
 
 
         if (!$usuario || !isset($usuario['password']) || !is_string($usuario['password'])) {
@@ -292,20 +292,57 @@ class AuthService
     }
 
 
-
-    
-    public function loginService(string $identificador, string $password): array
+    public function loginService(LoginDTO $dto): array
     {   
         
-        $basicUser = $this->verificarCredencialesService($identificador, $password);
+         if (!$dto->identificador || !$dto->password) {
+            http_response_code(400);
+            return [
+                'success' => false,
+                'code' => 'CAMPOS_FALTANTES',
+                'message' => 'Identificador (email o username) y contraseña son requeridos.'
+            ];
+        }
+
+        if ($dto->identificador === '' || $dto->password === '') {
+            http_response_code(400);
+            return[
+                'success' => false,
+                'code' => 'CAMPOS_FALTANTES',
+                'message' => 'Identificador y contraseña no pueden estar vacíos.'
+            ];
+            
+        }
+
+         $basicUser = $this->verificarCredencialesService($dto);
+
+        if (strlen($dto->identificador) < 3) {
+            http_response_code(400);
+            return[
+                'success' => false,
+                'code' => 'CAMPOS_INCOMPLETOS',
+                'message' => 'El identificador debe tener al menos 3 caracteres.'
+            ];
+        }
+
+         if (strlen($dto->password) < 6) {
+            http_response_code(400);
+            return[
+                'success' => false,
+                'code' => 'CAMPOS_INCOMPLETOS',
+                'message' => 'La contraseña debe tener al menos 6 caracteres.'
+            ];
+        }
+
         if ($basicUser === false) {
+            http_response_code(401);
             return [
                 'success' => false, 
                 'message' => 'Credenciales incorrectas.'];
         }
 
         $esAdmin = $this->usuarioRepo->esAdmin($basicUser['id']);
-
+        http_response_code(200);
         return [
             'success' => true,
             'message' => 'Login exitoso.',
