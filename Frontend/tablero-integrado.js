@@ -349,7 +349,12 @@ class EstadoJuego {
     if (this.modoSeguimiento) this[`turnosCompletadosJ${this.jugadorActual}`]++;
 
     this.jugadorActual = this.jugadorActual === 1 ? 2 : 1;
-    this.turnoEnRonda++;
+    
+    // En modo seguimiento, el backend ya incrementó el turno, NO lo incrementamos aquí
+    if (!this.modoSeguimiento) {
+      this.turnoEnRonda++;
+    }
+    
     this.yaColocoEnTurno = false;
     this.puedePasarTurno = false;
     this.dinosaurioColocadoEnTurno = null;
@@ -1469,12 +1474,12 @@ const ModoSeguimiento = {
     // ============================================================================
     // ENVIAR BOLSA AL BACKEND EN MODO SEGUIMIENTO
     // Solo enviar en turnos específicos:
-    // - Turno 1 de cada ronda: Jugador 1 envía su bolsa
-    // - Turno 2 de cada ronda: Jugador 2 envía su bolsa
+    // - Turno 1 de cada ronda: El primer jugador envía su bolsa
+    // - Turno 2 de cada ronda: El segundo jugador envía su bolsa
+    // No importa el jugadorNum porque puede estar intercambiado por las rondas
     // ============================================================================
     const debeEnviarBolsa = estadoJuego.modoSeguimiento && 
-                            ((estadoJuego.turnoEnRonda === 1 && jugadorNum === 1) ||
-                             (estadoJuego.turnoEnRonda === 2 && jugadorNum === 2));
+                            (estadoJuego.turnoEnRonda === 1 || estadoJuego.turnoEnRonda === 2);
 
     if (debeEnviarBolsa && window.app?.partidaInfo?.id) {
       try {
@@ -1483,6 +1488,13 @@ const ModoSeguimiento = {
           (window.app?.jugador2Info?.id);
 
         const endpoint = window.app?.getEndpoint('crearBolsa') || 'http://127.0.0.1:8000/crearBolsaSeguimiento';
+        
+        console.log('Enviando bolsa al backend:', {
+          turnoEnRonda: estadoJuego.turnoEnRonda,
+          jugadorNum,
+          jugadorId,
+          dinosaurios
+        });
         
         const response = await fetch(endpoint, {
           method: 'POST',
@@ -1517,7 +1529,7 @@ const ModoSeguimiento = {
     RenderManager.actualizarDinosauriosDisponibles();
     JuegoManager.actualizarInterfaz();
 
-    // En modo seguimiento, SIEMPRE mostrar el popup del dado para que el usuario seleccione
+    // En modo seguimiento, ir directo a la pantalla de juego sin animación del dado
     if (estadoJuego.modoSeguimiento) {
       window.app?.showScreen?.('partida');
       RenderManager.actualizarDinosauriosDisponibles();
@@ -1525,7 +1537,7 @@ const ModoSeguimiento = {
       JuegoManager.actualizarBotonSiguiente();
       RenderManager.renderizarTablero();
       setTimeout(() => DragDropManager.init(), 100);
-      // El popup del dado se mostrará DESPUÉS de colocar y descartar
+      // NO mostrar popup del dado aquí, se mostrará después de colocar y descartar
     } else if (estadoJuego.necesitaRestriccion()) {
       setTimeout(() => this._mostrarPopupSeleccionDado(), 100);
     } else {
@@ -2154,11 +2166,55 @@ const JuegoManager = {
       // Sincronizar estado con backend PRIMERO
       sincronizarConBackend(backendResponse);
 
+      console.log('DEBUG - Estado después de sincronizar:', {
+        modoSeguimiento: estadoJuego.modoSeguimiento,
+        turnoEnRonda: estadoJuego.turnoEnRonda,
+        jugadorActual: estadoJuego.jugadorActual,
+        esFinDeRonda: estadoJuego.esFinDeRonda()
+      });
+
       // Cambiar turno localmente después de sincronizar (solo si no es fin de ronda)
       if (!estadoJuego.esFinDeRonda()) {
         estadoJuego.cambiarTurno();
         // Actualizar interfaz después de cambiar turno para reflejar los avatares correctos
         this.actualizarInterfaz();
+        
+        console.log('DEBUG - Después de cambiar turno:', {
+          modoSeguimiento: estadoJuego.modoSeguimiento,
+          turnoEnRonda: estadoJuego.turnoEnRonda,
+          rondaActual: estadoJuego.rondaActual,
+          jugadorActual: estadoJuego.jugadorActual
+        });
+      }
+
+      // En modo seguimiento, verificar si el jugador actual necesita crear su bolsa
+      // Esto ocurre en los turnos 1 y 2 de cada ronda (los primeros 2 turnos)
+      if (estadoJuego.modoSeguimiento && 
+          (estadoJuego.turnoEnRonda === 1 || estadoJuego.turnoEnRonda === 2) && 
+          !estadoJuego.esFinDeRonda()) {
+        
+        const jugadorNum = estadoJuego.jugadorActual;
+        
+        // Verificar si este jugador ya creó su bolsa en esta ronda
+        const yaCreoBolsa = (jugadorNum === 1 && estadoJuego.dinosauriosRondaJ1.length > 0) ||
+                            (jugadorNum === 2 && estadoJuego.dinosauriosRondaJ2.length > 0);
+        
+        console.log('DEBUG - Verificando bolsa:', {
+          turnoEnRonda: estadoJuego.turnoEnRonda,
+          jugadorNum,
+          yaCreoBolsa,
+          dinosauriosRondaJ1: estadoJuego.dinosauriosRondaJ1.length,
+          dinosauriosRondaJ2: estadoJuego.dinosauriosRondaJ2.length
+        });
+        
+        // Si no tiene bolsa, mostrar popup para crearla
+        if (!yaCreoBolsa) {
+          console.log(`Mostrando popup de selección de dinosaurios para jugador ${jugadorNum} (turno ${estadoJuego.turnoEnRonda})`);
+          setTimeout(() => {
+            ModoSeguimiento.mostrarPopupSeleccionDinosaurios();
+          }, 500);
+          return; // No continuar procesando hasta que el jugador ingrese sus dinosaurios
+        }
       }
 
       // Procesar dado del backend DESPUÉS de cambiar turno

@@ -170,6 +170,7 @@ class PartidaSeguimientoService
 
     public function turnoSeguimientoService(TurnoSeguimientoDTO $dto): TurnoSeguimientoDTO
     {
+        try {
         //  Valida que se haya ingresado el ID de la partida
         if (!$dto->partida_id || 
              $dto->partida_id <= 0
@@ -368,6 +369,8 @@ class PartidaSeguimientoService
             $dto->jugador_id
         );
 
+        error_log("DEBUG - Bolsa obtenida para jugador $dto->jugador_id: " . json_encode($bolsa));
+
         //  Valida que realmente el jugador cuente con el dinosaurio que desea colocar en su bolsa.
         if(!in_array(
             $dto->tipoDino, 
@@ -378,8 +381,8 @@ class PartidaSeguimientoService
                     false,                              //  success
                     "El jugador no tiene 
                     en su bolsa el dinosaurio 
-                    $tipoDino para colocar en 
-                    $recinto.",                         //  message
+                    {$dto->tipoDino} para colocar en 
+                    {$dto->recinto}.",                  //  message
                     $turnoActual,                       //  turno
                     $rondaActual,                       //  ronda
                     null,                               //  puntaje_jugador1
@@ -493,6 +496,24 @@ class PartidaSeguimientoService
         );
 
         return $dto;
+        
+        } catch (Exception $e) {
+            // Capturar cualquier error y devolverlo
+            error_log("ERROR en turnoSeguimientoService: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            
+            $dto->fillResponse(
+                false,                                  //  success
+                "Error interno: " . $e->getMessage(),   //  message
+                null,                                   //  turno
+                null,                                   //  ronda
+                null,                                   //  puntaje_jugador1
+                null,                                   //  puntaje_jugador2
+                500                                     //  httpCode
+            );
+            
+            return $dto;
+        }
     }
 
 // ============================================================================
