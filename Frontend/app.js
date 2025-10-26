@@ -66,7 +66,8 @@ class AppState {
           crearPartida: 'http://127.0.0.1:8000/crearPartidaSeguimiento',
           crearBolsa: 'http://127.0.0.1:8000/crearBolsaSeguimiento',
           turno: 'http://127.0.0.1:8000/turnoSeguimiento',
-          finalizarRonda: 'http://127.0.0.1:8000/finalizarRonda',
+          finalizarRonda: 'http://127.0.0.1:8000/finalizarRondaSeguimiento',
+          finalizarRondaSeguimiento: 'http://127.0.0.1:8000/finalizarRondaSeguimiento',
           finalizarPartida: 'http://127.0.0.1:8000/finalizarPartida'
         }
       }

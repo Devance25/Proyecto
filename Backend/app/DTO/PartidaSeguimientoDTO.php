@@ -164,3 +164,147 @@ class TurnoSeguimientoDTO
         ];
     }
 }
+
+class RondaSeguimientoDTO
+{
+    //  Variables para la request.
+    public int    $partida_id;
+    public int    $jugador_id;
+    public string $recinto;
+    public string $tipoDino;
+    public string $tipoDinoDescarte;
+    public array  $bolsa_jugador1;
+    public array  $bolsa_jugador2;
+
+    //  Variables para la response.
+    public ?bool   $success          = null;
+    public ?string $message          = null;
+    public ?int    $turno            = null;
+    public ?int    $ronda            = null;
+    public ?string $caraDado         = null;
+    public ?int    $puntaje_jugador1 = null;
+    public ?int    $puntaje_jugador2 = null;
+    public int     $httpCode         = 200;
+
+    //  Crea el constructor con las varibles de la request.
+    public function __construct(
+        array $data
+    ){
+        $this->partida_id       = (int)   ($data['partida_id']       ??  0);
+        $this->jugador_id       = (int)   ($data['jugador_id']       ??  0);
+        $this->recinto          = (string)($data['recinto']          ?? '');
+        $this->tipoDino         = (string)($data['tipoDino']         ?? '');
+        $this->tipoDinoDescarte = (string)($data['tipoDinoDescarte'] ?? '');
+        $this->bolsa_jugador1   =          $data['bolsa_jugador1']   ??  [];
+        $this->bolsa_jugador2   =          $data['bolsa_jugador2']   ??  [];
+    }
+
+    //  Completa el DTO con los datos de la response.
+    public function fillResponse(
+        ?bool   $success,
+        ?string $message,
+        ?int    $turno,
+        ?int    $ronda,
+        ?string $caraDado,
+        int     $httpCode,
+        ?int    $puntaje_jugador1 = null,
+        ?int    $puntaje_jugador2 = null,
+        
+    ): void {
+        $this->success          = $success;
+        $this->message          = $message;
+        $this->turno            = $turno;
+        $this->ronda            = $ronda;
+        $this->caraDado         = $caraDado;
+        $this->puntaje_jugador1 = $puntaje_jugador1;
+        $this->puntaje_jugador2 = $puntaje_jugador2;
+        $this->httpCode         = $httpCode;
+    }
+
+    //  Funcion para comvertir el DTO a array.
+    public function toArray(): array
+    {
+        return [
+            'success'          => $this->success,
+            'message'          => $this->message,
+            'partida_id'       => $this->partida_id,
+            'jugador_id'       => $this->jugador_id,
+            'recinto'          => $this->recinto,
+            'tipoDino'         => $this->tipoDino,
+            'tipoDinoDescarte' => $this->tipoDinoDescarte,
+            'caraDado'         => $this->caraDado,
+            'turno'            => $this->turno,
+            'ronda'            => $this->ronda,
+            'puntaje_jugador1' => $this->puntaje_jugador1,
+            'puntaje_jugador2' => $this->puntaje_jugador2,
+            'bolsa_jugador1'   => $this->bolsa_jugador1,
+            'bolsa_jugador2'   => $this->bolsa_jugador2,
+            'httpCode'         => $this->httpCode,
+        ];
+    }
+}
+
+class FinalizarPartidaSeguimientoDTO
+{
+    //  Variables para la request.
+    public int    $partida_id;
+    public int    $jugador_id;
+    public string $recinto;
+    public string $tipoDino;
+    public string $tipoDinoDescarte;
+
+    //  Variables para la response.
+    public ?bool   $success          = null;
+    public ?string $message          = null;
+    public ?int    $ganador_id       = null;
+    public ?int    $empate           = null;
+    public ?int    $puntaje_jugador1 = null;
+    public ?int    $puntaje_jugador2 = null;
+    public int     $httpCode         = 200;
+
+    //  Crea el constructor con las varibles de la request.
+    public function __construct(
+        array $data
+    ){
+        $this->partida_id       = (int)   ($data['partida_id']       ??  0);
+        $this->jugador_id       = (int)   ($data['jugador_id']       ??  0);
+        $this->recinto          = (string)($data['recinto']          ?? '');
+        $this->tipoDino         = (string)($data['tipoDino']         ?? '');
+        $this->tipoDinoDescarte = (string)($data['tipoDinoDescarte'] ?? '');
+    }
+
+    //  Completa el DTO con los datos de la response.
+    public function fillResponse(
+        bool   $success,
+        string $message,
+        ?int   $ganador_id,
+        ?int   $empate,
+        ?int   $puntaje_jugador1,
+        ?int   $puntaje_jugador2,
+        int    $httpCode = 200
+    ): void {
+        $this->success          = $success;
+        $this->message          = $message;
+        $this->ganador_id       = $ganador_id;
+        $this->empate           = $empate;
+        $this->puntaje_jugador1 = $puntaje_jugador1;
+        $this->puntaje_jugador2 = $puntaje_jugador2;
+        $this->httpCode         = $httpCode;
+    }
+
+    //  Funcion para comvertir el DTO a array.
+    public function toArray(): array
+    {
+        return [
+            'success'          => $this->success,
+            'message'          => $this->message,
+            'partida_id'       => $this->partida_id,
+            'jugador_id'       => $this->jugador_id,
+            'recinto'          => $this->ganador_id,
+            'tipoDino'         => $this->empate,
+            'puntaje_jugador1' => $this->puntaje_jugador1,
+            'puntaje_jugador2' => $this->puntaje_jugador2,
+            'httpCode'         => $this->httpCode,
+        ];
+    }
+}

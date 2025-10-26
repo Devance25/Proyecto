@@ -730,57 +730,6 @@ class PartidaService
     }
 
 
-
-
-// ============================================================================
-// Funciones transversales a ambos modos.
-// ============================================================================
-
-    //  Service para calcular los puntajes de ambos jugadores.
-    public function calcularPuntajesService(CalcularPuntajesDTO $dto): CalcularPuntajesDTO
-    {   
-
-        // Trae los IDs de los jugadores.
-        $jugador1_id = $this->partidaRepo->getJugador1IdRepo($dto->partida_id);
-        $jugador2_id = $this->partidaRepo->getJugador2IdRepo($dto->partida_id);
-
-
-        // Utilizado los IDs de los jugadores trae sus colocaicones(devuelve un array indexado de arrays asociativos).
-        $colocaciones_jugador1 = $this->partidaRepo->getColocacionesRepo(
-            $dto->partida_id,
-            $jugador1_id
-        );
-        $colocaciones_jugador2 = $this->partidaRepo->getColocacionesRepo(
-            $dto->partida_id, 
-            $jugador2_id
-        );
-
-        // Convierte los arrays indexados de arrays asociativos a arrays asociativos de arrays indexados.
-        $por_recinto_jugador1 = $this->partida->agruparPorRecinto($colocaciones_jugador1);
-        $por_recinto_jugador2 = $this->partida->agruparPorRecinto($colocaciones_jugador2);
-        
-        //  Calcula los puntajes de los jugadores.
-        $puntaje_jugador1 = $this->puntaje->calcularPuntaje(
-            $por_recinto_jugador1, 
-            $por_recinto_jugador2
-        );
-        $puntaje_jugador2 = $this->puntaje->calcularPuntaje(
-            $por_recinto_jugador2, 
-            $por_recinto_jugador1
-        );
-
-        //  Guarda los puntajes en la base de datos
-        $this->partidaRepo->setPuntajesRepo($dto->partida_id, $puntaje_jugador1, $puntaje_jugador2);
-
-        //  Completa el DTO de calcular puntajes con los puntajes de los jugadores.
-        $dto->fillResponse($puntaje_jugador1, $puntaje_jugador2);
-
-        
-        //  Retorna los puntajes de los jugadores.
-        return $dto;
-    }
-    
-
     //  Service para finalizar la partida.
     public function finalizarPartidaService(FinalizarPartidaDTO $dto): FinalizarPartidaDTO
     {
@@ -1035,6 +984,54 @@ class PartidaService
         );
         
         //  Retorna el objeto con todos los datos
+        return $dto;
+    }
+
+// ============================================================================
+// Funciones transversales a ambos modos.
+// ============================================================================
+
+    //  Service para calcular los puntajes de ambos jugadores.
+    public function calcularPuntajesService(CalcularPuntajesDTO $dto): CalcularPuntajesDTO
+    {   
+
+        // Trae los IDs de los jugadores.
+        $jugador1_id = $this->partidaRepo->getJugador1IdRepo($dto->partida_id);
+        $jugador2_id = $this->partidaRepo->getJugador2IdRepo($dto->partida_id);
+
+
+        // Utilizado los IDs de los jugadores trae sus colocaicones(devuelve un array indexado de arrays asociativos).
+        $colocaciones_jugador1 = $this->partidaRepo->getColocacionesRepo(
+            $dto->partida_id,
+            $jugador1_id
+        );
+        $colocaciones_jugador2 = $this->partidaRepo->getColocacionesRepo(
+            $dto->partida_id, 
+            $jugador2_id
+        );
+
+        // Convierte los arrays indexados de arrays asociativos a arrays asociativos de arrays indexados.
+        $por_recinto_jugador1 = $this->partida->agruparPorRecinto($colocaciones_jugador1);
+        $por_recinto_jugador2 = $this->partida->agruparPorRecinto($colocaciones_jugador2);
+        
+        //  Calcula los puntajes de los jugadores.
+        $puntaje_jugador1 = $this->puntaje->calcularPuntaje(
+            $por_recinto_jugador1, 
+            $por_recinto_jugador2
+        );
+        $puntaje_jugador2 = $this->puntaje->calcularPuntaje(
+            $por_recinto_jugador2, 
+            $por_recinto_jugador1
+        );
+
+        //  Guarda los puntajes en la base de datos
+        $this->partidaRepo->setPuntajesRepo($dto->partida_id, $puntaje_jugador1, $puntaje_jugador2);
+
+        //  Completa el DTO de calcular puntajes con los puntajes de los jugadores.
+        $dto->fillResponse($puntaje_jugador1, $puntaje_jugador2);
+
+        
+        //  Retorna los puntajes de los jugadores.
         return $dto;
     }
 

@@ -170,17 +170,17 @@ try {
             ]);
             break;
 
-            case 'finalizarPartida':
-                if ($method === 'POST') {
-                    $partidaController->finalizarPartidaController();
-                    break;
-                }
-                http_response_code(405);
-                echo json_encode([
-                    'success' => false, 
-                    'message' => 'Método no permitido.'
-                ]);
+        case 'finalizarPartida':
+            if ($method === 'POST') {
+                $partidaController->finalizarPartidaController();
                 break;
+            }
+            http_response_code(405);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
+            break;
 
         
 // ============================================================================
@@ -225,15 +225,21 @@ try {
             ]);
             break;
 
-
-
-// ============================================================================
-// Endpoints transversales a ambos
-// ============================================================================
-        
-        case 'finalizarPartida':
+        case 'finalizarRondaSeguimiento':
             if ($method === 'POST') {
-                $partidaController->finalizarPartidaController();
+                $partidaSeguimientoController->finalizarRondaSeguimientoController();
+                break;
+            }
+            http_response_code(405);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
+            break;
+    
+        case 'finalizarPartidaSeguimiento':
+            if ($method === 'POST') {
+                $partidaSeguimientoController->finalizarPartidaSeguimientoController();
                 break;
             }
             http_response_code(405);
@@ -243,6 +249,11 @@ try {
             ]);
             break;
 
+
+
+// ============================================================================
+// Endpoints transversales a ambos
+// ============================================================================
 
 
         case 'health':

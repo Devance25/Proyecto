@@ -378,8 +378,8 @@ class EstadoJuego {
     // En modo seguimiento, el turno 6 es el último (6 turnos por ronda)
     // En modo digital, el turno 7 indica que se procesó el turno 6
     if (this.modoSeguimiento) {
-      // En modo seguimiento, después del turno 6 es fin de ronda
-      if (this.turnoEnRonda > 6) {
+      // En modo seguimiento, el turno 6 o más es fin de ronda
+      if (this.turnoEnRonda >= 6) {
         return true;
       }
     } else {
@@ -1625,14 +1625,6 @@ const ModoSeguimiento = {
     // Solo guardamos el valor del dado y habilitamos el botón
     // ============================================================================
     if (estadoJuego.modoSeguimiento) {
-      // Habilitar el botón "Enviar turno"
-      const btn = document.getElementById('btn-siguiente-turno');
-      if (btn) {
-        btn.disabled = false;
-        btn.textContent = 'Enviar turno';
-        console.log('Botón configurado como "Enviar turno" habilitado');
-      }
-      
       // Cerrar el popup del dado
       const popup = document.getElementById('popup-seleccion-dado');
       popup.classList.remove('obligatorio');
@@ -1646,10 +1638,16 @@ const ModoSeguimiento = {
       estadoJuego.yaDescarto = true;
       estadoJuego.puedePasarTurno = true;
       
+      // Actualizar el botón según el estado (esto evaluará si debe decir "Enviar turno" o "Finalizar ronda")
+      JuegoManager.actualizarBotonSiguiente();
+      
+      const btn = document.getElementById('btn-siguiente-turno');
       console.log('Flags configurados:', {
         yaColocoEnTurno: estadoJuego.yaColocoEnTurno,
         yaDescarto: estadoJuego.yaDescarto,
         dadoNumero: estadoJuego.dadoNumero,
+        turnoEnRonda: estadoJuego.turnoEnRonda,
+        rondaActual: estadoJuego.rondaActual,
         'btn.textContent': btn?.textContent,
         'btn.disabled': btn?.disabled
       });
@@ -1902,12 +1900,17 @@ const JuegoManager = {
       // Determinar qué endpoint usar según el estado del botón
       let backendResponse;
       if (btn.textContent === 'Finalizar ronda') {
-        backendResponse = await JuegoManager.enviarFinalizarRondaAlBackend();
+        // En modo seguimiento, usar endpoint específico
+        if (estadoJuego.modoSeguimiento) {
+          backendResponse = await JuegoManager.enviarFinalizarRondaSeguimientoAlBackend();
+        } else {
+          backendResponse = await JuegoManager.enviarFinalizarRondaAlBackend();
+        }
         // Procesar fin de ronda usando la lógica original del frontend
         if (backendResponse && backendResponse.success) {
-          // NO llamar procesarRespuestaBackend aquí, solo actualizar partidaInfo.bolsas
-          // para que estén disponibles cuando se inicie la siguiente ronda
-          if (backendResponse.bolsa_jugador1 && backendResponse.bolsa_jugador2) {
+          // En modo seguimiento, NO hay bolsas en la respuesta (se crean manualmente)
+          // En modo digital, sí hay bolsas que deben guardarse
+          if (!estadoJuego.modoSeguimiento && backendResponse.bolsa_jugador1 && backendResponse.bolsa_jugador2) {
             if (window.app?.partidaInfo) {
               // IMPORTANTE: Crear un objeto NUEVO para que las referencias no se compartan
               window.app.partidaInfo.bolsas = {
@@ -1916,6 +1919,13 @@ const JuegoManager = {
               };
               console.log('DEBUG - Bolsas guardadas en partidaInfo:', window.app.partidaInfo.bolsas);
             }
+          }
+          
+          // En modo seguimiento, resetear las bolsas para que se creen manualmente en la siguiente ronda
+          if (estadoJuego.modoSeguimiento) {
+            estadoJuego.dinosauriosRondaJ1 = [];
+            estadoJuego.dinosauriosRondaJ2 = [];
+            console.log('DEBUG - Bolsas reseteadas para modo seguimiento');
           }
           
           // Actualizar ronda y turno desde el backend
@@ -2062,6 +2072,91 @@ const JuegoManager = {
 
       } catch (fetchError) {
         console.error('DEBUG - Error en fetch:', fetchError);
+        throw fetchError;
+      }
+
+    } catch (error) {
+      // Diferentes tipos de errores
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        mostrarAlertaJuego('Error de conexión - Verifica tu internet', 'error', 5000);
+      } else if (error.message.includes('HTTP')) {
+        mostrarAlertaJuego('Error del servidor - Intenta nuevamente', 'error', 4000);
+      } else {
+        mostrarAlertaJuego('Error inesperado - Contacta soporte', 'error', 5000);
+      }
+
+      estadoJuego.sincronizandoConBackend = false;
+      return null;
+
+    } finally {
+      // Siempre rehabilitar botón
+      if (btn) {
+        btn.disabled = false;
+        JuegoManager.actualizarBotonSiguiente();
+      }
+    }
+  },
+
+  // Función para enviar finalizar ronda en modo seguimiento al backend
+  async enviarFinalizarRondaSeguimientoAlBackend() {
+    if (estadoJuego.sincronizandoConBackend) {
+      return null;
+    }
+
+    estadoJuego.sincronizandoConBackend = true;
+
+    // Deshabilitar botón durante request
+    const btn = document.getElementById('btn-siguiente-turno');
+    if (btn) btn.disabled = true;
+
+    try {
+      // En modo seguimiento, enviar los datos del último turno (turno 5)
+      const requestData = {
+        partida_id: estadoJuego.partidaId,
+        jugador_id: estadoJuego.jugadorActual === 1 ? 
+          (window.app?.jugador1Info?.id || 1) : 
+          (window.app?.jugador2Info?.id || 2),
+        recinto: estadoJuego.recintoColocadoEnTurno,
+        tipoDino: estadoJuego.dinosaurioColocadoEnTurno,
+        tipoDinoDescarte: estadoJuego.dinosaurioDescartadoEnTurno
+        // NO enviar caraDado - el backend lo lee de la BD
+      };
+
+      console.log('Enviando finalizar ronda seguimiento al backend:', requestData);
+
+      const endpoint = window.app?.getEndpoint('finalizarRondaSeguimiento') || 'http://127.0.0.1:8000/finalizarRondaSeguimiento';
+      
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestData)
+        });
+
+        const result = await response.json();
+        console.log('Respuesta de finalizar ronda seguimiento:', result);
+
+        // Verificar status HTTP
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        // VALIDACIÓN ROBUSTA DE RESPUESTA
+        if (!result || typeof result !== 'object') {
+          throw new Error('Respuesta inválida del servidor');
+        }
+
+        if (!result.success) {
+          const mensaje = result.message || 'Error desconocido';
+          mostrarAlertaJuego(mensaje, 'error', 4000);
+          return null;
+        }
+
+        estadoJuego.sincronizandoConBackend = false;
+        return result;
+
+      } catch (fetchError) {
+        console.error('DEBUG - Error en fetch finalizar ronda seguimiento:', fetchError);
         throw fetchError;
       }
 
@@ -2573,17 +2668,19 @@ const JuegoManager = {
     } else if (!estadoJuego.yaDescarto) {
       btn.textContent = 'Descarta dinosaurio';
       btn.disabled = true;
-    } else if (estadoJuego.modoSeguimiento && estadoJuego.dadoNumero && btn.textContent === 'Enviar turno') {
-      // En modo seguimiento, si ya seleccionó el dado, mantener "Enviar turno" habilitado
-      btn.disabled = false;
     } else {
-      // Después de colocar y descartar, siempre es "Tirar dado" o finalizar
+      // Después de colocar y descartar, verificar primero si es fin de ronda
       const esFinDeRonda = estadoJuego.esFinDeRonda();
       console.log('DEBUG actualizarBotonSiguiente:', {
         esFinDeRonda,
         rondaActual: estadoJuego.rondaActual,
         turnoEnRonda: estadoJuego.turnoEnRonda,
-        evaluacion: `${estadoJuego.rondaActual} === 4 && ${estadoJuego.turnoEnRonda} === 6 = ${estadoJuego.rondaActual === 4 && estadoJuego.turnoEnRonda === 6}`
+        modoSeguimiento: estadoJuego.modoSeguimiento,
+        dadoNumero: estadoJuego.dadoNumero,
+        yaColocoEnTurno: estadoJuego.yaColocoEnTurno,
+        yaDescarto: estadoJuego.yaDescarto,
+        evaluacion: `${estadoJuego.rondaActual} === 4 && ${estadoJuego.turnoEnRonda} >= 6 = ${estadoJuego.rondaActual === 4 && estadoJuego.turnoEnRonda >= 6}`,
+        esTurno6: estadoJuego.turnoEnRonda === 6
       });
       
       if (esFinDeRonda) {
@@ -2591,14 +2688,40 @@ const JuegoManager = {
         // Solo finalizar partida si estamos en ronda 4 Y en el turno 6 o más
         if (estadoJuego.rondaActual === 4 && estadoJuego.turnoEnRonda >= 6) {
           btn.textContent = 'Finalizar partida';
+          console.log('→ Botón configurado como: Finalizar partida');
         } else {
           btn.textContent = 'Finalizar ronda';
+          console.log('→ Botón configurado como: Finalizar ronda (esFinDeRonda)');
         }
         btn.disabled = false;
+      } else if (estadoJuego.modoSeguimiento) {
+        // En modo seguimiento, el turno 5 es el último visible (el backend procesa turno 6 internamente)
+        // Si es turno 5 y ya colocó/descartó/seleccionó dado, mostrar "Finalizar ronda"
+        if (estadoJuego.turnoEnRonda === 5) {
+          if (estadoJuego.rondaActual === 4) {
+            btn.textContent = 'Finalizar partida';
+            console.log('→ Botón configurado como: Finalizar partida (turno 5 - último turno)');
+          } else {
+            btn.textContent = 'Finalizar ronda';
+            console.log('→ Botón configurado como: Finalizar ronda (turno 5 - último turno)');
+          }
+          btn.disabled = estadoJuego.dadoNumero ? false : true; // Solo habilitar si ya seleccionó el dado
+        } else if (estadoJuego.dadoNumero) {
+          // Turnos normales en modo seguimiento: si ya seleccionó el dado, habilitar "Enviar turno"
+          btn.textContent = 'Enviar turno';
+          btn.disabled = false;
+          console.log('→ Botón configurado como: Enviar turno');
+        } else {
+          // Aún no seleccionó el dado
+          btn.textContent = 'Enviar turno';
+          btn.disabled = true;
+          console.log('→ Botón configurado como: Enviar turno (deshabilitado, esperando dado)');
+        }
       } else {
         // Turnos normales: tirar dado
         btn.textContent = 'Tirar dado';
         btn.disabled = false;
+        console.log('→ Botón configurado como: Tirar dado');
       }
     }
   },

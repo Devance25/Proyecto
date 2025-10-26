@@ -204,36 +204,6 @@ class RondaDTO{
 }
 
 
-
-
-// ============================================================================
-// DTO transversales a amobos modos
-// ============================================================================
-
-class CalcularPuntajesDTO
-{   
-    //  Variable para el request
-    public int $partida_id;
-
-    //  Variables para el response
-    public ?int $puntaje_jugador1 = null;
-    public ?int $puntaje_jugador2 = null;
-
-    public function __construct(
-        int $partida_id
-    ){
-        $this->partida_id = $partida_id;
-    }
-
-    public function fillResponse(
-        ?int $puntaje_jugador1,
-        ?int $puntaje_jugador2
-    ): void {
-        $this->puntaje_jugador1 = $puntaje_jugador1;
-        $this->puntaje_jugador2 = $puntaje_jugador2;
-    }
-}
-
 class FinalizarPartidaDTO
 {
     //  Variable para la request
@@ -295,4 +265,34 @@ class FinalizarPartidaDTO
         ];
     }
 }
+
+
+// ============================================================================
+// DTO transversales a amobos modos
+// ============================================================================
+
+class CalcularPuntajesDTO
+{   
+    //  Variable para el request
+    public int $partida_id;
+
+    //  Variables para el response
+    public ?int $puntaje_jugador1 = null;
+    public ?int $puntaje_jugador2 = null;
+
+    public function __construct(
+        int $partida_id
+    ){
+        $this->partida_id = $partida_id;
+    }
+
+    public function fillResponse(
+        ?int $puntaje_jugador1,
+        ?int $puntaje_jugador2
+    ): void {
+        $this->puntaje_jugador1 = $puntaje_jugador1;
+        $this->puntaje_jugador2 = $puntaje_jugador2;
+    }
+}
+
 
