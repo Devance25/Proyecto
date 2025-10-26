@@ -21,7 +21,7 @@ class Database {
     /** Configuración de conexión (ajusta a tu entorno local). */
     private string $host = "localhost";   // Host del servidor MySQL
     private string $user = "usuario2";        // Usuario de la base de datos
-    private string $password = "TuNuevaPassword123!";  // Contraseña del usuario
+    private string $password = "123456789";  // Contraseña del usuario
     private string $dbname = "DB_Draftosaurus_Devance"; // Nombre de la base de datos
 
     /**

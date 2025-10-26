@@ -122,14 +122,15 @@ class AuthService
     }
 
 
-    public function registrarUsuarioService(string $nombreUsuario, string $email, string $nacimiento, string $password, string $passwordConfirm): array
+    public function registrarUsuarioService(RegistroDTO $dto): array
     {
-        $nombreUsuario = trim($nombreUsuario);
-        $email = trim($email);
-        $nacimiento = trim($nacimiento);
-        $password = (string)$password;
-        $passwordConfirm = (string)$passwordConfirm;
+        $nombreUsuario = $dto->nombreUsuario;
+        $email = $dto->email;
+        $nacimiento = $dto->nacimiento;
+        $password = $dto->password;
+        $passwordConfirm = $dto->passwordConfirm;
 
+        // Validación mínima de presencia de campos
         if ($nombreUsuario === '' || $email === '' || $nacimiento === '' || $password === '' || $passwordConfirm === '') {
             return [
                 'success' => false, 
@@ -138,30 +139,86 @@ class AuthService
             ];
         }
 
+        // Validación de nombre de usuario (validar maximo!!!)
+        if (strlen($nombreUsuario) < 3 || strlen($nombreUsuario) > 15) {
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'El nombre de usuario debe tener entre 3 y 15 caracteres.'
+            ];
+        }
+
+        // Validación de email
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return [
                 'success' => false, 
                 'code' => 'invalid', 
-                'message' => 'Email inválido.'
+                'message' => 'El email no tiene un formato válido.'
             ];
         }
-
-        if (strlen($nombreUsuario) < 3) {
+        if (strlen($email) > 254) {
             return [
                 'success' => false, 
                 'code' => 'invalid', 
-                'message' => 'El username debe tener al menos 3 caracteres.'
+                'message' => 'El email no puede exceder 254 caracteres.'
+            ];
+        }
+        $emailExiste = $this->usuarioRepo->buscarPorEmailRepo($email);
+        if ($emailExiste) {
+            return [
+                'success' => false, 
+                'code' => 'duplicate', 
+                'message' => 'El email ya está registrado.'
             ];
         }
 
-        if (strlen($password) < 6) {
+        // Validación de fecha de nacimiento
+        $fechaNacimiento = DateTime::createFromFormat('Y-m-d', $nacimiento);
+         if (!$fechaNacimiento || $fechaNacimiento->format('Y-m-d') !== $nacimiento) {
             return [
                 'success' => false, 
                 'code' => 'invalid', 
-                'message' => 'La contraseña debe tener al menos 6 caracteres.'
+                'message' => 'La fecha de nacimiento debe tener el formato YYYY-MM-DD.'
+            ];
+        } else {
+            // Verificar que no sea fecha futura
+            $hoy = new DateTime();
+            if ($nacimiento > $hoy) {
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'La fecha de nacimiento no puede ser futura.'
+            ];
+            }
+            // Verificar edad mínima (18 años)
+            $edad = $hoy->diff($fechaNacimiento)->y;
+            if ($edad < 18) {
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'Debes tener al menos 18 años para registrarte.'
+            ];
+            }
+        }
+
+        // Validación de contraseña
+        if (strlen($password) < 6 || strlen($password) > 50) {
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'La contraseña debe tener al menos 6 caracteres y no puede exceder los 50 caracteres.'
+            ];
+        }
+        // Verificar que contenga al menos una letra y un número
+        if (!preg_match('/^(?=.*[A-Za-z])(?=.*\d)/', $dto->password)) {
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'La contraseña debe contener al menos una letra y un número.'
             ];
         }
 
+        // Validación de confirmación de contraseña
         if ($password !== $passwordConfirm) {
             return [
                 'success' => false, 
@@ -176,15 +233,6 @@ class AuthService
                 'success' => false, 
                 'code' => 'duplicate', 
                 'message' => 'El username ya está registrado.'
-            ];
-        }
-
-        $emailExiste = $this->usuarioRepo->buscarPorEmailRepo($email);
-        if ($emailExiste) {
-            return [
-                'success' => false, 
-                'code' => 'duplicate', 
-                'message' => 'El email ya está registrado.'
             ];
         }
 
