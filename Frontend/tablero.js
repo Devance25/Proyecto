@@ -378,8 +378,8 @@ class EstadoJuego {
     // En modo seguimiento, el turno 6 es el último (6 turnos por ronda)
     // En modo digital, el turno 7 indica que se procesó el turno 6
     if (this.modoSeguimiento) {
-      // En modo seguimiento, el turno 6 o más es fin de ronda
-      if (this.turnoEnRonda >= 6) {
+      // En modo seguimiento, el turno 7 o más es fin de ronda (después de procesar turno 6)
+      if (this.turnoEnRonda >= 7) {
         return true;
       }
     } else {
@@ -2629,7 +2629,11 @@ const JuegoManager = {
     RenderManager.actualizarDinosauriosDisponibles();
     
     // En modo seguimiento, mostrar popup del dado DESPUÉS de colocar y descartar
-    if (estadoJuego.modoSeguimiento && estadoJuego.yaColocoEnTurno && estadoJuego.yaDescarto) {
+    // PERO NO en el turno 6 (último turno de la ronda, no necesita dado)
+    if (estadoJuego.modoSeguimiento && 
+        estadoJuego.yaColocoEnTurno && 
+        estadoJuego.yaDescarto && 
+        estadoJuego.turnoEnRonda !== 6) {
       setTimeout(() => ModoSeguimiento._mostrarPopupSeleccionDado(), 200);
     }
   },
@@ -2695,17 +2699,17 @@ const JuegoManager = {
         }
         btn.disabled = false;
       } else if (estadoJuego.modoSeguimiento) {
-        // En modo seguimiento, el turno 5 es el último visible (el backend procesa turno 6 internamente)
-        // Si es turno 5 y ya colocó/descartó/seleccionó dado, mostrar "Finalizar ronda"
-        if (estadoJuego.turnoEnRonda === 5) {
+        // En modo seguimiento, el turno 6 es el último turno de la ronda
+        // Si es turno 6 y ya colocó/descartó, mostrar "Finalizar ronda" (sin necesidad de dado)
+        if (estadoJuego.turnoEnRonda === 6) {
           if (estadoJuego.rondaActual === 4) {
             btn.textContent = 'Finalizar partida';
-            console.log('→ Botón configurado como: Finalizar partida (turno 5 - último turno)');
+            console.log('→ Botón configurado como: Finalizar partida (turno 6 - último turno)');
           } else {
             btn.textContent = 'Finalizar ronda';
-            console.log('→ Botón configurado como: Finalizar ronda (turno 5 - último turno)');
+            console.log('→ Botón configurado como: Finalizar ronda (turno 6 - último turno)');
           }
-          btn.disabled = estadoJuego.dadoNumero ? false : true; // Solo habilitar si ya seleccionó el dado
+          btn.disabled = false; // Habilitar inmediatamente después de colocar y descartar
         } else if (estadoJuego.dadoNumero) {
           // Turnos normales en modo seguimiento: si ya seleccionó el dado, habilitar "Enviar turno"
           btn.textContent = 'Enviar turno';

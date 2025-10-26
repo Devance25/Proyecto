@@ -448,7 +448,7 @@ class PartidaSeguimientoService
 
 
         //  Si el turno es del 1 al 5.
-        if($turnoActual < 6){
+        if($turnoActual <= 6){
 
             //  Suma un turno.
             $this->partidaRepo->sumarTurnoRepo($dto->partida_id);     
@@ -459,19 +459,6 @@ class PartidaSeguimientoService
                 $dto->caraDado, 
                 $dto->jugador_id
             );
-        }
-
-        //  Si esta corriendo el turno 6 (no tira dado).
-        if ($turnoActual === 6 && $rondaActual === 1){
-            
-            //  Setea 'ronda = 2'.
-            $rondaActual = $this->partidaRepo->sumarRondaRepo($dto->partida_id);
-
-            // Resetea los turnos ('turno = 6' => 'tunro = 1').
-            $turnoActual = $this->partidaRepo->resetTurnosRepo($dto->partida_id);
-
-            // No se tira dado en turno 6.
-            $caraDadoActual = null;
         }
 
         //  Crea una dto de calcular puntajes.
@@ -515,7 +502,6 @@ class PartidaSeguimientoService
             return $dto;
         }
     }
-    ///////////////////////////////////////////////////////////////////////////////
 
 
     //Coloca y descarta dinosaurios, tira dado. Actualiza turnos y rondas
