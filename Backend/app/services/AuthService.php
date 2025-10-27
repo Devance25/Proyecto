@@ -22,14 +22,14 @@ class AuthService
     }
 
 
-    public function registrarUsuarioAdminService(string $nombreUsuario, string $email, string $nacimiento,string $password): array
+    public function registrarUsuarioAdminService(RegistroAdminDTO $dto): array
     {
-        $nombreUsuario = trim($nombreUsuario);
-        $email = trim($email);
-        $nacimiento = trim($nacimiento);
-        $password = (string)$password;
+        $nombreUsuario = $dto->nombreUsuario;
+        $email = $dto->email;
+        $nacimiento = $dto->nacimiento;
+        $password = $dto->password;
 
-
+        // Validación mínima de presencia de campos
         if ($nombreUsuario === '' || $email === '' || $nacimiento === '' || $password === '') {
             return [
                 'success' => false, 
@@ -38,7 +38,15 @@ class AuthService
                 ];
         }
 
-
+        // Validación de nombre de usuario
+        if (strlen($nombreUsuario) < 3 || strlen($nombreUsuario) > 15) {
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'El nombre de usuario debe tener entre 3 y 15 caracteres.'
+                ];
+        }
+        // Validación de email
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return [
                 'success' => false, 
@@ -46,26 +54,59 @@ class AuthService
                 'message' => 'Email inválido.'
                 ];
         }
-
-
-        if (strlen($nombreUsuario) < 3) {
+        if (strlen($email) > 254) {
             return [
                 'success' => false, 
                 'code' => 'invalid', 
-                'message' => 'El username debe tener al menos 3 caracteres.'
-                ];
+                'message' => 'El email no puede exceder 254 caracteres.'
+            ];
         }
 
-
-        if (strlen($password) < 6) {
+        // Validación de contraseña
+        if (strlen($password) < 6 || strlen($password) > 50) {
             return [
                 'success' => false, 
                 'code' => 'invalid', 
-                'message' => 'La contraseña debe tener al menos 6 caracteres.'
-                ];
+                'message' => 'La contraseña debe tener al menos 6 caracteres y no puede exceder los 50 caracteres.'
+            ];
+        }
+        // Verificar que contenga al menos una letra y un número
+        if (!preg_match('/^(?=.*[A-Za-z])(?=.*\d)/', $dto->password)) {
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'La contraseña debe contener al menos una letra y un número.'
+            ];
         }
 
-
+        // Validación de fecha de nacimiento
+        $fechaNacimiento = DateTime::createFromFormat('Y-m-d', $nacimiento);
+         if (!$fechaNacimiento || $fechaNacimiento->format('Y-m-d') !== $nacimiento) {
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'La fecha de nacimiento debe tener el formato YYYY-MM-DD.'
+            ];
+        } else {
+            // Verificar que no sea fecha futura
+            $hoy = new DateTime();
+            if ($nacimiento > $hoy) {
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'La fecha de nacimiento no puede ser futura.'
+            ];
+            }
+            // Verificar edad mínima (18 años)
+            $edad = $hoy->diff($fechaNacimiento)->y;
+            if ($edad < 18) {
+            return [
+                'success' => false, 
+                'code' => 'invalid', 
+                'message' => 'Debes tener al menos 18 años para registrarte.'
+            ];
+            }
+        }
 
         $usuarioExiste = $this->usuarioRepo->buscarPorNombreUsuarioRepo($nombreUsuario);
         if ($usuarioExiste) {
@@ -76,9 +117,7 @@ class AuthService
             ];
         }
 
-
         $emailExiste = $this->usuarioRepo->buscarPorEmailRepo($email);
-
         if ($emailExiste) {
             return [
                 'success' => false, 
@@ -89,7 +128,6 @@ class AuthService
 
 
         $hash = password_hash($password, PASSWORD_DEFAULT);
-
         if ($hash === false) {
             return [
                 'success' => false, 
@@ -100,7 +138,6 @@ class AuthService
 
 
         $created = $this->usuarioRepo->registrarUsuarioRepo($nombreUsuario, $email, $nacimiento, $hash);
-
         if ($created === false) {
 
             return [
@@ -279,7 +316,7 @@ class AuthService
         }
 
 
-        if (!password_verify($plainPassword, $usuario['password'])) {
+        if (!password_verify($dto->password, $usuario['password'])) {
             return false;
         }
 

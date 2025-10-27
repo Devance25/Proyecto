@@ -285,13 +285,7 @@ class UsuarioRepository
         $usuarios = [];
 
         while ($row = $result->fetch_assoc()) {
-            $usuarios[] = [
-                'id' => (int)$row['id'],
-                'nombreUsuario' => $row['nombre_usuario'],
-                'email' => $row['email'],
-                'nacimiento' => $row['nacimiento'],
-                'admin' => (bool)$row['admin']
-                ];
+            $usuarios[] = new GetUsuariosDTO($row);
         }
 
         $result->free();

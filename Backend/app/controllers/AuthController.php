@@ -14,7 +14,7 @@ class AuthController
     }
 
 
-
+/*============================================================================================================*/
 /*============================================================================================================*/
     public function registroController()
     {
@@ -63,7 +63,9 @@ class AuthController
         echo json_encode($result);
     }
 /*============================================================================================================*/
+/*============================================================================================================*/
 
+/*============================================================================================================*/
 /*============================================================================================================*/
     public function registroAdminController()
     {
@@ -81,106 +83,10 @@ class AuthController
             return;
         }
 
-        // Sanitiza/normaliza datos (trim para quitar espacios a los extremos)
-        if (isset($data['nombreUsuario'])) {
-            $nombreUsuario = trim((string)$data['nombreUsuario']);
-        } else {  
-            $nombreUsuario = '';
-        }
-
-        if (isset($data['email'])){
-            $email = trim((string)$data['email']);
-        } else {
-            $email = '';
-        }
-
-        if (isset($data['nacimiento'])){
-            $nacimiento = trim((string)$data ['nacimiento']);
-        } else {
-            $nacimiento = '';
-        }
-
-        if (isset($data['password'])){
-            $password = trim((string)$data ['password']);
-        } else {
-            $password = '';
-        }
-
-
-        $validacionErrores = [];
-
-        // Validación mínima de presencia de campos
-        if ($nombreUsuario === '' || $email === '' || $nacimiento === '' || $password === '') {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false, 
-                'message' => 'Todos los campos son requeridos.'
-            ]);
-            return;
-        }
-
-        // Validación de nombre de usuario
-        if (strlen($nombreUsuario) < 3 || strlen($nombreUsuario) > 15) {
-            $validacionErrores[] = 'El nombre de usuario debe tener entre 3 y 15 caracteres.';
-        }
-
-
-        // Validación de email
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $validacionErrores[] = 'El email no tiene un formato válido.';
-        }
-
-        if (strlen($email) > 254) {
-            $validacionErrores[] = 'El email no puede exceder 254 caracteres.';
-        }
-
-        // Validación de fecha de nacimiento
-        $fechaNacimiento = DateTime::createFromFormat('Y-m-d', $nacimiento);
-
-
-        if (!$fechaNacimiento || $fechaNacimiento->format('Y-m-d') !== $nacimiento) {
-            $validacionErrores[] = 'La fecha de nacimiento debe tener el formato YYYY-MM-DD.';
-        } else {
-            // Verificar que no sea fecha futura
-            $hoy = new DateTime();
-            if ($fechaNacimiento > $hoy) {
-                $validacionErrores[] = 'La fecha de nacimiento no puede ser futura.';
-            }
-
-            // Verificar edad mínima (8 años)
-            $edad = $hoy->diff($fechaNacimiento)->y;
-            if ($edad < 8) {
-                $validacionErrores[] = 'Debes tener al menos 8 años para registrarte.';
-            }
-        }
-
-        // Validación de contraseña
-        if (strlen($password) < 6) {
-            $validacionErrores[] = 'La contraseña debe tener al menos 6 caracteres.';
-        }
-
-        if (strlen($password) > 50) {
-            $validacionErrores[] = 'La contraseña no puede exceder 50 caracteres.';
-        }
-
-        // Verificar que contenga al menos una letra y un número
-        if (!preg_match('/^(?=.*[A-Za-z])(?=.*\d)/', $password)) {
-            $validacionErrores[] = 'La contraseña debe contener al menos una letra y un número.';
-        }
-
-
-        // Si hay errores de validación, retornar
-        if (!empty($validacionErrores)) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => implode(' ', $validacionErrores)
-            ]);
-            return;
-        }
+        $dto = new RegistroAdminDTO($data);
 
         // Delegamos la creación al servicio
-        $result = $this->authService->registrarUsuarioAdminService($nombreUsuario, $email, $nacimiento, $password);
+        $result = $this->authService->registrarUsuarioAdminService($dto);
 
         // Si el servicio no retornó un array válido, lo consideramos error interno
         if (!is_array($result) || !array_key_exists('success', $result)) {
@@ -209,7 +115,8 @@ class AuthController
     }
 
 
-    
+/*============================================================================================================*/
+/*============================================================================================================*/
     public function loginController()
     {
         $raw = file_get_contents("php://input");
@@ -245,6 +152,8 @@ class AuthController
 
         echo json_encode($result);
     }
+/*============================================================================================================*/
+/*============================================================================================================*/
 
 
     public function getUsuariosController()
