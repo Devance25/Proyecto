@@ -58,6 +58,11 @@ class Reglas
 
             case 'vacio':
             foreach($porRecinto as $recinto=>$dino){
+                // El río nunca se bloquea con la restricción "vacio" (huella libre)
+                // porque técnicamente no es un recinto, es donde se descartan los dinosaurios
+                if($recinto === 'rio'){
+                    continue;
+                }
                 if(!empty($dino)){
                     $recintosRestringidos[] = $recinto;
                     continue;

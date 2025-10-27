@@ -2500,23 +2500,24 @@ const JuegoManager = {
   },
 
   establecerSinRestriccion() {
-    // Solo resetear si no hay una restricción activa del dado
-    if (!estadoJuego.restriccionActual) {
-      estadoJuego.restriccionActual = null;
-      estadoJuego.dadoNumero = null;
+    // Limpiar restricción del estado
+    estadoJuego.restriccionActual = null;
+    estadoJuego.dadoNumero = null;
 
-      const info = document.querySelector('.info-restriccion');
-      const texto = document.querySelector('.texto-restriccion');
-      const icono = document.querySelector('.icono-restriccion-footer');
+    const info = document.querySelector('.info-restriccion');
+    const texto = document.querySelector('.texto-restriccion');
+    const icono = document.querySelector('.icono-restriccion-footer');
 
-      if (info) info.classList.add('restriccion-visible');
-      if (texto) {
-        texto.innerHTML = `<div>Sin restricción</div><div class="texto-sin-restriccion">Todos los recintos disponibles</div>`;
-      }
-      if (icono) {
-        icono.classList.remove('icono-restriccion-mostrar');
-        icono.classList.add('icono-restriccion-ocultar');
-      }
+    if (info) {
+      info.classList.remove('restriccion-oculta');
+      info.classList.add('restriccion-visible');
+    }
+    if (texto) {
+      texto.innerHTML = `<div>Sin restricción</div><div class="texto-sin-restriccion">Todos los recintos disponibles</div>`;
+    }
+    if (icono) {
+      icono.classList.remove('icono-restriccion-mostrar');
+      icono.classList.add('icono-restriccion-ocultar');
     }
   },
 
@@ -3029,6 +3030,9 @@ const JuegoManager = {
       dadoNumero: null,
       tituloRestriccion: null
     });
+    
+    // Actualizar la UI para mostrar "Sin restricción" / "Libre colocación"
+    this.establecerSinRestriccion();
 
     console.log('DEBUG _prepararSiguienteRonda - DESPUÉS de limpiar:', {
       dinosaurioColocadoEnTurno: estadoJuego.dinosaurioColocadoEnTurno,
