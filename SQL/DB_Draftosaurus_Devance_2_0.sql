@@ -50,6 +50,10 @@ CREATE INDEX idx_partidas_creado ON partidas(creado_el);
 CREATE INDEX idx_partidas_j1 ON partidas(jugador1_id);
 CREATE INDEX idx_partidas_j2 ON partidas(jugador2_id);
 
+select * from bolsas
+where partida_id = 138
+and jugador_id = 1;
+
 -- =====================================================
 -- TABLA: RANKING DE USUARIOS
 -- =====================================================
@@ -85,10 +89,11 @@ CREATE TABLE recintos_partida (
 -- TABLA: BOLSAS
 -- =====================================================
 CREATE TABLE bolsas (
-    id          INT AUTO_INCREMENT PRIMARY KEY,
-    partida_id  INT NOT NULL,
-    jugador_id  INT NOT NULL,
-    dino        ENUM('t-rex','triceratops','stegosaurus','parasaurolophus','diplodocus','pterodactilo') NOT NULL,
+    id          	INT AUTO_INCREMENT PRIMARY KEY,
+    partida_id  	INT NOT NULL,
+    jugador_id  	INT NULL,
+    bolsa_general	BOOL NOT NULL,
+    dino        	ENUM('t-rex','triceratops','stegosaurus','parasaurolophus','diplodocus','pterodactilo') NOT NULL,
 
     INDEX idx_bolsa_partida (partida_id),
 
@@ -96,7 +101,7 @@ CREATE TABLE bolsas (
     CONSTRAINT fk_bolsa_jugador FOREIGN KEY (jugador_id) REFERENCES usuarios(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-select * from partidas;
+
 
 -- =====================================================
 -- TRIGGER: CREAR RANKING AL INSERTAR USUARIO
@@ -114,10 +119,29 @@ DELIMITER ;
 -- Verifica en tu base de datos:
 SELECT dino FROM bolsas where partida_id = 1 and jugador_id = 3;
 
-select * from bolsas;
+select * from usuarios;
 
 UPDATE usuarios
 SET admin = TRUE
 WHERE id = 5;
+
+select * from bolsas
+where id = 182
+and bolsa_general = 1;
+
+select * from bolsas
+where partida_id = 68
+and bolsa_general=true;
+
+-- Verificar si hay registros de bolsa general para esa partida
+SELECT COUNT(*) FROM bolsas WHERE partida_id = 75 AND bolsa_general = true;
+
+-- Ver todos los registros de esa partida
+SELECT * FROM bolsas WHERE partida_id = 68;
+
+select *
+from bolsas
+where jugador_id = 5 and partida_id = 83;
+
 
 
