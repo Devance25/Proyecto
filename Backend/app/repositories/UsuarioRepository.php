@@ -300,7 +300,7 @@ class UsuarioRepository
 
 
     //DELETS
-        public function eliminarUsuarioRepo(int $usuario_id): int
+        public function eliminarUsuarioRepo(EliminaUsuarioDTO $dto): int
     {
         $query = "DELETE FROM usuarios 
                   WHERE id = ?
@@ -312,7 +312,7 @@ class UsuarioRepository
             throw new Exception("Error preparando la consulta: " . $this->conn->error);
         }
 
-        if (!$stmt->bind_param("i", $usuario_id)) {
+        if (!$stmt->bind_param("i", $dto->usuario_id)) {
             throw new Exception("Error en bind_param: " . $stmt->error);
         }
 
@@ -327,11 +327,11 @@ class UsuarioRepository
         if ($filasEliminadas === 0) {
             return [
                 'success' => false,
-                'message' => "No se encontro usuario con $usuario_id",
+                'message' => "No se encontro usuario con $dto->usuario_id",
             ];
         }
 
-        return $usuario_id;
+        return $dto->usuario_id;
         
     }
 

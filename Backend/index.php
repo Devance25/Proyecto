@@ -103,7 +103,7 @@ try {
             break;
 
         case 'modificarUsuario':
-            if ($method === 'POST') {
+            if ($method === 'PATCH') {
                 $authController->modificarUsuarioController();
                 break;
             }

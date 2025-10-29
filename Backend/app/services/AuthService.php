@@ -20,8 +20,9 @@ class AuthService
         }
         return self::$instance;
     }
+/*============================================================================================================*/
 
-
+/*============================================================================================================*/
     public function registrarUsuarioAdminService(RegistroAdminDTO $dto): array
     {
         $nombreUsuario = $dto->nombreUsuario;
@@ -157,8 +158,9 @@ class AuthService
             ],
         ];
     }
+/*============================================================================================================*/
 
-
+/*============================================================================================================*/
     public function registrarUsuarioService(RegistroDTO $dto): array
     {
         $nombreUsuario = $dto->nombreUsuario;
@@ -302,9 +304,9 @@ class AuthService
             ],
         ];
     }
+/*============================================================================================================*/
 
-
-
+/*============================================================================================================*/
     private function verificarCredencialesService(LoginDTO $dto)
     {
 
@@ -327,8 +329,9 @@ class AuthService
             'email' => $usuario['email'],
         ];
     }
+/*============================================================================================================*/
 
-
+/*============================================================================================================*/
     public function loginService(LoginDTO $dto): array
     {   
         
@@ -391,16 +394,18 @@ class AuthService
             ],
         ];
     }
+/*============================================================================================================*/
 
+/*============================================================================================================*/
     public function getUsuariosService(): array
     {
         $usuarios = $this->usuarioRepo->getUsuariosRepo(); 
 
         return $usuarios;
     }
+/*============================================================================================================*/
 
-
-
+/*============================================================================================================*/
     public function modificarUsuarioService(int $usuario_id, string $nombre, string $email, string $nacimiento): array
     {
 
@@ -412,20 +417,19 @@ class AuthService
          ];
 
     }
+/*============================================================================================================*/
 
-
-
-
-    public function eliminarUsuarioService(int $usuario_id): array
+/*============================================================================================================*/
+    public function eliminarUsuarioService(EliminaUsuarioDTO $dto): array
     {
-        if ($usuario_id <= 0) {
+        if ($dto->usuario_id <= 0) {
             return [
                 'success' => false,
                 'message' => 'ID inválido'
             ];
         }
 
-        $resultado = $this->usuarioRepo->eliminarUsuarioRepo($usuario_id);
+        $resultado = $this->usuarioRepo->eliminarUsuarioRepo($dto);
 
         if ($resultado) {
             return [

@@ -26,14 +26,12 @@ class RegistroAdminDTO{
     public String $email;
     public String $nacimiento;
     public String $password;
-    public String $admin;
 
     public function __construct(array $data){
         $this->nombreUsuario = trim((String)($data['nombreUsuario'] ?? ''));
         $this->email = trim((String)($data['email'] ?? ''));
         $this->nacimiento = trim(($data['nacimiento'] ?? ''));
         $this->password = trim((String)($data['password'] ?? ''));
-        $this->admin = trim((String)($data['admin'] ?? ''));
     }
 }
 /*============================================================================================================*/
@@ -72,16 +70,30 @@ class GetUsuariosDTO{
     }
 }
 /*============================================================================================================*/
-
+//Falta terminar ModificaUsuario
 /*============================================================================================================*/
 class ModificaUsuarioDTO{
+    public int $usuario_id;
+    public String $nombre;
+    public String $email;
+    public String $nacimiento;
 
+    public function __construct(array $data){
+        $this->usuario_id = (int)($data['id'] ?? 0);
+        $this->nombre = trim($data['nombreUsuario'] ?? '');
+        $this->email = trim($data['email'] ?? '');
+        $this->nacimiento = trim($data['nacimiento'] ?? '');
+    }
 }
 /*============================================================================================================*/
 
 /*============================================================================================================*/
 class EliminaUsuarioDTO{
+    public int $usuario_id;
 
+    public function __construct(array $data){
+        $this->usuario_id = (int)($data['id'] ?? 0);
+    }
 }
 /*============================================================================================================*/
 ?>

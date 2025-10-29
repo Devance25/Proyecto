@@ -12,9 +12,8 @@ class AuthController
 
         $this->authService = AuthService::getInstance();
     }
-
-
 /*============================================================================================================*/
+
 /*============================================================================================================*/
     public function registroController()
     {
@@ -63,9 +62,7 @@ class AuthController
         echo json_encode($result);
     }
 /*============================================================================================================*/
-/*============================================================================================================*/
 
-/*============================================================================================================*/
 /*============================================================================================================*/
     public function registroAdminController()
     {
@@ -113,9 +110,8 @@ class AuthController
 
         echo json_encode($result);
     }
-
-
 /*============================================================================================================*/
+
 /*============================================================================================================*/
     public function loginController()
     {
@@ -153,9 +149,8 @@ class AuthController
         echo json_encode($result);
     }
 /*============================================================================================================*/
+
 /*============================================================================================================*/
-
-
     public function getUsuariosController()
     {
         try {
@@ -186,9 +181,9 @@ class AuthController
             ]);
         }
     }
+/*============================================================================================================*/
 
-
-
+/*============================================================================================================*/
     public function modificarUsuarioController()
     {
         $raw = file_get_contents("php://input");
@@ -203,24 +198,19 @@ class AuthController
             return;
         }
 
-        $usuario_id = $data['id'] ?? null;
-        $nombre = trim($data['nombreUsuario'] ?? '');
-        $email = trim($data['email'] ?? '');
-        $nacimiento = trim($data['nacimiento'] ?? '');
+        $dto = new ModificaUsuarioDTO($data);
 
-
-
-
-        if ($usuario_id <= 0) {
+        if ($dto->usuario_id <= 0) {
             http_response_code(400);
             echo json_encode([
                 'success' => false,
-                'message' => 'ID de usuario inválido.'
+                'message' => 'ID de usuario inválido.',
+                'id' => $usuario_id
             ]);
             return;
         }
 
-        if ($nombre === '' || $email === '' || $nacimiento === '') {
+        if ($dto->nombre === '' || $dto->email === '' || $dto->acimiento === '') {
             http_response_code(400);
             echo json_encode([
                 'success' => false,
@@ -229,7 +219,7 @@ class AuthController
             return;
         }
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if (!filter_var($dto->email, FILTER_VALIDATE_EMAIL)) {
             http_response_code(400);
             echo json_encode([
                 'success' => false,
@@ -238,7 +228,7 @@ class AuthController
             return;
         }
 
-        if (strlen($nombre) < 3) {
+        if (strlen($dto->nombre) < 3) {
             http_response_code(400);
             echo json_encode([
                 'success' => false,
@@ -247,16 +237,16 @@ class AuthController
             return;
         }
 
-        $usuarioModificado = $this->authService->modificarUsuarioService($usuario_id, $nombre, $email, $nacimiento);
+        $usuarioModificado = $this->authService->modificarUsuarioService($dto->usuario_id, $dto->nombre, $dto->email, $dto->nacimiento);
 
         echo json_encode([
             'success' => true,
             'message' => $usuarioModificado,
         ]);
     }
+/*============================================================================================================*/
 
-
-
+/*============================================================================================================*/
     public function eliminarUsuarioController()
     {
         $raw = file_get_contents("php://input");
@@ -271,19 +261,19 @@ class AuthController
             return;
         }
 
-        $usuario_id = $data['id'] ?? null;
+        $dto = new EliminaUsuarioDTO($data);
 
-        if (!$usuario_id) {
+        if (!$dto->usuario_id) {
             http_response_code(400);
             echo json_encode([
                 'success' => false,
-                'message' => 'Identificador (email o username) y contraseña son requeridos.'
+                'message' => 'No se pudo hallar el ID.',
+                'json' => $dto
             ]);
             return;
         }
-        
 
-        if ($usuario_id <= 0) {
+        if ($dto->usuario_id <= 0) {
             http_response_code(400);
             echo json_encode([
                 'success' => false,
@@ -293,7 +283,7 @@ class AuthController
         }
 
         
-        $result = $this->authService->eliminarUsuarioService($usuario_id);
+        $result = $this->authService->eliminarUsuarioService($dto);
 
         if (!is_array($result) || !array_key_exists('success', $result)) {
             http_response_code(500);
