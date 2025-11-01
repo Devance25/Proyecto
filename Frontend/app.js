@@ -52,10 +52,10 @@ class AppState {
         modoSeguimiento: false,
         descripcion: 'El sistema maneja automáticamente las bolsas y el dado',
         endpoints: {
-          crearPartida: 'http://192.168.2.235/user_devance/Backend/index.php/crearPartida',
-          turno: 'http://192.168.2.235/user_devance/Backend/index.php/turno',
-          finalizarRonda: 'http://192.168.2.235/user_devance/Backend/index.php/finalizarRonda',
-          finalizarPartida: 'http://192.168.2.235/user_devance/Backend/index.php/finalizarPartida'
+          crearPartida: 'http://127.0.0.1:8000/crearPartida',
+          turno: 'http://127.0.0.1:8000/turno',
+          finalizarRonda: 'http://127.0.0.1:8000/finalizarRonda',
+          finalizarPartida: 'http://127.0.0.1:8000/finalizarPartida'
         }
       },
       SEGUIMIENTO: {
@@ -63,12 +63,12 @@ class AppState {
         modoSeguimiento: true,
         descripcion: 'Para seguir partidas físicas reales',
         endpoints: {
-          crearPartida: 'http://192.168.2.235/user_devance/Backend/index.php/crearPartidaSeguimiento',
-          crearBolsa: 'http://192.168.2.235/user_devance/Backend/index.php/crearBolsaSeguimiento',
-          turno: 'http://192.168.2.235/user_devance/Backend/index.php/turnoSeguimiento',
-          finalizarRonda: 'http://192.168.2.235/user_devance/Backend/index.php/finalizarRondaSeguimiento',
-          finalizarRondaSeguimiento: 'http://192.168.2.235/user_devance/Backend/index.php/finalizarRondaSeguimiento',
-          finalizarPartida: 'http://192.168.2.235/user_devance/Backend/index.php/finalizarPartida'
+          crearPartida: 'http://127.0.0.1:8000/crearPartidaSeguimiento',
+          crearBolsa: 'http://127.0.0.1:8000/crearBolsaSeguimiento',
+          turno: 'http://127.0.0.1:8000/turnoSeguimiento',
+          finalizarRonda: 'http://127.0.0.1:8000/finalizarRondaSeguimiento',
+          finalizarRondaSeguimiento: 'http://127.0.0.1:8000/finalizarRondaSeguimiento',
+          finalizarPartida: 'http://127.0.0.1:8000/finalizarPartida'
         }
       }
     };
@@ -781,7 +781,7 @@ class AppState {
     this.setLoading(true);
 
     try {
-      const response = await fetch('http://192.168.2.235/user_devance/Backend/index.php/login', {
+      const response = await fetch('http://127.0.0.1:8000/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identificador: username, password })
@@ -1283,7 +1283,7 @@ class AppState {
     this.setLoading(true);
 
     try {
-      const response = await fetch('http://192.168.2.235/user_devance/Backend/index.php/login', {
+      const response = await fetch('http://127.0.0.1:8000/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identificador, password })
@@ -1350,7 +1350,7 @@ class AppState {
     this.setLoading(true);
 
     try {
-      const response = await fetch('http://192.168.2.235/user_devance/Backend/index.php/registro', {
+      const response = await fetch('http://127.0.0.1:8000/registro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1902,7 +1902,7 @@ class AdminManager {
     console.log('Iniciando fetchUsers...');
     
     try {
-      const url = 'http://192.168.2.235/user_devance/Backend/index.php/getUsuarios';
+      const url = 'http://127.0.0.1:8000/getUsuarios';
       console.log('Haciendo petición a:', url);
       
       const response = await fetch(url, {
@@ -2127,7 +2127,7 @@ class AdminManager {
     const userId = parseInt(popup.dataset.userId);
     
     try {
-      const response = await fetch('http://192.168.2.235/user_devance/Backend/index.php/eliminarUsuario', {
+      const response = await fetch('http://127.0.0.1:8000/eliminarUsuario', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: userId })
@@ -2181,7 +2181,7 @@ class AdminManager {
         payload.password = password;
       }
 
-      const response = await fetch('http://192.168.2.235/user_devance/Backend/index.php/modificarUsuario', {
+      const response = await fetch('http://127.0.0.1:8000/modificarUsuario', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -2213,7 +2213,7 @@ class AdminManager {
     const password = document.getElementById('new-password').value.trim();
     
     try {
-      const response = await fetch('http://192.168.2.235/user_devance/Backend/index.php/registroAdmin', {
+      const response = await fetch('http://127.0.0.1:8000/registroAdmin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
