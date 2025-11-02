@@ -2039,7 +2039,7 @@ class AdminManager {
     }
 
     const usuariosFiltrados = this.usuariosData.filter(user => 
-      !user.admin && user.nombreUsuario && user.nombreUsuario.toLowerCase().includes(filtro.toLowerCase())
+      user.admin === "0" && user.nombreUsuario && user.nombreUsuario.toLowerCase().includes(filtro.toLowerCase())
     );
 
     console.log(`Mostrando ${usuariosFiltrados.length} usuarios filtrados`);
@@ -2089,9 +2089,11 @@ class AdminManager {
       if (action === 'eliminar') {
         this.mostrarPopupEliminar(username, userId);
       } else if (action === 'editar') {
-        const user = this.usuariosData.find(u => u.id === userId);
+        const user = this.usuariosData.find(u => parseInt(u.id) === userId);
         if (user) {
           this.mostrarEditarUsuario(user);
+        } else {
+          console.error('Usuario no encontrado. userId:', userId, 'usuariosData:', this.usuariosData);
         }
       }
     });
