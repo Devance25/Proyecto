@@ -200,43 +200,6 @@ class AuthController
 
         $dto = new ModificaUsuarioDTO($data);
 
-        if ($dto->usuario_id <= 0) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'ID de usuario inválido.',
-                'id' => $usuario_id
-            ]);
-            return;
-        }
-
-        if ($dto->nombre === '' || $dto->email === '' || $dto->acimiento === '') {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Todos los campos son obligatorios.'
-            ]);
-            return;
-        }
-
-        if (!filter_var($dto->email, FILTER_VALIDATE_EMAIL)) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Email inválido.'
-            ]);
-            return;
-        }
-
-        if (strlen($dto->nombre) < 3) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'El nombre de usuario debe tener al menos 3 caracteres.'
-            ]);
-            return;
-        }
-
         $usuarioModificado = $this->authService->modificarUsuarioService($dto->usuario_id, $dto->nombre, $dto->email, $dto->nacimiento);
 
         echo json_encode([
@@ -262,26 +225,6 @@ class AuthController
         }
 
         $dto = new EliminaUsuarioDTO($data);
-
-        if (!$dto->usuario_id) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'No se pudo hallar el ID.',
-                'json' => $dto
-            ]);
-            return;
-        }
-
-        if ($dto->usuario_id <= 0) {
-            http_response_code(400);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Identificador y contraseña no pueden estar vacíos.'
-            ]);
-            return;
-        }
-
         
         $result = $this->authService->eliminarUsuarioService($dto);
 

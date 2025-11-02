@@ -408,6 +408,42 @@ class AuthService
 /*============================================================================================================*/
     public function modificarUsuarioService(int $usuario_id, string $nombre, string $email, string $nacimiento): array
     {
+         if ($dto->usuario_id <= 0) {
+            http_response_code(400);
+            return [
+                'success' => false,
+                'message' => 'ID de usuario inválido.',
+                'id' => $usuario_id
+            ];
+            
+        }
+
+        if ($dto->nombre === '' || $dto->email === '' || $dto->acimiento === '') {
+            http_response_code(400);
+            return[
+                'success' => false,
+                'message' => 'Todos los campos son obligatorios.'
+            ];
+            
+        }
+
+        if (!filter_var($dto->email, FILTER_VALIDATE_EMAIL)) {
+            http_response_code(400);
+            return[
+                'success' => false,
+                'message' => 'Email inválido.'
+            ];
+            
+        }
+
+        if (strlen($dto->nombre) < 3) {
+            http_response_code(400);
+            return[
+                'success' => false,
+                'message' => 'El nombre de usuario debe tener al menos 3 caracteres.'
+            ];
+            
+        }
 
          $usuarioModificado = $this->usuarioRepo->modificarUsuarioRepo($usuario_id, $nombre, $email, $nacimiento);
 
@@ -421,7 +457,16 @@ class AuthService
 
 /*============================================================================================================*/
     public function eliminarUsuarioService(EliminaUsuarioDTO $dto): array
-    {
+    { 
+
+        if ($dto->usuario_id <= 0) {
+            http_response_code(400);
+            return [
+                'success' => false,
+                'message' => 'Identificador y contraseña no pueden estar vacíos.'
+            ];
+        }
+
         if ($dto->usuario_id <= 0) {
             return [
                 'success' => false,
