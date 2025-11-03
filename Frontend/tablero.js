@@ -84,10 +84,10 @@ const CONFIG = {
   RESTRICCIONES_DADO: {
     1: {
       tipo: 'huella-libre',
-      titulo: 'Huella (libre)',
+      titulo: 'Huella Libre',
       imagen: 'dado-huella',
-      descripcion: 'Tablero libre, sin restricción',
-      recintosBloqueados: [] // No bloquea nada
+      descripcion: 'Solo recintos vacíos (el río siempre disponible)',
+      recintosBloqueados: [] // Se calcula dinámicamente
     },
     2: {
       tipo: 'no-t-rex',
@@ -163,10 +163,10 @@ const REGLAS_RECINTOS = {
     puntos: (recinto) => {
       const conteos = {};
       recinto.forEach(d => conteos[d] = (conteos[d] || 0) + 1);
-      return Object.values(conteos).reduce((parejas, count) => parejas + Math.floor(count / 2), 0) * 6;
+      return Object.values(conteos).reduce((parejas, count) => parejas + Math.floor(count / 2), 0) * 5;
     },
     nombre: 'Pradera del Amor',
-    descripcion: 'Deben ir en parejas del mismo tipo. 6 puntos por cada pareja'
+    descripcion: 'Deben ir en parejas del mismo tipo. 5 puntos por cada pareja'
   },
   'woody-trio': {
     validar: () => true,
@@ -198,7 +198,7 @@ const REGLAS_RECINTOS = {
     maxDinos: 1,
     puntos: (recinto) => recinto.length === 1 ? 7 : 0,
     nombre: 'Isla Solitaria',
-    descripcion: 'Solo se permite 1 dinosaurio. 7 puntos fijos'
+    descripcion: 'Solo 1 dinosaurio. 7 puntos si es el único de su especie en todo tu zoo'
   },
   'rio': {
     validar: () => true,
@@ -713,7 +713,7 @@ const RenderManager = {
     if (jugador.dinosauriosDisponibles.length === 0) {
       const mensaje = Utils.crearElemento('div', {
         className: 'mensaje-sin-dinosaurios',
-        textContent: 'No hay dinosaurios disponibles'
+        textContent: window.app?.languageManager?.getMessage('game.no.dinosaurs') || 'No hay dinosaurios disponibles'
       });
       contenedor.appendChild(mensaje);
       return;
@@ -2296,17 +2296,39 @@ const JuegoManager = {
         esFinDeRonda: estadoJuego.esFinDeRonda()
       });
 
-      // Cambiar turno localmente después de sincronizar (solo si no es fin de ronda)
+      // Calcular jugador actual basándose en el turno (NO alternar)
       if (!estadoJuego.esFinDeRonda()) {
-        estadoJuego.cambiarTurno();
+        // El jugador actual se determina por el número de turno
+        // Turno impar = primerJugador, Turno par = otro jugador
+        const esTurnoImpar = estadoJuego.turnoEnRonda % 2 === 1;
+        const jugadorCalculado = esTurnoImpar ? estadoJuego.primerJugador : (estadoJuego.primerJugador === 1 ? 2 : 1);
+        
+        console.log('🎯 CÁLCULO DE JUGADOR ACTUAL:', {
+          turnoEnRonda: estadoJuego.turnoEnRonda,
+          esTurnoImpar,
+          primerJugador: estadoJuego.primerJugador,
+          jugadorCalculado,
+          'Jugador 1 info': window.app?.jugador1Info,
+          'Jugador 2 info': window.app?.jugador2Info
+        });
+        
+        estadoJuego.jugadorActual = jugadorCalculado;
+        
+        // Resetear estados del turno
+        estadoJuego.yaColocoEnTurno = false;
+        estadoJuego.puedePasarTurno = false;
+        estadoJuego.dinosaurioColocadoEnTurno = null;
+        estadoJuego.recintoColocadoEnTurno = null;
+        estadoJuego.dinosaurioDescartadoEnTurno = null;
+        estadoJuego.yaDescarto = false;
+        
         // Actualizar interfaz después de cambiar turno para reflejar los avatares correctos
         this.actualizarInterfaz();
         
-        console.log('DEBUG - Después de cambiar turno:', {
-          modoSeguimiento: estadoJuego.modoSeguimiento,
-          turnoEnRonda: estadoJuego.turnoEnRonda,
-          rondaActual: estadoJuego.rondaActual,
-          jugadorActual: estadoJuego.jugadorActual
+        console.log('✅ JUGADOR ASIGNADO:', {
+          jugadorActual: estadoJuego.jugadorActual,
+          nombreJugador: estadoJuego.getJugadorActual().nombre,
+          nombreOponente: estadoJuego.getOponente().nombre
         });
       }
 
@@ -2513,7 +2535,10 @@ const JuegoManager = {
       info.classList.add('restriccion-visible');
     }
     if (texto) {
-      texto.innerHTML = `<div>Sin restricción</div><div class="texto-sin-restriccion">Todos los recintos disponibles</div>`;
+      const langManager = window.app?.languageManager;
+      const noRestriction = langManager?.getMessage('game.no.restriction') || 'Sin restricción';
+      const allEnclosures = langManager?.getMessage('game.all.enclosures') || 'Todos los recintos disponibles';
+      texto.innerHTML = `<div>${noRestriction}</div><div class="texto-sin-restriccion">${allEnclosures}</div>`;
     }
     if (icono) {
       icono.classList.remove('icono-restriccion-mostrar');
@@ -2657,9 +2682,13 @@ const JuegoManager = {
 
 
     // Validar que el botón solo tenga textos válidos
-    const textosValidos = ['Arrastra un dinosaurio', 'Descarta dinosaurio', 'Tirar dado', 'Enviar turno', 'Finalizar ronda', 'Finalizar partida'];
+    const langManager = window.app?.languageManager;
+    const textosValidosEs = ['Arrastra un dinosaurio', 'Descarta dinosaurio', 'Tirar dado', 'Enviar turno', 'Finalizar ronda', 'Finalizar partida'];
+    const textosValidosEn = ['Drag a dinosaur', 'Discard dinosaur', 'Roll dice', 'Send turn', 'Finish round', 'Finish game'];
+    const textosValidos = [...textosValidosEs, ...textosValidosEn];
+    
     if (!textosValidos.includes(btn.textContent)) {
-      btn.textContent = 'Arrastra un dinosaurio';
+      btn.textContent = langManager?.getMessage('game.drag.dinosaur') || 'Arrastra un dinosaurio';
       btn.disabled = true;
     }
 
@@ -2667,11 +2696,13 @@ const JuegoManager = {
     const sinDinosaurios = jugador.dinosauriosDisponibles.length === 0;
 
     // FASE 3: ESTADOS DINÁMICOS
+    const langManager = window.app?.languageManager;
+    
     if (!estadoJuego.yaColocoEnTurno) {
-      btn.textContent = 'Arrastra un dinosaurio';
+      btn.textContent = langManager?.getMessage('game.drag.dinosaur') || 'Arrastra un dinosaurio';
       btn.disabled = true;
     } else if (!estadoJuego.yaDescarto) {
-      btn.textContent = 'Descarta dinosaurio';
+      btn.textContent = langManager?.getMessage('game.discard.dinosaur') || 'Descarta dinosaurio';
       btn.disabled = true;
     } else {
       // Después de colocar y descartar, verificar primero si es fin de ronda
@@ -2692,10 +2723,10 @@ const JuegoManager = {
         // Es fin de ronda (turno 6 completado o más)
         // Solo finalizar partida si estamos en ronda 4 Y en el turno 6 o más
         if (estadoJuego.rondaActual === 4 && estadoJuego.turnoEnRonda >= 6) {
-          btn.textContent = 'Finalizar partida';
+          btn.textContent = langManager?.getMessage('game.finish.game') || 'Finalizar partida';
           console.log('→ Botón configurado como: Finalizar partida');
         } else {
-          btn.textContent = 'Finalizar ronda';
+          btn.textContent = langManager?.getMessage('game.finish.round') || 'Finalizar ronda';
           console.log('→ Botón configurado como: Finalizar ronda (esFinDeRonda)');
         }
         btn.disabled = false;
@@ -2704,10 +2735,10 @@ const JuegoManager = {
         // Si es turno 6 y ya colocó/descartó, mostrar "Finalizar ronda" (sin necesidad de dado)
         if (estadoJuego.turnoEnRonda === 6) {
           if (estadoJuego.rondaActual === 4) {
-            btn.textContent = 'Finalizar partida';
+            btn.textContent = langManager?.getMessage('game.finish.game') || 'Finalizar partida';
             console.log('→ Botón configurado como: Finalizar partida (turno 6 - último turno)');
           } else {
-            btn.textContent = 'Finalizar ronda';
+            btn.textContent = langManager?.getMessage('game.finish.round') || 'Finalizar ronda';
             console.log('→ Botón configurado como: Finalizar ronda (turno 6 - último turno)');
           }
           btn.disabled = false; // Habilitar inmediatamente después de colocar y descartar

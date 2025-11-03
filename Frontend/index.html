@@ -33,7 +33,7 @@
             <img src="img/Logo-draftosaurus.png" alt="Draftosaurus" class="logo fade-in">
         </div>
         <div class="loader-container">
-            <p class="texto texto--blanco texto--weight-semibold texto-carga">
+            <p class="texto texto--blanco texto--weight-semibold texto-carga" data-es="Cargando..." data-en="Loading...">
                 Cargando...
             </p>
             <div class="progress">
@@ -57,8 +57,8 @@
 
         <div class="contenedor-centrado fade-in-up">
             <div class="contenedor-titulo">
-                <h1 class="titulo titulo--sm titulo-contenedor">INGRESAR</h1>
-                <p class="texto texto--blanco subtitulo-contenedor">Ingresá tu email y contraseña</p>
+                <h1 class="titulo titulo--sm titulo-contenedor" data-es="INGRESAR" data-en="LOGIN">INGRESAR</h1>
+                <p class="texto texto--blanco subtitulo-contenedor" data-es="Ingresá tu email y contraseña" data-en="Enter your email and password">Ingresá tu email y contraseña</p>
             </div>
 
             <form id="login-form" novalidate>
@@ -66,8 +66,8 @@
                     <div class="form-icon"><img src="img/foto_usuario-1.png" alt="Usuario" loading="lazy"></div>
                     <div class="form-divider"></div>
                     <div class="form-campo">
-                        <label for="login-username" class="form-label">Usuario</label>
-                        <input type="text" id="login-username" class="form-input" placeholder="Ingresá tu correo..." required autocomplete="username">
+                        <label for="login-username" class="form-label" data-es="Usuario" data-en="Username">Usuario</label>
+                        <input type="text" id="login-username" class="form-input" placeholder="Ingresá tu correo..." data-es="Ingresá tu correo..." data-en="Enter your email..." required autocomplete="username">
                     </div>
                 </div>
 
@@ -75,16 +75,16 @@
                     <div class="form-icon"><img src="img/icono_contrasena.png" alt="Contraseña" loading="lazy"></div>
                     <div class="form-divider"></div>
                     <div class="form-campo">
-                        <label for="login-password" class="form-label">Contraseña</label>
-                        <input type="password" id="login-password" class="form-input" placeholder="Ingresa tu contraseña..." required autocomplete="current-password">
+                        <label for="login-password" class="form-label" data-es="Contraseña" data-en="Password">Contraseña</label>
+                        <input type="password" id="login-password" class="form-input" placeholder="Ingresa tu contraseña..." data-es="Ingresa tu contraseña..." data-en="Enter your password..." required autocomplete="current-password">
                     </div>
                 </div>
 
-                <button type="submit" id="btn-login" class="btn"><span class="btn-text">Iniciar sesión</span></button>
+                <button type="submit" id="btn-login" class="btn"><span class="btn-text" data-es="Iniciar sesión" data-en="Login">Iniciar sesión</span></button>
             </form>
 
             <div class="footer">
-                ¿Aún no tenés cuenta? <a href="#" id="link-registro">Registrate ahora</a>
+                <span data-es="¿Aún no tenés cuenta?" data-en="Don't have an account yet?">¿Aún no tenés cuenta?</span> <a href="#" id="link-registro" data-es="Registrate ahora" data-en="Register now">Registrate ahora</a>
             </div>
         </div>
     </div>
@@ -101,8 +101,8 @@
 
         <div class="contenedor-centrado fade-in-up">
             <div class="contenedor-titulo">
-                <h1 class="titulo titulo--sm titulo-contenedor">Registrate</h1>
-                <p class="texto texto--blanco subtitulo-contenedor">Unite al increíble mundo de Draftosaurus</p>
+                <h1 class="titulo titulo--sm titulo-contenedor" data-es="Registrate" data-en="Register">Registrate</h1>
+                <p class="texto texto--blanco subtitulo-contenedor" data-es="Unite al increíble mundo de Draftosaurus" data-en="Join the incredible world of Draftosaurus">Unite al increíble mundo de Draftosaurus</p>
             </div>
 
             <form id="register-form" novalidate>
@@ -110,8 +110,8 @@
                     <div class="form-icon"><img src="img/foto_usuario-1.png" alt="Usuario" loading="lazy"></div>
                     <div class="form-divider"></div>
                     <div class="form-campo">
-                        <label for="register-username" class="form-label">Nombre de usuario</label>
-                        <input type="text" id="register-username" class="form-input" placeholder="Ingresá tu nombre..." required autocomplete="username" minlength="3" maxlength="20">
+                        <label for="register-username" class="form-label" data-es="Nombre de usuario" data-en="Username">Nombre de usuario</label>
+                        <input type="text" id="register-username" class="form-input" placeholder="Ingresá tu nombre..." data-es="Ingresá tu nombre..." data-en="Enter your name..." required autocomplete="username" minlength="3" maxlength="20">
                     </div>
                 </div>
 
@@ -119,8 +119,8 @@
                     <div class="form-icon"><img src="img/icono_mail.png" alt="Email" loading="lazy"></div>
                     <div class="form-divider"></div>
                     <div class="form-campo">
-                        <label for="register-email" class="form-label">Email</label>
-                        <input type="email" id="register-email" class="form-input" placeholder="Ingresá tu correo..." required autocomplete="email">
+                        <label for="register-email" class="form-label" data-es="Email" data-en="Email">Email</label>
+                        <input type="email" id="register-email" class="form-input" placeholder="Ingresá tu correo..." data-es="Ingresá tu correo..." data-en="Enter your email..." required autocomplete="email">
                     </div>
                 </div>
 
@@ -128,7 +128,7 @@
                     <div class="form-icon"><img src="img/foto_usuario-1.png" alt="Fecha de nacimiento" loading="lazy"></div>
                     <div class="form-divider"></div>
                     <div class="form-campo">
-                        <label for="register-fecha" class="form-label">Fecha de nacimiento</label>
+                        <label for="register-fecha" class="form-label" data-es="Fecha de nacimiento" data-en="Birth date">Fecha de nacimiento</label>
                         <input type="date" id="register-fecha" class="form-input" required autocomplete="bday">
                     </div>
                 </div>
@@ -137,8 +137,8 @@
                     <div class="form-icon"><img src="img/icono_contrasena.png" alt="Contraseña" loading="lazy"></div>
                     <div class="form-divider"></div>
                     <div class="form-campo">
-                        <label for="register-password" class="form-label">Contraseña</label>
-                        <input type="password" id="register-password" class="form-input" placeholder="Ingresá tu contraseña..." required autocomplete="new-password" minlength="6">
+                        <label for="register-password" class="form-label" data-es="Contraseña" data-en="Password">Contraseña</label>
+                        <input type="password" id="register-password" class="form-input" placeholder="Ingresá tu contraseña..." data-es="Ingresá tu contraseña..." data-en="Enter your password..." required autocomplete="new-password" minlength="6">
                     </div>
                 </div>
 
@@ -146,16 +146,16 @@
                     <div class="form-icon"><img src="img/icono_contrasena.png" alt="Confirmar Contraseña" loading="lazy"></div>
                     <div class="form-divider"></div>
                     <div class="form-campo">
-                        <label for="register-password-confirm" class="form-label">Confirmar contraseña</label>
-                        <input type="password" id="register-password-confirm" class="form-input" placeholder="Confirmá tu contraseña..." required autocomplete="new-password" minlength="6">
+                        <label for="register-password-confirm" class="form-label" data-es="Confirmar contraseña" data-en="Confirm password">Confirmar contraseña</label>
+                        <input type="password" id="register-password-confirm" class="form-input" placeholder="Confirmá tu contraseña..." data-es="Confirmá tu contraseña..." data-en="Confirm your password..." required autocomplete="new-password" minlength="6">
                     </div>
                 </div>
 
-                <button type="submit" id="btn-registro" class="btn"><span class="btn-text">Crear cuenta</span></button>
+                <button type="submit" id="btn-registro" class="btn"><span class="btn-text" data-es="Crear cuenta" data-en="Create account">Crear cuenta</span></button>
             </form>
 
             <div class="footer">
-                ¿Ya tenés cuenta? <a href="#" id="link-login">Iniciá sesión</a>
+                <span data-es="¿Ya tenés cuenta?" data-en="Already have an account?">¿Ya tenés cuenta?</span> <a href="#" id="link-login" data-es="Iniciá sesión" data-en="Sign in">Iniciá sesión</a>
             </div>
         </div>
     </div>
@@ -168,13 +168,13 @@
                     <img src="img/foto_administrador.png" alt="Avatar del administrador" class="admin-avatar-image" loading="lazy">
                 </div>
                 <h2 class="admin-title-main" id="admin-username">ADMIN</h2>
-                <p class="admin-role-label">ADMINISTRADOR</p>
+                <p class="admin-role-label" data-es="ADMINISTRADOR" data-en="ADMINISTRATOR">ADMINISTRADOR</p>
             </div>
 
             <div class="admin-buttons">
-                <button type="button" id="btn-modificar-usuarios" class="btn btn--naranja">Modificar usuarios</button>
-                <button type="button" id="btn-nuevo-usuario" class="btn btn--verde">Nuevo usuario</button>
-                <button type="button" id="btn-salir-admin" class="btn btn--blanco admin-exit-button">Salir del modo administrador</button>
+                <button type="button" id="btn-modificar-usuarios" class="btn btn--naranja"><span data-es="Modificar usuarios" data-en="Modify users">Modificar usuarios</span></button>
+                <button type="button" id="btn-nuevo-usuario" class="btn btn--verde"><span data-es="Nuevo usuario" data-en="New user">Nuevo usuario</span></button>
+                <button type="button" id="btn-salir-admin" class="btn btn--blanco admin-exit-button"><span data-es="Salir del modo administrador" data-en="Exit admin mode">Salir del modo administrador</span></button>
             </div>
         </div>
     </div>
@@ -197,7 +197,7 @@
                         loading="lazy">
                     <div class="stat-content">
                         <h3 id="partidas-ganadas" class="stat-card__value">0</h3>
-                        <p class="stat-card__label">Partidas ganadas</p>
+                        <p class="stat-card__label" data-es="Partidas ganadas" data-en="Games won">Partidas ganadas</p>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -205,18 +205,117 @@
                         loading="lazy">
                     <div class="stat-content">
                         <h3 id="partidas-perdidas" class="stat-card__value">0</h3>
-                        <p class="stat-card__label">Partidas perdidas</p>
+                        <p class="stat-card__label" data-es="Partidas perdidas" data-en="Games lost">Partidas perdidas</p>
                     </div>
                 </div>
             </div>
 
             <div>
                 <button id="btn-jugar-app" class="btn">
-                    <span class="btn-text">Jugar en la app</span>
+                    <span class="btn-text" data-es="Jugar en la app" data-en="Play in app">Jugar en la app</span>
                 </button>
                 <button id="btn-modo-asistente" class="btn btn--naranja">
-                    <span class="btn-text">Modo seguimiento</span>
+                    <span class="btn-text" data-es="Modo seguimiento" data-en="Tracking mode">Modo seguimiento</span>
                 </button>
+                <button id="btn-ver-ranking" class="btn-link" data-es="Ver ranking global" data-en="View global ranking">
+                    Ver ranking global
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA DE RANKING GLOBAL -->
+    <div id="pantalla-ranking" class="pantalla fondo-interfaz fade-in hidden">
+        <button id="btn-volver-ranking" class="btn-icon" aria-label="Volver">
+            <img src="img/siguiente.svg" alt="Volver" loading="lazy">
+        </button>
+
+        <div class="contenedor-centrado">
+            <div class="contenedor-titulo">
+                <h1 class="titulo titulo--sm titulo-contenedor" data-es="Ranking global" data-en="Global Ranking">Ranking global</h1>
+                <p class="texto texto--blanco subtitulo-contenedor" data-es="Los mejores jugadores de Draftosaurus" data-en="The best Draftosaurus players">Los mejores jugadores de Draftosaurus</p>
+            </div>
+                
+            <div class="ranking-container">
+                    <div class="ranking-list">
+                        <!-- Datos de ejemplo -->
+                        <div class="ranking-item">
+                            <span class="ranking-puesto">1</span>
+                            <span class="ranking-nombre">THUNDERDINO</span>
+                            <span class="ranking-victorias"><strong>156</strong> <span data-es="victorias" data-en="victories">victorias</span></span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="ranking-puesto">2</span>
+                            <span class="ranking-nombre">JURASSICPRO</span>
+                            <span class="ranking-victorias"><strong>142</strong> <span data-es="victorias" data-en="victories">victorias</span></span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="ranking-puesto">3</span>
+                            <span class="ranking-nombre">VELOCIRACER</span>
+                            <span class="ranking-victorias"><strong>128</strong> <span data-es="victorias" data-en="victories">victorias</span></span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="ranking-puesto">4</span>
+                            <span class="ranking-nombre">TREXMASTER</span>
+                            <span class="ranking-victorias"><strong>115</strong> <span data-es="victorias" data-en="victories">victorias</span></span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="ranking-puesto">5</span>
+                            <span class="ranking-nombre">DINOKING</span>
+                            <span class="ranking-victorias"><strong>98</strong> <span data-es="victorias" data-en="victories">victorias</span></span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="ranking-puesto">6</span>
+                            <span class="ranking-nombre">PTEROFLYER</span>
+                            <span class="ranking-victorias"><strong>87</strong> <span data-es="victorias" data-en="victories">victorias</span></span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="ranking-puesto">7</span>
+                            <span class="ranking-nombre">STEGOCHAMP</span>
+                            <span class="ranking-victorias"><strong>76</strong> <span data-es="victorias" data-en="victories">victorias</span></span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="ranking-puesto">8</span>
+                            <span class="ranking-nombre">BRONTOPOWER</span>
+                            <span class="ranking-victorias"><strong>65</strong> <span data-es="victorias" data-en="victories">victorias</span></span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="ranking-puesto">9</span>
+                            <span class="ranking-nombre">RAPTORHUNTER</span>
+                            <span class="ranking-victorias"><strong>54</strong> <span data-es="victorias" data-en="victories">victorias</span></span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="ranking-puesto">10</span>
+                            <span class="ranking-nombre">TRIKEFORCE</span>
+                            <span class="ranking-victorias"><strong>48</strong> <span data-es="victorias" data-en="victories">victorias</span></span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="ranking-puesto">11</span>
+                            <span class="ranking-nombre">ANKYLODEF</span>
+                            <span class="ranking-victorias"><strong>42</strong> <span data-es="victorias" data-en="victories">victorias</span></span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="ranking-puesto">12</span>
+                            <span class="ranking-nombre">SPINOWARRIOR</span>
+                            <span class="ranking-victorias"><strong>38</strong> <span data-es="victorias" data-en="victories">victorias</span></span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="ranking-puesto">13</span>
+                            <span class="ranking-nombre">DILOPRIME</span>
+                            <span class="ranking-victorias"><strong>31</strong> <span data-es="victorias" data-en="victories">victorias</span></span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="ranking-puesto">14</span>
+                            <span class="ranking-nombre">PARASAURIO99</span>
+                            <span class="ranking-victorias"><strong>27</strong> <span data-es="victorias" data-en="victories">victorias</span></span>
+                        </div>
+                        <div class="ranking-item">
+                            <span class="ranking-puesto">15</span>
+                            <span class="ranking-nombre">MEGALODON</span>
+                            <span class="ranking-victorias"><strong>23</strong> <span data-es="victorias" data-en="victories">victorias</span></span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -235,7 +334,7 @@
 
         <div class="admin-content-container">
             <div class="admin-title-container">
-                <h1 class="titulo titulo--lg titulo--beige admin-page-title">GESTIÓN DE USUARIOS</h1>
+                <h1 class="titulo titulo--lg titulo--beige admin-page-title" data-es="GESTIÓN DE USUARIOS" data-en="USER MANAGEMENT">GESTIÓN DE USUARIOS</h1>
             </div>
 
             <div class="search-container">
@@ -268,22 +367,22 @@
 
             <form id="form-editar-usuario" class="admin-form-container" novalidate>
                 <div class="admin-form-group">
-                    <label for="edit-username" class="admin-form-label">Nombre de usuario</label>
+                    <label for="edit-username" class="admin-form-label" data-es="Nombre de usuario" data-en="Username">Nombre de usuario</label>
                     <input type="text" id="edit-username" class="admin-form-input" required>
                 </div>
                 <div class="admin-form-group">
-                    <label for="edit-email" class="admin-form-label">Correo electrónico</label>
+                    <label for="edit-email" class="admin-form-label" data-es="Correo electrónico" data-en="Email address">Correo electrónico</label>
                     <input type="email" id="edit-email" class="admin-form-input" required>
                 </div>
                 <div class="admin-form-group">
-                    <label for="edit-birthdate" class="admin-form-label">Fecha de nacimiento</label>
+                    <label for="edit-birthdate" class="admin-form-label" data-es="Fecha de nacimiento" data-en="Birth date">Fecha de nacimiento</label>
                     <input type="date" id="edit-birthdate" class="admin-form-input" required>
                 </div>
                 <div class="admin-form-group">
-                    <label for="edit-password" class="admin-form-label">Nueva contraseña</label>
-                    <input type="password" id="edit-password" class="admin-form-input" placeholder="Dejar vacío para mantener actual">
+                    <label for="edit-password" class="admin-form-label" data-es="Nueva contraseña" data-en="New password">Nueva contraseña</label>
+                    <input type="password" id="edit-password" class="admin-form-input" placeholder="Dejar vacío para mantener actual" data-es="Dejar vacío para mantener actual" data-en="Leave empty to keep current">
                 </div>
-                <button type="submit" class="btn btn--verde">Confirmar</button>
+                <button type="submit" class="btn btn--verde"><span data-es="Confirmar" data-en="Confirm">Confirmar</span></button>
             </form>
         </div>
     </div>
@@ -307,32 +406,32 @@
 
             <form id="form-nuevo-usuario" class="admin-form-container" novalidate>
                 <div class="admin-form-group">
-                    <label for="new-username" class="admin-form-label">Nombre de usuario</label>
+                    <label for="new-username" class="admin-form-label" data-es="Nombre de usuario" data-en="Username">Nombre de usuario</label>
                     <input type="text" id="new-username" class="admin-form-input" required>
                 </div>
                 <div class="admin-form-group">
-                    <label for="new-email" class="admin-form-label">Correo electrónico</label>
+                    <label for="new-email" class="admin-form-label" data-es="Correo electrónico" data-en="Email address">Correo electrónico</label>
                     <input type="email" id="new-email" class="admin-form-input" required>
                 </div>
                 <div class="admin-form-group">
-                    <label for="new-birthdate" class="admin-form-label">Fecha de nacimiento</label>
+                    <label for="new-birthdate" class="admin-form-label" data-es="Fecha de nacimiento" data-en="Birth date">Fecha de nacimiento</label>
                     <input type="date" id="new-birthdate" class="admin-form-input" required>
                 </div>
                 <div class="admin-form-group">
-                    <label for="new-password" class="admin-form-label">Contraseña</label>
+                    <label for="new-password" class="admin-form-label" data-es="Contraseña" data-en="Password">Contraseña</label>
                     <input type="password" id="new-password" class="admin-form-input" required>
                 </div>
-                <button type="submit" class="btn btn--verde">Confirmar</button>
+                <button type="submit" class="btn btn--verde"><span data-es="Confirmar" data-en="Confirm">Confirmar</span></button>
             </form>
         </div>
     </div>
 
     <div id="popup-eliminar-usuario" class="admin-popup-overlay hidden">
         <div class="admin-popup-content">
-            <h2 class="admin-popup-title">¿Desea eliminar el usuario <span id="usuario-a-eliminar"></span>?</h2>
+            <h2 class="admin-popup-title"><span data-es="¿Desea eliminar el usuario" data-en="Do you want to delete user">¿Desea eliminar el usuario</span> <span id="usuario-a-eliminar"></span>?</h2>
             <div class="admin-popup-buttons">
-                <button type="button" id="btn-confirmar-eliminar" class="btn btn--verde">Sí</button>
-                <button type="button" id="btn-cancelar-eliminar" class="btn btn--naranja">No</button>
+                <button type="button" id="btn-confirmar-eliminar" class="btn btn--verde"><span data-es="Sí" data-en="Yes">Sí</span></button>
+                <button type="button" id="btn-cancelar-eliminar" class="btn btn--naranja"><span data-es="No" data-en="No">No</span></button>
             </div>
         </div>
     </div>
@@ -354,24 +453,24 @@
                     <div class="form-group form-group--jugador">
                         <img src="img/foto_usuario-1.png" alt="Avatar Jugador 1" class="jugador-avatar">
                         <div class="form-campo">
-                            <label for="jugador-1" class="form-label">Jugador #1 (tú)</label>
+                            <label for="jugador-1" class="form-label" data-es="Jugador #1 (tú)" data-en="Player #1 (you)">Jugador #1 (tú)</label>
                             <input type="text" id="jugador-1" class="form-input" value="" readonly aria-readonly="true">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <div class="tipo-jugador-selector">
-                            <label class="form-label">Tipo de Jugador #2</label>
+                            <label class="form-label" data-es="Tipo de Jugador #2" data-en="Player #2 Type">Tipo de Jugador #2</label>
                             <div class="radio-group">
                                 <label for="radio-invitado" class="radio-option">
                                     <input type="radio" id="radio-invitado" name="tipo-jugador-2" value="invitado" checked>
                                     <span class="radio-custom"></span>
-                                    Invitado
+                                    <span data-es="Invitado" data-en="Guest">Invitado</span>
                                 </label>
                                 <label for="radio-usuario" class="radio-option">
                                     <input type="radio" id="radio-usuario" name="tipo-jugador-2" value="usuario">
                                     <span class="radio-custom"></span>
-                                    Usuario existente
+                                    <span data-es="Usuario existente" data-en="Existing user">Usuario existente</span>
                                 </label>
                             </div>
                         </div>
@@ -380,22 +479,22 @@
                     <div class="form-group form-group--jugador">
                         <img src="img/invitado.png" id="avatar-jugador-2" alt="Avatar Jugador 2" class="jugador-avatar">
                         <div class="form-campo">
-                            <label for="jugador-2" class="form-label">Jugador #2</label>
-                            <input type="text" id="jugador-2" class="form-input" placeholder="Ingrese nombre de jugador #2" autocomplete="off">
+                            <label for="jugador-2" class="form-label" data-es="Jugador #2" data-en="Player #2">Jugador #2</label>
+                            <input type="text" id="jugador-2" class="form-input" placeholder="Ingrese nombre de jugador #2" data-es="Ingrese nombre de jugador #2" data-en="Enter player #2 name" autocomplete="off">
                         </div>
                     </div>
 
                     <div class="form-group form-group--jugador hidden" id="grupo-password-jugador2">
                         <img src="img/icono_contrasena.png" alt="Contraseña" class="jugador-avatar">
                         <div class="form-campo">
-                            <label for="password-jugador-2" class="form-label">Contraseña</label>
-                            <input type="password" id="password-jugador-2" class="form-input" placeholder="Ingrese la contraseña" autocomplete="current-password">
+                            <label for="password-jugador-2" class="form-label" data-es="Contraseña" data-en="Password">Contraseña</label>
+                            <input type="password" id="password-jugador-2" class="form-input" placeholder="Ingrese la contraseña" data-es="Ingrese la contraseña" data-en="Enter password" autocomplete="current-password">
                         </div>
                     </div>
                 </div>
 
                 <button type="submit" id="btn-comenzar-partida" class="btn" disabled>
-                    <span class="btn-text">Jugar en la app</span>
+                    <span class="btn-text" data-es="Empezar partida" data-en="Start game">Empezar partida</span>
                 </button>
             </form>
         </div>
@@ -408,8 +507,8 @@
 
         <div class="contenedor-centrado fade-in-up">
             <div class="contenedor-titulo">
-                <h1 class="titulo titulo--sm titulo-contenedor">¿Quién empieza?</h1>
-                <p class="texto texto--blanco subtitulo-contenedor">Selecciona el primer jugador</p>
+                <h1 class="titulo titulo--sm titulo-contenedor" data-es="¿Quién empieza?" data-en="Who starts?">¿Quién empieza?</h1>
+                <p class="texto texto--blanco subtitulo-contenedor" data-es="Selecciona el primer jugador" data-en="Select the first player">Selecciona el primer jugador</p>
             </div>
 
             <div class="seleccion-jugadores">
@@ -417,23 +516,23 @@
                     <img src="img/foto_usuario-1.png" alt="Avatar Jugador 1" class="jugador-avatar">
                     <div class="jugador-info">
                         <h3 class="nombre-jugador nombre-jugador-1">JUGADOR 1</h3>
-                        <p class="texto texto--xs">Empieza primero</p>
+                        <p class="texto texto--xs" data-es="Empieza primero" data-en="Goes first">Empieza primero</p>
                     </div>
-                    <button id="btn-seleccionar-j1" class="btn btn--verde"><span class="btn-text">Seleccionar</span></button>
+                    <button id="btn-seleccionar-j1" class="btn btn--verde"><span class="btn-text" data-es="Seleccionar" data-en="Select">Seleccionar</span></button>
                 </div>
 
                 <div id="opcion-jugador-2" class="jugador-opcion">
                     <img src="img/invitado.png" id="avatar-seleccion-j2" alt="Avatar Jugador 2" class="jugador-avatar">
                     <div class="jugador-info">
                         <h3 class="nombre-jugador nombre-jugador-2">JUGADOR 2</h3>
-                        <p class="texto texto--xs">Empieza primero</p>
+                        <p class="texto texto--xs" data-es="Empieza primero" data-en="Goes first">Empieza primero</p>
                     </div>
-                    <button id="btn-seleccionar-j2" class="btn btn--verde"><span class="btn-text">Seleccionar</span></button>
+                    <button id="btn-seleccionar-j2" class="btn btn--verde"><span class="btn-text" data-es="Seleccionar" data-en="Select">Seleccionar</span></button>
                 </div>
             </div>
 
             <div class="seleccion-aleatoria">
-                <button id="btn-seleccion-aleatoria" class="btn btn--naranja"><span class="btn-text">Selección aleatoria</span></button>
+                <button id="btn-seleccion-aleatoria" class="btn btn--naranja"><span class="btn-text" data-es="Selección aleatoria" data-en="Random selection">Selección aleatoria</span></button>
             </div>
         </div>
     </div>
@@ -442,10 +541,10 @@
         <div class="contenedor-turno-jugador">
             <div class="info-turno">
                 <div id="avatar-turno-actual" class="avatar-turno" style="background-image: url('img/foto_usuario-1.png')"></div>
-                <h1 id="texto-turno" class="titulo titulo--xl titulo--blanco">Sigue</h1>
+                <h1 id="texto-turno" class="titulo titulo--xl titulo--blanco" data-es="Sigue" data-en="Next">Sigue</h1>
                 <h2 id="nombre-turno-jugador" class="titulo titulo--lg titulo--beige">ANA</h2>
             </div>
-            <button id="btn-empezar-turno" class="btn btn--verde btn-empezar-turno"><span class="btn-text">Empezar</span></button>
+                <button id="btn-empezar-turno" class="btn btn--verde btn-empezar-turno"><span class="btn-text" data-es="Empezar" data-en="Start">Empezar</span></button>
         </div>
     </div>
 
@@ -474,7 +573,7 @@
                     Los dinosaurios deben colocarse en un recinto que no contenga un T-Rex.<br><br>
                     Aún puedes jugar un T-Rex este turno, siempre que en el recinto en cuestión no haya ya uno.
                 </p>
-                <button id="btn-comenzar-juego" class="btn btn--verde"><span class="btn-text">Continuar</span></button>
+                <button id="btn-comenzar-juego" class="btn btn--verde"><span class="btn-text" data-es="Continuar" data-en="Continue">Continuar</span></button>
             </div>
         </div>
     </div>
@@ -486,18 +585,18 @@
                 <div class="info-texto">
                     <div class="nombre-puntos"></div>
                     <div class="puntos-jugador"><span id="puntos-jugador2"></span></div>
-                    <div class="ver-mapa" onclick="mostrarMapa()">Ver mapa</div>
+                    <div class="ver-mapa" onclick="mostrarMapa()" data-es="Ver mapa" data-en="View map">Ver mapa</div>
                 </div>
             </div>
 
             <div class="botones-info">
                 <button class="btn-como-jugar" onclick="mostrarReglas()">
                     <img src="img/icono_informacion.png" alt="Info" class="icono-btn">
-                    <span>¿Cómo jugar?</span>
+                    <span data-es="¿Cómo jugar?" data-en="How to play?">¿Cómo jugar?</span>
                 </button>
                 <button class="btn-datos-fisicos" onclick="mostrarPesos()">
                     <img src="img/icono_datos_fisica.png" alt="Física" class="icono-btn">
-                    <span>Datos físicos</span>
+                    <span data-es="Datos físicos" data-en="Physical data">Datos físicos</span>
                 </button>
             </div>
         </div>
@@ -548,13 +647,13 @@
                 <div class="texto-restriccion"></div>
             </div>
 
-            <button id="btn-siguiente-turno" class="boton-siguiente" disabled>Siguiente turno</button>
+            <button id="btn-siguiente-turno" class="boton-siguiente" disabled data-es="Siguiente turno" data-en="Next turn">Siguiente turno</button>
         </div>
     </div>
 
     <div id="pantalla-resumen-ronda" class="pantalla fondo-interfaz fade-in hidden">
         <div class="contenedor-resumen">
-            <h1 class="titulo titulo--xl titulo--blanco titulo-resumen">Resumen de la ronda <span id="numero-ronda-resumen" class="numero-ronda">#1</span></h1>
+            <h1 class="titulo titulo--xl titulo--blanco titulo-resumen"><span data-es="Resumen de la ronda" data-en="Round summary">Resumen de la ronda</span> <span id="numero-ronda-resumen" class="numero-ronda">#1</span></h1>
 
             <div class="resultados-ronda">
                 <div class="resultado-jugador-ronda">
@@ -578,14 +677,14 @@
                     <img src="img/icono_intercambio-dinos.png" alt="Intercambio de dinosaurios" class="icono-intercambio">
                 </div>
                 <div class="texto-reparticion">
-                    <h3>Repartición de dinosaurios</h3>
-                    <p>Se repartirán 6 nuevos dinosaurios a cada jugador</p>
-                    <p class="nota-ronda-verde">Los dinosaurios colocados se mantienen en sus recintos</p>
+                    <h3 data-es="Repartición de dinosaurios" data-en="Dinosaur distribution">Repartición de dinosaurios</h3>
+                    <p data-es="Se repartirán 6 nuevos dinosaurios a cada jugador" data-en="6 new dinosaurs will be distributed to each player">Se repartirán 6 nuevos dinosaurios a cada jugador</p>
+                    <p class="nota-ronda-verde" data-es="Los dinosaurios colocados se mantienen en sus recintos" data-en="Placed dinosaurs remain in their enclosures">Los dinosaurios colocados se mantienen en sus recintos</p>
                 </div>
             </div>
 
             <button id="btn-siguiente-ronda" class="btn btn--verde btn-siguiente-ronda">
-                <span class="btn-text">Siguiente ronda</span>
+                <span class="btn-text" data-es="Siguiente ronda" data-en="Next round">Siguiente ronda</span>
             </button>
         </div>
     </div>
@@ -630,8 +729,8 @@
                     </div>
 
                     <div class="botones-finales">
-                        <button id="btn-revancha" class="btn"><span class="btn-text">Revancha</span></button>
-                        <button id="btn-nueva-partida" class="btn btn--naranja"><span class="btn-text">Nueva partida</span></button>
+                        <button id="btn-revancha" class="btn"><span class="btn-text" data-es="Revancha" data-en="Rematch">Revancha</span></button>
+                        <button id="btn-nueva-partida" class="btn btn--naranja"><span class="btn-text" data-es="Nueva partida" data-en="New game">Nueva partida</span></button>
                     </div>
                 </div>
             </div>
@@ -642,134 +741,134 @@
     <div id="popup-reglas" class="popup-overlay hidden">
         <div class="popup">
             <button class="popup-close" onclick="cerrarPopup('popup-reglas')" aria-label="Cerrar">×</button>
-            <h2>REGLAS DE DRAFTOSAURUS</h2>
+            <h2 data-es="REGLAS DE DRAFTOSAURUS" data-en="DRAFTOSAURUS RULES">REGLAS DE DRAFTOSAURUS</h2>
             <div id="contenido-reglas">
-                <h3>Objetivo del juego</h3>
-                <p>Los científicos finalmente han clonado dinosaurios! En todo el mundo se están abriendo zoológicos
+                <h3 data-es="Objetivo del juego" data-en="Game objective">Objetivo del juego</h3>
+                <p data-es="Los científicos finalmente han clonado dinosaurios! En todo el mundo se están abriendo zoológicos llenos de estas enormes criaturas. ¡Organiza los recintos de dinosaurios lo mejor que puedas para mostrar a los visitantes curiosos los dinosaurios más trendy!" data-en="Scientists have finally cloned dinosaurs! Zoos full of these enormous creatures are opening all over the world. Organize the dinosaur enclosures as best you can to show curious visitors the trendiest dinosaurs!">Los científicos finalmente han clonado dinosaurios! En todo el mundo se están abriendo zoológicos
                     llenos de estas enormes criaturas. ¡Organiza los recintos de dinosaurios lo mejor que puedas para
                     mostrar a los visitantes curiosos los dinosaurios más trendy!</p>
 
-                <h3>Reglas rápidas</h3>
+                <h3 data-es="Reglas rápidas" data-en="Quick rules">Reglas rápidas</h3>
                 <div class="reglas-rapidas">
                     <div class="regla-item">
                         <img src="img/dino-t-rex.png" alt="Dinosaurio" class="regla-icono">
                         <div class="regla-texto">
-                            <strong>Objetivo:</strong> Construir el mejor zoológico de dinosaurios para obtener la mayor puntuación.
+                            <strong data-es="Objetivo:" data-en="Objective:">Objetivo:</strong> <span data-es="Construir el mejor zoológico de dinosaurios para obtener la mayor puntuación." data-en="Build the best dinosaur zoo to get the highest score.">Construir el mejor zoológico de dinosaurios para obtener la mayor puntuación.</span>
                         </div>
                     </div>
                     <div class="regla-item">
                         <img src="img/dado-huella.png" alt="Dado" class="regla-icono">
                         <div class="regla-texto">
-                            <strong>Dado:</strong> En cada turno (excepto el primero), lanzás el dado para ver dónde podés colocar tu dinosaurio.
+                            <strong data-es="Dado:" data-en="Dice:">Dado:</strong> <span data-es="En cada turno (excepto el primero), lanzás el dado para ver dónde podés colocar tu dinosaurio." data-en="In each turn (except the first), you roll the dice to see where you can place your dinosaur.">En cada turno (excepto el primero), lanzás el dado para ver dónde podés colocar tu dinosaurio.</span>
                         </div>
                     </div>
                     <div class="regla-item">
                         <img src="img/dino-triceratops.png" alt="Dinosaurios" class="regla-icono">
                         <div class="regla-texto">
-                            <strong>Dinosaurios:</strong> Cada ronda recibís 6 dinosaurios para colocar en tu zoo.
+                            <strong data-es="Dinosaurios:" data-en="Dinosaurs:">Dinosaurios:</strong> <span data-es="Cada ronda recibís 6 dinosaurios para colocar en tu zoo." data-en="Each round you receive 6 dinosaurs to place in your zoo.">Cada ronda recibís 6 dinosaurios para colocar en tu zoo.</span>
                         </div>
                     </div>
                     <div class="regla-item">
                         <img src="img/corona.png" alt="Puntuación" class="regla-icono">
                         <div class="regla-texto">
-                            <strong>Puntuación:</strong> Cada recinto tiene reglas específicas de puntuación. El T-Rex da bonus especial.
+                            <strong data-es="Puntuación:" data-en="Scoring:">Puntuación:</strong> <span data-es="Cada recinto tiene reglas específicas de puntuación. El T-Rex da bonus especial." data-en="Each enclosure has specific scoring rules. T-Rex gives special bonus.">Cada recinto tiene reglas específicas de puntuación. El T-Rex da bonus especial.</span>
                         </div>
                     </div>
                     <div class="regla-item">
                         <img src="img/rio.png" alt="Río" class="regla-icono">
                         <div class="regla-texto">
-                            <strong>Río:</strong> Siempre disponible como "salvavidas" cuando no podés cumplir la restricción del dado.
+                            <strong data-es="Río:" data-en="River:">Río:</strong> <span data-es="Siempre disponible como \"salvavidas\" cuando no podés cumplir la restricción del dado." data-en="Always available as a \"lifeline\" when you can't meet the dice restriction.">Siempre disponible como "salvavidas" cuando no podés cumplir la restricción del dado.</span>
                         </div>
                     </div>
                 </div>
 
-                <h3>Caras del Dado</h3>
+                <h3 data-es="Caras del Dado" data-en="Dice Faces">Caras del Dado</h3>
                 <div class="caras-dado">
                     <div class="cara-dado">
                         <img src="img/dado-huella.png" alt="Huella" class="dado-imagen">
                         <div class="cara-info">
-                            <strong>Huella (Cara 1):</strong> Tablero libre, sin restricción. Podés colocar el dinosaurio en cualquier recinto.
+                            <strong data-es="Huella Libre (Cara 1):" data-en="Free Footprint (Face 1):">Huella Libre (Cara 1):</strong> <span data-es="Solo podés colocar en recintos vacíos (sin dinosaurios). El río siempre está disponible." data-en="You can only place in empty enclosures (without dinosaurs). The river is always available.">Solo podés colocar en recintos vacíos (sin dinosaurios). El río siempre está disponible.</span>
                         </div>
                     </div>
                     <div class="cara-dado">
                         <img src="img/dado-no-trex.png" alt="No T-Rex" class="dado-imagen">
                         <div class="cara-info">
-                            <strong>No T-Rex (Cara 2):</strong> Solo el Rey de la Jungla está bloqueado. Podés colocar en cualquier otro recinto.
+                            <strong data-es="No T-Rex (Cara 2):" data-en="No T-Rex (Face 2):">No T-Rex (Cara 2):</strong> <span data-es="Bloquea todos los recintos que ya contengan al menos un T-Rex. Podés colocar en recintos vacíos o sin T-Rex." data-en="Blocks all enclosures that already contain at least one T-Rex. You can place in empty enclosures or without T-Rex.">Bloquea todos los recintos que ya contengan al menos un T-Rex. Podés colocar en recintos vacíos o sin T-Rex.</span>
                         </div>
                     </div>
                     <div class="cara-dado">
                         <img src="img/dado-cafe.png" alt="Cafetería" class="dado-imagen">
                         <div class="cara-info">
-                            <strong>Lado Cafetería (Cara 3):</strong> Recintos disponibles: Bosque de la Semejanza, Trío Frondoso, Pradera del Amor. Si no podés cumplir, poné el dinosaurio en el río.
+                            <strong data-es="Lado Cafetería (Cara 3):" data-en="Cafeteria Side (Face 3):">Lado Cafetería (Cara 3):</strong> <span data-es="Recintos disponibles: Bosque de la Semejanza, Trío Frondoso, Pradera del Amor. Si no podés cumplir, poné el dinosaurio en el río." data-en="Available enclosures: Forest of Resemblance, Leafy Trio, Meadow of Love. If you can't comply, put the dinosaur in the river.">Recintos disponibles: Bosque de la Semejanza, Trío Frondoso, Pradera del Amor. Si no podés cumplir, poné el dinosaurio en el río.</span>
                         </div>
                     </div>
                     <div class="cara-dado">
                         <img src="img/dado-banos.png" alt="Baños" class="dado-imagen">
                         <div class="cara-info">
-                            <strong>Lado Baños (Cara 4):</strong> Recintos disponibles: Rey de la Jungla, Prado de la Diferencia, Isla Solitaria. Si no podés cumplir, poné el dinosaurio en el río.
+                            <strong data-es="Lado Baños (Cara 4):" data-en="Bathroom Side (Face 4):">Lado Baños (Cara 4):</strong> <span data-es="Recintos disponibles: Rey de la Jungla, Prado de la Diferencia, Isla Solitaria. Si no podés cumplir, poné el dinosaurio en el río." data-en="Available enclosures: King of the Jungle, Meadow of Difference, Lonely Island. If you can't comply, put the dinosaur in the river.">Recintos disponibles: Rey de la Jungla, Prado de la Diferencia, Isla Solitaria. Si no podés cumplir, poné el dinosaurio en el río.</span>
                         </div>
                     </div>
                     <div class="cara-dado">
                         <img src="img/dado-bosque.png" alt="Bosque" class="dado-imagen">
                         <div class="cara-info">
-                            <strong>Bosque (Cara 5):</strong> Recintos disponibles: Trío Frondoso, Bosque de la Semejanza, Rey de la Jungla. Si no podés cumplir, poné el dinosaurio en el río.
+                            <strong data-es="Bosque (Cara 5):" data-en="Forest (Face 5):">Bosque (Cara 5):</strong> <span data-es="Recintos disponibles: Trío Frondoso, Bosque de la Semejanza, Rey de la Jungla. Si no podés cumplir, poné el dinosaurio en el río." data-en="Available enclosures: Leafy Trio, Forest of Resemblance, King of the Jungle. If you can't comply, put the dinosaur in the river.">Recintos disponibles: Trío Frondoso, Bosque de la Semejanza, Rey de la Jungla. Si no podés cumplir, poné el dinosaurio en el río.</span>
                         </div>
                     </div>
                     <div class="cara-dado">
                         <img src="img/dado-rocas.png" alt="Rocas" class="dado-imagen">
                         <div class="cara-info">
-                            <strong>Rocas/Pradera (Cara 6):</strong> Recintos disponibles: Prado de la Diferencia, Isla Solitaria, Pradera del Amor. Si no podés cumplir, poné el dinosaurio en el río.
+                            <strong data-es="Rocas/Pradera (Cara 6):" data-en="Rocks/Meadow (Face 6):">Rocas/Pradera (Cara 6):</strong> <span data-es="Recintos disponibles: Prado de la Diferencia, Isla Solitaria, Pradera del Amor. Si no podés cumplir, poné el dinosaurio en el río." data-en="Available enclosures: Meadow of Difference, Lonely Island, Meadow of Love. If you can't comply, put the dinosaur in the river.">Recintos disponibles: Prado de la Diferencia, Isla Solitaria, Pradera del Amor. Si no podés cumplir, poné el dinosaurio en el río.</span>
                         </div>
                     </div>
                 </div>
 
-                <h3>Recintos y puntuación</h3>
+                <h3 data-es="Recintos y puntuación" data-en="Enclosures and scoring">Recintos y puntuación</h3>
                 <div class="recintos-info">
                     <div class="recinto-item">
                         <img src="img/Bosque-de-la-Semejanza.png" alt="Bosque de la Semejanza" class="recinto-imagen">
                         <div class="recinto-detalle">
-                            <strong>Bosque de la Semejanza:</strong> Solo dinosaurios de la misma especie, llenando de izquierda a derecha sin espacios. Puntos: 1, 3, 6, 10, 15, 21 (según cantidad de dinos iguales)
+                            <strong data-es="Bosque de la Semejanza:" data-en="Forest of Resemblance:">Bosque de la Semejanza:</strong> <span data-es="Solo dinosaurios de la misma especie, llenando de izquierda a derecha sin espacios. Puntos: 2, 4, 8, 12, 18, 24 (según cantidad de dinos iguales)" data-en="Only dinosaurs of the same species, filling from left to right without spaces. Points: 2, 4, 8, 12, 18, 24 (according to number of identical dinos)">Solo dinosaurios de la misma especie, llenando de izquierda a derecha sin espacios. Puntos: 2, 4, 8, 12, 18, 24 (según cantidad de dinos iguales)</span>
                         </div>
                     </div>
                     <div class="recinto-item">
                         <img src="img/Prado-de-la-Diferencia.png" alt="Prado de la Diferencia" class="recinto-imagen">
                         <div class="recinto-detalle">
-                            <strong>Prado de la Diferencia:</strong> Solo dinos de especies distintas, llenando de izquierda a derecha sin espacios. Puntos: 1, 3, 6, 10, 15, 21 (según cantidad de especies distintas)
+                            <strong data-es="Prado de la Diferencia:" data-en="Meadow of Difference:">Prado de la Diferencia:</strong> <span data-es="Solo dinos de especies distintas, llenando de izquierda a derecha sin espacios. Puntos: 1, 3, 6, 10, 15, 21 (según cantidad de especies distintas)" data-en="Only dinos of different species, filling from left to right without spaces. Points: 1, 3, 6, 10, 15, 21 (according to number of different species)">Solo dinos de especies distintas, llenando de izquierda a derecha sin espacios. Puntos: 1, 3, 6, 10, 15, 21 (según cantidad de especies distintas)</span>
                         </div>
                     </div>
                     <div class="recinto-item">
                         <img src="img/Pradera-del-Amor-vs2.png" alt="Pradera del Amor" class="recinto-imagen">
                         <div class="recinto-detalle">
-                            <strong>Pradera del Amor:</strong> Permite parejas de dinosaurios de la misma especie. 5 puntos por cada pareja formada. Podés tener varias parejas de la misma especie.
+                            <strong data-es="Pradera del Amor:" data-en="Meadow of Love:">Pradera del Amor:</strong> <span data-es="Permite parejas de dinosaurios de la misma especie. 5 puntos por cada pareja formada. Podés tener varias parejas de la misma especie." data-en="Allows pairs of dinosaurs of the same species. 5 points for each pair formed. You can have several pairs of the same species.">Permite parejas de dinosaurios de la misma especie. 5 puntos por cada pareja formada. Podés tener varias parejas de la misma especie.</span>
                         </div>
                     </div>
                     <div class="recinto-item">
                         <img src="img/Trio-Frondoso.png" alt="Trío Frondoso" class="recinto-imagen">
                         <div class="recinto-detalle">
-                            <strong>Trío Frondoso:</strong> Puede contener hasta 3 dinos de cualquier especie. 7 puntos si hay exactamente 3, 0 puntos si hay menos.
+                            <strong data-es="Trío Frondoso:" data-en="Leafy Trio:">Trío Frondoso:</strong> <span data-es="Puede contener hasta 3 dinos de cualquier especie. 7 puntos si hay exactamente 3, 0 puntos si hay menos." data-en="Can contain up to 3 dinos of any species. 7 points if there are exactly 3, 0 points if less.">Puede contener hasta 3 dinos de cualquier especie. 7 puntos si hay exactamente 3, 0 puntos si hay menos.</span>
                         </div>
                     </div>
                     <div class="recinto-item">
                         <img src="img/recinto-t-rex.png" alt="Rey de la Jungla" class="recinto-imagen">
                         <div class="recinto-detalle">
-                            <strong>Rey de la Jungla:</strong> Solo 1 dinosaurio de cualquier especie. 7 puntos si tu zoo tiene al menos tantos dinosaurios de esa especie como cada oponente. Si algún oponente tiene más, vale 0 puntos.
+                            <strong data-es="Rey de la Jungla:" data-en="King of the Jungle:">Rey de la Jungla:</strong> <span data-es="Solo 1 dinosaurio de cualquier especie. 7 puntos si tu zoo tiene al menos tantos dinosaurios de esa especie como cada oponente. Si algún oponente tiene más, vale 0 puntos." data-en="Only 1 dinosaur of any species. 7 points if your zoo has at least as many dinosaurs of that species as each opponent. If any opponent has more, it's worth 0 points.">Solo 1 dinosaurio de cualquier especie. 7 puntos si tu zoo tiene al menos tantos dinosaurios de esa especie como cada oponente. Si algún oponente tiene más, vale 0 puntos.</span>
                         </div>
                     </div>
                     <div class="recinto-item">
                         <img src="img/isla-solitaria.png" alt="Isla Solitaria" class="recinto-imagen">
                         <div class="recinto-detalle">
-                            <strong>Isla Solitaria:</strong> Solo 1 dinosaurio. 7 puntos si es el único de su especie en todo tu zoo, 0 puntos si no.
+                            <strong data-es="Isla Solitaria:" data-en="Lonely Island:">Isla Solitaria:</strong> <span data-es="Solo 1 dinosaurio. 7 puntos si es el único de su especie en todo tu zoo, 0 puntos si no." data-en="Only 1 dinosaur. 7 points if it's the only one of its species in your entire zoo, 0 points if not.">Solo 1 dinosaurio. 7 puntos si es el único de su especie en todo tu zoo, 0 puntos si no.</span>
                         </div>
                     </div>
                     <div class="recinto-item">
                         <img src="img/rio.png" alt="El Río" class="recinto-imagen">
                         <div class="recinto-detalle">
-                            <strong>El Río:</strong> Cada dinosaurio aquí colocado vale 1 punto al final.
+                            <strong data-es="El Río:" data-en="The River:">El Río:</strong> <span data-es="Cada dinosaurio aquí colocado vale 1 punto al final." data-en="Each dinosaur placed here is worth 1 point at the end.">Cada dinosaurio aquí colocado vale 1 punto al final.</span>
                         </div>
                     </div>
                 </div>
 
-                <h3>Consejos y estrategias</h3>
+                <h3 data-es="Consejos y estrategias" data-en="Tips and strategies">Consejos y estrategias</h3>
                 <div class="consejos-interactivos">
                     <div class="consejo-item" onclick="mostrarDetalleConsejo(this)">
                         <img src="img/icono_informacion.png" alt="Información" class="consejo-icono">
@@ -827,40 +926,40 @@
                     </div>
                 </div>
 
-                <h3>T-Rex especial</h3>
+                <h3 data-es="T-Rex especial" data-en="Special T-Rex">T-Rex especial</h3>
                 <div class="trex-info">
                     <img src="img/dino-t-rex.png" alt="T-Rex" class="trex-imagen">
                     <div class="trex-texto">
-                        <p>El T-Rex es un dinosaurio especial que otorga puntos extra al final de la partida. Cada recinto de tu zoo que contenga al menos un T-Rex otorga +1 punto extra al final.</p>
-                        <p><strong>Ejemplo:</strong> Si tenés un T-Rex en el Bosque de la Semejanza y otro en el Río, obtendrás +2 puntos extra (+1 por cada recinto con T-Rex).</p>
-                        <p><strong>Importante:</strong> Recintos con múltiples T-Rex solo dan +1 punto por recinto, no por cantidad de T-Rex.</p>
+                        <p data-es="El T-Rex es un dinosaurio especial que otorga puntos extra al final de la partida. Cada recinto de tu zoo que contenga al menos un T-Rex otorga +1 punto extra al final." data-en="The T-Rex is a special dinosaur that grants extra points at the end of the game. Each enclosure in your zoo that contains at least one T-Rex grants +1 extra point at the end.">El T-Rex es un dinosaurio especial que otorga puntos extra al final de la partida. Cada recinto de tu zoo que contenga al menos un T-Rex otorga +1 punto extra al final.</p>
+                        <p><strong data-es="Ejemplo:" data-en="Example:">Ejemplo:</strong> <span data-es="Si tenés un T-Rex en el Bosque de la Semejanza y otro en el Río, obtendrás +2 puntos extra (+1 por cada recinto con T-Rex)." data-en="If you have a T-Rex in the Forest of Resemblance and another in the River, you'll get +2 extra points (+1 for each enclosure with T-Rex).">Si tenés un T-Rex en el Bosque de la Semejanza y otro en el Río, obtendrás +2 puntos extra (+1 por cada recinto con T-Rex).</span></p>
+                        <p><strong data-es="Importante:" data-en="Important:">Importante:</strong> <span data-es="Recintos con múltiples T-Rex solo dan +1 punto por recinto, no por cantidad de T-Rex." data-en="Enclosures with multiple T-Rex only give +1 point per enclosure, not per T-Rex amount.">Recintos con múltiples T-Rex solo dan +1 punto por recinto, no por cantidad de T-Rex.</span></p>
                     </div>
                 </div>
 
-                <h3>Alertas importantes</h3>
+                <h3 data-es="Alertas importantes" data-en="Important alerts">Alertas importantes</h3>
                 <div class="alertas-importantes">
                     <div class="alerta-item alerta-roja">
                         <img src="img/icono_informacion.png" alt="Alerta" class="alerta-icono">
                         <div class="alerta-texto">
-                            <strong>¡Atención!</strong> Si no podés cumplir la restricción del dado, tenés que poner el dinosaurio en el Río. No podés saltarte el turno.
+                            <strong data-es="¡Atención!" data-en="Attention!">¡Atención!</strong> <span data-es="Si no podés cumplir la restricción del dado, tenés que poner el dinosaurio en el Río. No podés saltarte el turno." data-en="If you can't meet the dice restriction, you have to put the dinosaur in the River. You can't skip the turn.">Si no podés cumplir la restricción del dado, tenés que poner el dinosaurio en el Río. No podés saltarte el turno.</span>
                         </div>
                     </div>
                     <div class="alerta-item alerta-verde">
                         <img src="img/icono_informacion.png" alt="Consejo" class="alerta-icono">
                         <div class="alerta-texto">
-                            <strong>Consejo:</strong> El primer turno de cada ronda no tiene restricción del dado. ¡Aprovechalo para colocar estratégicamente!
+                            <strong data-es="Consejo:" data-en="Tip:">Consejo:</strong> <span data-es="El primer turno de cada ronda no tiene restricción del dado. ¡Aprovechalo para colocar estratégicamente!" data-en="The first turn of each round has no dice restriction. Take advantage of it to place strategically!">El primer turno de cada ronda no tiene restricción del dado. ¡Aprovechalo para colocar estratégicamente!</span>
                         </div>
                     </div>
                     <div class="alerta-item alerta-azul">
                         <img src="img/icono_informacion.png" alt="Info" class="alerta-icono">
                         <div class="alerta-texto">
-                            <strong>Recordatorio:</strong> Los puntos se calculan al final de cada ronda. Planificá tu zoo pensando en la puntuación final.
+                            <strong data-es="Recordatorio:" data-en="Reminder:">Recordatorio:</strong> <span data-es="Los puntos se calculan al final de cada ronda. Planificá tu zoo pensando en la puntuación final." data-en="Points are calculated at the end of each round. Plan your zoo thinking about the final score.">Los puntos se calculan al final de cada ronda. Planificá tu zoo pensando en la puntuación final.</span>
                         </div>
                     </div>
                     <div class="alerta-item alerta-amarilla">
                         <img src="img/icono_informacion.png" alt="Estrategia" class="alerta-icono">
                         <div class="alerta-texto">
-                            <strong>Estrategia:</strong> Observá el mapa del oponente para tomar decisiones inteligentes en el Rey de la Jungla e Isla Solitaria.
+                            <strong data-es="Estrategia:" data-en="Strategy:">Estrategia:</strong> <span data-es="Observá el mapa del oponente para tomar decisiones inteligentes en el Rey de la Jungla e Isla Solitaria." data-en="Watch your opponent's map to make smart decisions in the King of the Jungle and Lonely Island.">Observá el mapa del oponente para tomar decisiones inteligentes en el Rey de la Jungla e Isla Solitaria.</span>
                         </div>
                     </div>
                 </div>
@@ -871,13 +970,13 @@
     <div id="popup-pesos" class="popup-overlay hidden">
         <div class="popup">
             <button class="popup-close" onclick="cerrarPopup('popup-pesos')" aria-label="Cerrar">×</button>
-            <h2>Cálculo del peso de cada recinto</h2>
+            <h2 data-es="Cálculo del peso de cada recinto" data-en="Weight calculation for each enclosure">Cálculo del peso de cada recinto</h2>
             <div id="contenido-pesos">
                 <table class="tabla-pesos">
                     <thead>
                         <tr>
-                            <th>Dinosaurio</th>
-                            <th>Masa (kg)</th>
+                            <th data-es="Dinosaurio" data-en="Dinosaur">Dinosaurio</th>
+                            <th data-es="Masa (kg)" data-en="Mass (kg)">Masa (kg)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -904,48 +1003,48 @@
                     </tbody>
                 </table>
 
-                <h3>Masa por recinto (kg)</h3>
+                <h3 data-es="Masa por recinto (kg)" data-en="Mass per enclosure (kg)">Masa por recinto (kg)</h3>
                 <table class="tabla-masa-recintos">
                     <thead>
                         <tr>
-                            <th>Recinto</th>
-                            <th>Masa (kg)</th>
-                            <th>Peso (N)</th>
+                            <th data-es="Recinto" data-en="Enclosure">Recinto</th>
+                            <th data-es="Masa total (kg)" data-en="Total mass (kg)">Masa total (kg)</th>
+                            <th data-es="Peso (N)" data-en="Weight (N)">Peso (N)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>Bosque de la Semejanza</strong></td>
+                            <td><strong data-es="Bosque de la Semejanza" data-en="Forest of Resemblance">Bosque de la Semejanza</strong></td>
                             <td><span id="masa-bosque-semejanza">0</span></td>
                             <td><span id="peso-bosque-semejanza">0</span></td>
                         </tr>
                         <tr>
-                            <td><strong>Trío Frondoso</strong></td>
+                            <td><strong data-es="Trío Frondoso" data-en="Leafy Trio">Trío Frondoso</strong></td>
                             <td><span id="masa-woody-trio">0</span></td>
                             <td><span id="peso-woody-trio">0</span></td>
                         </tr>
                         <tr>
-                            <td><strong>Pradera del Amor</strong></td>
+                            <td><strong data-es="Pradera del Amor" data-en="Meadow of Love">Pradera del Amor</strong></td>
                             <td><span id="masa-pradera-amor">0</span></td>
                             <td><span id="peso-pradera-amor">0</span></td>
                         </tr>
                         <tr>
-                            <td><strong>Rey de la Jungla</strong></td>
+                            <td><strong data-es="Rey de la Jungla" data-en="King of the Jungle">Rey de la Jungla</strong></td>
                             <td><span id="masa-rey-jungla">0</span></td>
                             <td><span id="peso-rey-jungla">0</span></td>
                         </tr>
                         <tr>
-                            <td><strong>Prado de la Diferencia</strong></td>
+                            <td><strong data-es="Prado de la Diferencia" data-en="Meadow of Difference">Prado de la Diferencia</strong></td>
                             <td><span id="masa-prado-diferencia">0</span></td>
                             <td><span id="peso-prado-diferencia">0</span></td>
                         </tr>
                         <tr>
-                            <td><strong>Isla Solitaria</strong></td>
+                            <td><strong data-es="Isla Solitaria" data-en="Lonely Island">Isla Solitaria</strong></td>
                             <td><span id="masa-isla-solitaria">0</span></td>
                             <td><span id="peso-isla-solitaria">0</span></td>
                         </tr>
                         <tr>
-                            <td><strong>Río</strong></td>
+                            <td><strong data-es="Río" data-en="River">Río</strong></td>
                             <td><span id="masa-rio">0</span></td>
                             <td><span id="peso-rio">0</span></td>
                         </tr>
@@ -954,13 +1053,13 @@
 
                 <div class="totales-fisica">
                     <p class="masa-total-info">
-                        <strong>Masa total del zoológico:</strong> <span id="masa-total">0</span> kg
+                        <strong data-es="Masa total del zoológico:" data-en="Total zoo mass:">Masa total del zoológico:</strong> <span id="masa-total">0</span> <span data-es="kg" data-en="kg">kg</span>
                     </p>
                     <p class="peso-total-info">
-                        <strong>Peso total ejercido en el zoológico:</strong> <span id="peso-total">0</span> N
+                        <strong data-es="Peso total ejercido en el zoológico:" data-en="Total weight exerted on the zoo:">Peso total ejercido en el zoológico:</strong> <span id="peso-total">0</span> <span data-es="N" data-en="N">N</span>
                     </p>
                     <p class="primera-ley-newton">
-                        <em>Primera Ley de Newton: El peso (fuerza gravitacional) es igual a la masa multiplicada por la aceleración de la gravedad (P = m × g, donde g = 9.8 m/s²)</em>
+                        <em data-es="Primera Ley de Newton: El peso (fuerza gravitacional) es igual a la masa multiplicada por la aceleración de la gravedad (P = m × g, donde g = 9.8 m/s²)" data-en="Newton's First Law: Weight (gravitational force) equals mass multiplied by gravitational acceleration (P = m × g, where g = 9.8 m/s²)">Primera Ley de Newton: El peso (fuerza gravitacional) es igual a la masa multiplicada por la aceleración de la gravedad (P = m × g, donde g = 9.8 m/s²)</em>
                     </p>
                 </div>
             </div>
@@ -1053,19 +1152,19 @@
 
     <div id="popup-descarte" class="popup-overlay hidden">
         <div class="popup">
-            <h2 class="titulo titulo--md titulo--marron">Descartar un dinosaurio</h2>
-            <p class="texto texto--marron">Elegí un dinosaurio de tu mano para descartar.</p>
+            <h2 class="titulo titulo--md titulo--marron" data-es="Descartar un dinosaurio" data-en="Discard a dinosaur">Descartar un dinosaurio</h2>
+            <p class="texto texto--marron" data-es="Elegí un dinosaurio de tu mano para descartar." data-en="Choose a dinosaur from your hand to discard.">Elegí un dinosaurio de tu mano para descartar.</p>
             <div id="dinosaurios-descarte" class="lista-dinos"></div>
             <div class="contenedor-boton-centrado">
-                <button id="btn-confirmar-descarte" class="btn btn--verde" disabled>Descartar</button>
+                <button id="btn-confirmar-descarte" class="btn btn--verde" disabled><span data-es="Descartar" data-en="Discard">Descartar</span></button>
             </div>
         </div>
     </div>
 
     <div id="popup-seleccion-dinosaurios" class="popup-overlay hidden">
         <div class="popup">
-            <h2 class="titulo titulo--md titulo--marron">Seleccionar dinosaurios</h2>
-            <p class="texto texto--marron">Selecciona los dinosaurios que tienes en tu mano</p>
+            <h2 class="titulo titulo--md titulo--marron" data-es="Seleccionar dinosaurios" data-en="Select dinosaurs">Seleccionar dinosaurios</h2>
+            <p class="texto texto--marron" data-es="Selecciona los dinosaurios que tienes en tu mano" data-en="Select the dinosaurs you have in your hand">Selecciona los dinosaurios que tienes en tu mano</p>
 
             <div class="seleccion-dinosaurios-grid">
                 <div class="dino-selector" data-tipo="t-rex">
@@ -1130,12 +1229,12 @@
             </div>
 
             <div class="contador-total">
-                Total seleccionados: <span id="total-dinosaurios">0</span>/6
+                <span data-es="Total seleccionados:" data-en="Total selected:">Total seleccionados:</span> <span id="total-dinosaurios">0</span>/6
             </div>
 
             <div class="contenedor-boton-seleccion">
                 <button id="btn-confirmar-seleccion" class="btn btn--verde" disabled>
-                    Selecciona 6 dinosaurios
+                    <span data-es="Selecciona 6 dinosaurios" data-en="Select 6 dinosaurs">Selecciona 6 dinosaurios</span>
                 </button>
             </div>
         </div>
@@ -1143,38 +1242,38 @@
 
     <div id="popup-seleccion-dado" class="popup-overlay hidden">
         <div class="popup">
-            <h2 class="titulo titulo--md titulo--marron">Seleccionar cara del dado</h2>
-            <p class="texto texto--marron">Selecciona la cara que salió al lanzar el dado</p>
+            <h2 class="titulo titulo--md titulo--marron" data-es="Seleccionar cara del dado" data-en="Select dice face">Seleccionar cara del dado</h2>
+            <p class="texto texto--marron" data-es="Selecciona la cara que salió al lanzar el dado" data-en="Select the face that came up when rolling the dice">Selecciona la cara que salió al lanzar el dado</p>
 
             <div class="caras-dado-grid">
                 <div class="cara-dado-opcion" data-cara="1">
                     <img src="img/dado-huella.png" alt="Lugar vacío" class="cara-dado-img">
-                    <div class="cara-dado-texto">Lugar vacío</div>
+                    <div class="cara-dado-texto" data-es="Lugar vacío" data-en="Empty place">Lugar vacío</div>
                 </div>
 
                 <div class="cara-dado-opcion" data-cara="2">
                     <img src="img/dado-no-trex.png" alt="Sin T-Rex" class="cara-dado-img">
-                    <div class="cara-dado-texto">Sin T-Rex</div>
+                    <div class="cara-dado-texto" data-es="Sin T-Rex" data-en="No T-Rex">Sin T-Rex</div>
                 </div>
 
                 <div class="cara-dado-opcion" data-cara="3">
                     <img src="img/dado-cafe.png" alt="Lado cafetería" class="cara-dado-img">
-                    <div class="cara-dado-texto">Lado cafetería</div>
+                    <div class="cara-dado-texto" data-es="Lado cafetería" data-en="Cafeteria side">Lado cafetería</div>
                 </div>
 
                 <div class="cara-dado-opcion" data-cara="4">
                     <img src="img/dado-banos.png" alt="Lado baños" class="cara-dado-img">
-                    <div class="cara-dado-texto">Lado baños</div>
+                    <div class="cara-dado-texto" data-es="Lado baños" data-en="Bathroom side">Lado baños</div>
                 </div>
 
                 <div class="cara-dado-opcion" data-cara="5">
                     <img src="img/dado-bosque.png" alt="Bosque" class="cara-dado-img">
-                    <div class="cara-dado-texto">Bosque</div>
+                    <div class="cara-dado-texto" data-es="Bosque" data-en="Forest">Bosque</div>
                 </div>
 
                 <div class="cara-dado-opcion" data-cara="6">
                     <img src="img/dado-rocas.png" alt="Rocas" class="cara-dado-img">
-                    <div class="cara-dado-texto">Rocas</div>
+                    <div class="cara-dado-texto" data-es="Rocas" data-en="Rocks">Rocas</div>
                 </div>
             </div>
         </div>

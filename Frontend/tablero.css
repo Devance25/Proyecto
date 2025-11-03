@@ -1771,6 +1771,12 @@ div.popup-overlay:not(.hidden) {
     height: 35px;
   }
 
+  /* Forzar tamaño consistente cuando jugador 2 tiene turno activo */
+  .info-jugador-base.info-jugador2.turno-activo .avatar-circular {
+    width: 50px !important;
+    height: 50px !important;
+  }
+
   .info-jugador2 .info-texto {
     flex-direction: row;
     align-items: center;
@@ -2007,6 +2013,110 @@ div.popup-overlay:not(.hidden) {
   .cara-dado-texto { font-size: var(--font-size-xs); }
 }
 
+/* Tablets Landscape (768px - 1023px) - iPad Mini, etc */
+@media (min-width: 768px) and (max-width: 1023px) and (orientation: landscape) {
+  .rejilla-partida {
+    width: min(55vh, 55vw);
+    height: min(55vh, 55vw);
+    max-width: 420px;
+    max-height: 420px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .botones-info {
+    gap: var(--space-xs);
+  }
+
+  .btn-como-jugar,
+  .btn-datos-fisicos {
+    padding: 6px 12px;
+    font-size: 11px;
+    min-height: 32px;
+  }
+
+  .header-juego {
+    padding: 4px 8px;
+    min-height: auto;
+  }
+
+  .footer-juego {
+    padding: 4px 8px;
+    min-height: auto;
+  }
+
+  .dinosaurios-disponibles {
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    bottom: auto;
+    width: max-content;
+    max-width: 120px;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .dino {
+    width: 40px;
+    height: 40px;
+  }
+
+  .info-restriccion {
+    padding: 6px 10px;
+    font-size: 10px;
+    min-height: 32px;
+  }
+
+  .boton-siguiente {
+    padding: 6px 12px;
+    font-size: 12px;
+    min-height: 32px;
+  }
+
+  .info-jugador-base,
+  .info-jugador,
+  .info-jugador2 {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  /* Avatares normales (sin turno activo) */
+  .info-jugador-base:not(.turno-activo) .avatar-circular,
+  .info-jugador:not(.turno-activo) .avatar-circular,
+  .info-jugador2:not(.turno-activo) .avatar-circular {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .nombre-puntos {
+    font-size: 12px;
+  }
+
+  /* Mantener tamaño consistente para jugador activo en tablets - SIEMPRE más grande */
+  .info-jugador-base.turno-activo .avatar-circular,
+  .info-jugador.turno-activo .avatar-circular,
+  .turno-activo .avatar-circular {
+    width: 45px !important;
+    height: 45px !important;
+  }
+
+  .info-jugador-base.turno-activo .nombre-puntos,
+  .info-jugador.turno-activo .nombre-puntos,
+  .info-jugador2.turno-activo .nombre-puntos {
+    font-size: 14px;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .info-jugador-base.turno-activo,
+  .info-jugador.turno-activo,
+  .info-jugador2.turno-activo {
+    padding: 6px 10px;
+  }
+}
+
 /* Desktop (1024px+) */
 @media (min-width: 1024px) {
   .tablero { padding: 0; }
@@ -2058,6 +2168,7 @@ div.popup-overlay:not(.hidden) {
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
+    gap: var(--space-sm);
   }
 
   /* Jugador Activo en Desktop */

@@ -221,6 +221,7 @@ body {
 .titulo-contenedor {
   position: relative;
   top: -6px;
+  text-align: center;
 }
 
 .subtitulo-contenedor {
@@ -1110,6 +1111,11 @@ input[type="date"].form-input::-webkit-calendar-picker-indicator {
   line-height: 1.4;
 }
 
+.btn-siguiente-ronda {
+  width: 100%;
+  max-width: 400px;
+}
+
 /* PODIO */
 
 .podio {
@@ -1894,6 +1900,124 @@ body .hidden {
     padding: var(--space-sm) var(--space-lg);
   }
 }
+
+/* Botón tipo link */
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--color-amarillo);
+  font-family: var(--font-base);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  padding: var(--space-sm) var(--space-md);
+  transition: var(--transition-base);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  display: block;
+  margin: var(--space-md) auto 0;
+  text-align: center;
+  width: fit-content;
+}
+
+.btn-link:hover {
+  color: var(--color-blanco);
+}
+
+/* Ranking Global */
+.ranking-container {
+  width: 100%;
+  max-height: 60vh;
+  overflow-y: auto;
+  margin-top: var(--space-md);
+  padding: var(--space-sm);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius-md);
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-marron) rgba(255, 255, 255, 0.1);
+}
+
+.ranking-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ranking-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--border-radius-sm);
+}
+
+.ranking-container::-webkit-scrollbar-thumb {
+  background: var(--color-marron);
+  border-radius: var(--border-radius-sm);
+}
+
+.ranking-container::-webkit-scrollbar-thumb:hover {
+  background: var(--color-marron-dark);
+}
+
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--border-radius-sm);
+}
+
+.ranking-puesto {
+  font-family: var(--font-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-amarillo);
+  min-width: 40px;
+  text-align: center;
+}
+
+.ranking-item:nth-child(1) .ranking-puesto {
+  color: #FFD700; /* Oro */
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.ranking-item:nth-child(2) .ranking-puesto {
+  color: #C0C0C0; /* Plata */
+  text-shadow: 0 0 10px rgba(192, 192, 192, 0.5);
+}
+
+.ranking-item:nth-child(3) .ranking-puesto {
+  color: #CD7F32; /* Bronce */
+  text-shadow: 0 0 10px rgba(205, 127, 50, 0.5);
+}
+
+.ranking-nombre {
+  font-family: var(--font-display);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-marron);
+  text-transform: uppercase;
+  flex: 1;
+  letter-spacing: 0.5px;
+}
+
+.ranking-victorias {
+  font-family: var(--font-base);
+  font-size: var(--font-size-sm);
+  color: var(--color-marron);
+  font-weight: var(--font-weight-medium);
+}
+
+.ranking-victorias strong {
+  font-family: var(--font-display);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-marron);
+  margin-right: var(--space-xs);
 
 /* Extra large devices (large desktops, 1440px and up) */
 @media (min-width: 1440px) {
