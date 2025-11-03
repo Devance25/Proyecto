@@ -84,44 +84,62 @@ const CONFIG = {
   RESTRICCIONES_DADO: {
     1: {
       tipo: 'huella-libre',
-      titulo: 'Huella Libre',
+      titulo: { es: 'Huella Libre', en: 'Free Footprint' },
       imagen: 'dado-huella',
-      descripcion: 'Solo recintos vacíos (el río siempre disponible)',
+      descripcion: { 
+        es: 'Solo podés colocar en recintos vacíos (sin dinosaurios). El río siempre está disponible como opción segura.',
+        en: 'You can only place in empty enclosures (without dinosaurs). The river is always available as a safe option.'
+      },
       recintosBloqueados: [] // Se calcula dinámicamente
     },
     2: {
       tipo: 'no-t-rex',
-      titulo: 'No T-Rex',
+      titulo: { es: 'No T-Rex', en: 'No T-Rex' },
       imagen: 'dado-no-trex',
-      descripcion: 'Bloquea recintos que contengan T-Rex',
+      descripcion: { 
+        es: 'Bloquea todos los recintos que contengan al menos un T-Rex. Podés colocar en recintos vacíos o sin T-Rex, o usar el río.',
+        en: 'Blocks all enclosures containing at least one T-Rex. You can place in empty enclosures or without T-Rex, or use the river.'
+      },
       recintosBloqueados: [] // Se calcula dinámicamente
     },
     3: {
       tipo: 'lado-cafeteria',
-      titulo: 'Lado Cafetería',
+      titulo: { es: 'Lado Cafetería', en: 'Cafeteria Side' },
       imagen: 'dado-cafe',
-      descripcion: 'Rey de la Jungla, Prado de la Diferencia, Isla Solitaria',
+      descripcion: { 
+        es: 'Recintos bloqueados: Rey de la Jungla, Prado de la Diferencia, Isla Solitaria. Disponibles: Bosque de la Semejanza, Trío Frondoso, Pradera del Amor. Si no podés cumplir, usá el río.',
+        en: 'Blocked enclosures: King of Jungle, Meadow of Difference, Lonely Island. Available: Forest of Resemblance, Leafy Trio, Meadow of Love. If you can\'t comply, use the river.'
+      },
       recintosBloqueados: ['rey-jungla', 'prado-diferencia', 'isla-solitaria']
     },
     4: {
       tipo: 'lado-banos',
-      titulo: 'Lado Baños',
+      titulo: { es: 'Lado Baños', en: 'Bathroom Side' },
       imagen: 'dado-banos',
-      descripcion: 'Bosque de la Semejanza, Trío Frondoso, Pradera del Amor',
+      descripcion: { 
+        es: 'Recintos bloqueados: Bosque de la Semejanza, Trío Frondoso, Pradera del Amor. Disponibles: Rey de la Jungla, Prado de la Diferencia, Isla Solitaria. Si no podés cumplir, usá el río.',
+        en: 'Blocked enclosures: Forest of Resemblance, Leafy Trio, Meadow of Love. Available: King of Jungle, Meadow of Difference, Lonely Island. If you can\'t comply, use the river.'
+      },
       recintosBloqueados: ['bosque-semejanza', 'woody-trio', 'pradera-amor']
     },
     5: {
       tipo: 'bosque',
-      titulo: 'Bosque',
+      titulo: { es: 'Bosque', en: 'Forest' },
       imagen: 'dado-bosque',
-      descripcion: 'Prado de la Diferencia, Isla Solitaria, Pradera del Amor',
+      descripcion: { 
+        es: 'Recintos bloqueados: Prado de la Diferencia, Isla Solitaria, Pradera del Amor. Disponibles: Bosque de la Semejanza, Trío Frondoso, Rey de la Jungla. Si no podés cumplir, usá el río.',
+        en: 'Blocked enclosures: Meadow of Difference, Lonely Island, Meadow of Love. Available: Forest of Resemblance, Leafy Trio, King of Jungle. If you can\'t comply, use the river.'
+      },
       recintosBloqueados: ['prado-diferencia', 'isla-solitaria', 'pradera-amor']
     },
     6: {
       tipo: 'rocas',
-      titulo: 'Rocas / Pradera',
+      titulo: { es: 'Rocas / Pradera', en: 'Rocks / Meadow' },
       imagen: 'dado-rocas',
-      descripcion: 'Bosque de la Semejanza, Rey de la Jungla, Trío Frondoso',
+      descripcion: { 
+        es: 'Recintos bloqueados: Bosque de la Semejanza, Rey de la Jungla, Trío Frondoso. Disponibles: Prado de la Diferencia, Isla Solitaria, Pradera del Amor. Si no podés cumplir, usá el río.',
+        en: 'Blocked enclosures: Forest of Resemblance, King of Jungle, Leafy Trio. Available: Meadow of Difference, Lonely Island, Meadow of Love. If you can\'t comply, use the river.'
+      },
       recintosBloqueados: ['bosque-semejanza', 'rey-jungla', 'woody-trio']
     }
   },
@@ -977,7 +995,8 @@ const DragDropManager = {
         }
 
         JuegoManager.actualizarBotonSiguiente();
-        mostrarAlertaJuego(`Dinosaurio devuelto a disponibles`, 'info', 2000);
+        const langManager = window.app?.languageManager;
+        mostrarAlertaJuego(langManager?.getMessage('game.dino.returned') || 'Dinosaurio devuelto a disponibles', 'info', 2000);
       }
     }
 
@@ -1238,7 +1257,10 @@ const MapaOponente = {
   _actualizarTitulo(nombre) {
     const titulo = document.getElementById('titulo-mapa');
     if (titulo) {
-      titulo.textContent = `MAPA DE ${(nombre || 'OPONENTE').toUpperCase()}`;
+      const langManager = window.app?.languageManager;
+      const mapOf = langManager?.getMessage('game.map.of') || 'MAPA DE';
+      const opponent = langManager?.getMessage('game.opponent') || 'OPONENTE';
+      titulo.textContent = `${mapOf} ${(nombre || opponent).toUpperCase()}`;
     }
   },
 
@@ -1305,12 +1327,16 @@ const MapaOponente = {
 
     Object.entries(detalles).forEach(([recinto, puntos]) => {
       const elem = document.getElementById(`puntos-${recinto}`);
-      if (elem) elem.textContent = `${puntos} pts`;
+      const langManager = window.app?.languageManager;
+      const ptsText = langManager?.getMessage('game.pts') || 'pts';
+      if (elem) elem.textContent = `${puntos} ${ptsText}`;
     });
 
     const totalElem = document.getElementById('puntos-total-oponente');
     if (totalElem) {
-      totalElem.innerHTML = `<strong>${total} PUNTOS</strong>`;
+      const langManager = window.app?.languageManager;
+      const pointsText = langManager?.getMessage('game.points') || 'PUNTOS';
+      totalElem.innerHTML = `<strong>${total} ${pointsText}</strong>`;
     }
   }
 };
@@ -1350,7 +1376,9 @@ const ModoSeguimiento = {
     const titulo = popup.querySelector('h2');
     if (titulo) {
       const nombre = estadoJuego.getJugadorActual().nombre || `Jugador ${estadoJuego.jugadorActual}`;
-      titulo.textContent = `${nombre.toUpperCase()} - Seleccionar dinosaurios para RONDA ${estadoJuego.rondaActual}`;
+      const langManager = window.app?.languageManager;
+      const selectDinos = langManager?.getText('Seleccionar dinosaurios para RONDA', 'Select dinosaurs for ROUND') || 'Seleccionar dinosaurios para RONDA';
+      titulo.textContent = `${nombre.toUpperCase()} - ${selectDinos} ${estadoJuego.rondaActual}`;
     }
 
     this._configurarSeleccionDinosaurios();
@@ -1423,7 +1451,8 @@ const ModoSeguimiento = {
             contador.textContent = valorActual + 1;
             this._actualizarTotalSeleccion();
           } else {
-            window.app?.showToast?.(`Máximo ${this.MAX_DINOSAURIOS} dinosaurios`, 'warning');
+            const langManager = window.app?.languageManager;
+            window.app?.showToast?.(langManager?.getMessage('game.max.dinosaurs', {max: this.MAX_DINOSAURIOS}) || `Máximo ${this.MAX_DINOSAURIOS} dinosaurios`, 'warning');
           }
         };
         btnIncrease.addEventListener('click', increaseHandler);
@@ -1452,8 +1481,10 @@ const ModoSeguimiento = {
     const btnConfirmar = document.getElementById('btn-confirmar-seleccion');
     if (btnConfirmar) {
       btnConfirmar.disabled = (total !== this.MAX_DINOSAURIOS);
+      const langManager = window.app?.languageManager;
       btnConfirmar.textContent = total < this.MAX_DINOSAURIOS ?
-        `Selecciona ${this.MAX_DINOSAURIOS - total} más` : 'Confirmar selección';
+        langManager?.getMessage('game.select.more', {count: this.MAX_DINOSAURIOS - total}) || `Selecciona ${this.MAX_DINOSAURIOS - total} más` 
+        : langManager?.getMessage('game.confirm.selection') || 'Confirmar selección';
     }
   },
 
@@ -1467,7 +1498,8 @@ const ModoSeguimiento = {
     });
 
     if (dinosaurios.length !== this.MAX_DINOSAURIOS) {
-      window.app?.showToast?.(`Debes seleccionar exactamente ${this.MAX_DINOSAURIOS} dinosaurios`, 'error');
+      const langManager = window.app?.languageManager;
+      window.app?.showToast?.(langManager?.getMessage('game.select.exact', {max: this.MAX_DINOSAURIOS}) || `Debes seleccionar exactamente ${this.MAX_DINOSAURIOS} dinosaurios`, 'error');
       return;
     }
 
@@ -1519,14 +1551,16 @@ const ModoSeguimiento = {
 
         if (!response.ok || !result.success) {
           console.error('Error al crear bolsa en backend:', result);
-          window.app?.showToast?.('Error al guardar bolsa en el servidor', 'error');
+          const langManager = window.app?.languageManager;
+          window.app?.showToast?.(langManager?.getMessage('game.error.save.bag') || 'Error al guardar bolsa en el servidor', 'error');
           return;
         }
 
         console.log('Bolsa creada en backend:', result);
       } catch (error) {
         console.error('Error al enviar bolsa al backend:', error);
-        window.app?.showToast?.('Error de conexión con el servidor', 'error');
+        const langManager = window.app?.languageManager;
+        window.app?.showToast?.(langManager?.getMessage('game.error.connection') || 'Error de conexión con el servidor', 'error');
         return;
       }
     }
@@ -1578,7 +1612,8 @@ const ModoSeguimiento = {
     const btnConfirmar = document.getElementById('btn-confirmar-seleccion');
     if (btnConfirmar) {
       btnConfirmar.disabled = true;
-      btnConfirmar.textContent = `Selecciona ${this.MAX_DINOSAURIOS} dinosaurios`;
+      const langManager = window.app?.languageManager;
+      btnConfirmar.textContent = langManager?.getMessage('game.select.more', {count: this.MAX_DINOSAURIOS}) || `Selecciona ${this.MAX_DINOSAURIOS} dinosaurios`;
     }
   },
 
@@ -1603,7 +1638,9 @@ const ModoSeguimiento = {
     }
 
     // Crear popup temporal para mostrar la restricción
-    const mensaje = `🎲 Restricción del dado: ${restriccion.titulo}`;
+    const lang = window.app?.languageManager?.currentLang || 'es';
+    const tituloTraducido = typeof restriccion.titulo === 'object' ? restriccion.titulo[lang] : restriccion.titulo;
+    const mensaje = `🎲 Restricción del dado: ${tituloTraducido}`;
     mostrarAlertaJuego(mensaje, 'info', 3000);
 
     // Después de mostrar la alerta, ejecutar el callback
@@ -1875,12 +1912,14 @@ const JuegoManager = {
 
     // Verificar que colocación y descarte estén completos
     if (!estadoJuego.yaColocoEnTurno) {
-      window.app?.showToast?.('Debes colocar un dinosaurio primero', 'warning');
+      const langManager = window.app?.languageManager;
+      window.app?.showToast?.(langManager?.getMessage('game.place.dino.first') || 'Debes colocar un dinosaurio primero', 'warning');
       return;
     }
 
     if (!estadoJuego.yaDescarto && tienenDinosaurios) {
-      window.app?.showToast?.('Debes descartar un dinosaurio primero', 'warning');
+      const langManager = window.app?.languageManager;
+      window.app?.showToast?.(langManager?.getMessage('game.discard.dino.first') || 'Debes descartar un dinosaurio primero', 'warning');
       return;
     }
 
@@ -1892,14 +1931,19 @@ const JuegoManager = {
       this.limpiarIndicadoresTurno();
 
       // Mostrar animación de dado mientras se envía al backend (solo si no es finalizar ronda ni partida)
-      if (btn.textContent !== 'Finalizar ronda' && btn.textContent !== 'Finalizar partida') {
+      const langManager = window.app?.languageManager;
+      const finalizarRonda = langManager?.getMessage('game.finish.round') || 'Finalizar ronda';
+      const finalizarPartida = langManager?.getMessage('game.finish.game') || 'Finalizar partida';
+      
+      if (btn.textContent !== finalizarRonda && btn.textContent !== finalizarPartida && 
+          btn.textContent !== 'Finish round' && btn.textContent !== 'Finish game') {
         window.app.showScreen('dado-animacion');
         setTimeout(() => window.app.iniciarAnimacionDado(), 400);
       }
 
       // Determinar qué endpoint usar según el estado del botón
       let backendResponse;
-      if (btn.textContent === 'Finalizar ronda') {
+      if (btn.textContent === finalizarRonda || btn.textContent === 'Finish round') {
         // En modo seguimiento, usar endpoint específico
         if (estadoJuego.modoSeguimiento) {
           backendResponse = await JuegoManager.enviarFinalizarRondaSeguimientoAlBackend();
@@ -1963,9 +2007,10 @@ const JuegoManager = {
         } else {
           // Error: volver a pantalla de partida
           window.app.showScreen('partida');
-          mostrarAlertaJuego('Error al procesar fin de ronda. Intenta nuevamente.', 'error', 3000);
+          const langManager = window.app?.languageManager;
+          mostrarAlertaJuego(langManager?.getMessage('game.error.round') || 'Error al procesar fin de ronda. Intenta nuevamente.', 'error', 3000);
         }
-      } else if (btn.textContent === 'Finalizar partida') {
+      } else if (btn.textContent === finalizarPartida || btn.textContent === 'Finish game') {
         backendResponse = await JuegoManager.enviarFinalizarPartidaAlBackend();
         if (backendResponse && backendResponse.success) {
           // Procesar fin de partida - mostrar pantalla final con puntajes del backend
@@ -1979,7 +2024,8 @@ const JuegoManager = {
         } else {
           // Error: volver a pantalla de partida
           window.app.showScreen('partida');
-          mostrarAlertaJuego('Error al procesar fin de partida. Intenta nuevamente.', 'error', 3000);
+          const langManager = window.app?.languageManager;
+          mostrarAlertaJuego(langManager?.getMessage('game.error.finish') || 'Error al procesar fin de partida. Intenta nuevamente.', 'error', 3000);
         }
       } else {
         backendResponse = await enviarTurnoAlBackend();
@@ -1990,7 +2036,8 @@ const JuegoManager = {
         } else {
           // Error: volver a pantalla de partida
           window.app.showScreen('partida');
-          mostrarAlertaJuego('Error al procesar turno. Intenta nuevamente.', 'error', 3000);
+          const langManager = window.app?.languageManager;
+          mostrarAlertaJuego(langManager?.getMessage('game.error.turn') || 'Error al procesar turno. Intenta nuevamente.', 'error', 3000);
         }
       }
     } else {
@@ -2077,12 +2124,13 @@ const JuegoManager = {
 
     } catch (error) {
       // Diferentes tipos de errores
+      const langManager = window.app?.languageManager;
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        mostrarAlertaJuego('Error de conexión - Verifica tu internet', 'error', 5000);
+        mostrarAlertaJuego(langManager?.getMessage('game.error.connection.check') || 'Error de conexión - Verifica tu internet', 'error', 5000);
       } else if (error.message.includes('HTTP')) {
-        mostrarAlertaJuego('Error del servidor - Intenta nuevamente', 'error', 4000);
+        mostrarAlertaJuego(langManager?.getMessage('game.error.server.retry') || 'Error del servidor - Intenta nuevamente', 'error', 4000);
       } else {
-        mostrarAlertaJuego('Error inesperado - Contacta soporte', 'error', 5000);
+        mostrarAlertaJuego(langManager?.getMessage('game.error.support') || 'Error inesperado - Contacta soporte', 'error', 5000);
       }
 
       estadoJuego.sincronizandoConBackend = false;
@@ -2162,12 +2210,13 @@ const JuegoManager = {
 
     } catch (error) {
       // Diferentes tipos de errores
+      const langManager = window.app?.languageManager;
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        mostrarAlertaJuego('Error de conexión - Verifica tu internet', 'error', 5000);
+        mostrarAlertaJuego(langManager?.getMessage('game.error.connection.check') || 'Error de conexión - Verifica tu internet', 'error', 5000);
       } else if (error.message.includes('HTTP')) {
-        mostrarAlertaJuego('Error del servidor - Intenta nuevamente', 'error', 4000);
+        mostrarAlertaJuego(langManager?.getMessage('game.error.server.retry') || 'Error del servidor - Intenta nuevamente', 'error', 4000);
       } else {
-        mostrarAlertaJuego('Error inesperado - Contacta soporte', 'error', 5000);
+        mostrarAlertaJuego(langManager?.getMessage('game.error.support') || 'Error inesperado - Contacta soporte', 'error', 5000);
       }
 
       estadoJuego.sincronizandoConBackend = false;
@@ -2256,12 +2305,13 @@ const JuegoManager = {
 
     } catch (error) {
       // Diferentes tipos de errores
+      const langManager = window.app?.languageManager;
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        mostrarAlertaJuego('Error de conexión - Verifica tu internet', 'error', 5000);
+        mostrarAlertaJuego(langManager?.getMessage('game.error.connection.check') || 'Error de conexión - Verifica tu internet', 'error', 5000);
       } else if (error.message.includes('HTTP')) {
-        mostrarAlertaJuego('Error del servidor - Intenta nuevamente', 'error', 4000);
+        mostrarAlertaJuego(langManager?.getMessage('game.error.server.retry') || 'Error del servidor - Intenta nuevamente', 'error', 4000);
       } else {
-        mostrarAlertaJuego('Error inesperado - Contacta soporte', 'error', 5000);
+        mostrarAlertaJuego(langManager?.getMessage('game.error.support') || 'Error inesperado - Contacta soporte', 'error', 5000);
       }
 
       estadoJuego.sincronizandoConBackend = false;
@@ -2280,7 +2330,8 @@ const JuegoManager = {
   procesarRespuestaBackend(backendResponse) {
     // VALIDACIÓN ADICIONAL
     if (!backendResponse) {
-      mostrarAlertaJuego('Error procesando respuesta del servidor', 'error', 3000);
+      const langManager = window.app?.languageManager;
+      mostrarAlertaJuego(langManager?.getMessage('game.error.server.response') || 'Error procesando respuesta del servidor', 'error', 3000);
       return;
     }
 
@@ -2423,7 +2474,8 @@ const JuegoManager = {
 
     } catch (error) {
       console.error('Error procesando respuesta del backend:', error);
-      mostrarAlertaJuego('Error procesando datos del servidor', 'error', 3000);
+      const langManager = window.app?.languageManager;
+      mostrarAlertaJuego(langManager?.getMessage('game.error.server.data') || 'Error procesando datos del servidor', 'error', 3000);
     }
   },
 
@@ -2443,7 +2495,7 @@ const JuegoManager = {
     const btn = document.getElementById('btn-siguiente-turno');
     if (btn) {
       btn.disabled = true;
-      btn.textContent = 'Tirar dado';
+      btn.textContent = window.app?.languageManager?.getMessage('game.roll.dice') || 'Tirar dado';
     }
 
     RenderManager.actualizarDinosauriosDisponibles();
@@ -2503,18 +2555,26 @@ const JuegoManager = {
     }
 
     if (texto) {
+      const langManager = window.app?.languageManager;
+      const lang = langManager?.currentLang || 'es';
       const restriccionConfig = Object.values(CONFIG.RESTRICCIONES_DADO).find(r => r.tipo === tipo);
-      let mensaje = `<div>Restricción Actual</div><div>${titulo}</div>`;
+      const currentRestriction = langManager?.getMessage('game.restriction.current') || 'Restricción Actual';
+      const tituloTraducido = typeof titulo === 'object' ? titulo[lang] : titulo;
+      let mensaje = `<div>${currentRestriction}</div><div>${tituloTraducido}</div>`;
 
       // Casos especiales que se calculan dinámicamente
       if (estadoJuego.restriccionActual === 'no-t-rex') {
-        mensaje += `<div class="texto-restriccion-bloqueados">Bloquea recintos con T-Rex</div>`;
+        const trexBlock = langManager?.getMessage('game.restriction.trex') || 'Bloquea recintos con T-Rex';
+        mensaje += `<div class="texto-restriccion-bloqueados">${trexBlock}</div>`;
       } else if (estadoJuego.restriccionActual === 'huella-libre') {
-        mensaje += `<div class="texto-restriccion-bloqueados">Solo recintos vacíos</div>`;
+        const emptyOnly = langManager?.getMessage('game.restriction.empty') || 'Solo recintos vacíos';
+        mensaje += `<div class="texto-restriccion-bloqueados">${emptyOnly}</div>`;
       } else if (restriccionConfig && restriccionConfig.recintosBloqueados.length > 0) {
-        mensaje += `<div class="texto-restriccion-bloqueados">Recintos bloqueados: ${restriccionConfig.recintosBloqueados.length}</div>`;
+        const blockedText = langManager?.getMessage('game.restriction.blocked') || 'Recintos bloqueados';
+        mensaje += `<div class="texto-restriccion-bloqueados">${blockedText}: ${restriccionConfig.recintosBloqueados.length}</div>`;
       } else {
-        mensaje += `<div class="texto-sin-restriccion">Todos los recintos disponibles</div>`;
+        const allAvailable = langManager?.getMessage('game.all.enclosures') || 'Todos los recintos disponibles';
+        mensaje += `<div class="texto-sin-restriccion">${allAvailable}</div>`;
       }
 
       texto.innerHTML = mensaje;
@@ -2680,9 +2740,9 @@ const JuegoManager = {
     const btn = document.getElementById('btn-siguiente-turno');
     if (!btn) return;
 
+    const langManager = window.app?.languageManager;
 
     // Validar que el botón solo tenga textos válidos
-    const langManager = window.app?.languageManager;
     const textosValidosEs = ['Arrastra un dinosaurio', 'Descarta dinosaurio', 'Tirar dado', 'Enviar turno', 'Finalizar ronda', 'Finalizar partida'];
     const textosValidosEn = ['Drag a dinosaur', 'Discard dinosaur', 'Roll dice', 'Send turn', 'Finish round', 'Finish game'];
     const textosValidos = [...textosValidosEs, ...textosValidosEn];
@@ -2696,7 +2756,6 @@ const JuegoManager = {
     const sinDinosaurios = jugador.dinosauriosDisponibles.length === 0;
 
     // FASE 3: ESTADOS DINÁMICOS
-    const langManager = window.app?.languageManager;
     
     if (!estadoJuego.yaColocoEnTurno) {
       btn.textContent = langManager?.getMessage('game.drag.dinosaur') || 'Arrastra un dinosaurio';
@@ -2744,18 +2803,18 @@ const JuegoManager = {
           btn.disabled = false; // Habilitar inmediatamente después de colocar y descartar
         } else if (estadoJuego.dadoNumero) {
           // Turnos normales en modo seguimiento: si ya seleccionó el dado, habilitar "Enviar turno"
-          btn.textContent = 'Enviar turno';
+          btn.textContent = langManager?.getMessage('game.send.turn') || 'Enviar turno';
           btn.disabled = false;
           console.log('→ Botón configurado como: Enviar turno');
         } else {
           // Aún no seleccionó el dado
-          btn.textContent = 'Enviar turno';
+          btn.textContent = langManager?.getMessage('game.send.turn') || 'Enviar turno';
           btn.disabled = true;
           console.log('→ Botón configurado como: Enviar turno (deshabilitado, esperando dado)');
         }
       } else {
         // Turnos normales: tirar dado
-        btn.textContent = 'Tirar dado';
+        btn.textContent = langManager?.getMessage('game.roll.dice') || 'Tirar dado';
         btn.disabled = false;
         console.log('→ Botón configurado como: Tirar dado');
       }
@@ -2797,10 +2856,13 @@ const JuegoManager = {
     const puntosJugador1Elem = document.getElementById('puntos-jugador1');
     const puntosJugador2Elem = document.getElementById('puntos-jugador2');
 
+    const langManager = window.app?.languageManager;
+    const pointsText = langManager?.getMessage('game.points') || 'PUNTOS';
+    
     if (estadoJuego.jugadorActual === 1) {
       // Jugador 1 está jugando: Jugador 1 abajo (mostrar puntos), Jugador 2 arriba (ocultar puntos)
       if (puntosJugador1Elem) {
-        puntosJugador1Elem.textContent = `${parseInt(estadoJuego.jugador1.puntos) || 0} PUNTOS`;
+        puntosJugador1Elem.textContent = `${parseInt(estadoJuego.jugador1.puntos) || 0} ${pointsText}`;
       }
       if (puntosJugador2Elem) {
         puntosJugador2Elem.textContent = ''; // Ocultar puntos del oponente
@@ -2808,7 +2870,7 @@ const JuegoManager = {
     } else {
       // Jugador 2 está jugando: Jugador 2 abajo (mostrar puntos), Jugador 1 arriba (ocultar puntos)
       if (puntosJugador1Elem) {
-        puntosJugador1Elem.textContent = `${parseInt(estadoJuego.jugador2.puntos) || 0} PUNTOS`;
+        puntosJugador1Elem.textContent = `${parseInt(estadoJuego.jugador2.puntos) || 0} ${pointsText}`;
       }
       if (puntosJugador2Elem) {
         puntosJugador2Elem.textContent = ''; // Ocultar puntos del oponente
@@ -2934,7 +2996,9 @@ const JuegoManager = {
     const puntosActuales = parseInt(jugador.puntosRonda) || 0;
     const puntosFooter = document.querySelector('.info-jugador .puntos-jugador span');
     if (puntosFooter) {
-      puntosFooter.textContent = `${puntosActuales} PUNTOS`;
+      const langManager = window.app?.languageManager;
+      const pointsText = langManager?.getMessage('game.points') || 'PUNTOS';
+      puntosFooter.textContent = `${puntosActuales} ${pointsText}`;
     }
 
     GameLogic.actualizarPuntos();
@@ -2986,8 +3050,8 @@ const JuegoManager = {
 
   _actualizarResumenRonda() {
     const elementos = {
-      'puntos-resumen-j1': `${estadoJuego.jugador1.puntos} puntos totales`,
-      'puntos-resumen-j2': `${estadoJuego.jugador2.puntos} puntos totales`,
+      'puntos-resumen-j1': `${estadoJuego.jugador1.puntos} ${window.app?.languageManager?.getMessage('game.total.points') || 'puntos totales'}`,
+      'puntos-resumen-j2': `${estadoJuego.jugador2.puntos} ${window.app?.languageManager?.getMessage('game.total.points') || 'puntos totales'}`,
       'nombre-resumen-j1': estadoJuego.jugador1.nombre.toUpperCase(),
       'nombre-resumen-j2': estadoJuego.jugador2.nombre.toUpperCase(),
       'numero-ronda-resumen': `#${estadoJuego.rondaActual}`
@@ -3480,7 +3544,8 @@ document.addEventListener('DOMContentLoaded', () => {
       estadoJuego.recintoColocadoEnTurno = null;
 
       JuegoManager.actualizarBotonSiguiente();
-      mostrarAlertaJuego(`Dinosaurio devuelto a disponibles`, 'success', 2000);
+      const langManager = window.app?.languageManager;
+      mostrarAlertaJuego(langManager?.getMessage('game.dino.returned') || 'Dinosaurio devuelto a disponibles', 'success', 2000);
     }
   });
 
@@ -3599,12 +3664,13 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Error completo:', error);
 
       // Diferentes tipos de errores
+      const langManager = window.app?.languageManager;
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        mostrarAlertaJuego('Error de conexión - Verifica tu internet', 'error', 5000);
+        mostrarAlertaJuego(langManager?.getMessage('game.error.connection.check') || 'Error de conexión - Verifica tu internet', 'error', 5000);
       } else if (error.message.includes('HTTP')) {
-        mostrarAlertaJuego('Error del servidor - Intenta nuevamente', 'error', 4000);
+        mostrarAlertaJuego(langManager?.getMessage('game.error.server.retry') || 'Error del servidor - Intenta nuevamente', 'error', 4000);
       } else {
-        mostrarAlertaJuego('Error inesperado - Contacta soporte', 'error', 5000);
+        mostrarAlertaJuego(langManager?.getMessage('game.error.support') || 'Error inesperado - Contacta soporte', 'error', 5000);
       }
 
       estadoJuego.sincronizandoConBackend = false;
@@ -3816,10 +3882,13 @@ document.addEventListener('DOMContentLoaded', () => {
     cerrarPopup: (id) => PopupManager.cerrar(id),
     limpiarIndicadoresTurno: () => JuegoManager.limpiarIndicadoresTurno(),
     cancelarPartida: () => {
-      if (confirm('¿Estás seguro de que quieres cancelar la partida actual?')) {
+      const langManager = window.app?.languageManager;
+      const confirmMsg = langManager?.getMessage('game.confirm.cancel') || '¿Estás seguro de que quieres cancelar la partida actual?';
+      if (confirm(confirmMsg)) {
         estadoJuego.reset();
         window.app?.showScreen?.('lobby');
-        mostrarAlertaJuego('Partida cancelada', 'info', 2000);
+        const langManager = window.app?.languageManager;
+        mostrarAlertaJuego(langManager?.getMessage('game.cancelled') || 'Partida cancelada', 'info', 2000);
       }
     },
     mostrarDetalleConsejo,

@@ -328,7 +328,7 @@
             <div class="admin-info">
                 <img src="img/foto_administrador.png" alt="Avatar administrador" class="admin-avatar">
                 <span class="admin-name" id="admin-header-name">ADMIN</span>
-                <span class="admin-title">ADMINISTRADOR</span>
+                <span class="admin-title" data-es="ADMINISTRADOR" data-en="ADMINISTRATOR">ADMINISTRADOR</span>
             </div>
         </div>
 
@@ -338,12 +338,12 @@
             </div>
 
             <div class="search-container">
-                <input type="text" id="buscar-usuario" class="admin-form-input" placeholder="Buscar usuario..." autocomplete="off">
+                <input type="text" id="buscar-usuario" class="admin-form-input" placeholder="Buscar usuario..." data-es="Buscar usuario..." data-en="Search user..." autocomplete="off">
                 <div class="btn-search"><img src="img/lupa.svg" alt="Buscar"></div>
             </div>
 
             <div class="usuarios-list admin-users-list-container" id="lista-usuarios-admin">
-                <div class="titulo-seccion">Usuarios registrados</div>
+                <div class="titulo-seccion" data-es="Usuarios registrados" data-en="Registered users">Usuarios registrados</div>
             </div>
         </div>
     </div>
@@ -356,13 +356,13 @@
             <div class="admin-info">
                 <img src="img/foto_administrador.png" alt="Avatar administrador" class="admin-avatar">
                 <span class="admin-name" id="admin-header-name-edit">ADMIN</span>
-                <span class="admin-title">ADMINISTRADOR</span>
+                <span class="admin-title" data-es="ADMINISTRADOR" data-en="ADMINISTRATOR">ADMINISTRADOR</span>
             </div>
         </div>
 
         <div class="admin-content-container">
             <div class="admin-title-container">
-                <h1 class="titulo titulo--lg titulo--beige admin-page-title">EDITAR USUARIO</h1>
+                <h1 class="titulo titulo--lg titulo--beige admin-page-title" data-es="EDITAR USUARIO" data-en="EDIT USER">EDITAR USUARIO</h1>
             </div>
 
             <form id="form-editar-usuario" class="admin-form-container" novalidate>
@@ -395,13 +395,13 @@
             <div class="admin-info">
                 <img src="img/foto_usuario-1.png" alt="Avatar administrador" class="admin-avatar">
                 <span class="admin-name" id="admin-header-name-nuevo">ADMIN</span>
-                <span class="admin-title">ADMINISTRADOR</span>
+                <span class="admin-title" data-es="ADMINISTRADOR" data-en="ADMINISTRATOR">ADMINISTRADOR</span>
             </div>
         </div>
 
         <div class="admin-content-container">
             <div class="admin-title-container">
-                <h1 class="titulo titulo--lg titulo--beige admin-page-title">NUEVO USUARIO</h1>
+                <h1 class="titulo titulo--lg titulo--beige admin-page-title" data-es="NUEVO USUARIO" data-en="NEW USER">NUEVO USUARIO</h1>
             </div>
 
             <form id="form-nuevo-usuario" class="admin-form-container" novalidate>
@@ -444,8 +444,8 @@
 
         <div class="contenedor-centrado">
             <div class="contenedor-titulo">
-                <h1 class="titulo titulo--sm titulo-contenedor">Listado jugadores</h1>
-                <p class="texto texto--blanco subtitulo-contenedor">2 jugadores</p>
+                <h1 class="titulo titulo--sm titulo-contenedor" data-es="Listado jugadores" data-en="Player list">Listado jugadores</h1>
+                <p class="texto texto--blanco subtitulo-contenedor" data-es="2 jugadores" data-en="2 players">2 jugadores</p>
             </div>
 
             <form id="form-jugadores" novalidate>
@@ -494,7 +494,7 @@
                 </div>
 
                 <button type="submit" id="btn-comenzar-partida" class="btn" disabled>
-                    <span class="btn-text" data-es="Empezar partida" data-en="Start game">Empezar partida</span>
+                    <span class="btn-text" data-es="Continuar" data-en="Continue">Continuar</span>
                 </button>
             </form>
         </div>
@@ -555,7 +555,7 @@
                     <img src="img/dado-banos.png" id="dado-imagen" alt="Dado" class="dado-imagen">
                 </div>
             </div>
-            <p class="texto texto--blanco texto--weight-semibold dado-texto">Lanzando dado...</p>
+            <p class="texto texto--blanco texto--weight-semibold dado-texto" data-es="Lanzando dado..." data-en="Rolling dice...">Lanzando dado...</p>
         </div>
     </div>
 
@@ -609,25 +609,25 @@
 
         <div class="rejilla-partida">
             <div class="col">
-                <div class="cuadro" data-recinto="bosque-semejanza" title="Bosque Semejanza: Solo dinosaurios iguales. Puntos: 2, 4, 8, 12, 18, 24">
+                <div class="cuadro" data-recinto="bosque-semejanza">
                     <img src="img/Bosque-de-la-Semejanza.png" alt="Bosque de la Semejanza" class="recinto">
                 </div>
-                <div class="cuadro" data-recinto="woody-trio" title="Trío Frondoso: Exactamente 3 dinosaurios = 7 puntos">
+                <div class="cuadro" data-recinto="woody-trio">
                     <img src="img/Trio-Frondoso.png" alt="Trio Frondoso" class="recinto">
                 </div>
-                <div class="cuadro" data-recinto="pradera-amor" title="Pradera del Amor: Parejas de misma especie = 6pts">
+                <div class="cuadro" data-recinto="pradera-amor">
                     <img src="img/Pradera-del-Amor-vs2.png" alt="Pradera del Amor" class="recinto">
                 </div>
             </div>
-            <div class="rectangulo" data-recinto="rio" title="Río: 1pt por dinosaurio"></div>
+            <div class="rectangulo" data-recinto="rio"></div>
             <div class="col">
-                <div class="cuadro" data-recinto="rey-jungla" title="Rey de la Jungla: 1 dinosaurio. 7pts si tienes más">
+                <div class="cuadro" data-recinto="rey-jungla">
                     <img src="img/recinto-t-rex.png" alt="Rey de la Jungla" class="recinto t-rex">
                 </div>
-                <div class="cuadro" data-recinto="prado-diferencia" title="Prado Diferencia: Solo especies diferentes. Puntos: 1, 3, 6, 10, 15, 21">
+                <div class="cuadro" data-recinto="prado-diferencia">
                     <img src="img/Prado-de-la-Diferencia.png" alt="Prado de la Diferencia" class="recinto">
                 </div>
-                <div class="cuadro" data-recinto="isla-solitaria" title="Isla Solitaria: 1 dinosaurio único = 7pts">
+                <div class="cuadro" data-recinto="isla-solitaria">
                     <img src="img/isla-solitaria.png" alt="Isla Solitaria" class="recinto">
                 </div>
             </div>
@@ -692,7 +692,7 @@
     <div id="pantalla-resultados" class="pantalla fondo-interfaz fade-in hidden">
         <button id="btn-volver-inicio-final" class="btn-icon"><img src="img/siguiente.svg" alt="Volver" loading="lazy"></button>
 
-        <h1 class="titulo titulo--xl titulo--blanco titulo-final">FIN DEL JUEGO</h1>
+        <h1 class="titulo titulo--xl titulo--blanco titulo-final" data-es="FIN DEL JUEGO" data-en="GAME OVER">FIN DEL JUEGO</h1>
         
         <div class="contenedor-centrado">
             <div class="podio">
@@ -873,55 +873,55 @@
                     <div class="consejo-item" onclick="mostrarDetalleConsejo(this)">
                         <img src="img/icono_informacion.png" alt="Información" class="consejo-icono">
                         <div class="consejo-texto">
-                            <strong>Planificá tu zoo:</strong> Pensá en qué recintos querés llenar primero y qué dinosaurios necesitás para maximizar puntos.
+                            <strong data-es="Planificá tu zoo:" data-en="Plan your zoo:">Planificá tu zoo:</strong> <span data-es="Pensá en qué recintos querés llenar primero y qué dinosaurios necesitás para maximizar puntos." data-en="Think about which enclosures you want to fill first and which dinosaurs you need to maximize points.">Pensá en qué recintos querés llenar primero y qué dinosaurios necesitás para maximizar puntos.</span>
                         </div>
                         <div class="consejo-detalle">
-                            <strong>Detalle:</strong> Empezá por los recintos que te den más puntos. El Bosque de la Semejanza y Prado de la Diferencia pueden dar hasta 21 puntos si los llenás completamente.
+                            <strong data-es="Detalle:" data-en="Detail:">Detalle:</strong> <span data-es="Empezá por los recintos que te den más puntos. El Bosque de la Semejanza y Prado de la Diferencia pueden dar hasta 21 puntos si los llenás completamente." data-en="Start with the enclosures that give you the most points. Forest of Resemblance and Meadow of Difference can give up to 21 points if you fill them completely.">Empezá por los recintos que te den más puntos. El Bosque de la Semejanza y Prado de la Diferencia pueden dar hasta 21 puntos si los llenás completamente.</span>
                         </div>
                     </div>
                     <div class="consejo-item" onclick="mostrarDetalleConsejo(this)">
                         <img src="img/icono_informacion.png" alt="Información" class="consejo-icono">
                         <div class="consejo-texto">
-                            <strong>El Río es tu salvavidas:</strong> Cuando no podés cumplir la restricción del dado, el Río siempre está disponible y da puntos seguros.
+                            <strong data-es="El Río es tu salvavidas:" data-en="The River is your lifeline:">El Río es tu salvavidas:</strong> <span data-es="Cuando no podés cumplir la restricción del dado, el Río siempre está disponible y da puntos seguros." data-en="When you can't meet the dice restriction, the River is always available and gives safe points.">Cuando no podés cumplir la restricción del dado, el Río siempre está disponible y da puntos seguros.</span>
                         </div>
                         <div class="consejo-detalle">
-                            <strong>Detalle:</strong> Cada dinosaurio en el Río vale 1 punto. Es mejor poner un dino en el Río que perder un turno. ¡Usalo estratégicamente!
+                            <strong data-es="Detalle:" data-en="Detail:">Detalle:</strong> <span data-es="Cada dinosaurio en el Río vale 1 punto. Es mejor poner un dino en el Río que perder un turno. ¡Usalo estratégicamente!" data-en="Each dinosaur in the River is worth 1 point. It's better to put a dino in the River than to lose a turn. Use it strategically!">Cada dinosaurio en el Río vale 1 punto. Es mejor poner un dino en el Río que perder un turno. ¡Usalo estratégicamente!</span>
                         </div>
                     </div>
                     <div class="consejo-item" onclick="mostrarDetalleConsejo(this)">
                         <img src="img/icono_informacion.png" alt="Información" class="consejo-icono">
                         <div class="consejo-texto">
-                            <strong>T-Rex estratégico:</strong> Distribuí los T-Rex en diferentes recintos para maximizar el bonus (+1 por recinto con T-Rex).
+                            <strong data-es="T-Rex estratégico:" data-en="Strategic T-Rex:">T-Rex estratégico:</strong> <span data-es="Distribuí los T-Rex en diferentes recintos para maximizar el bonus (+1 por recinto con T-Rex)." data-en="Distribute T-Rexes in different enclosures to maximize the bonus (+1 per enclosure with T-Rex).">Distribuí los T-Rex en diferentes recintos para maximizar el bonus (+1 por recinto con T-Rex).</span>
                         </div>
                         <div class="consejo-detalle">
-                            <strong>Detalle:</strong> Si tenés 3 T-Rex, ponelos en 3 recintos diferentes para obtener +3 puntos extra. Si los ponés todos en el mismo recinto, solo obtendrás +1 punto.
+                            <strong data-es="Detalle:" data-en="Detail:">Detalle:</strong> <span data-es="Si tenés 3 T-Rex, ponelos en 3 recintos diferentes para obtener +3 puntos extra. Si los ponés todos en el mismo recinto, solo obtendrás +1 punto." data-en="If you have 3 T-Rex, put them in 3 different enclosures to get +3 extra points. If you put them all in the same enclosure, you'll only get +1 point.">Si tenés 3 T-Rex, ponelos en 3 recintos diferentes para obtener +3 puntos extra. Si los ponés todos en el mismo recinto, solo obtendrás +1 punto.</span>
                         </div>
                     </div>
                     <div class="consejo-item" onclick="mostrarDetalleConsejo(this)">
                         <img src="img/icono_informacion.png" alt="Información" class="consejo-icono">
                         <div class="consejo-texto">
-                            <strong>Observá a tu oponente:</strong> Para el Rey de la Jungla e Isla Solitaria, es importante ver qué dinosaurios tiene tu rival.
+                            <strong data-es="Observá a tu oponente:" data-en="Watch your opponent:">Observá a tu oponente:</strong> <span data-es="Para el Rey de la Jungla e Isla Solitaria, es importante ver qué dinosaurios tiene tu rival." data-en="For the King of the Jungle and Lonely Island, it's important to see what dinosaurs your rival has.">Para el Rey de la Jungla e Isla Solitaria, es importante ver qué dinosaurios tiene tu rival.</span>
                         </div>
                         <div class="consejo-detalle">
-                            <strong>Detalle:</strong> Si tu oponente tiene muchos T-Rex, poné un T-Rex en el Rey de la Jungla para asegurar los 7 puntos. Para la Isla Solitaria, elegí un dinosaurio que tu oponente no tenga.
+                            <strong data-es="Detalle:" data-en="Detail:">Detalle:</strong> <span data-es="Si tu oponente tiene muchos T-Rex, poné un T-Rex en el Rey de la Jungla para asegurar los 7 puntos. Para la Isla Solitaria, elegí un dinosaurio que tu oponente no tenga." data-en="If your opponent has many T-Rex, put a T-Rex in the King of the Jungle to secure the 7 points. For Lonely Island, choose a dinosaur your opponent doesn't have.">Si tu oponente tiene muchos T-Rex, poné un T-Rex en el Rey de la Jungla para asegurar los 7 puntos. Para la Isla Solitaria, elegí un dinosaurio que tu oponente no tenga.</span>
                         </div>
                     </div>
                     <div class="consejo-item" onclick="mostrarDetalleConsejo(this)">
                         <img src="img/icono_informacion.png" alt="Información" class="consejo-icono">
                         <div class="consejo-texto">
-                            <strong>Llenado sin espacios:</strong> En Bosque de la Semejanza y Prado de la Diferencia, llená de izquierda a derecha sin dejar espacios vacíos.
+                            <strong data-es="Llenado sin espacios:" data-en="Filling without gaps:">Llenado sin espacios:</strong> <span data-es="En Bosque de la Semejanza y Prado de la Diferencia, llená de izquierda a derecha sin dejar espacios vacíos." data-en="In Forest of Resemblance and Meadow of Difference, fill from left to right without leaving empty spaces.">En Bosque de la Semejanza y Prado de la Diferencia, llená de izquierda a derecha sin dejar espacios vacíos.</span>
                         </div>
                         <div class="consejo-detalle">
-                            <strong>Detalle:</strong> Los puntos se calculan según la cantidad de dinosaurios consecutivos desde la izquierda. Si dejás espacios vacíos, perdés puntos potenciales.
+                            <strong data-es="Detalle:" data-en="Detail:">Detalle:</strong> <span data-es="Los puntos se calculan según la cantidad de dinosaurios consecutivos desde la izquierda. Si dejás espacios vacíos, perdés puntos potenciales." data-en="Points are calculated based on the number of consecutive dinosaurs from the left. If you leave empty spaces, you lose potential points.">Los puntos se calculan según la cantidad de dinosaurios consecutivos desde la izquierda. Si dejás espacios vacíos, perdés puntos potenciales.</span>
                         </div>
                     </div>
                     <div class="consejo-item" onclick="mostrarDetalleConsejo(this)">
                         <img src="img/icono_informacion.png" alt="Información" class="consejo-icono">
                         <div class="consejo-texto">
-                            <strong>Parejas en Pradera del Amor:</strong> Concentráte en formar parejas del mismo tipo para maximizar los 5 puntos por pareja.
+                            <strong data-es="Parejas en Pradera del Amor:" data-en="Pairs in Meadow of Love:">Parejas en Pradera del Amor:</strong> <span data-es="Concentráte en formar parejas del mismo tipo para maximizar los 5 puntos por pareja." data-en="Focus on forming pairs of the same type to maximize the 5 points per pair.">Concentráte en formar parejas del mismo tipo para maximizar los 5 puntos por pareja.</span>
                         </div>
                         <div class="consejo-detalle">
-                            <strong>Detalle:</strong> Podés tener varias parejas del mismo tipo. Por ejemplo, 4 T-Rex en la Pradera del Amor te darían 10 puntos (2 parejas × 5 puntos).
+                            <strong data-es="Detalle:" data-en="Detail:">Detalle:</strong> <span data-es="Podés tener varias parejas del mismo tipo. Por ejemplo, 4 T-Rex en la Pradera del Amor te darían 10 puntos (2 parejas × 5 puntos)." data-en="You can have several pairs of the same type. For example, 4 T-Rex in Meadow of Love would give you 10 points (2 pairs × 5 points).">Podés tener varias parejas del mismo tipo. Por ejemplo, 4 T-Rex en la Pradera del Amor te darían 10 puntos (2 parejas × 5 puntos).</span>
                         </div>
                     </div>
                 </div>
@@ -1111,38 +1111,38 @@
 
             <!-- Información de puntos del oponente -->
             <div class="info-puntos-oponente">
-                <h3>Puntuación por recinto</h3>
+                <h3 data-es="Puntuación por recinto" data-en="Score by enclosure">Puntuación por recinto</h3>
                 <div class="puntos-detalle">
                     <div class="punto-item">
-                        <span>Bosque de la Semejanza:</span>
+                        <span data-es="Bosque de la Semejanza:" data-en="Forest of Resemblance:">Bosque de la Semejanza:</span>
                         <span id="puntos-bosque-semejanza">0 pts</span>
                     </div>
                     <div class="punto-item">
-                        <span>Trío Frondoso:</span>
+                        <span data-es="Trío Frondoso:" data-en="Leafy Trio:">Trío Frondoso:</span>
                         <span id="puntos-woody-trio">0 pts</span>
                     </div>
                     <div class="punto-item">
-                        <span>Pradera del Amor:</span>
+                        <span data-es="Pradera del Amor:" data-en="Meadow of Love:">Pradera del Amor:</span>
                         <span id="puntos-pradera-amor">0 pts</span>
                     </div>
                     <div class="punto-item">
-                        <span>Rey de la Jungla:</span>
+                        <span data-es="Rey de la Jungla:" data-en="King of the Jungle:">Rey de la Jungla:</span>
                         <span id="puntos-rey-jungla">0 pts</span>
                     </div>
                     <div class="punto-item">
-                        <span>Prado de la Diferencia:</span>
+                        <span data-es="Prado de la Diferencia:" data-en="Meadow of Difference:">Prado de la Diferencia:</span>
                         <span id="puntos-prado-diferencia">0 pts</span>
                     </div>
                     <div class="punto-item">
-                        <span>Isla Solitaria:</span>
+                        <span data-es="Isla Solitaria:" data-en="Lonely Island:">Isla Solitaria:</span>
                         <span id="puntos-isla-solitaria">0 pts</span>
                     </div>
                     <div class="punto-item">
-                        <span>Río:</span>
+                        <span data-es="Río:" data-en="River:">Río:</span>
                         <span id="puntos-rio">0 pts</span>
                     </div>
                     <div class="punto-item total">
-                        <span><strong>TOTAL:</strong></span>
+                        <span><strong data-es="TOTAL:" data-en="TOTAL:">TOTAL:</strong></span>
                         <span id="puntos-total-oponente"><strong>0 PUNTOS</strong></span>
                     </div>
                 </div>

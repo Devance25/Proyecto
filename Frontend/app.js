@@ -52,7 +52,37 @@ class LanguageManager {
         'game.finish.game': 'Finalizar partida',
         'game.next.round': 'Siguiente ronda',
         'game.no.dinosaurs': 'No hay dinosaurios disponibles',
-        'game.points': 'PUNTOS'
+        'game.points': 'PUNTOS',
+        'game.dice.rolled': '¡Dado lanzado!',
+        'game.map.of': 'MAPA DE',
+        'game.opponent': 'OPONENTE',
+        'game.pts': 'pts',
+        'game.select.more': 'Selecciona {count} más',
+        'game.confirm.selection': 'Confirmar selección',
+        'game.restriction.current': 'Restricción Actual',
+        'game.restriction.trex': 'Bloquea recintos con T-Rex',
+        'game.restriction.empty': 'Solo recintos vacíos',
+        'game.restriction.blocked': 'Recintos bloqueados',
+        'game.total.points': 'puntos totales',
+        'game.dino.returned': 'Dinosaurio devuelto a disponibles',
+        'game.max.dinosaurs': 'Máximo {max} dinosaurios',
+        'game.dice.rolling': '¡Dado girando...!',
+        'game.select.exact': 'Debes seleccionar exactamente {max} dinosaurios',
+        'game.error.save.bag': 'Error al guardar bolsa en el servidor',
+        'game.error.connection': 'Error de conexión con el servidor',
+        'game.place.dino.first': 'Debes colocar un dinosaurio primero',
+        'game.discard.dino.first': 'Debes descartar un dinosaurio primero',
+        'game.error.round': 'Error al procesar fin de ronda. Intenta nuevamente.',
+        'game.error.finish': 'Error al procesar fin de partida. Intenta nuevamente.',
+        'game.error.turn': 'Error al procesar turno. Intenta nuevamente.',
+        'game.error.server.response': 'Error procesando respuesta del servidor',
+        'game.error.server.data': 'Error procesando datos del servidor',
+        'game.error.connection.check': 'Error de conexión - Verifica tu internet',
+        'game.error.server.retry': 'Error del servidor - Intenta nuevamente',
+        'game.error.support': 'Error inesperado - Contacta soporte',
+        'game.error.incomplete': 'Respuesta incompleta del servidor',
+        'game.cancelled': 'Partida cancelada',
+        'game.confirm.cancel': '¿Estás seguro de que quieres cancelar la partida actual?'
       },
       en: {
         // Toast messages
@@ -95,7 +125,37 @@ class LanguageManager {
         'game.finish.game': 'Finish game',
         'game.next.round': 'Next round',
         'game.no.dinosaurs': 'No dinosaurs available',
-        'game.points': 'POINTS'
+        'game.points': 'POINTS',
+        'game.dice.rolled': 'Dice rolled!',
+        'game.map.of': 'MAP OF',
+        'game.opponent': 'OPPONENT',
+        'game.pts': 'pts',
+        'game.select.more': 'Select {count} more',
+        'game.confirm.selection': 'Confirm selection',
+        'game.restriction.current': 'Current Restriction',
+        'game.restriction.trex': 'Blocks enclosures with T-Rex',
+        'game.restriction.empty': 'Only empty enclosures',
+        'game.restriction.blocked': 'Blocked enclosures',
+        'game.total.points': 'total points',
+        'game.dino.returned': 'Dinosaur returned to available',
+        'game.max.dinosaurs': 'Maximum {max} dinosaurs',
+        'game.dice.rolling': 'Rolling dice...!',
+        'game.select.exact': 'You must select exactly {max} dinosaurs',
+        'game.error.save.bag': 'Error saving bag on server',
+        'game.error.connection': 'Server connection error',
+        'game.place.dino.first': 'You must place a dinosaur first',
+        'game.discard.dino.first': 'You must discard a dinosaur first',
+        'game.error.round': 'Error processing round end. Try again.',
+        'game.error.finish': 'Error processing game end. Try again.',
+        'game.error.turn': 'Error processing turn. Try again.',
+        'game.error.server.response': 'Error processing server response',
+        'game.error.server.data': 'Error processing server data',
+        'game.error.connection.check': 'Connection error - Check your internet',
+        'game.error.server.retry': 'Server error - Try again',
+        'game.error.support': 'Unexpected error - Contact support',
+        'game.error.incomplete': 'Incomplete server response',
+        'game.cancelled': 'Game cancelled',
+        'game.confirm.cancel': 'Are you sure you want to cancel the current game?'
       }
     };
     
@@ -1242,7 +1302,7 @@ class AppState {
     cont.classList.remove('spinning');
     cont.classList.add('final');
     
-    if (texto) texto.textContent = '¡Dado lanzado!';
+    if (texto) texto.textContent = this.languageManager.getMessage('game.dice.rolled');
     
     setTimeout(() => this.mostrarResultadoDado(this.dadoSeleccionado), 800);
   }
@@ -1285,7 +1345,7 @@ class AppState {
     cont.classList.remove('spinning', 'final');
     cont.classList.add('spinning');
     
-    if (texto) texto.textContent = '¡Dado girando...!';
+    if (texto) texto.textContent = this.languageManager.getMessage('game.dice.rolling') || '¡Dado girando...!';
     
     // Array de imágenes para la animación
     const dados = [
@@ -1312,7 +1372,7 @@ class AppState {
         cont.classList.remove('spinning');
         cont.classList.add('final');
         
-        if (texto) texto.textContent = '¡Dado lanzado!';
+        if (texto) texto.textContent = this.languageManager.getMessage('game.dice.rolled');
         
         // Mostrar resultado después de un breve delay
         setTimeout(() => this.mostrarResultadoDado(this.dadoSeleccionado), 800);
@@ -1338,7 +1398,7 @@ class AppState {
     cont.classList.remove('spinning', 'final');
     cont.classList.add('spinning');
     
-    if (texto) texto.textContent = '¡Dado girando...!';
+    if (texto) texto.textContent = this.languageManager.getMessage('game.dice.rolling') || '¡Dado girando...!';
     
     // Array de imágenes para la animación
     const dados = [
@@ -1365,7 +1425,7 @@ class AppState {
         cont.classList.remove('spinning');
         cont.classList.add('final');
         
-        if (texto) texto.textContent = '¡Dado lanzado!';
+        if (texto) texto.textContent = this.languageManager.getMessage('game.dice.rolled');
         
         // Después de la animación, mostrar el popup del dado para que el usuario presione "Continuar"
         setTimeout(() => {
@@ -1376,45 +1436,23 @@ class AppState {
   }
 
   mostrarResultadoDado(dadoNumero) {
+    // Usar la configuración del tablero (ya tiene traducciones)
+    const restriccionConfig = window.CONFIG?.RESTRICCIONES_DADO?.[dadoNumero];
+    if (!restriccionConfig) return;
+    
+    const lang = this.languageManager.currentLang;
     const config = {
-      1: {
-        titulo: 'Huella (libre)',
-        descripcion: '¡Tablero completamente libre! Podés colocar el dinosaurio en cualquier recinto sin restricciones. Es la cara más flexible del dado.',
-        imagen: 'img/dado-huella.png'
-      },
-      2: {
-        titulo: 'No T-Rex',
-        descripcion: 'El Rey de la Jungla está bloqueado. Podés colocar en cualquier otro recinto: Bosque de la Semejanza, Prado de la Diferencia, Pradera del Amor, Trío Frondoso, Isla Solitaria o el Río.',
-        imagen: 'img/dado-no-trex.png'
-      },
-      3: {
-        titulo: 'Lado Cafetería',
-        descripcion: 'Recintos disponibles: Bosque de la Semejanza, Trío Frondoso, Pradera del Amor. Los recintos del lado izquierdo del tablero están abiertos. Si no podés cumplir, poné el dinosaurio en el río.',
-        imagen: 'img/dado-cafe.png'
-      },
-      4: {
-        titulo: 'Lado Baños',
-        descripcion: 'Recintos bloqueados: Rey de la Jungla, Prado de la Diferencia, Isla Solitaria. Podés colocar en cualquier otro recinto: Bosque de la Semejanza, Trío Frondoso, Pradera del Amor o el Río.',
-        imagen: 'img/dado-banos.png'
-      },
-      5: {
-        titulo: 'Bosque',
-        descripcion: 'Recintos disponibles: Trío Frondoso, Bosque de la Semejanza, Rey de la Jungla. Los recintos con temática de bosque están abiertos. Si no podés cumplir, poné el dinosaurio en el río.',
-        imagen: 'img/dado-bosque.png'
-      },
-      6: {
-        titulo: 'Rocas / Pradera',
-        descripcion: 'Recintos disponibles: Prado de la Diferencia, Isla Solitaria, Pradera del Amor. Los recintos con temática de pradera y rocas están abiertos. Si no podés cumplir, poné el dinosaurio en el río.',
-        imagen: 'img/dado-rocas.png'
-      }
+      titulo: typeof restriccionConfig.titulo === 'object' ? restriccionConfig.titulo[lang] : restriccionConfig.titulo,
+      descripcion: typeof restriccionConfig.descripcion === 'object' ? restriccionConfig.descripcion[lang] : restriccionConfig.descripcion,
+      imagen: `img/${restriccionConfig.imagen}.png`
     };
     
-    this.updatePopupContent(config[dadoNumero]);
+    this.updatePopupContent(config);
     this.showScreen('dado-resultado');
     
     const btn = document.getElementById('btn-comenzar-juego');
     if (btn) {
-      btn.textContent = 'Continuar';
+      btn.textContent = lang === 'en' ? 'Continue' : 'Continuar';
       btn.onclick = () => this.comenzarJuego();
     }
   }
