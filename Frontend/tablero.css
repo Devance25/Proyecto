@@ -2047,17 +2047,26 @@ div.popup-overlay:not(.hidden) {
   .info-jugador-base,
   .info-jugador,
   .info-jugador2 {
-    padding: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
     font-size: var(--font-size-base);
     backdrop-filter: none;
   }
 
-  .avatar-circular { width: 40px; height: 40px; }
+  .avatar-circular { 
+    width: 40px; 
+    height: 40px; 
+    margin-right: var(--space-md);
+  }
 
   .info-texto {
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
+    gap: 8px;
+  }
+
+  .ver-mapa {
+    margin-top: var(--space-xs);
   }
 
   /* Jugador Activo en Desktop */

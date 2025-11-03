@@ -885,25 +885,9 @@ class AppState {
     this.players = nombres.slice(0, 2);
     this.jugador2Info = jugador2Info;
     
-    // NUEVO: Si el jugador 2 empieza, intercambiar los datos para mantener consistencia
-    if (primerJugador === 2) {
-      // Intercambiar nombres en el array
-      [this.players[0], this.players[1]] = [this.players[1], this.players[0]];
-      
-      // Intercambiar jugador1Info y jugador2Info
-      const tempJugador1 = this.jugador1Info ? { ...this.jugador1Info } : null;
-      this.jugador1Info = this.jugador2Info ? { ...this.jugador2Info } : null;
-      this.jugador2Info = tempJugador1;
-      
-      // Actualizar nombres después del intercambio
-      nombres = [this.players[0], this.players[1]];
-      jugador2Info = this.jugador2Info;
-      
-      // Ahora el que empieza es siempre el jugador 1
-      primerJugador = 1;
-      
-      console.log('Intercambio realizado - Jugador 2 elegido empezará como Jugador 1');
-    }
+    // MODIFICADO: NO intercambiar jugador1Info y jugador2Info para mantener avatares consistentes
+    // Los avatares deben permanecer: jugador1Info = foto_usuario-1.png, jugador2Info = foto_usuario-2.png
+    // El backend recibirá el primerJugador correcto sin necesidad de intercambiar IDs
     
     // NUEVO: Crear partida en backend si ambos son usuarios registrados
     if (this.jugador1Info?.id && this.jugador2Info?.id) {
@@ -966,9 +950,18 @@ class AppState {
     
     if (this.esModoSeguimiento()) {
       const nombreJugador = nombres[primerJugador - 1];
-      const avatarSrc = primerJugador === 1 ? 
-        'img/foto_usuario-1.png' : 
-        (jugador2Info.tipo === 'invitado' ? 'img/invitado.png' : 'img/foto_usuario-2.png');
+      
+      // Determinar qué jugadorInfo corresponde al primer jugador
+      const jugadorQueEmpieza = primerJugador === 1 ? this.jugador1Info : jugador2Info;
+      
+      // Asignar avatar correcto: Jugador 1 siempre usa foto_usuario-1.png, Jugador 2 usa foto_usuario-2.png
+      let avatarSrc;
+      if (jugadorQueEmpieza?.tipo === 'invitado') {
+        avatarSrc = 'img/invitado.png';
+      } else {
+        avatarSrc = (jugadorQueEmpieza === this.jugador1Info) ? 
+          'img/foto_usuario-1.png' : 'img/foto_usuario-2.png';
+      }
       
       this.mostrarTurnoJugadorConSeleccion(nombreJugador, avatarSrc);
     } else {

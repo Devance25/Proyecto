@@ -1159,7 +1159,7 @@ const PopupManager = {
 
   cerrar(popupId) {
     const puedeSerCerrado = (popup) => {
-      return !(popup.id === 'popup-descarte' && !estadoJuego.puedePasarTurno) &&
+      return !(popup.id === 'popup-descarte' && estadoJuego.yaColocoEnTurno && !estadoJuego.yaDescarto) &&
         popup.id !== 'popup-seleccion-dinosaurios' &&
         popup.id !== 'popup-seleccion-dado';
     };
@@ -1179,7 +1179,7 @@ const PopupManager = {
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains('popup-overlay')) {
         const popup = e.target;
-        if (popup.id === 'popup-descarte' && !estadoJuego.puedePasarTurno) return;
+        if (popup.id === 'popup-descarte' && estadoJuego.yaColocoEnTurno && !estadoJuego.yaDescarto) return;
         if (popup.id === 'popup-seleccion-dinosaurios') return;
         if (popup.id === 'popup-seleccion-dado') return;
         Utils.togglePopup(popup, false);
@@ -1191,7 +1191,7 @@ const PopupManager = {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const popup = btn.closest('.popup-overlay');
-        if (popup?.id === 'popup-descarte' && !estadoJuego.puedePasarTurno && estadoJuego.yaColocoEnTurno) return;
+        if (popup?.id === 'popup-descarte' && estadoJuego.yaColocoEnTurno && !estadoJuego.yaDescarto) return;
         if (popup?.id === 'popup-seleccion-dinosaurios') return;
         if (popup?.id === 'popup-seleccion-dado') return;
         Utils.togglePopup(popup, false);
@@ -1202,7 +1202,7 @@ const PopupManager = {
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         document.querySelectorAll('.popup-overlay:not(.hidden)').forEach(popup => {
-          if (popup.id === 'popup-descarte' && !estadoJuego.puedePasarTurno) return;
+          if (popup.id === 'popup-descarte' && estadoJuego.yaColocoEnTurno && !estadoJuego.yaDescarto) return;
           if (popup.id === 'popup-seleccion-dinosaurios') return;
           if (popup.id === 'popup-seleccion-dado') return;
           Utils.togglePopup(popup, false);
@@ -2857,8 +2857,9 @@ const JuegoManager = {
       if (infoJugadorAbajo?.tipo === 'invitado') {
         avatarJugador1Bottom.src = 'img/invitado.png';
       } else {
-        // INVERTIR: jugador1_id usa foto_usuario-2.png, jugador2_id usa foto_usuario-1.png
-        avatarJugador1Bottom.src = esJugador1BackendAbajo ? 'img/foto_usuario-2.png' : 'img/foto_usuario-1.png';
+        // Jugador 1 (logueado) siempre usa foto_usuario-1.png, Jugador 2 usa foto_usuario-2.png
+        avatarJugador1Bottom.src = (infoJugadorAbajo === window.app?.jugador1Info) ? 
+          'img/foto_usuario-1.png' : 'img/foto_usuario-2.png';
       }
     }
 
@@ -2871,8 +2872,9 @@ const JuegoManager = {
       if (infoJugadorArriba?.tipo === 'invitado') {
         avatarJugador2Top.src = 'img/invitado.png';
       } else {
-        // INVERTIR: jugador1_id usa foto_usuario-2.png, jugador2_id usa foto_usuario-1.png
-        avatarJugador2Top.src = esJugador1BackendArriba ? 'img/foto_usuario-2.png' : 'img/foto_usuario-1.png';
+        // Jugador 1 (logueado) siempre usa foto_usuario-1.png, Jugador 2 usa foto_usuario-2.png
+        avatarJugador2Top.src = (infoJugadorArriba === window.app?.jugador1Info) ? 
+          'img/foto_usuario-1.png' : 'img/foto_usuario-2.png';
       }
     }
 
@@ -2965,7 +2967,7 @@ const JuegoManager = {
       if (elem) elem.textContent = valor;
     });
 
-    // Actualizar avatares dinámicamente
+    // Actualizar avatares dinámicamente - Jugador 1 siempre usa foto_usuario-1.png, Jugador 2 usa foto_usuario-2.png
     const avatarJugador1 = document.getElementById('avatar-resumen-j1');
     const avatarJugador2 = document.getElementById('avatar-resumen-j2');
     
@@ -3045,9 +3047,19 @@ const JuegoManager = {
 
     if (estadoJuego.modoSeguimiento) {
       const jugador = estadoJuego[`jugador${estadoJuego.primerJugador}`];
-      const avatarSrc = estadoJuego.primerJugador === 1 ?
-        'img/foto_usuario-1.png' :
-        (window.app?.jugador2Info?.tipo === 'invitado' ? 'img/invitado.png' : 'img/foto_usuario-2.png');
+      
+      // Determinar qué jugadorInfo corresponde al jugador actual
+      const jugadorInfo = (jugador.id === window.app?.jugador1Info?.id) ? 
+        window.app?.jugador1Info : window.app?.jugador2Info;
+      
+      // Asignar avatar correcto: Jugador 1 siempre usa foto_usuario-1.png, Jugador 2 usa foto_usuario-2.png
+      let avatarSrc;
+      if (jugadorInfo?.tipo === 'invitado') {
+        avatarSrc = 'img/invitado.png';
+      } else {
+        avatarSrc = (jugadorInfo === window.app?.jugador1Info) ? 
+          'img/foto_usuario-1.png' : 'img/foto_usuario-2.png';
+      }
 
       if (window.app?.mostrarTurnoJugadorConSeleccion) {
         window.app.mostrarTurnoJugadorConSeleccion(jugador.nombre, avatarSrc);
@@ -3097,11 +3109,16 @@ const JuegoManager = {
     if (nombreGanador) nombreGanador.textContent = ganador.nombre.toUpperCase();
     if (puntosGanador) puntosGanador.textContent = `${ganador.puntos} puntos`;
     if (avatarGanador) {
-      if (ganador === j1) {
-        avatarGanador.style.backgroundImage = 'url("img/foto_usuario-1.png")';
+      // Determinar qué jugadorInfo corresponde al ganador
+      const ganadorInfo = (ganador.id === window.app?.jugador1Info?.id) ? 
+        window.app?.jugador1Info : window.app?.jugador2Info;
+      
+      if (ganadorInfo?.tipo === 'invitado') {
+        avatarGanador.style.backgroundImage = 'url("img/invitado.png")';
       } else {
-        avatarGanador.style.backgroundImage = window.app?.jugador2Info?.tipo === 'invitado' ?
-          'url("img/invitado.png")' : 'url("img/foto_usuario-2.png")';
+        // Jugador 1 siempre usa foto_usuario-1.png, Jugador 2 usa foto_usuario-2.png
+        avatarGanador.style.backgroundImage = (ganadorInfo === window.app?.jugador1Info) ?
+          'url("img/foto_usuario-1.png")' : 'url("img/foto_usuario-2.png")';
       }
     }
 
@@ -3113,11 +3130,16 @@ const JuegoManager = {
     if (nombrePerdedor) nombrePerdedor.textContent = perdedor.nombre.toUpperCase();
     if (puntosPerdedor) puntosPerdedor.textContent = `${perdedor.puntos} puntos`;
     if (avatarPerdedor) {
-      if (perdedor === j1) {
-        avatarPerdedor.style.backgroundImage = 'url("img/foto_usuario-1.png")';
+      // Determinar qué jugadorInfo corresponde al perdedor
+      const perdedorInfo = (perdedor.id === window.app?.jugador1Info?.id) ? 
+        window.app?.jugador1Info : window.app?.jugador2Info;
+      
+      if (perdedorInfo?.tipo === 'invitado') {
+        avatarPerdedor.style.backgroundImage = 'url("img/invitado.png")';
       } else {
-        avatarPerdedor.style.backgroundImage = window.app?.jugador2Info?.tipo === 'invitado' ?
-          'url("img/invitado.png")' : 'url("img/foto_usuario-2.png")';
+        // Jugador 1 siempre usa foto_usuario-1.png, Jugador 2 usa foto_usuario-2.png
+        avatarPerdedor.style.backgroundImage = (perdedorInfo === window.app?.jugador1Info) ?
+          'url("img/foto_usuario-1.png")' : 'url("img/foto_usuario-2.png")';
       }
     }
 
@@ -3126,20 +3148,30 @@ const JuegoManager = {
     const avatarSegundo = document.getElementById('avatar-segundo');
 
     if (avatarPrimero) {
-      if (ganador === j1) {
-        avatarPrimero.style.backgroundImage = 'url("img/foto_usuario-1.png")';
+      // Determinar qué jugadorInfo corresponde al ganador
+      const ganadorInfo = (ganador.id === window.app?.jugador1Info?.id) ? 
+        window.app?.jugador1Info : window.app?.jugador2Info;
+      
+      if (ganadorInfo?.tipo === 'invitado') {
+        avatarPrimero.style.backgroundImage = 'url("img/invitado.png")';
       } else {
-        avatarPrimero.style.backgroundImage = window.app?.jugador2Info?.tipo === 'invitado' ?
-          'url("img/invitado.png")' : 'url("img/foto_usuario-2.png")';
+        // Jugador 1 siempre usa foto_usuario-1.png, Jugador 2 usa foto_usuario-2.png
+        avatarPrimero.style.backgroundImage = (ganadorInfo === window.app?.jugador1Info) ?
+          'url("img/foto_usuario-1.png")' : 'url("img/foto_usuario-2.png")';
       }
     }
 
     if (avatarSegundo) {
-      if (perdedor === j1) {
-        avatarSegundo.style.backgroundImage = 'url("img/foto_usuario-1.png")';
+      // Determinar qué jugadorInfo corresponde al perdedor
+      const perdedorInfo = (perdedor.id === window.app?.jugador1Info?.id) ? 
+        window.app?.jugador1Info : window.app?.jugador2Info;
+      
+      if (perdedorInfo?.tipo === 'invitado') {
+        avatarSegundo.style.backgroundImage = 'url("img/invitado.png")';
       } else {
-        avatarSegundo.style.backgroundImage = window.app?.jugador2Info?.tipo === 'invitado' ?
-          'url("img/invitado.png")' : 'url("img/foto_usuario-2.png")';
+        // Jugador 1 siempre usa foto_usuario-1.png, Jugador 2 usa foto_usuario-2.png
+        avatarSegundo.style.backgroundImage = (perdedorInfo === window.app?.jugador1Info) ?
+          'url("img/foto_usuario-1.png")' : 'url("img/foto_usuario-2.png")';
       }
     }
   },
