@@ -58,6 +58,11 @@ class Reglas
 
             case 'vacio':
             foreach($porRecinto as $recinto=>$dino){
+                // El río nunca se bloquea con la restricción "vacio" (huella libre)
+                // porque técnicamente no es un recinto, es donde se descartan los dinosaurios
+                if($recinto === 'rio'){
+                    continue;
+                }
                 if(!empty($dino)){
                     $recintosRestringidos[] = $recinto;
                     continue;
@@ -166,6 +171,11 @@ class Reglas
     //==========================================================================================================================================================
     public function reglasReyDeLaSelva(array $porRecinto1, array $porRecinto2): int
     {
+        // Verificar que existe el recinto rey-jungla y tiene elementos
+        if (!isset($porRecinto1['rey-jungla']) || empty($porRecinto1['rey-jungla'])) {
+            return 0;
+        }
+
         $reyDeLaSelva = $porRecinto1['rey-jungla'][0];
         $conteoDinos1 = 0;
         $conteoTipoRey1 = 0;
@@ -173,7 +183,7 @@ class Reglas
         foreach($porRecinto1 as $recinto=>$dinos){
             
             $conteoDinos1 = array_count_values($dinos);
-            $conteoTipoRey1 += $conteoDinos1[$reyDeLaSelva];
+            $conteoTipoRey1 += isset($conteoDinos1[$reyDeLaSelva]) ? $conteoDinos1[$reyDeLaSelva] : 0;
         }
 
         $conteoDinos2 = 0;
@@ -181,7 +191,7 @@ class Reglas
         foreach($porRecinto2 as $recinto=>$dinos){
 
             $conteoDinos2 = array_count_values($dinos);
-            $conteoTipoRey2 += $conteoDinos2[$reyDeLaSelva];
+            $conteoTipoRey2 += isset($conteoDinos2[$reyDeLaSelva]) ? $conteoDinos2[$reyDeLaSelva] : 0;
         }
         if($conteoTipoRey1 >= $conteoTipoRey2){
             return 7;
@@ -194,6 +204,10 @@ class Reglas
     //==========================================================================================================================================================
     public function reglasIslaSolitaria(array $dinos, array $porRecinto1): int   //Recibe como parametro el dino de la isla y los demas recintos con sus respectivos dinos.
     {
+        // Verificar que hay dinosaurios en la isla solitaria
+        if (empty($dinos)) {
+            return 0;
+        }
         $dinoSolitario = $dinos[0];     //Guarda en la variable el dino 'solitario'
         $dinosEnTablero = [];           //Crea array para guardar a todos los dinos del tablero.
 

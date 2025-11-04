@@ -1,83 +1,446 @@
-/*
-=============================================================================
-APLICACIÓN PRINCIPAL - GESTIÓN DE ESTADO Y NAVEGACIÓN
-=============================================================================
-*/
+// ============================================================================
+// CONFIGURACIÓN GLOBAL Y ESTADO DE LA APLICACIÓN
+// ============================================================================
 
 /**
- * Clase principal que maneja todo el estado y flujo de la aplicación
- * Controla navegación entre pantallas, validaciones, autenticación y 
- * coordinación con el sistema de juego (tablero.js)
+ * GESTOR DE IDIOMAS - SISTEMA SIMPLE CON ATRIBUTOS HTML
+ */
+class LanguageManager {
+  constructor() {
+    this.currentLang = localStorage.getItem('draftosaurus_lang') || 'es';
+    
+    // Traducciones para mensajes dinámicos (toasts, validaciones, etc.)
+    this.messages = {
+      es: {
+        // Toast messages
+        'login.welcome': '¡Bienvenido de vuelta!',
+        'login.welcome.admin': '¡Bienvenido, Administrador!',
+        'login.invalid': 'Credenciales inválidas',
+        'login.error': 'Error al conectar con el servidor',
+        'register.success': '¡Cuenta creada exitosamente!',
+        'register.error': 'Error al registrarse',
+        'logout': 'Sesión cerrada',
+        'tracking.activated': 'Modo seguimiento activado',
+        'game.created': 'Partida creada exitosamente',
+        'player2.login.error': 'Credenciales inválidas para el jugador 2',
+        'player2.same.error': 'El jugador 2 debe ser diferente al jugador 1',
+        'player2.login.success': 'Jugador 2 logueado correctamente',
+        'player2.password.required': 'Ingresa la contraseña del jugador 2',
+        // Validaciones
+        'validation.name.max': 'Nombre máximo {max} caracteres',
+        'validation.name.letters': 'Solo se permiten letras y espacios',
+        'validation.username.max': 'Usuario máximo {max} caracteres',
+        'validation.username.format': 'Solo letras, números y guión bajo',
+        'validation.age.min': 'Debes tener al menos {min} años',
+        'error.unexpected': 'Ha ocurrido un error inesperado',
+        'error.async': 'Error en operación asíncrona',
+        // Admin
+        'admin.user.deleted': 'Usuario eliminado correctamente',
+        'admin.user.delete.error': 'Error al eliminar usuario',
+        'admin.user.modified': 'Usuario modificado correctamente',
+        'admin.user.modify.error': 'Error al modificar usuario',
+        'admin.user.created': 'Usuario creado correctamente',
+        'admin.user.create.error': 'Error al crear usuario',
+        // Game elements
+        'game.no.restriction': 'Sin restricción',
+        'game.all.enclosures': 'Todos los recintos disponibles',
+        'game.roll.dice': 'Tirar dado',
+        'game.drag.dinosaur': 'Arrastra un dinosaurio',
+        'game.discard.dinosaur': 'Descarta dinosaurio',
+        'game.send.turn': 'Enviar turno',
+        'game.finish.round': 'Finalizar ronda',
+        'game.finish.game': 'Finalizar partida',
+        'game.next.round': 'Siguiente ronda',
+        'game.no.dinosaurs': 'No hay dinosaurios disponibles',
+        'game.points': 'PUNTOS',
+        'game.dice.rolled': '¡Dado lanzado!',
+        'game.map.of': 'MAPA DE',
+        'game.opponent': 'OPONENTE',
+        'game.pts': 'pts',
+        'game.select.more': 'Selecciona {count} más',
+        'game.confirm.selection': 'Confirmar selección',
+        'game.restriction.current': 'Restricción Actual',
+        'game.restriction.trex': 'Bloquea recintos con T-Rex',
+        'game.restriction.empty': 'Solo recintos vacíos',
+        'game.restriction.blocked': 'Recintos bloqueados',
+        'game.total.points': 'puntos totales',
+        'game.dino.returned': 'Dinosaurio devuelto a disponibles',
+        'game.max.dinosaurs': 'Máximo {max} dinosaurios',
+        'game.dice.rolling': '¡Dado girando...!',
+        'game.select.exact': 'Debes seleccionar exactamente {max} dinosaurios',
+        'game.error.save.bag': 'Error al guardar bolsa en el servidor',
+        'game.error.connection': 'Error de conexión con el servidor',
+        'game.place.dino.first': 'Debes colocar un dinosaurio primero',
+        'game.discard.dino.first': 'Debes descartar un dinosaurio primero',
+        'game.error.round': 'Error al procesar fin de ronda. Intenta nuevamente.',
+        'game.error.finish': 'Error al procesar fin de partida. Intenta nuevamente.',
+        'game.error.turn': 'Error al procesar turno. Intenta nuevamente.',
+        'game.error.server.response': 'Error procesando respuesta del servidor',
+        'game.error.server.data': 'Error procesando datos del servidor',
+        'game.error.connection.check': 'Error de conexión - Verifica tu internet',
+        'game.error.server.retry': 'Error del servidor - Intenta nuevamente',
+        'game.error.support': 'Error inesperado - Contacta soporte',
+        'game.error.incomplete': 'Respuesta incompleta del servidor',
+        'game.cancelled': 'Partida cancelada',
+        'game.confirm.cancel': '¿Estás seguro de que quieres cancelar la partida actual?',
+        'ranking.loading': 'Cargando ranking...',
+        'ranking.error': 'Error al cargar el ranking',
+        'ranking.empty': 'No hay jugadores en el ranking aún'
+      },
+      en: {
+        // Toast messages
+        'login.welcome': 'Welcome back!',
+        'login.welcome.admin': 'Welcome, Administrator!',
+        'login.invalid': 'Invalid credentials',
+        'login.error': 'Error connecting to server',
+        'register.success': 'Account created successfully!',
+        'register.error': 'Registration error',
+        'logout': 'Session closed',
+        'tracking.activated': 'Tracking mode activated',
+        'game.created': 'Game created successfully',
+        'player2.login.error': 'Invalid credentials for player 2',
+        'player2.same.error': 'Player 2 must be different from player 1',
+        'player2.login.success': 'Player 2 logged in successfully',
+        'player2.password.required': 'Enter player 2 password',
+        // Validaciones
+        'validation.name.max': 'Maximum name {max} characters',
+        'validation.name.letters': 'Only letters and spaces allowed',
+        'validation.username.max': 'Maximum username {max} characters',
+        'validation.username.format': 'Only letters, numbers and underscore',
+        'validation.age.min': 'You must be at least {min} years old',
+        'error.unexpected': 'An unexpected error occurred',
+        'error.async': 'Error in asynchronous operation',
+        // Admin
+        'admin.user.deleted': 'User deleted successfully',
+        'admin.user.delete.error': 'Error deleting user',
+        'admin.user.modified': 'User modified successfully',
+        'admin.user.modify.error': 'Error modifying user',
+        'admin.user.created': 'User created successfully',
+        'admin.user.create.error': 'Error creating user',
+        // Game elements
+        'game.no.restriction': 'No restriction',
+        'game.all.enclosures': 'All enclosures available',
+        'game.roll.dice': 'Roll dice',
+        'game.drag.dinosaur': 'Drag a dinosaur',
+        'game.discard.dinosaur': 'Discard dinosaur',
+        'game.send.turn': 'Send turn',
+        'game.finish.round': 'Finish round',
+        'game.finish.game': 'Finish game',
+        'game.next.round': 'Next round',
+        'game.no.dinosaurs': 'No dinosaurs available',
+        'game.points': 'POINTS',
+        'game.dice.rolled': 'Dice rolled!',
+        'game.map.of': 'MAP OF',
+        'game.opponent': 'OPPONENT',
+        'game.pts': 'pts',
+        'game.select.more': 'Select {count} more',
+        'game.confirm.selection': 'Confirm selection',
+        'game.restriction.current': 'Current Restriction',
+        'game.restriction.trex': 'Blocks enclosures with T-Rex',
+        'game.restriction.empty': 'Only empty enclosures',
+        'game.restriction.blocked': 'Blocked enclosures',
+        'game.total.points': 'total points',
+        'game.dino.returned': 'Dinosaur returned to available',
+        'game.max.dinosaurs': 'Maximum {max} dinosaurs',
+        'game.dice.rolling': 'Rolling dice...!',
+        'game.select.exact': 'You must select exactly {max} dinosaurs',
+        'game.error.save.bag': 'Error saving bag on server',
+        'game.error.connection': 'Server connection error',
+        'game.place.dino.first': 'You must place a dinosaur first',
+        'game.discard.dino.first': 'You must discard a dinosaur first',
+        'game.error.round': 'Error processing round end. Try again.',
+        'game.error.finish': 'Error processing game end. Try again.',
+        'game.error.turn': 'Error processing turn. Try again.',
+        'game.error.server.response': 'Error processing server response',
+        'game.error.server.data': 'Error processing server data',
+        'game.error.connection.check': 'Connection error - Check your internet',
+        'game.error.server.retry': 'Server error - Try again',
+        'game.error.support': 'Unexpected error - Contact support',
+        'game.error.incomplete': 'Incomplete server response',
+        'game.cancelled': 'Game cancelled',
+        'game.confirm.cancel': 'Are you sure you want to cancel the current game?',
+        'ranking.loading': 'Loading ranking...',
+        'ranking.error': 'Error loading ranking',
+        'ranking.empty': 'No players in ranking yet'
+      }
+    };
+    
+    this.init();
+  }
+  
+  init() {
+    // Event listeners para botones de idioma existentes
+    document.addEventListener('click', (e) => {
+      const langBtn = e.target.closest('[data-lang]');
+      if (langBtn) {
+        e.preventDefault(); // Prevenir comportamiento por defecto
+        e.stopPropagation(); // Evitar propagación
+        const lang = langBtn.getAttribute('data-lang');
+        this.changeLanguage(lang);
+      }
+    });
+    
+    // Aplicar idioma inicial cuando el DOM esté listo
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        this.applyLanguage(this.currentLang);
+      });
+    } else {
+      this.applyLanguage(this.currentLang);
+    }
+  }
+  
+  changeLanguage(lang) {
+    // Actualizar idioma aunque sea el mismo (para forzar re-render)
+    this.currentLang = lang;
+    localStorage.setItem('draftosaurus_lang', lang);
+    
+    // Aplicar cambios inmediatamente
+    this.applyLanguage(lang);
+    
+    // Actualizar el atributo lang del documento
+    document.documentElement.setAttribute('lang', lang);
+    
+    console.log(`Idioma cambiado a: ${lang}`); // Debug
+  }
+  
+  applyLanguage(lang) {
+    // Buscar todos los elementos con atributos de idioma
+    const elements = document.querySelectorAll('[data-es], [data-en]');
+    console.log(`Aplicando idioma ${lang} a ${elements.length} elementos`); // Debug
+    
+    elements.forEach(element => {
+      const text = element.getAttribute('data-' + lang);
+      if (text) {
+        // Si es un input, actualizar el placeholder
+        if (element.tagName === 'INPUT' && element.hasAttribute('placeholder')) {
+          element.placeholder = text;
+        } else if (element.tagName === 'TEXTAREA' && element.hasAttribute('placeholder')) {
+          element.placeholder = text;
+        } else {
+          element.textContent = text;
+        }
+      }
+    });
+    
+    // Actualizar el atributo lang del documento
+    document.documentElement.setAttribute('lang', lang);
+  }
+  
+  // Método para obtener texto en el idioma actual
+  getText(esText, enText) {
+    return this.currentLang === 'en' ? enText : esText;
+  }
+  
+  // Método para obtener mensaje dinámico con parámetros
+  getMessage(key, params = {}) {
+    let message = this.messages[this.currentLang][key] || this.messages.es[key] || key;
+    
+    // Reemplazar parámetros {param} en el mensaje
+    Object.keys(params).forEach(param => {
+      message = message.replace(new RegExp(`\\{${param}\\}`, 'g'), params[param]);
+    });
+    
+    return message;
+  }
+}
+
+/**
+ * CLASE PRINCIPAL DE LA APLICACIÓN - DRAFTOSAURUS DIGITAL
+ * 
+ * Esta clase maneja el estado global de la aplicación y coordina entre los dos modos:
+ * 
+ * 1. MODO JUEGO DIGITAL COMPLETO (modoSeguimiento = false):
+ *    - El sistema genera automáticamente las bolsas de dinosaurios
+ *    - El sistema tira el dado automáticamente
+ *    - Endpoints: /crearPartida, /turno, /finalizarRonda
+ * 
+ * 2. MODO SEGUIMIENTO (modoSeguimiento = true):
+ *    - El usuario selecciona manualmente los dinosaurios
+ *    - El usuario selecciona manualmente el resultado del dado
+ *    - Endpoints: /crearPartidaSeguimiento, /crearBolsaSeguimiento, /turnoSeguimiento
+ * 
+ * 3. FUNCIONES TRANSVERSALES:
+ *    - Autenticación, validaciones, UI común
  */
 class AppState {
   constructor() {
-    // En qué pantalla estamos actualmente
-    this.currentScreen = 'carga';          // Pantalla que se está mostrando
-    this.user = null;                      // Información del usuario que inició sesión
-    this.loading = false;                  // Si algo se está cargando
+    // ============================================================================
+    // CONFIGURACIÓN DE PANTALLAS Y ESTADO GENERAL
+    // ============================================================================
+    this.currentScreen = 'carga';
+    this.user = null;
+    this.loading = false;
+    this.players = [];
     
-    // Información sobre la partida
-    this.players = [];                     // Nombres de los dos jugadores
-    this.jugador2Info = null;              // Datos del segundo jugador
-    this.dadoSeleccionado = null;          // Número que salió en el dado
-    this.modoSeguimiento = false;          // Si el juego es manual o automático
+    // ============================================================================
+    // SISTEMA DE IDIOMAS
+    // ============================================================================
+    this.languageManager = new LanguageManager();
     
-    // Reglas para los formularios
-    // Cuántos caracteres mínimo y máximo puede tener cada campo
+    // ============================================================================
+    // INFORMACIÓN DE JUGADORES Y PARTIDA
+    // ============================================================================
+    this.jugador1Info = null; // Información del jugador 1
+    this.jugador2Info = null; // Información del jugador 2
+    this.partidaInfo = null;  // Información de la partida creada
+    this.dadoSeleccionado = null;
+    
+    // ============================================================================
+    // CONTROL DE MODOS DE JUEGO
+    // ============================================================================
+    this.modoSeguimiento = false; // false = Digital Completo, true = Seguimiento
+    
+    // ============================================================================
+    // CONFIGURACIÓN DE ENDPOINTS POR MODO
+    // ============================================================================
+    this.CONFIG_MODOS = {
+      DIGITAL_COMPLETO: {
+        nombre: 'Digital Completo',
+        modoSeguimiento: false,
+        descripcion: 'El sistema maneja automáticamente las bolsas y el dado',
+        endpoints: {
+          crearPartida: 'http://127.0.0.1:8000/crearPartida',
+          turno: 'http://127.0.0.1:8000/turno',
+          finalizarRonda: 'http://127.0.0.1:8000/finalizarRonda',
+          finalizarPartida: 'http://127.0.0.1:8000/finalizarPartida'
+        }
+      },
+      SEGUIMIENTO: {
+        nombre: 'Seguimiento',
+        modoSeguimiento: true,
+        descripcion: 'Para seguir partidas físicas reales',
+        endpoints: {
+          crearPartida: 'http://127.0.0.1:8000/crearPartidaSeguimiento',
+          crearBolsa: 'http://127.0.0.1:8000/crearBolsaSeguimiento',
+          turno: 'http://127.0.0.1:8000/turnoSeguimiento',
+          finalizarRonda: 'http://127.0.0.1:8000/finalizarRondaSeguimiento',
+          finalizarRondaSeguimiento: 'http://127.0.0.1:8000/finalizarRondaSeguimiento',
+          finalizarPartida: 'http://127.0.0.1:8000/finalizarPartida'
+        }
+      }
+    };
+    
     this.validationConfig = {
-      username: { min: 3, max: 15 },       // Límites para nombres de usuario
-      playerName: { min: 2, max: 12 },     // Límites para nombres de jugadores
-      password: { min: 6, max: 50 },       // Límites para contraseñas
-      minAge: 8                            // Edad mínima para registrarse
+      username: { min: 3, max: 15 },
+      playerName: { min: 2, max: 12 },
+      password: { min: 6, max: 50 },
+      minAge: 8
     };
     
     this.init();
   }
 
-  /**
-   * Inicialización principal de la aplicación
-   * Configura sistemas de eventos, validaciones y determina pantalla inicial
-   */
   init() {
-    // Configurar todas las funciones importantes de la aplicación
-    this.bindEvents();                  // Responder a clicks, envíos de formularios y teclas
-    this.setupFormValidation();         // Revisar que los formularios estén bien llenados
-    this.setupAccessibility();          // Hacer la app más fácil de usar para todos
-    this.setupBirthdateField();         // Configurar el campo de fecha de nacimiento
-    this.setupFormClickHandlers();      // Responder a clicks en los formularios
-    this.setupRealTimeValidation();     // Revisar formularios mientras el usuario escribe
+    this.bindEvents();
+    this.setupFormValidation();
+    this.setupAccessibility();
+    this.setupBirthdateField();
+    this.setupFormClickHandlers();
+    this.setupRealTimeValidation();
     
-    // Decidir qué pantalla mostrar al usuario cuando abre la aplicación
-    // Ver si el usuario ya había iniciado sesión antes
-    const usuarioGuardado = localStorage.getItem('usuario');
-    if (usuarioGuardado) {
-      // El usuario ya estaba logueado - llevarlo directo al menú principal
-      this.user = JSON.parse(usuarioGuardado);
+    // Pantalla de carga inicial
+    // MODIFICADO: Intentar recuperar sesión desde localStorage
+    const datosJuego = this.recuperarDatosJuego();
+    if (datosJuego && datosJuego.jugador1) {
+      this.user = datosJuego.jugador1;
+      this.jugador1Info = datosJuego.jugador1;
+      this.jugador2Info = datosJuego.jugador2 || null;
+      this.partidaInfo = datosJuego.partida || null;
       this.showScreen('lobby');
     } else {
-      // No hay sesión guardada - mostrar pantalla de inicio de sesión
       setTimeout(() => this.showScreen('login'), 1000);
     }
   }
 
-  /*
-  =============================================================================
-  SISTEMA DE EVENTOS GLOBALES
-  =============================================================================
-  */
+  // ============================================================================
+  // MÉTODOS DE CONFIGURACIÓN DE ENDPOINTS
+  // ============================================================================
+  
+  /**
+   * Obtiene el modo actual de juego
+   */
+  getModoActual() {
+    return this.modoSeguimiento ? 'SEGUIMIENTO' : 'DIGITAL_COMPLETO';
+  }
 
   /**
-   * Configura todas las funciones que escuchan clicks y teclas en la aplicación
-   * Esto permite que toda la aplicación responda a las acciones del usuario
+   * Obtiene la configuración del modo actual
    */
+  getConfigModo() {
+    return this.CONFIG_MODOS[this.getModoActual()];
+  }
+
+  /**
+   * Obtiene el endpoint para una acción específica
+   */
+  getEndpoint(accion) {
+    const config = this.getConfigModo();
+    return config?.endpoints?.[accion] || null;
+  }
+
+  /**
+   * Establece el modo de juego
+   */
+  setModo(modo) {
+    this.modoSeguimiento = modo === 'SEGUIMIENTO';
+  }
+
+  /**
+   * Verifica si está en modo seguimiento
+   */
+  esModoSeguimiento() {
+    return this.modoSeguimiento;
+  }
+
+  /**
+   * Verifica si está en modo digital completo
+   */
+  esModoDigitalCompleto() {
+    return !this.modoSeguimiento;
+  }
+
+  // NUEVO: Métodos para manejar datos en localStorage
+  recuperarDatosJuego() {
+    try {
+      const datosGuardados = localStorage.getItem('datosJuego');
+      return datosGuardados ? JSON.parse(datosGuardados) : null;
+    } catch (error) {
+      console.error('Error al recuperar datos del juego:', error);
+      return null;
+    }
+  }
+
+  guardarDatosJuego() {
+    try {
+      const datosJuego = {
+        jugador1: this.jugador1Info,
+        jugador2: this.jugador2Info,
+        partida: this.partidaInfo,
+        fechaGuardado: new Date().toISOString()
+      };
+      localStorage.setItem('datosJuego', JSON.stringify(datosJuego));
+      console.log('Datos del juego guardados:', datosJuego);
+    } catch (error) {
+      console.error('Error al guardar datos del juego:', error);
+    }
+  }
+
+  limpiarDatosJuego() {
+    localStorage.removeItem('datosJuego');
+    this.jugador1Info = null;
+    this.jugador2Info = null;
+    this.partidaInfo = null;
+  }
+
+  // ============================================================================
+  // SISTEMA DE EVENTOS Y MANEJO DE INTERACCIONES
+  // ============================================================================
   bindEvents() {
-    // Escuchar cuando el usuario hace algo en la aplicación
     document.addEventListener('click', this.handleClick.bind(this));
     document.addEventListener('submit', this.handleSubmit.bind(this));
     document.addEventListener('keydown', this.handleKeydown.bind(this));
     
-    // Comportamiento especial cuando presiona Enter en los formularios
-    // No envía el formulario si hay errores
     document.addEventListener('keydown', e => {
       if (e.key === 'Enter' && e.target.matches('input:not([type="submit"])')) {
         const form = e.target.closest('form');
@@ -88,18 +451,14 @@ class AppState {
     });
   }
 
-  /**
-   * Decide qué hacer cuando el usuario hace clic en algún botón o elemento
-   * Busca el ID del elemento clicado y ejecuta la acción correspondiente
-   * @param {Event} e - Información del clic que hizo el usuario
-   */
   handleClick(e) {
     const target = e.target.closest('[id]');
     if (!target) return;
     
-    // Lista que conecta cada botón (por su ID) con lo que debe hacer
     const actions = {
-      // Cambiar entre las pantallas de login y registro
+      // ============================================================================
+      // EVENTOS TRANSVERSALES (Comunes a ambos modos)
+      // ============================================================================
       'link-registro': () => {
         e.preventDefault();
         this.showScreen('registro');
@@ -108,23 +467,22 @@ class AppState {
         e.preventDefault();
         this.showScreen('login');
       },
-      
-      // Cerrar sesión del usuario
       'btn-logout': () => this.logout(),
       'btn-salir-admin': () => this.logout(),
-      
-      // Formas de jugar
-      'btn-jugar-app': () => {
-        this.modoSeguimiento = false;
-        this.showScreen('jugadores');
-      },
-      'btn-modo-asistente': () => this.iniciarModoSeguimiento(),
-      
-      // Volver a pantallas anteriores
       'btn-volver-jugadores': () => this.showScreen('lobby'),
       'btn-volver-seleccion': () => this.showScreen('jugadores'),
+      'btn-siguiente-ronda': () => this.siguienteRonda(),
+      'btn-revancha': () => this.revancha(),
+      'btn-nueva-partida': () => this.nuevaPartida(),
+      'btn-volver-inicio-final': () => this.showScreen('lobby'),
       
-      // Elegir quién juega primero
+      // ============================================================================
+      // EVENTOS ESPECÍFICOS DE MODO JUEGO DIGITAL COMPLETO
+      // ============================================================================
+      'btn-jugar-app': () => {
+        this.modoSeguimiento = false; // Activar modo digital completo
+        this.showScreen('jugadores');
+      },
       'btn-seleccionar-j1': () => {
         if (!this.seleccionEnCurso) {
           this.seleccionEnCurso = true;
@@ -138,27 +496,29 @@ class AppState {
         }
       },
       'btn-seleccion-aleatoria': () => this.seleccionAleatoria(),
-      
-      // Controlar la partida
-      'btn-empezar-turno': () => this.empezarTurnoSeguimiento(),
       'btn-comenzar-juego': () => this.comenzarJuego(),
-      'btn-siguiente-ronda': () => this.siguienteRonda(),
-      'btn-revancha': () => this.revancha(),
-      'btn-nueva-partida': () => this.nuevaPartida(),
-      'btn-volver-inicio-final': () => this.showScreen('lobby')
+      
+      // ============================================================================
+      // EVENTOS ESPECÍFICOS DE MODO SEGUIMIENTO
+      // ============================================================================
+      'btn-modo-asistente': () => this.iniciarModoSeguimiento(),
+      'btn-empezar-turno': () => this.empezarTurnoSeguimiento(),
+      
+      // ============================================================================
+      // PANTALLA DE RANKING
+      // ============================================================================
+      'btn-ver-ranking': () => {
+        this.cargarRanking();
+        this.showScreen('ranking');
+      },
+      'btn-volver-ranking': () => this.showScreen('lobby')
     };
     
-    // Ejecutar la función correspondiente si encontramos el botón en nuestra lista
     if (actions[target.id]) {
       actions[target.id]();
     }
   }
 
-  /**
-   * Maneja todos los eventos de envío de formularios
-   * Previene comportamiento por defecto y delega a funciones específicas
-   * @param {Event} e - Evento de envío del formulario
-   */
   handleSubmit(e) {
     e.preventDefault();
     const formActions = {
@@ -172,138 +532,93 @@ class AppState {
     }
   }
 
-  /**
-   * Maneja eventos globales de teclado
-   * @param {KeyboardEvent} e - Evento de teclado
-   */
   handleKeydown(e) {
     if (e.key === 'Escape') {
-      this.hideToasts(); // Cerrar notificaciones con Esc
+      this.hideToasts();
     }
   }
 
-  /*
-  =============================================================================
-  SISTEMA DE VALIDACIÓN EN TIEMPO REAL
-  =============================================================================
-  */
-
-  /**
-   * Configura validación instantánea mientras el usuario escribe
-   */
+  // ============================================================================
+  // SISTEMA DE VALIDACIÓN EN TIEMPO REAL (TRANSVERSAL)
+  // ============================================================================
   setupRealTimeValidation() {
     document.addEventListener('input', e => {
-      // Revisar nombres de jugadores mientras escriben
       if (e.target.matches('#jugador-1, #jugador-2')) {
         this.validatePlayerNameRealTime(e.target);
       }
-      // Revisar nombres de usuario mientras escriben
       if (e.target.matches('#register-username')) {
         this.validateUsernameRealTime(e.target);
       }
     });
   }
 
-  /**
-   * Valida nombres de jugadores en tiempo real
-   * Aplica filtros de caracteres, longitud y formatea automáticamente
-   * @param {HTMLInputElement} input - Campo de entrada del nombre
-   */
   validatePlayerNameRealTime(input) {
     const value = input.value;
     const { max, min } = this.validationConfig.playerName;
     
-    // Mostrar cuántos caracteres ha escrito de los permitidos
     this.updateCharacterCounter(input, value.length, max);
     
-    // Si escribió demasiado, cortar el texto
+    // Limitar longitud
     if (value.length > max) {
       input.value = value.substring(0, max);
       this.showToast(`Nombre máximo ${max} caracteres`, 'warning');
     }
     
-    // Solo permitir letras, espacios y acentos (ñ, á, é, etc.)
     if (!/^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]*$/.test(value)) {
       input.value = value.replace(/[^a-zA-ZÀ-ÿ\u00f1\u00d1\s]/g, '');
-      this.showToast('Solo se permiten letras y espacios', 'warning');
+      this.showToast(this.languageManager.getMessage('validation.name.letters'), 'warning');
     }
     
-    // Si hay varios espacios seguidos, cambiarlos por uno solo
     if (/\s{2,}/.test(value)) {
       input.value = value.replace(/\s+/g, ' ');
     }
     
-    // Revisar si ya se puede habilitar el botón de comenzar
     this.actualizarBotonComenzar();
     
-    // Quitar el color rojo si ya está bien escrito
+    // Clear error si es válido
     if (value.length >= min && value.length <= max && value.trim() !== '') {
       this.clearFieldError(input);
     }
   }
 
-  /**
-   * Valida nombres de usuario para registro en tiempo real
-   * Permite solo caracteres alfanuméricos y guión bajo
-   * @param {HTMLInputElement} input - Campo de entrada del usuario
-   */
   validateUsernameRealTime(input) {
     const value = input.value;
     const max = this.validationConfig.username.max;
     
-    // Mostrar cuántos caracteres lleva escritos
     this.updateCharacterCounter(input, value.length, max);
     
-    // Si escribió demasiado, cortar el texto
     if (value.length > max) {
       input.value = value.substring(0, max);
       this.showToast(`Usuario máximo ${max} caracteres`, 'warning');
     }
     
-    // Solo permitir letras, números y guión bajo (_)
     if (!/^[a-zA-Z0-9_]*$/.test(value)) {
       input.value = value.replace(/[^a-zA-Z0-9_]/g, '');
-      this.showToast('Solo letras, números y guión bajo', 'warning');
+      this.showToast(this.languageManager.getMessage('validation.username.format'), 'warning');
     }
   }
 
-  /**
-   * Actualiza el contador visual de caracteres en campos de entrada
-   * Proporciona feedback visual sobre límites de caracteres con colores
-   * @param {HTMLInputElement} input - Campo de entrada
-   * @param {number} currentLength - Longitud actual del texto
-   * @param {number} maxLength - Longitud máxima permitida
-   */
   updateCharacterCounter(input, currentLength, maxLength) {
     let counter = input.parentElement.querySelector('.character-counter');
     
-    // Si no existe el contador, crearlo
     if (!counter) {
       counter = document.createElement('div');
       counter.className = 'character-counter';
       input.parentElement.appendChild(counter);
     }
     
-    // Escribir cuántos caracteres lleva de los totales permitidos
     counter.textContent = `${currentLength}/${maxLength}`;
     
-    // Cambiar el color según qué tan cerca esté del límite
     if (maxLength - currentLength < 3) {
-      // Muy cerca del límite - rojo
       counter.className = 'character-counter character-counter--warning';
     } else if (maxLength - currentLength < 6) {
-      // Acercándose al límite - amarillo
       counter.className = 'character-counter character-counter--attention';
     } else {
-      // Seguro - sin color especial
       counter.className = 'character-counter';
     }
   }
 
-  /**
-   * Controla el estado del botón para iniciar partida
-   * Valida que ambos jugadores tengan nombres válidos y diferentes
-   */
+  // ACTUALIZACIÓN BOTÓN COMENZAR
   actualizarBotonComenzar() {
     const j1 = document.getElementById('jugador-1');
     const j2 = document.getElementById('jugador-2');
@@ -311,22 +626,19 @@ class AppState {
     
     if (!j1 || !j2 || !btn) return;
     
-    // Validar criterios para habilitar el botón
     const j1Valid = j1.value.trim().length >= this.validationConfig.playerName.min;
     const j2Valid = j2.value.trim().length >= this.validationConfig.playerName.min && 
                     j2.value.trim().length <= this.validationConfig.playerName.max;
     const namesAreDifferent = j1.value.trim().toLowerCase() !== j2.value.trim().toLowerCase();
     
-    // Solo habilitar si todos los criterios se cumplen
     btn.disabled = !(j1Valid && j2Valid && namesAreDifferent);
     
-    // Cambiar el texto del botón dependiendo del tipo de juego
     const btnText = btn.querySelector('.btn-text');
     if (btnText) {
-      btnText.textContent = this.modoSeguimiento ? 'Modo seguimiento' : 'Jugar en la app';
+      btnText.textContent = this.esModoSeguimiento() ? 'Modo seguimiento' : 'Jugar en la app';
     }
     
-    // Feedback visual en campo del jugador 2
+    // Visual feedback
     if (j2.value.trim() && !j2Valid) {
       j2.classList.add('error');
     } else if (j2Valid && namesAreDifferent) {
@@ -334,27 +646,13 @@ class AppState {
     }
   }
 
-  /*
-  =============================================================================
-  SISTEMA DE VALIDACIÓN DE FORMULARIOS
-  =============================================================================
-  */
-
-  /**
-   * Valida los campos del formulario de login
-   * @param {string} nombreUsuario - Nombre de usuario o correo
-   * @param {string} contraseña - Contraseña
-   * @param {HTMLFormElement} form - Formulario de login
-   * @returns {boolean} - true si es válido
-   */
+  // VALIDACIÓN DE FORMULARIOS
   validateLoginForm(username, password, form) {
-    // Validaciones básicas de campos requeridos
     const validations = [
       [!username, '#login-username', 'Por favor ingresa tu usuario'],
       [!password, '#login-password', 'Por favor ingresa tu contraseña']
     ];
     
-    // Revisar cada campo uno por uno hasta encontrar un error
     for (const [condition, field, message] of validations) {
       if (condition) {
         this.showFieldError(form, field, message);
@@ -365,47 +663,29 @@ class AppState {
     return true;
   }
 
-  /**
-   * Valida todos los campos del formulario de registro
-   * Aplica múltiples reglas: longitud, formato, edad, etc.
-   * @param {Object} data - Datos del formulario de registro
-   * @param {HTMLFormElement} form - Formulario de registro
-   * @returns {boolean} - true si todos los campos son válidos
-   */
   validateRegisterForm(data, form) {
     const { username: { min: userMin, max: userMax }, password: { min: passMin } } = this.validationConfig;
     
-    // Lista de todas las cosas que hay que revisar en el formulario
     const validations = [
-      // Revisar datos del usuario
       [!data.username, '#register-username', 'Por favor ingresa tu nombre de usuario'],
       [data.username.length < userMin || data.username.length > userMax, 
        '#register-username', `El usuario debe tener entre ${userMin} y ${userMax} caracteres`],
-      
-      // Validaciones de email
       [!data.email, '#register-email', 'Por favor ingresa tu email'],
       [!this.validateEmail(data.email), '#register-email', 'Ingresa un email válido'],
-      
-      // Validaciones de fecha de nacimiento
       [!data.birthdate, '#register-fecha', 'Por favor ingresa tu fecha de nacimiento'],
       [this.isFutureDate(data.birthdate), '#register-fecha', 'La fecha de nacimiento no puede ser futura'],
       [this.isUnderAge(data.birthdate, this.validationConfig.minAge), 
        '#register-fecha', `Debes tener al menos ${this.validationConfig.minAge} años para registrarte`],
-      
-      // Validaciones de contraseña
       [!data.password, '#register-password', 'Por favor ingresa tu contraseña'],
       [data.password.length < passMin, 
        '#register-password', `La contraseña debe tener al menos ${passMin} caracteres`],
       [!/^(?=.*[A-Za-z])(?=.*\d)/.test(data.password), 
        '#register-password', 'La contraseña debe contener al menos una letra y un número'],
-      
-      // Validaciones de confirmación de contraseña
       [!data.passwordConfirm, '#register-password-confirm', 'Por favor confirma tu contraseña'],
       [data.password !== data.passwordConfirm, 
        '#register-password-confirm', 'Las contraseñas no coinciden']
     ];
     
-    // Revisar todo hasta encontrar algo mal
     for (const [condition, field, message] of validations) {
       if (condition) {
         this.showFieldError(form, field, message);
@@ -416,36 +696,21 @@ class AppState {
     return true;
   }
 
-  /**
-   * Valida que los nombres de los jugadores cumplan con las reglas establecidas
-   * Verifica longitud, caracteres permitidos y que sean diferentes entre sí
-   * @param {HTMLInputElement} j1 - Campo del primer jugador
-   * @param {HTMLInputElement} j2 - Campo del segundo jugador
-   * @returns {boolean} - true si ambos nombres son válidos
-   */
   validatePlayersForm(j1, j2) {
-    // Obtener límites de caracteres para nombres de jugadores
     const { min, max } = this.validationConfig.playerName;
     const j2Name = j2.value.trim();
     const j1Name = j1.value.trim();
     
-    // Lista de validaciones que debe pasar el segundo jugador
     const validations = [
-      // Verificar que el campo no esté vacío
       [!j2 || !j2Name, '#jugador-2', 'Ingresa el nombre del segundo jugador'],
-      // Verificar longitud mínima
       [j2Name.length < min, '#jugador-2', `El nombre debe tener al menos ${min} caracteres`],
-      // Verificar longitud máxima
       [j2Name.length > max, '#jugador-2', `El nombre no puede exceder ${max} caracteres`],
-      // Verificar que solo contenga letras y espacios (incluye acentos y ñ)
       [!/^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]+$/.test(j2Name), 
        '#jugador-2', 'El nombre solo puede contener letras y espacios'],
-      // Verificar que los nombres sean diferentes (comparación sin mayúsculas)
       [j1Name.toLowerCase() === j2Name.toLowerCase(), 
        '#jugador-2', 'Los jugadores deben tener nombres diferentes']
     ];
     
-    // Revisar cada validación y mostrar error si alguna falla
     for (const [condition, field, message] of validations) {
       if (condition) {
         this.showFieldError(document.getElementById('form-jugadores'), field, message);
@@ -456,17 +721,7 @@ class AppState {
     return true;
   }
 
-  /*
-  =============================================================================
-  UTILIDADES DE VALIDACIÓN
-  =============================================================================
-  */
-
-  /**
-   * Verifica si un formulario completo es válido
-   * @param {HTMLFormElement} form - Formulario a validar
-   * @returns {boolean} - true si todos los campos requeridos son válidos
-   */
+  // UTILIDADES DE VALIDACIÓN
   isFormValid(form) {
     const fields = form.querySelectorAll('input[required], input.form-input');
     return Array.from(fields).every(field => {
@@ -474,63 +729,30 @@ class AppState {
     });
   }
 
-  /**
-   * Limpia nombres de jugadores removiendo espacios extra y limitando longitud
-   * @param {string} name - Nombre a limpia
-   * @returns {string} - Nombre limpio y dentro de límites
-   */
   sanitizePlayerName(name) {
     return name.trim().replace(/\s+/g, ' ').substring(0, this.validationConfig.playerName.max);
   }
 
-  /**
-   * Valida que el formato del correo electrónico sea correcto
-   * Usa expresión regular RFC 5322 para validación completa
-   * @param {string} email - Correo electrónico a validar
-   * @returns {boolean} - true si el formato es válido
-   */
   validateEmail(email) {
-    // Expresión regular que sigue el estándar RFC 5322 para emails
     const re = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-    // Verificar formato y longitud máxima permitida
     return re.test(email) && email.length <= 254;
   }
 
-  /**
-   * Verifica si una fecha es futura (después de hoy)
-   * Útil para validar fechas de nacimiento que no pueden ser futuras
-   * @param {string} dateString - Fecha en formato string
-   * @returns {boolean} - true si la fecha es futura
-   */
   isFutureDate(dateString) {
     if (!dateString) return false;
-    
-    // Crear fecha de hoy sin horas para comparación exacta
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const inputDate = new Date(dateString);
-    
     return inputDate > today;
   }
 
-  /**
-   * Calcula si una persona es menor de edad según su fecha de nacimiento
-   * Considera años, meses y días para cálculo preciso de edad
-   * @param {string} dateString - Fecha de nacimiento en formato string
-   * @param {number} minAge - Edad mínima requerida
-   * @returns {boolean} - true si es menor de la edad mínima
-   */
   isUnderAge(dateString, minAge) {
     if (!dateString) return false;
-    
     const today = new Date();
     const birthDate = new Date(dateString);
-    
-    // Calcular edad básica por diferencia de años
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
     
-    // Ajustar edad si aún no ha cumplido años este año
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
@@ -538,17 +760,7 @@ class AppState {
     return age < minAge;
   }
 
-  /*
-  =============================================================================
-  SISTEMA DE NAVEGACIÓN ENTRE PANTALLAS
-  =============================================================================
-  */
-
-  /**
-   * Cambia la pantalla visible de la aplicación
-   * Maneja transiciones, animaciones y configuración específica de cada pantalla
-   * @param {string} screenName - Nombre de la pantalla sin prefijo 'pantalla-'
-   */
+  // MANEJO DE PANTALLAS
   showScreen(screenName) {
     const targetScreen = document.getElementById(`pantalla-${screenName}`);
     if (!targetScreen) {
@@ -556,18 +768,15 @@ class AppState {
       return;
     }
 
-    // Quitar la pantalla de carga si está visible
     const loadingScreen = document.getElementById('pantalla-carga');
     if (loadingScreen) {
       loadingScreen.classList.add('hidden');
     }
 
-    // Mostrar la pantalla que queremos con efectos
     targetScreen.classList.remove('hidden');
     targetScreen.style.opacity = '1';
     targetScreen.style.transition = '';
     
-    // Esconder todas las otras pantallas
     document.querySelectorAll('.pantalla, .pantalla-inicio').forEach(s => {
       if (s !== targetScreen) {
         s.classList.add('hidden');
@@ -576,58 +785,36 @@ class AppState {
       }
     });
     
-    // Hacer que los elementos aparezcan con efecto
     this.animateScreenElements(targetScreen);
-    
-    // Actualizar estado interno y configurar pantalla
     this.currentScreen = screenName;
     this.handleScreenSpecificSetup(screenName, targetScreen);
   }
 
-  /**
-   * Aplica animaciones de entrada a elementos de una pantalla
-   * Crea efecto escalonado donde los elementos aparecen uno tras otro
-   * @param {HTMLElement} screen - Pantalla que contiene los elementos a animar
-   */
   animateScreenElements(screen) {
-    // Buscar todos los elementos que tienen clases de animación
     const elements = screen.querySelectorAll('.fade-in, .fade-in-up');
-    
-    // Aplicar delay progresivo a cada elemento para efecto escalonado
     elements.forEach((el, index) => {
       setTimeout(() => {
-        // Cada elemento aparece 100ms después del anterior
         el.style.animationDelay = `${index * 100}ms`;
         el.classList.add('animated');
       }, 100);
     });
   }
 
-  /**
-   * Configura elementos específicos según la pantalla que se está mostrando
-   * Cada pantalla puede necesitar configuración especial al aparecer
-   * @param {string} screenName - Nombre de la pantalla actual
-   * @param {HTMLElement} screen - Elemento DOM de la pantalla
-   */
   handleScreenSpecificSetup(screenName, screen) {
     switch(screenName) {
       case 'jugadores':
-        // Configurar formulario de selección de jugadores
         this.setupPantallaJugadores();
         break;
       case 'seleccion-inicial':
-        // Configurar eventos para selección de quién empieza
         this.setupSeleccionInicialEvents();
         break;
       case 'lobby':
-        // Mostrar nombre del usuario en el lobby
         if (this.user && screen) {
           const titulo = screen.querySelector('.titulo--lg');
           if (titulo) titulo.textContent = this.user.name;
         }
         break;
       case 'partida':
-        // Mostrar la pantalla de juego principal
         const pantallaPartida = document.getElementById('pantalla-partida');
         if (pantallaPartida) {
           pantallaPartida.classList.remove('hidden');
@@ -636,25 +823,15 @@ class AppState {
     }
   }
 
-  /**
-   * Configura todos los elementos necesarios para la pantalla de selección de jugadores
-   * Carga datos del usuario, configura controles y eventos específicos
-   */
   setupPantallaJugadores() {
-    // Verificar que la pantalla existe antes de configurarla
     if (!document.getElementById('lista-jugadores')) return;
     
-    // Configurar todos los componentes de la pantalla
-    this.loadUserData();              // Cargar datos del usuario logueado
-    this.setupGameControls();         // Configurar botones y controles
-    this.setupTipoJugadorChange();    // Configurar cambio entre invitado/usuario
-    this.actualizarBotonComenzar();  // Actualizar estado del botón principal
+    this.loadUserData();
+    this.setupGameControls();
+    this.setupTipoJugadorChange();
+    this.actualizarBotonComenzar();
   }
 
-  /**
-   * Carga automáticamente el nombre del usuario logueado en el campo del primer jugador
-   * Facilita la experiencia del usuario al no tener que escribir su nombre nuevamente
-   */
   loadUserData() {
     const input = document.getElementById('jugador-1');
     if (input && this.user?.username) {
@@ -662,31 +839,20 @@ class AppState {
     }
   }
 
-  /**
-   * Configura los controles principales del juego
-   * Deshabilita el botón de comenzar inicialmente y configura eventos de validación
-   */
   setupGameControls() {
-    // Deshabilitar botón de comenzar hasta que se completen los datos
     const btn = document.getElementById('btn-comenzar-partida');
     if (btn) btn.disabled = true;
     
-    // Escuchar cambios en los campos para validar en tiempo real
     const container = document.getElementById('lista-jugadores');
     if (container) {
       container.addEventListener('input', () => this.actualizarBotonComenzar());
     }
   }
 
-  /**
-   * Configura los eventos para cambiar entre tipo de jugador (invitado/usuario)
-   * Maneja tanto clicks en radio buttons como en sus labels asociados
-   */
   setupTipoJugadorChange() {
     const radioInvitado = document.getElementById('radio-invitado');
     const radioUsuario = document.getElementById('radio-usuario');
     
-    // Configurar eventos para los radio buttons
     [radioInvitado, radioUsuario].forEach(radio => {
       if (radio) {
         radio.addEventListener('change', () => {
@@ -697,7 +863,7 @@ class AppState {
       }
     });
     
-    // Configurar eventos para clicks en los labels (mejora UX)
+    // Click en los labels
     document.querySelectorAll('.radio-option').forEach(label => {
       label.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -705,31 +871,23 @@ class AppState {
         if (input) {
           input.checked = true;
           this.updatePlayerType(input.value);
-          // Disparar evento change para activar otros listeners
           input.dispatchEvent(new Event('change', { bubbles: true }));
         }
       });
     });
   }
 
-  /**
-   * Actualiza la interfaz cuando cambia el tipo de segundo jugador
-   * Cambia avatar, placeholder, campos requeridos y validaciones según el tipo
-   * @param {string} tipo - Tipo de jugador: 'invitado' o 'usuario'
-   */
   updatePlayerType(tipo) {
     const avatar = document.getElementById('avatar-jugador-2');
     const nombre = document.getElementById('jugador-2');
     const grupoPassword = document.getElementById('grupo-password-jugador2');
     const passwordInput = document.getElementById('password-jugador-2');
     
-    // Actualizar avatar según el tipo de jugador
     if (avatar) {
       avatar.src = tipo === 'invitado' ? 'img/invitado.png' : 'img/foto_usuario-2.png';
       avatar.alt = tipo === 'invitado' ? 'Invitado' : 'Usuario existente';
     }
     
-    // Actualizar placeholder y limpiar campo de nombre
     if (nombre) {
       nombre.placeholder = tipo === 'invitado' ? 
         'Ingrese nombre de jugador #2' : 
@@ -737,44 +895,32 @@ class AppState {
       nombre.value = '';
     }
 
-    // Mostrar/ocultar campo de contraseña según el tipo
     if (grupoPassword && passwordInput) {
       if (tipo === 'usuario') {
-        // Usuario existente necesita contraseña
         grupoPassword.classList.remove('hidden');
         passwordInput.required = true;
       } else {
-        // Invitado no necesita contraseña
         grupoPassword.classList.add('hidden');
         passwordInput.required = false;
         passwordInput.value = '';
       }
     }
     
-    // Revalidar el formulario con los nuevos campos
     this.actualizarBotonComenzar();
   }
 
-  /**
-   * Configura los eventos para la pantalla de selección de quién empieza la partida
-   * Maneja efectos visuales, selección única y transición al juego
-   */
   setupSeleccionInicialEvents() {
-    // Limpiar eventos anteriores clonando los elementos
     document.querySelectorAll('.jugador-opcion').forEach(opcion => {
       const newOpcion = opcion.cloneNode(true);
       opcion.parentNode.replaceChild(newOpcion, opcion);
     });
     
-    // Configurar eventos para cada opción de jugador
     document.querySelectorAll('.jugador-opcion').forEach(opcion => {
-      // Efecto hover: elevar y sombrear al pasar el mouse
       opcion.addEventListener('mouseenter', () => {
         opcion.style.transform = 'translateY(-5px)';
         opcion.style.boxShadow = '0 10px 25px rgba(0,0,0,0.3)';
       });
       
-      // Efecto hover: restaurar posición al salir del mouse (si no está seleccionado)
       opcion.addEventListener('mouseleave', () => {
         if (!opcion.classList.contains('seleccionado')) {
           opcion.style.transform = '';
@@ -782,24 +928,22 @@ class AppState {
         }
       });
       
-      // Selección de jugador: solo uno puede estar seleccionado
       opcion.addEventListener('click', () => {
-        // Deseleccionar todas las opciones anteriores
+        // Deseleccionar todas
         document.querySelectorAll('.jugador-opcion').forEach(opt => {
           opt.classList.remove('seleccionado');
           opt.style.transform = '';
           opt.style.boxShadow = '';
         });
         
-        // Seleccionar la opción actual con efectos visuales
+        // Seleccionar actual
         opcion.classList.add('seleccionado');
         opcion.style.transform = 'translateY(-5px)';
         opcion.style.boxShadow = '0 0 20px rgba(98,129,7,0.4)';
         
-        // Determinar qué jugador empieza y iniciar partida
+        // Iniciar partida
         const jugadorNum = opcion.id === 'opcion-jugador-2' ? 2 : 1;
         
-        // Prevenir múltiples clicks durante la transición
         if (!this.seleccionEnCurso) {
           this.seleccionEnCurso = true;
           setTimeout(() => this.iniciarPartidaConJugador(jugadorNum), 250);
@@ -808,27 +952,60 @@ class AppState {
     });
   }
 
-  /*
-  =============================================================================
-  MODO SEGUIMIENTO MANUAL
-  =============================================================================
-  */
-
+  // ============================================================================
+  // FUNCIONES ESPECÍFICAS DE MODO SEGUIMIENTO
+  // ============================================================================
+  
   /**
-   * Activa el modo seguimiento para partidas manuales
-   * En este modo, los jugadores seleccionan sus dinosaurios manualmente
+   * Inicia el modo seguimiento para seguir partidas físicas reales
+   * En este modo el usuario selecciona manualmente dinosaurios y dados
    */
   iniciarModoSeguimiento() {
-    this.modoSeguimiento = true;
+    this.setModo('SEGUIMIENTO');
     this.showScreen('jugadores');
-    this.showToast('Modo seguimiento activado', 'success');
+    this.showToast(this.languageManager.getMessage('tracking.activated'), 'success');
   }
 
-  /**
-   * Muestra la pantalla de turno con información del jugador actual
-   * @param {string} nombreJugador - Nombre del jugador actual
-   * @param {string} avatarSrc - Ruta de la imagen del avatar
-   */
+  // ============================================================================
+  // RANKING
+  // ============================================================================
+  async cargarRanking() {
+    const rankingList = document.querySelector('.ranking-list');
+    if (!rankingList) return;
+
+    // Mostrar estado de carga
+    rankingList.innerHTML = `<div class="ranking-loading">${this.languageManager.getMessage('ranking.loading')}</div>`;
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/ranking');
+      const result = await response.json();
+
+      if (!result.success || !result.ranking || result.ranking.length === 0) {
+        rankingList.innerHTML = `<div class="ranking-empty">${this.languageManager.getMessage('ranking.empty')}</div>`;
+        return;
+      }
+
+      // Renderizar ranking
+      rankingList.innerHTML = result.ranking.map((jugador, index) => `
+        <div class="ranking-item">
+          <span class="ranking-puesto">${index + 1}</span>
+          <span class="ranking-nombre">${jugador.nombreUsuario.toUpperCase()}</span>
+          <span class="ranking-victorias">
+            <strong>${jugador.victorias}</strong> 
+            <span data-es="victorias" data-en="victories">victorias</span>
+          </span>
+        </div>
+      `).join('');
+
+      // Reaplicar traducciones
+      this.languageManager.applyLanguage(this.languageManager.currentLang);
+
+    } catch (error) {
+      console.error('Error cargando ranking:', error);
+      rankingList.innerHTML = `<div class="ranking-error">${this.languageManager.getMessage('ranking.error')}</div>`;
+    }
+  }
+
   mostrarTurnoJugadorConSeleccion(nombreJugador, avatarSrc) {
     const nombreElement = document.getElementById('nombre-turno-jugador');
     const avatarElement = document.getElementById('avatar-turno-actual');
@@ -839,10 +1016,6 @@ class AppState {
     this.showScreen('turno-jugador');
   }
 
-  /**
-   * Inicia el turno en modo seguimiento
-   * Muestra el popup para selección manual de dinosaurios
-   */
   empezarTurnoSeguimiento() {
     this.showScreen('partida');
     setTimeout(() => {
@@ -852,135 +1025,243 @@ class AppState {
     }, 100);
   }
 
-  /*
-  =============================================================================
-  GESTIÓN DE JUGADORES Y CONFIGURACIÓN DE PARTIDA
-  =============================================================================
-  */
-
+  // ============================================================================
+  // MANEJO DE JUGADORES (TRANSVERSAL - Común a ambos modos)
+  // ============================================================================
+  
   /**
-   * Procesa el formulario de configuración de jugadores
-   * Valida nombres, depura datos y prepara la información para iniciar partida
-   * @param {HTMLFormElement} form - Formulario de jugadores
+   * Procesa el formulario de selección de jugadores
+   * Funciona tanto para modo digital completo como modo seguimiento
    */
-  handleJugadoresSubmit(form) {
+  async handleJugadoresSubmit(form) {
     const j1 = form.querySelector('#jugador-1');
     const j2 = form.querySelector('#jugador-2');
     const tipoJugador = form.querySelector('input[name="tipo-jugador-2"]:checked');
+    const passwordJ2 = form.querySelector('#password-jugador-2');
     
-    // Limpiar nombres para prevenir problemas de formato
+    // Sanitizar nombres
     if (j1) j1.value = this.sanitizePlayerName(j1.value);
     if (j2) j2.value = this.sanitizePlayerName(j2.value);
     
-    // Validar formulario antes de proceder
     if (!this.validatePlayersForm(j1, j2)) return;
     
-    // Preparar datos de jugadores para la partida
     const nombres = [j1.value.trim(), j2.value.trim()];
-    const jugador2Info = {
-      nombre: j2.value.trim(),
-      tipo: tipoJugador ? tipoJugador.value : 'invitado'
-    };
+    const tipoSeleccionado = tipoJugador ? tipoJugador.value : 'invitado';
     
-    // Proceder a selección de quién empieza
-    this.mostrarSelectorQuienEmpieza(nombres, jugador2Info);
+    // NUEVO: Manejar diferentes tipos de jugador 2
+    if (tipoSeleccionado === 'usuario') {
+      // Intentar logear al jugador 2 como usuario existente
+      await this.loginJugador2(j2.value.trim(), passwordJ2?.value?.trim(), nombres);
+    } else {
+      // Jugador 2 como invitado
+      const jugador2Info = {
+        nombre: j2.value.trim(),
+        tipo: 'invitado',
+        username: j2.value.trim(),
+        name: j2.value.trim().toUpperCase()
+      };
+      
+      this.jugador2Info = jugador2Info;
+      this.guardarDatosJuego(); // NUEVO: Guardar datos actualizados
+      
+      this.mostrarSelectorQuienEmpieza(nombres, jugador2Info);
+    }
   }
 
-  /**
-   * Muestra la pantalla de selección de jugador inicial
-   * Actualiza la UI con nombres y avatares de los jugadores
-   * @param {Array} nombres - Array con nombres de los dos jugadores
-   * @param {Object} jugador2Info - Información del segundo jugador
-   */
+  // NUEVO: Método para logear al jugador 2
+  async loginJugador2(username, password, nombres) {
+    if (!password) {
+      this.showToast(this.languageManager.getMessage('player2.password.required'), 'error');
+      return;
+    }
+
+    this.setLoading(true);
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identificador: username, password })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        this.showToast(this.languageManager.getMessage('player2.login.error'), 'error');
+        return;
+      }
+
+      // NUEVO: Guardar datos del jugador 2 con estructura de BD
+      this.jugador2Info = {
+        id: result.user.id,
+        email: result.user.email,
+        username: result.user.nombreUsuario,
+        name: result.user.nombreUsuario.toUpperCase(),
+        nacimiento: result.user.nacimiento,
+        tipo: 'usuario',
+        partidasJugadas: result.user.partidasJugadas || 0,
+        partidasGanadas: result.user.partidasGanadas || 0
+      };
+
+      // NUEVO: Verificar que no sea el mismo usuario
+      if (this.jugador1Info?.id === this.jugador2Info.id) {
+        this.showToast(this.languageManager.getMessage('player2.same.error'), 'error');
+        this.jugador2Info = null;
+        return;
+      }
+
+      // NUEVO: Guardar ambos jugadores
+      this.guardarDatosJuego();
+
+      this.showToast(this.languageManager.getMessage('player2.login.success'), 'success');
+      this.mostrarSelectorQuienEmpieza(nombres, this.jugador2Info);
+
+    } catch (error) {
+      console.error('Error al logear jugador 2:', error);
+      this.showToast(this.languageManager.getMessage('login.error'), 'error');
+    } finally {
+      this.setLoading(false);
+    }
+  }
+
   mostrarSelectorQuienEmpieza(nombres, jugador2Info) {
-    // Actualizar nombres en la interfaz
     const n1 = document.querySelector('.nombre-jugador-1');
     const n2 = document.querySelector('.nombre-jugador-2');
     
     if (n1) n1.textContent = nombres[0].toUpperCase();
     if (n2) n2.textContent = nombres[1].toUpperCase();
     
-    // Actualizar avatar del segundo jugador según su tipo
     const avatar = document.getElementById('avatar-seleccion-j2');
     if (avatar && jugador2Info) {
       avatar.src = jugador2Info.tipo === 'invitado' ? 
         'img/invitado.png' : 'img/foto_usuario-2.png';
     }
     
-    // Navegar a pantalla de selección inicial
     this.showScreen('seleccion-inicial');
   }
 
-  /**
-   * Ejecuta selección aleatoria de jugador inicial
-   * Aplica efectos visuales y procede automáticamente
-   */
   seleccionAleatoria() {
-    // Elegir jugador aleatoriamente (50/50)
     const elegido = Math.random() < 0.5 ? 1 : 2;
     const card = document.getElementById(`opcion-jugador-${elegido}`);
     
-    // Hacer que se vea cual fue elegido
     if (card) {
       card.classList.add('seleccionado');
       card.style.transform = 'translateY(-5px)';
       card.style.boxShadow = '0 0 20px rgba(98,129,7,0.4)';
     }
     
-    // Iniciar partida con el jugador elegido tras pausa
     setTimeout(() => this.iniciarPartidaConJugador(elegido), 300);
   }
 
-  /**
-   * Inicia una nueva partida con los datos de los jugadores y quién empieza
-   * Recopila información del formulario y prepara los datos para el juego
-   * @param {number} primerJugador - Número del jugador que inicia (1 o 2)
-   */
   iniciarPartidaConJugador(primerJugador) {
-    // Obtener nombres de los campos del formulario con valores por defecto
     const j1 = document.getElementById('jugador-1')?.value?.trim() || 'Jugador 1';
     const j2 = document.getElementById('jugador-2')?.value?.trim() || 'Jugador 2';
     
-    // Crear array con los nombres de ambos jugadores
     const nombres = [j1, j2];
     
-    // Recopilar información específica del segundo jugador
-    const jugador2Info = {
-      nombre: j2,
-      tipo: document.querySelector('input[name="tipo-jugador-2"]:checked')?.value || 'invitado'
-    };
+    // MODIFICADO: Usar los datos ya guardados en lugar de crear objeto básico
+    const jugador2Info = this.jugador2Info;
     
-    // Delegar la inicialización al método principal
     this.iniciarPartida(nombres, jugador2Info, primerJugador);
     
-    // Permitir nueva selección después de un breve delay
     setTimeout(() => {
       this.seleccionEnCurso = false;
     }, 1000);
   }
 
+  // ============================================================================
+  // INICIALIZACIÓN DE PARTIDA (TRANSVERSAL - Común a ambos modos)
+  // ============================================================================
+  
   /**
-   * Inicializa una nueva partida con todos los parámetros necesarios
-   * Coordina entre la interfaz (app.js) y la lógica del juego (tablero.js)
-   * @param {Array} nombres - Array con nombres de ambos jugadores
-   * @param {Object} jugador2Info - Información del segundo jugador (nombre y tipo)
-   * @param {number} primerJugador - Número del jugador que inicia (1 o 2)
+   * Inicia una nueva partida
+   * Crea partida en backend si ambos jugadores son usuarios registrados
+   * Funciona tanto para modo digital completo como modo seguimiento
    */
-  iniciarPartida(nombres, jugador2Info, primerJugador) {
-    // Guardar información de los jugadores en el estado de la aplicación
+  async iniciarPartida(nombres, jugador2Info, primerJugador) {
     this.players = nombres.slice(0, 2);
     this.jugador2Info = jugador2Info;
     
-    // Delegar la inicialización del juego al sistema de tablero
+    // NUEVO: Si el jugador 2 empieza, intercambiar los datos para mantener consistencia
+    if (primerJugador === 2) {
+      // Intercambiar nombres en el array
+      [this.players[0], this.players[1]] = [this.players[1], this.players[0]];
+      
+      // Intercambiar jugador1Info y jugador2Info
+      const tempJugador1 = this.jugador1Info ? { ...this.jugador1Info } : null;
+      this.jugador1Info = this.jugador2Info ? { ...this.jugador2Info } : null;
+      this.jugador2Info = tempJugador1;
+      
+      // Actualizar nombres después del intercambio
+      nombres = [this.players[0], this.players[1]];
+      jugador2Info = this.jugador2Info;
+      
+      // Ahora el que empieza es siempre el jugador 1
+      primerJugador = 1;
+      
+      console.log('Intercambio realizado - Jugador 2 elegido empezará como Jugador 1');
+    }
+    
+    // NUEVO: Crear partida en backend si ambos son usuarios registrados
+    if (this.jugador1Info?.id && this.jugador2Info?.id) {
+      try {
+        // ============================================================================
+        // DISCRIMINACIÓN DE ENDPOINTS SEGÚN EL MODO DE JUEGO
+        // ============================================================================
+        const endpoint = this.getEndpoint('crearPartida');
+        
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jugador1_id: this.jugador1Info.id,
+            jugador2_id: this.jugador2Info.id
+          })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          // NUEVO: Guardar información completa de la partida creada
+          this.partidaInfo = {
+            id: result.partida_id,
+            jugador1_id: this.jugador1Info.id,
+            jugador2_id: this.jugador2Info.id,
+            estado: 'activa',
+            turno: 1,
+            ronda: 1,
+            cara_dado_actual: 'vacio',
+            tirador_actual_id: primerJugador === 1 ? this.jugador1Info.id : this.jugador2Info.id,
+            creado_el: new Date().toISOString(),
+            // Información de bolsas de ambos jugadores desde el backend
+            bolsas: {
+              jugador1: result.bolsaJugador1 || [],
+              jugador2: result.bolsaJugador2 || []
+            }
+          };
+          
+          // NUEVO: Guardar todos los datos (jugadores + partida)
+          this.guardarDatosJuego();
+          
+          this.showToast(this.languageManager.getMessage('game.created'), 'success');
+        } else {
+          console.log('Error al crear partida, continuando en modo local:', result.message);
+        }
+      } catch (error) {
+        console.error('Error al crear partida, continuando en modo local:', error);
+      }
+    } else {
+      console.log('Partida local (uno o ambos jugadores son invitados)');
+    }
+    
+    // Continuar con la lógica original del juego
     if (window.JuegoManager?.inicializarPartida) {
       window.JuegoManager.inicializarPartida(nombres, jugador2Info, primerJugador, this.modoSeguimiento);
     } else {
       console.error('JuegoManager no disponible');
     }
     
-    // Configurar la pantalla inicial según el modo de juego
-    if (this.modoSeguimiento) {
-      // Modo seguimiento: mostrar pantalla de selección manual
+    if (this.esModoSeguimiento()) {
       const nombreJugador = nombres[primerJugador - 1];
       const avatarSrc = primerJugador === 1 ? 
         'img/foto_usuario-1.png' : 
@@ -988,85 +1269,53 @@ class AppState {
       
       this.mostrarTurnoJugadorConSeleccion(nombreJugador, avatarSrc);
     } else {
-      // Modo normal: determinar si necesita dado o no
       if (window.estadoJuego?.turnoEnRonda === 1 && window.estadoJuego?.rondaActual === 1) {
-        // Primer turno de la primera ronda: sin restricción
         this.mostrarPantallaSinRestriccion();
       } else {
-        // Otros turnos: lanzar dado para obtener restricción
         this.showScreen('dado-animacion');
         setTimeout(() => this.iniciarAnimacionDado(), 400);
       }
     }
   }
 
-  /**
-   * Muestra la pantalla de juego sin restricciones del dado
-   * Se usa en el primer turno de la primera ronda donde no hay limitaciones
-   */
   mostrarPantallaSinRestriccion() {
-    // Cambiar a la pantalla de partida principal
     this.showScreen('partida');
     
-    // Obtener elementos de la interfaz de restricciones
     const infoRestriccion = document.querySelector('.info-restriccion');
     const textoRestriccion = document.querySelector('.texto-restriccion');
     
-    // Hacer visible el panel de información de restricción
     if (infoRestriccion) {
       infoRestriccion.style.visibility = 'visible';
     }
     
-    // Mostrar mensaje de "Sin restricción" en la interfaz
     if (textoRestriccion) {
       textoRestriccion.innerHTML = '<div>Sin restricción</div>';
     }
     
-    // Actualizar la interfaz del juego y dinosaurios disponibles
     if (window.JuegoManager) {
       window.JuegoManager.actualizarInterfaz();
       window.RenderManager?.actualizarDinosauriosDisponibles();
     }
   }
 
-  /**
-   * Inicia el juego principal después de la configuración inicial
-   * Determina si mostrar pantalla sin restricción o procesar resultado del dado
-   */
   comenzarJuego() {
-    // Verificar si es el primer turno de la primera ronda
     if (window.estadoJuego?.turnoEnRonda === 1 && window.estadoJuego?.rondaActual === 1) {
-      // Primer turno: mostrar pantalla sin restricciones del dado
       this.mostrarPantallaSinRestriccion();
     } else {
-      // Otros turnos: mostrar pantalla de partida y aplicar restricción del dado
       this.showScreen('partida');
-      
-      // Procesar el resultado del dado si está disponible
       if (window.JuegoManager?.procesarResultadoDado) {
-        // Usar dado seleccionado o valor por defecto (1 = sin restricción)
         window.JuegoManager.procesarResultadoDado(this.dadoSeleccionado || 1);
       }
     }
   }
 
-  /*
-  =============================================================================
-  SISTEMA DE ANIMACIÓN DEL DADO
-  =============================================================================
-  */
-
-  /**
-   * Inicia la animación del dado con efecto de giro rápido
-   * Simula el lanzamiento real de un dado físico
-   */
+  // ANIMACIÓN DE DADOS
   iniciarAnimacionDado() {
     const img = document.getElementById('dado-imagen');
     const cont = document.getElementById('dado-animado');
     
     if (!img || !cont) return;
     
-    // Array con todas las caras posibles del dado
     const dados = [
       'img/dado-banos.png',
       'img/dado-bosque.png',
@@ -1079,7 +1328,6 @@ class AppState {
     let contador = 0;
     cont.classList.add('spinning');
     
-    // Fase 1: Animación rápida inicial
     const intervalo = setInterval(() => {
       img.src = dados[Math.floor(Math.random() * dados.length)];
       contador++;
@@ -1091,19 +1339,11 @@ class AppState {
     }, 150);
   }
 
-  /**
-   * Segunda fase de la animación: ralentización progresiva
-   * Simula la física real del dado perdiendo velocidad
-   * @param {Array} dados - Array de imágenes del dado
-   * @param {number} contadorInicial - Contador inicial de cambios
-   * @param {number} maxCambios - Máximo de cambios antes de finalizar
-   */
   ralentizarAnimacionDado(dados, contadorInicial, maxCambios) {
     const img = document.getElementById('dado-imagen');
     let contador = contadorInicial;
     let intervaloActual = 200;
     
-    // Fase 2: Animación que se ralentiza progresivamente
     const intervaloLento = setInterval(() => {
       img.src = dados[Math.floor(Math.random() * dados.length)];
       contador++;
@@ -1113,42 +1353,161 @@ class AppState {
         this.finalizarAnimacionDado(dados);
       }
       
-      // Aumentar intervalo para ralentizar
       intervaloActual += 50;
     }, intervaloActual);
   }
 
-  /**
-   * Finaliza la animación del dado y determina el resultado
-   * Selecciona aleatoriamente la cara final y actualiza la UI
-   * @param {Array} dados - Array de imágenes del dado
-   */
   finalizarAnimacionDado(dados) {
     const img = document.getElementById('dado-imagen');
     const cont = document.getElementById('dado-animado');
     const texto = document.querySelector('.dado-texto');
     
-    // Determinar resultado final del dado (1-6)
-    this.dadoSeleccionado = Math.floor(Math.random() * dados.length) + 1;
-    img.src = dados[this.dadoSeleccionado - 1];
+    // NO sobrescribir dadoSeleccionado - ya fue configurado por el backend
+    if (this.dadoSeleccionado) {
+      img.src = dados[this.dadoSeleccionado - 1];
+    } else {
+      // Fallback solo si no hay valor del backend
+      this.dadoSeleccionado = Math.floor(Math.random() * dados.length) + 1;
+      img.src = dados[this.dadoSeleccionado - 1];
+    }
     
-    // Aplicar estilos finales
     cont.classList.remove('spinning');
     cont.classList.add('final');
     
     if (texto) texto.textContent = '¡Dado lanzado!';
     
-    // Mostrar resultado tras breve pausa
     setTimeout(() => this.mostrarResultadoDado(this.dadoSeleccionado), 800);
   }
 
-  /**
-   * Muestra el resultado del dado con su restricción correspondiente
-   * Configura la pantalla de resultado con información detallada de la restricción
-   * @param {number} dadoNumero - Número del dado (1-6) que determina la restricción
-   */
+  // Actualizar dado desde el backend
+  actualizarDadoDesdeBackend(caraDado) {
+    // Mapear nombre de cara del backend a número del frontend
+    const mapeo = {
+      'bosque': 5,        // Bosque
+      'roca': 6,          // Rocas / Pradera  
+      'baño': 4,          // Lado Baños
+      'cafeteria': 3,     // Lado Cafetería
+      'no-trex': 2,       // No T-Rex
+      'vacio': 1          // Huella (libre)
+    };
+    
+    this.dadoSeleccionado = mapeo[caraDado] || 1;
+    console.log(`Dado actualizado desde backend: "${caraDado}" -> ${this.dadoSeleccionado}`);
+    
+    // Simular la animación del dado girando (sin mostrar modal de resultado)
+    this.simularAnimacionDadoSinModal();
+  }
+
+  // Simular la animación del dado girando
+  simularAnimacionDado() {
+    const img = document.querySelector('#dado-animado img');
+    const cont = document.getElementById('dado-animado');
+    const texto = document.querySelector('.dado-texto');
+    
+    if (!img || !cont) {
+      console.warn('Elementos del dado no encontrados, mostrando resultado directamente');
+      this.mostrarResultadoDado(this.dadoSeleccionado);
+      return;
+    }
+
+    // Mostrar pantalla de dado
+    this.showScreen('dado-animacion');
+    
+    // Configurar animación
+    cont.classList.remove('spinning', 'final');
+    cont.classList.add('spinning');
+    
+    if (texto) texto.textContent = '¡Dado girando...!';
+    
+    // Array de imágenes para la animación
+    const dados = [
+      'img/dado-huella.png',
+      'img/dado-no-trex.png', 
+      'img/dado-cafe.png',
+      'img/dado-banos.png',
+      'img/dado-bosque.png',
+      'img/dado-rocas.png'
+    ];
+    
+    // Animar el dado cambiando imágenes rápidamente
+    let animacionCount = 0;
+    const animacionInterval = setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * dados.length);
+      img.src = dados[randomIndex];
+      animacionCount++;
+      
+      if (animacionCount >= 15) { // ~3 segundos con interval de 200ms
+        clearInterval(animacionInterval);
+        
+        // Mostrar la cara final
+        img.src = dados[this.dadoSeleccionado - 1];
+        cont.classList.remove('spinning');
+        cont.classList.add('final');
+        
+        if (texto) texto.textContent = '¡Dado lanzado!';
+        
+        // Mostrar resultado después de un breve delay
+        setTimeout(() => this.mostrarResultadoDado(this.dadoSeleccionado), 800);
+      }
+    }, 200);
+  }
+
+  // Simular la animación del dado girando sin mostrar modal de resultado
+  simularAnimacionDadoSinModal() {
+    const img = document.querySelector('#dado-animado img');
+    const cont = document.getElementById('dado-animado');
+    const texto = document.querySelector('.dado-texto');
+    
+    if (!img || !cont) {
+      console.warn('Elementos del dado no encontrados');
+      return;
+    }
+
+    // Mostrar pantalla de dado
+    this.showScreen('dado-animacion');
+    
+    // Configurar animación
+    cont.classList.remove('spinning', 'final');
+    cont.classList.add('spinning');
+    
+    if (texto) texto.textContent = '¡Dado girando...!';
+    
+    // Array de imágenes para la animación
+    const dados = [
+      'img/dado-huella.png',
+      'img/dado-no-trex.png', 
+      'img/dado-cafe.png',
+      'img/dado-banos.png',
+      'img/dado-bosque.png',
+      'img/dado-rocas.png'
+    ];
+    
+    // Animar el dado cambiando imágenes rápidamente
+    let animacionCount = 0;
+    const animacionInterval = setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * dados.length);
+      img.src = dados[randomIndex];
+      animacionCount++;
+      
+      if (animacionCount >= 15) { // ~3 segundos con interval de 200ms
+        clearInterval(animacionInterval);
+        
+        // Mostrar la cara final
+        img.src = dados[this.dadoSeleccionado - 1];
+        cont.classList.remove('spinning');
+        cont.classList.add('final');
+        
+        if (texto) texto.textContent = '¡Dado lanzado!';
+        
+        // Después de la animación, mostrar el popup del dado para que el usuario presione "Continuar"
+        setTimeout(() => {
+          this.mostrarResultadoDado(this.dadoSeleccionado);
+        }, 800);
+      }
+    }, 200);
+  }
+
   mostrarResultadoDado(dadoNumero) {
-    // Configuración completa de todas las caras del dado con sus restricciones
     const config = {
       1: {
         titulo: 'Huella (libre)',
@@ -1167,7 +1526,7 @@ class AppState {
       },
       4: {
         titulo: 'Lado Baños',
-        descripcion: 'Recintos disponibles: Rey de la Jungla, Prado de la Diferencia, Isla Solitaria. Los recintos del lado derecho del tablero están abiertos. Si no podés cumplir, poné el dinosaurio en el río.',
+        descripcion: 'Recintos bloqueados: Rey de la Jungla, Prado de la Diferencia, Isla Solitaria. Podés colocar en cualquier otro recinto: Bosque de la Semejanza, Trío Frondoso, Pradera del Amor o el Río.',
         imagen: 'img/dado-banos.png'
       },
       5: {
@@ -1182,13 +1541,9 @@ class AppState {
       }
     };
     
-    // Actualizar contenido del popup con la configuración del dado obtenido
     this.updatePopupContent(config[dadoNumero]);
-    
-    // Mostrar la pantalla de resultado del dado
     this.showScreen('dado-resultado');
     
-    // Configurar botón para continuar al juego
     const btn = document.getElementById('btn-comenzar-juego');
     if (btn) {
       btn.textContent = 'Continuar';
@@ -1196,53 +1551,36 @@ class AppState {
     }
   }
 
-  /**
-   * Modifica imagen, título y descripción según la configuración proporcionada
-   * @param {Object} config - Objeto con imagen, título y descripción del dado
-   */
   updatePopupContent(config) {
-    // Obtener elementos del DOM del popup de resultado
     const img = document.getElementById('dado-resultado-img');
     const titulo = document.getElementById('titulo-dado');
     const desc = document.getElementById('descripcion-dado');
     
-    // Actualizar imagen del dado si el elemento existe
     if (img) img.src = config.imagen;
-    
-    // Actualizar título de la restricción si el elemento existe
     if (titulo) titulo.textContent = config.titulo;
-    
-    // Actualizar descripción detallada si el elemento existe
     if (desc) desc.textContent = config.descripcion;
   }
 
-  /*
-  =============================================================================
-  SISTEMA DE AUTENTICACIÓN Y MANEJO DE FORMULARIOS
-  =============================================================================
-  */
-
+  // ============================================================================
+  // MANEJO DE FORMULARIOS DE AUTENTICACIÓN (TRANSVERSAL)
+  // ============================================================================
+  
   /**
-   * Procesa el formulario de login y autentica al usuario
-   * Maneja tanto usuarios normales como administradores
-   * @param {HTMLFormElement} form - Formulario de login
+   * Procesa el formulario de login
+   * Guarda información del usuario para ambos modos de juego
    */
   async handleLogin(form) {
     const identificador = form.querySelector('#login-username').value.trim();
     const password = form.querySelector('#login-password').value.trim();
 
-    // Limpiar errores previos del formulario
     this.clearFormErrors(form);
 
-    // Validar datos antes de enviar
     if (!this.validateLoginForm(identificador, password, form)) return;
 
-    // Mostrar estado de carga
     this.setLoading(true);
 
     try {
-      // Enviar datos de usuario al servidor para verificar login
-      const response = await fetch('http://localhost:8000/login', {
+      const response = await fetch('http://127.0.0.1:8000/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identificador, password })
@@ -1250,13 +1588,12 @@ class AppState {
 
       const result = await response.json();
 
-      // Verificar respuesta del servidor
       if (!response.ok || !result.success) {
         this.showToast(result.message || 'Credenciales inválidas', 'error');
         return;
       }
 
-      // Guardar información del usuario que acaba de iniciar sesión
+      // MODIFICADO: Guardar tanto en user como en jugador1Info
       this.user = {
         id: result.user.id,
         email: result.user.email,
@@ -1265,53 +1602,51 @@ class AppState {
         isAdmin: result.user.esAdmin || false
       };
 
-      // Persistir sesión en localStorage
+      // NUEVO: Guardar información completa del jugador 1
+      this.jugador1Info = {
+        id: result.user.id,
+        email: result.user.email,
+        username: result.user.nombreUsuario,
+        name: result.user.nombreUsuario.toUpperCase(),
+        nacimiento: result.user.nacimiento,
+        tipo: 'usuario',
+        partidasJugadas: result.user.partidasJugadas || 0,
+        partidasGanadas: result.user.partidasGanadas || 0,
+        isAdmin: result.user.esAdmin || false
+      };
+
+      // NUEVO: Guardar datos del juego
+      this.guardarDatosJuego();
+
+      // Mantener compatibilidad con localStorage anterior
       localStorage.setItem('usuario', JSON.stringify(this.user));
 
-      // Navegar según tipo de usuario
       if (this.user.isAdmin) {
-        // Usuario administrador - mostrar panel de admin
         window.adminManager?.mostrarPerfilAdmin(this.user);
-        this.showToast('¡Bienvenido, Administrador!', 'success');
+        this.showToast(this.languageManager.getMessage('login.welcome.admin'), 'success');
       } else {
-        // Usuario normal - ir al lobby principal
         this.showScreen('lobby');
-        this.showToast('¡Bienvenido de vuelta!', 'success');
+        this.showToast(this.languageManager.getMessage('login.welcome'), 'success');
       }
 
     } catch (error) {
-      // Si algo sale mal durante el proceso de login (red, servidor, etc.)
       console.error(error);
-      // Mostrar mensaje de error
-      this.showToast('Error al conectar con el servidor', 'error');
+      this.showToast(this.languageManager.getMessage('login.error'), 'error');
     } finally {
-      // Quita el indicador de carga para que el usuario pueda intentar nuevamente
       this.setLoading(false);
     }
   }
 
-
-
-  /**
-   * Procesa el formulario de registro de nuevos usuarios
-   * Valida datos, envía información al servidor y configura sesión automáticamente
-   * @param {HTMLFormElement} form - Formulario de registro
-   */
   async handleRegister(form) {
-    // Extraer y preparar datos del formulario
     const formData = this.getRegisterFormData(form);
 
-    // Limpiar errores previos
     this.clearFormErrors(form);
 
-    // Validar todos los campos antes de enviar
     if (!this.validateRegisterForm(formData, form)) return;
 
-    // Mostrar estado de carga durante proceso
     this.setLoading(true);
 
     try {
-      // Enviar datos al endpoint de registro
       const response = await fetch('http://127.0.0.1:8000/registro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1326,13 +1661,12 @@ class AppState {
 
       const result = await response.json();
 
-      // Verificar respuesta del servidor
       if (!response.ok || !result.success) {
         this.showToast(result.message || 'Error al registrarse', 'error');
         return;
       }
 
-      // Configurar usuario recién registrado en sesión
+      // MODIFICADO: Guardar tanto en user como en jugador1Info
       this.user = {
         id: result.usuario.id,
         email: result.usuario.email,
@@ -1340,29 +1674,34 @@ class AppState {
         name: result.usuario.nombreUsuario.toUpperCase()
       };
 
-      // Persistir sesión automáticamente
+      // NUEVO: Guardar información completa del jugador 1
+      this.jugador1Info = {
+        id: result.usuario.id,
+        email: result.usuario.email,
+        username: result.usuario.nombreUsuario,
+        name: result.usuario.nombreUsuario.toUpperCase(),
+        nacimiento: result.usuario.nacimiento,
+        tipo: 'usuario',
+        partidasJugadas: 0,
+        partidasGanadas: 0
+      };
+
+      // NUEVO: Guardar datos del juego
+      this.guardarDatosJuego();
+
+      // Mantener compatibilidad con localStorage anterior
       localStorage.setItem('usuario', JSON.stringify(this.user));
 
-      // Navegar al lobby y mostrar mensaje de éxito
       this.showScreen('lobby');
-      this.showToast('¡Cuenta creada exitosamente!', 'success');
-      
+      this.showToast(this.languageManager.getMessage('register.success'), 'success');
     } catch (error) {
       console.error(error);
-      this.showToast('Error al conectar con el servidor', 'error');
+      this.showToast(this.languageManager.getMessage('register.error'), 'error');
     } finally {
       this.setLoading(false);
     }
   }
 
-
-
-  /**
-   * Extrae datos del formulario de registro de manera segura
-   * Maneja casos donde los elementos no existen
-   * @param {HTMLFormElement} form - Formulario de registro
-   * @returns {Object} - Objeto con datos del formulario
-   */
   getRegisterFormData(form) {
     return {
       username: form.querySelector('#register-username')?.value?.trim() || '',
@@ -1373,26 +1712,16 @@ class AppState {
     };
   }
 
-  /*
-  =============================================================================
-  CONFIGURACIÓN AVANZADA DE FORMULARIOS
-  =============================================================================
-  */
-
-  /**
-   * Configura validación automática en todos los formularios
-   * Establece limpieza de errores en tiempo real y validación de contraseñas
-   */
+  // CONFIGURACIÓN DE FORMULARIOS
   setupFormValidation() {
     document.querySelectorAll('.form-input').forEach(input => {
-      // Limpiar errores automáticamente cuando el usuario corrige
       input.addEventListener('input', () => {
         if (input.classList.contains('error')) {
           this.clearFieldError(input);
         }
       });
       
-      // Configurar validación especial para contraseñas en registro
+      // Validación de fuerza de contraseña
       if (input.type === 'password' && input.closest('#register-form')) {
         input.addEventListener('input', () => {
           this.validatePasswordStrength(input);
@@ -1401,27 +1730,18 @@ class AppState {
     });
   }
 
-  /**
-   * Valida y muestra la fortaleza de contraseña en tiempo real
-   * Proporciona feedback visual sobre seguridad de la contraseña
-   * @param {HTMLInputElement} campoContraseña - Campo de contraseña
-   */
   validatePasswordStrength(passwordInput) {
     const password = passwordInput.value;
     let indicator = passwordInput.parentElement.querySelector('.password-strength');
     
-    // Crear indicador si no existe
     if (!indicator) {
       indicator = this.createPasswordStrengthIndicator(passwordInput);
     }
     
-    // Ver qué tan segura es la contraseña
     const strength = this.calculatePasswordStrength(password);
     
-    // Limpiar el aspecto visual anterior
     indicator.className = 'password-strength';
     
-    // Cambiar los colores según qué tan segura sea
     if (password.length === 0) {
       indicator.textContent = '';
     } else if (strength < 2) {
@@ -1436,29 +1756,18 @@ class AppState {
     }
   }
 
-  /**
-   * Calcula la fortaleza de una contraseña basada en múltiples criterios
-   * @param {string} contraseña - Contraseña a evaluar
-   * @returns {number} - Nivel de fortaleza (0-5)
-   */
   calculatePasswordStrength(password) {
     let strength = 0;
     
-    // Criterios de evaluación
-    if (password.length >= 6) strength++;        // Longitud mínima
-    if (/[a-z]/.test(password)) strength++;      // Minúsculas
-    if (/[A-Z]/.test(password)) strength++;      // Mayúsculas
-    if (/\d/.test(password)) strength++;         // Números
-    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++; // Símbolos especiales
+    if (password.length >= 6) strength++;
+    if (/[a-z]/.test(password)) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/\d/.test(password)) strength++;
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
     
     return strength;
   }
 
-  /**
-   * Crea el elemento visual para mostrar fortaleza de contraseña
-   * @param {HTMLInputElement} campoContraseña - Campo de contraseña
-   * @returns {HTMLElement} - Elemento indicador creado
-   */
   createPasswordStrengthIndicator(passwordInput) {
     const indicator = document.createElement('div');
     indicator.className = 'password-strength';
@@ -1466,20 +1775,13 @@ class AppState {
     return indicator;
   }
 
-  /**
-   * Configura eventos de clic para mejorar la experiencia del usuario
-   * Permite hacer clic en cualquier parte del grupo de formulario para enfocar el input
-   */
   setupFormClickHandlers() {
-    // Configurar clicks en grupos de formulario para enfocar automáticamente el input
     document.querySelectorAll('.form-group').forEach(group => {
       const input = group.querySelector('.form-input');
       const tipoJugadorSelector = group.querySelector('.tipo-jugador-selector');
       
-      // Solo agregar evento si el input no es de solo lectura y no es un selector de tipo
       if (input && !input.hasAttribute('readonly') && !tipoJugadorSelector) {
         group.addEventListener('click', e => {
-          // Si el clic no fue directamente en el input, enfocarlo
           if (e.target !== input) {
             input.focus();
           }
@@ -1487,27 +1789,21 @@ class AppState {
       }
     });
     
-    // Configurar clicks en opciones de radio button para mejor usabilidad
+    // Radio buttons
     document.querySelectorAll('.radio-option').forEach(option => {
       option.addEventListener('click', function(e) {
         e.stopPropagation();
         const radio = this.querySelector('input[type="radio"]');
         if (radio) {
-          // Marcar el radio button como seleccionado
           radio.checked = true;
-          // Disparar evento change para activar otros listeners
           radio.dispatchEvent(new Event('change', { bubbles: true }));
         }
       });
     });
   }
 
-  /**
-   * Configura características de accesibilidad para mejorar la experiencia de todos los usuarios
-   * Incluye soporte para navegación por teclado, movimiento reducido y indicadores visuales
-   */
   setupAccessibility() {
-    // Configurar indicadores visuales de foco para navegación por teclado
+    // Focus visible
     document.addEventListener('focusin', e => {
       if (e.target.matches('.btn, .form-input, .btn-icon')) {
         e.target.classList.add('focus-visible');
@@ -1518,53 +1814,43 @@ class AppState {
       e.target.classList.remove('focus-visible');
     });
     
-    // Respetar preferencia de movimiento reducido del usuario
+    // Reduced motion
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      // Desactivar todas las transiciones para usuarios sensibles al movimiento
       document.documentElement.style.setProperty('--transition-base', '0ms');
       document.documentElement.style.setProperty('--transition-fast', '0ms');
     }
     
-    // Detectar cuando el usuario navega con teclado para mostrar indicadores apropiados
+    // Keyboard navigation
     document.addEventListener('keydown', e => {
       if (e.key === 'Tab') {
         document.body.classList.add('keyboard-nav');
       }
     });
     
-    // Detectar cuando el usuario usa mouse para ocultar indicadores de teclado
     document.addEventListener('mousedown', () => {
       document.body.classList.remove('keyboard-nav');
     });
   }
 
-  /**
-   * Configura el campo de fecha de nacimiento con validaciones y restricciones
-   * Establece límites de fecha y valida la edad mínima requerida
-   */
   setupBirthdateField() {
     const fechaInput = document.querySelector('#register-fecha');
     if (!fechaInput) return;
     
-    // Establecer fecha máxima como hoy (no se puede nacer en el futuro)
     const hoy = new Date();
     const yyyy = hoy.getFullYear();
     const mm = String(hoy.getMonth() + 1).padStart(2, '0');
     const dd = String(hoy.getDate()).padStart(2, '0');
     fechaInput.max = `${yyyy}-${mm}-${dd}`;
     
-    // Establecer fecha mínima hasta hace 100 años (límite razonable de edad)
     const fechaMinima = new Date();
     fechaMinima.setFullYear(fechaMinima.getFullYear() - 100);
     fechaInput.min = `${fechaMinima.getFullYear()}-${String(fechaMinima.getMonth() + 1).padStart(2, '0')}-${String(fechaMinima.getDate()).padStart(2, '0')}`;
     
-    // Validar edad cuando el usuario cambie la fecha
     fechaInput.addEventListener('change', () => {
       const birthDate = new Date(fechaInput.value);
       const today = new Date();
       const age = today.getFullYear() - birthDate.getFullYear();
       
-      // Verificar si cumple con la edad mínima requerida
       if (age < this.validationConfig.minAge) {
         this.showToast(`Debes tener al menos ${this.validationConfig.minAge} años`, 'warning');
         fechaInput.classList.add('error');
@@ -1574,24 +1860,11 @@ class AppState {
     });
   }
 
-  /*
-  =============================================================================
-  SISTEMA DE NOTIFICACIONES (TOASTS)
-  =============================================================================
-  */
-
-  /**
-   * Muestra una notificación temporal al usuario
-   * Previene duplicados y maneja auto-ocultado
-   * @param {string} message - Mensaje a mostrar
-   * @param {string} type - Tipo de notificación que determina el estilo e icono
-   * @param {number} duration - Duración en milisegundos antes de auto-ocultar
-   */
+  // SISTEMA DE TOASTS
   showToast(message, type = 'info', duration = 5000) {
     const container = document.getElementById('toast-container');
     if (!container) return;
     
-    // Prevenir notificaciones duplicadas
     const existingToasts = Array.from(container.querySelectorAll('.toast'));
     const isDuplicate = existingToasts.some(toast => {
       const msgElement = toast.querySelector('.toast__message');
@@ -1600,11 +1873,9 @@ class AppState {
     
     if (isDuplicate) return;
     
-    // Crear y mostrar nueva notificación
     const toast = this.createToastElement(message, type);
     container.appendChild(toast);
     
-    // Auto-remover después del tiempo especificado
     setTimeout(() => {
       if (toast.parentNode) {
         this.removeToast(toast);
@@ -1612,17 +1883,10 @@ class AppState {
     }, duration);
   }
 
-  /**
-   * Crea un elemento de notificación con interactividad
-   * @param {string} message - Mensaje de la notificación
-   * @param {string} type - Tipo para estilo y icono
-   * @returns {HTMLElement} - Elemento toast creado
-   */
   createToastElement(message, type) {
     const toast = document.createElement('div');
     toast.className = `toast toast--${type} fade-in`;
     
-    // Iconos para cada tipo de notificación
     const icons = {
       success: '✓',
       error: '✗',
@@ -1630,7 +1894,6 @@ class AppState {
       info: 'ℹ'
     };
     
-    // Estructura HTML de la notificación
     toast.innerHTML = `
       <div class="toast__content">
         <span class="toast__icon">${icons[type] || icons.info}</span>
@@ -1639,12 +1902,9 @@ class AppState {
       </div>
     `;
     
-    // Event listeners para interacción
     const closeBtn = toast.querySelector('.toast__close');
-    // Escuchar clicks en el botón de cerrar para eliminar la notificación
     closeBtn.addEventListener('click', () => this.removeToast(toast));
     
-    // Cerrar al hacer click en cualquier parte del toast
     toast.addEventListener('click', e => {
       if (!e.target.matches('.toast__close')) {
         this.removeToast(toast);
@@ -1654,10 +1914,6 @@ class AppState {
     return toast;
   }
 
-  /**
-   * Remueve una notificación con animación de salida
-   * @param {HTMLElement} toast - Elemento toast a remover
-   */
   removeToast(toast) {
     toast.classList.add('fade-out');
     setTimeout(() => {
@@ -1667,106 +1923,61 @@ class AppState {
     }, 300);
   }
 
-  /**
-   * Oculta todas las notificaciones visibles
-   */
   hideToasts() {
     document.querySelectorAll('.toast').forEach(toast => {
       this.removeToast(toast);
     });
   }
 
-  /*
-  =============================================================================
-  UTILIDADES DE INTERFAZ Y ESTADO
-  =============================================================================
-  */
-
-  /**
-   * Muestra error en un campo específico del formulario
-   * Aplica estilos de error, accesibilidad y scroll automático
-   * @param {HTMLFormElement} form - Formulario contenedor
-   * @param {string} selector - Selector CSS del campo
-   * @param {string} message - Mensaje de error a mostrar
-   */
+  // UTILIDADES
   showFieldError(form, selector, message) {
     const field = form.querySelector(selector);
     if (field) {
-      // Aplicar estilo visual de error al campo
       field.classList.add('error');
-      // Marcar como inválido para lectores de pantalla
       field.setAttribute('aria-invalid', 'true');
-      // Hacer scroll suave hasta el campo con error
       field.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
-      // Enfocar el campo después de un breve delay
       setTimeout(() => field.focus(), 300);
     }
-    // Mostrar notificación de error al usuario
     this.showToast(message, 'error');
   }
 
-  /**
-   * Restaura el estado normal de todos los campos y contadores
-   * @param {HTMLFormElement} form - Formulario a limpiar
-   */
   clearFormErrors(form) {
-    // Limpiar errores de todos los campos de entrada
     form.querySelectorAll('.form-input').forEach(input => {
       this.clearFieldError(input);
     });
     
-    // Restaurar contadores de caracteres a estado normal
     form.querySelectorAll('.character-counter--warning, .character-counter--attention')
       .forEach(counter => {
         counter.className = 'character-counter';
       });
   } 
 
-
-  /**
-   * Limpia el estado de error de un campo individual
-   * Restaura el estilo normal y la accesibilidad del campo
-   * @param {HTMLInputElement} input - Campo a limpiar
-   */
   clearFieldError(input) {
-    // Quitar estilo visual de error
     input.classList.remove('error');
-    // Marcar como válido para lectores de pantalla
     input.setAttribute('aria-invalid', 'false');
     
-    // Limpiar contador de caracteres si existe
     const counter = input.parentElement.querySelector('.character-counter');
     if (counter) {
       counter.classList.remove('character-counter--warning', 'character-counter--attention');
     }
   }
 
-  /**
-   * Controla el estado de carga de la aplicación
-   * Deshabilita botones y muestra indicadores de carga durante operaciones
-   * @param {boolean} isLoading - true para activar estado de carga, false para desactivar
-   */
   setLoading(isLoading) {
     this.loading = isLoading;
     
-    // Aplicar cambios a todos los botones de la página
     document.querySelectorAll('.btn').forEach(btn => {
       if (isLoading) {
-        // Activar estado de carga: deshabilitar botón y cambiar texto
         btn.classList.add('btn--loading');
         btn.disabled = true;
         
-        // Guardar texto original si no está guardado
         if (!btn.dataset.originalText) {
           btn.dataset.originalText = btn.textContent;
         }
         btn.textContent = 'Cargando...';
       } else {
-        // Desactivar estado de carga: restaurar botón y texto original
         btn.classList.remove('btn--loading');
         btn.disabled = false;
         
-        // Restaurar texto original si existe
         if (btn.dataset.originalText) {
           btn.textContent = btn.dataset.originalText;
           delete btn.dataset.originalText;
@@ -1775,15 +1986,13 @@ class AppState {
     });
   }
 
-  /*
-  =============================================================================
-  ACCIONES DE CONTROL DEL JUEGO
-  =============================================================================
-  */
-
+  // ============================================================================
+  // ACCIONES DE JUEGO (TRANSVERSAL - Común a ambos modos)
+  // ============================================================================
+  
   /**
    * Avanza a la siguiente ronda del juego
-   * Coordina con el JuegoManager para mantener continuidad
+   * Funciona tanto para modo digital completo como modo seguimiento
    */
   siguienteRonda() {
     if (window.JuegoManager?._prepararSiguienteRonda) {
@@ -1791,10 +2000,6 @@ class AppState {
     }
   }
 
-  /**
-   * Inicia una revancha con los mismos jugadores
-   * Reinicia el estado del juego pero mantiene configuración de jugadores
-   */
   revancha() {
     if (window.JuegoManager?.reiniciarJuegoCompleto) {
       window.JuegoManager.reiniciarJuegoCompleto();
@@ -1802,20 +2007,13 @@ class AppState {
     this.showScreen('seleccion-inicial');
   }
 
-  /**
-   * Inicia una partida completamente nueva
-   * Limpia configuración de jugadores y vuelve a configuración inicial
-   */
   nuevaPartida() {
-    // Resetear a modo automático
-    this.modoSeguimiento = false;
+    this.setModo('DIGITAL_COMPLETO');
     this.showScreen('jugadores');
     
-    // Limpiar configuración del segundo jugador
     const j2 = document.getElementById('jugador-2');
     if (j2) j2.value = '';
     
-    // Restaurar configuración por defecto (invitado)
     const radioInvitado = document.getElementById('radio-invitado');
     if (radioInvitado) radioInvitado.checked = true;
     
@@ -1823,129 +2021,101 @@ class AppState {
   }
 
   /**
-   * Cierra sesión del usuario actual
-   * Maneja confirmación si hay partida en curso y limpia todo el estado
+   * Cierra la sesión del usuario y limpia todos los datos
+   * Funciona para ambos modos de juego
    */
   logout() {
-    // Confirmar si hay partida en curso
     const confirmLogout = this.currentScreen === 'partida' ? 
       confirm('¿Estás seguro de que quieres cerrar sesión? Se perderá el progreso de la partida actual.') : 
       true;
 
     if (!confirmLogout) return;
 
-    // Limpieza completa de datos persistentes
-    localStorage.clear();
+    localStorage.removeItem('usuario');
+    this.limpiarDatosJuego(); // NUEVO: Limpiar datos del juego
 
-    // Resetear estado de la aplicación
     this.user = null;
     this.players = [];
+    this.jugador1Info = null; // NUEVO
     this.jugador2Info = null;
+    this.partidaInfo = null; // NUEVO
     this.dadoSeleccionado = null;
-    this.modoSeguimiento = false;
+    this.setModo('DIGITAL_COMPLETO');
 
-    // Limpiar todos los formularios
     document.querySelectorAll('form').forEach(form => form.reset());
 
-    // Navegar a login y notificar
     this.showScreen('login');
-    this.showToast('Sesión cerrada', 'info');
+    this.showToast(this.languageManager.getMessage('logout'), 'info');
   }
 
-  /**
-   * Resetea completamente el estado de la aplicación
-   * Utilizado para limpiezas profundas o recuperación de errores
-   */
   resetAppState() {
-    // Resetear estado interno
     this.currentScreen = 'login';
     this.user = null;
     this.loading = false;
     this.players = [];
+    this.jugador1Info = null; // NUEVO
     this.jugador2Info = null;
+    this.partidaInfo = null; // NUEVO
     this.dadoSeleccionado = null;
-    this.modoSeguimiento = false;
+    this.setModo('DIGITAL_COMPLETO');
     
-    // Limpiar datos persistentes
-    localStorage.clear();
-    
-    // Limpiar notificaciones activas
     this.hideToasts();
     
-    // Resetear y limpiar todos los formularios
     document.querySelectorAll('form').forEach(form => {
       form.reset();
       this.clearFormErrors(form);
     });
   }
-
 }
 
-/*
-=============================================================================
-INICIALIZACIÓN Y MANEJO DE ERRORES GLOBALES
-=============================================================================
-*/
-
-/**
- * Inicialización principal de la aplicación
- * Se ejecuta cuando la página web está completamente cargada
- */
+// INICIALIZACIÓN
 if (!window.app) {
   document.addEventListener('DOMContentLoaded', () => {
-    // Crear instancia principal de la aplicación
     const tempApp = new AppState();
     
-    // Exponer globalmente para acceso desde otros módulos
     window.app = tempApp;
     window.adminManager = new AdminManager();
   });
 }
 
-/**
- * Sistema de manejo de errores globales
- * Captura errores no manejados y los reporta al usuario
- */
+// MANEJO DE ERRORES GLOBALES
 window.addEventListener('error', e => {
   console.error('Error global capturado:', e.error);
   if (window.app) {
-    window.app.showToast('Ha ocurrido un error inesperado', 'error');
+    window.app.showToast(window.app.languageManager.getMessage('error.unexpected'), 'error');
   }
 });
 
-/**
- * Manejo de promesas rechazadas sin catch
- * Previene que errores asincrónicos pasen desapercibidos
- */
 window.addEventListener('unhandledrejection', e => {
   console.error('Promesa rechazada sin manejar:', e.reason);
   if (window.app) {
-    window.app.showToast('Error en operación asíncrona', 'error');
+    window.app.showToast(window.app.languageManager.getMessage('error.async'), 'error');
   }
 });
 
-/*
-=============================================================================
-SISTEMA DE ADMINISTRACIÓN DE USUARIOS
-=============================================================================
-*/
+// ============================================================================
+// ADMINISTRADOR (TRANSVERSAL - Funcionalidad de administración)
+// ============================================================================
 
 /**
- * Gestor del panel de administración para usuarios con privilegios de admin
- * Permite edición completa de usuarios: crear, leer, actualizar y eliminar
- * Se integra con el backend para operaciones de base de datos
+ * CLASE ADMINISTRADOR - DRAFTOSAURUS DIGITAL
+ * 
+ * Maneja todas las funciones de administración del sistema:
+ * - Gestión de usuarios
+ * - Creación, edición y eliminación de usuarios
+ * - Visualización de estadísticas
+ * 
+ * Esta funcionalidad es transversal a ambos modos de juego
  */
 class AdminManager {
   constructor() {
-    this.currentUser = null;           // Usuario admin actualmente logueado
-    this.currentEditingUser = null;    // Usuario siendo editado
-    this.usuariosData = [];            // Cache de usuarios cargados desde backend
+    this.currentUser = null;
+    this.currentEditingUser = null;
     this.init();
   }
 
   init() {
     this.setupAdminEvents();
-    this.fetchUsers();
     this.asegurarPopupOculto();
   }
 
@@ -2025,16 +2195,10 @@ class AdminManager {
     }
   }
 
-  /**
-   * Obtiene la lista completa de usuarios desde el servidor
-   * Maneja errores de conexión y valida la estructura de datos recibida
-   * @returns {Promise<void>} - Promesa que se resuelve cuando los datos están listos
-   */
   async fetchUsers() {
     console.log('Iniciando fetchUsers...');
     
     try {
-      // Realizar petición GET al endpoint de usuarios
       const url = 'http://127.0.0.1:8000/getUsuarios';
       console.log('Haciendo petición a:', url);
       
@@ -2047,7 +2211,6 @@ class AdminManager {
       
       console.log('Status de respuesta:', response.status);
 
-      // Verificar que la respuesta sea exitosa
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Error en respuesta:', errorText);
@@ -2057,12 +2220,11 @@ class AdminManager {
       const data = await response.json();
       console.log('Datos recibidos:', data);
 
-      // Verificar que el servidor responda con éxito
       if (!data.success) {
         throw new Error(data.message || 'No se pudieron obtener los usuarios');
       }
 
-      // Validar estructura de datos y asignar usuarios
+      // Verificación mejorada
       if (data && Array.isArray(data.usuarios)) {
         this.usuariosData = data.usuarios;
         console.log('✅ usuariosData asignado correctamente:', this.usuariosData);
@@ -2073,7 +2235,7 @@ class AdminManager {
 
       console.log('Usuarios cargados:', this.usuariosData.length);
 
-      // Renderizar lista si la pantalla está visible
+      // Renderizar inmediatamente
       if (document.getElementById('pantalla-listado-usuarios')?.classList.contains('hidden') === false) {
         console.log('Renderizando lista inmediatamente...');
         this.renderizarListaUsuarios();
@@ -2086,56 +2248,39 @@ class AdminManager {
     }
   }
 
-  /**
-   * Configura y muestra el perfil del administrador
-   * Actualiza la interfaz con los datos del usuario administrador
-   * @param {Object} usuario - Datos del usuario administrador
-   */
   mostrarPerfilAdmin(usuario) {
-    // Guardar usuario actual para referencia
     this.currentUser = usuario;
     
-    // Actualizar nombre de usuario en la interfaz
     const adminUsername = document.getElementById('admin-username');
     if (adminUsername) {
       adminUsername.textContent = usuario.username;
     }
 
-    // Actualizar todos los elementos que muestran el nombre del admin
     document.querySelectorAll('.admin-name').forEach(el => {
       el.textContent = usuario.username;
     });
 
-    // Mostrar la pantalla principal de administración
     this.mostrarPantalla('pantalla-admin');
   }
 
-  /**
-   * Muestra la pantalla de listado de usuarios con carga asíncrona
-   * Maneja estados de carga y errores de conexión
-   * @returns {Promise<void>} - Promesa que se resuelve cuando la lista está lista
-   */
-  async mostrarListadoUsuarios() 
-  {
+  async mostrarListadoUsuarios() {
     console.log('Iniciando mostrarListadoUsuarios...');
     
     // Mostrar pantalla primero con mensaje de carga
     this.mostrarPantalla('pantalla-listado-usuarios');
     
-    // Mostrar indicador de carga mientras se obtienen los datos
     const container = document.getElementById('lista-usuarios-admin');
     if (container) {
       container.innerHTML = '<div class="titulo-seccion">Cargando usuarios...</div>';
     }
     
     try {
-      // Obtener usuarios desde el servidor
+      // Forzar carga de usuarios
       await this.fetchUsers();
       console.log('Usuarios cargados, renderizando lista...');
       this.renderizarListaUsuarios();
     } catch (error) {
       console.error('Error al cargar usuarios:', error);
-      // Mostrar mensaje de error si falla la carga
       if (container) {
         container.innerHTML = `
           <div class="titulo-seccion">Error al cargar usuarios</div>
@@ -2147,46 +2292,28 @@ class AdminManager {
     }
   }
 
-  /**
-   * Prepara y muestra el formulario para crear un nuevo usuario
-   * Limpia el formulario y cambia a la pantalla correspondiente
-   */
   mostrarNuevoUsuario() {
-    // Limpiar formulario para evitar datos previos
     const form = document.getElementById('form-nuevo-usuario');
     if (form) form.reset();
     
-    // Mostrar pantalla de creación de usuario
     this.mostrarPantalla('pantalla-nuevo-usuario');
   }
 
-  /**
-   * Prepara y muestra el formulario de edición con los datos del usuario
-   * Llena automáticamente los campos con la información existente
-   * @param {Object} usuario - Usuario a editar con todos sus datos
-   */
   mostrarEditarUsuario(usuario) {
-    // Guardar referencia al usuario que se está editando
     this.currentEditingUser = usuario;
     
-    // Llenar formulario con datos actuales del usuario
+    // Llenar formulario con datos del usuario
     document.getElementById('edit-username').value = usuario.nombreUsuario;
     document.getElementById('edit-email').value = usuario.email;
     document.getElementById('edit-birthdate').value = usuario.nacimiento;
     
-    // Limpiar campo de contraseña (opcional para edición)
+    // Limpiar password
     const passwordField = document.getElementById('edit-password');
     if (passwordField) passwordField.value = '';
 
-    // Mostrar pantalla de edición
     this.mostrarPantalla('pantalla-editar-usuario');
   }
 
-  /**
-   * Renderiza la lista de usuarios en la interfaz de administración
-   * Aplica filtros de búsqueda y genera la estructura HTML dinámicamente
-   * @param {string} filtro - Texto para filtrar usuarios por nombre
-   */
   renderizarListaUsuarios(filtro = '') {
     console.log('renderizarListaUsuarios llamado, usuariosData:', this.usuariosData);
     
@@ -2196,7 +2323,7 @@ class AdminManager {
       return;
     }
 
-    // Validar que los datos de usuarios sean válidos
+    // Validación mejorada
     if (!Array.isArray(this.usuariosData)) {
       console.warn('usuariosData no es un array válido:', this.usuariosData);
       container.innerHTML = `
@@ -2208,14 +2335,12 @@ class AdminManager {
       return;
     }
 
-    // Filtrar usuarios: excluir admins y aplicar filtro de búsqueda
     const usuariosFiltrados = this.usuariosData.filter(user => 
-      !user.admin && user.nombreUsuario && user.nombreUsuario.toLowerCase().includes(filtro.toLowerCase())
+      user.admin === "0" && user.nombreUsuario && user.nombreUsuario.toLowerCase().includes(filtro.toLowerCase())
     );
 
     console.log(`Mostrando ${usuariosFiltrados.length} usuarios filtrados`);
 
-    // Mostrar mensaje si no hay usuarios
     if (usuariosFiltrados.length === 0) {
       container.innerHTML = `
         <div class="titulo-seccion">Usuarios registrados</div>
@@ -2226,7 +2351,6 @@ class AdminManager {
       return;
     }
 
-    // Generar HTML dinámico para cada usuario con botones de acción
     container.innerHTML = `
       <div class="titulo-seccion">Usuarios registrados (${usuariosFiltrados.length})</div>
       ${usuariosFiltrados.map(user => `
@@ -2244,90 +2368,64 @@ class AdminManager {
       `).join('')}
     `;
 
-    // Configurar eventos para los botones de acción
     this.setupUserActionListeners();
-}
+  }
 
-  /**
-   * Configura los event listeners para los botones de acción de usuarios
-   * Maneja clicks en botones de editar y eliminar usando delegación de eventos
-   */
   setupUserActionListeners() {
     const container = document.getElementById('lista-usuarios-admin');
     if (!container) return;
 
-    // Usar delegación de eventos para manejar clicks en botones dinámicos
     container.addEventListener('click', (e) => {
       const button = e.target.closest('[data-action]');
       if (!button) return;
 
-      // Extraer datos del botón clickeado
       const action = button.dataset.action;
       const userId = parseInt(button.dataset.userId);
       const username = button.dataset.username;
 
-      // Ejecutar acción según el tipo de botón
       if (action === 'eliminar') {
         this.mostrarPopupEliminar(username, userId);
       } else if (action === 'editar') {
-        // Buscar usuario completo en los datos para edición
-        const user = this.usuariosData.find(u => u.id === userId);
+        const user = this.usuariosData.find(u => parseInt(u.id) === userId);
         if (user) {
           this.mostrarEditarUsuario(user);
+        } else {
+          console.error('Usuario no encontrado. userId:', userId, 'usuariosData:', this.usuariosData);
         }
       }
     });
   }
 
-  /**
-   * Filtra la lista de usuarios según el texto de búsqueda
-   * @param {string} filtro - Texto para filtrar usuarios por nombre
-   */
   filtrarUsuarios(filtro) {
     this.renderizarListaUsuarios(filtro);
   }
 
-  /**
-   * Muestra el popup de confirmación para eliminar un usuario
-   * Configura la interfaz con los datos del usuario a eliminar
-   * @param {string} username - Nombre del usuario a eliminar
-   * @param {number} userId - ID del usuario a eliminar
-   */
   mostrarPopupEliminar(username, userId) {
     const popup = document.getElementById('popup-eliminar-usuario');
     const usernameSpan = document.getElementById('usuario-a-eliminar');
     
-    // Fallback si el popup no existe
     if (!popup) {
       alert(`¿Desea eliminar el usuario ${username}?`); // Fallback
       return;
     }
     
-    // Actualizar nombre del usuario en el popup
     if (usernameSpan) {
       usernameSpan.textContent = username;
     }
     
-    // Mostrar popup con alta prioridad visual
     popup.classList.remove('hidden');
     popup.style.zIndex = '10000';
     popup.dataset.userId = userId;
     
-    // Forzar actualización del DOM para asegurar que el popup sea visible
+    // Forzar reflow
     popup.offsetHeight;
   }
 
-  /**
-   * Confirma y ejecuta la eliminación del usuario seleccionado
-   * Envía petición al servidor y actualiza la lista tras eliminación exitosa
-   * @returns {Promise<void>} - Promesa que se resuelve cuando la eliminación termina
-   */
   async confirmarEliminarUsuario() {
     const popup = document.getElementById('popup-eliminar-usuario');
     const userId = parseInt(popup.dataset.userId);
     
     try {
-      // Enviar petición de eliminación al servidor
       const response = await fetch('http://127.0.0.1:8000/eliminarUsuario', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -2336,28 +2434,22 @@ class AdminManager {
 
       const result = await response.json();
 
-      // Verificar que la eliminación fue exitosa
       if (!response.ok || !result.success) {
         throw new Error(result.message || 'Error al eliminar usuario');
       }
 
-      // Recargar lista de usuarios desde el servidor actualizado
+      // Recargar usuarios desde el backend
       await this.fetchUsers();
-      window.app?.showToast('Usuario eliminado correctamente', 'success');
+      window.app?.showToast(window.app.languageManager.getMessage('admin.user.deleted'), 'success');
       
     } catch (error) {
       console.error('Error al eliminar usuario:', error);
-      window.app?.showToast('Error al eliminar usuario', 'error');
+      window.app?.showToast(window.app.languageManager.getMessage('admin.user.delete.error'), 'error');
     } finally {
-      // Cerrar popup independientemente del resultado
       this.cerrarPopupEliminar();
     }
   }
 
-  /**
-   * Cierra el popup de confirmación de eliminación
-   * Oculta el popup y limpia los datos temporales
-   */
   cerrarPopupEliminar() {
     const popup = document.getElementById('popup-eliminar-usuario');
     if (popup) {
@@ -2365,26 +2457,17 @@ class AdminManager {
     }
   }
 
-  /**
-   * Maneja el envío del formulario de edición de usuario
-   * Recopila datos del formulario y envía actualización al servidor
-   * @param {Event} e - Evento de envío del formulario
-   * @returns {Promise<void>} - Promesa que se resuelve cuando la edición termina
-   */
   async handleEditarUsuario(e) {
     e.preventDefault();
 
-    // Verificar que hay un usuario siendo editado
     if (!this.currentEditingUser) return;
 
-    // Recopilar datos del formulario de edición
     const username = document.getElementById('edit-username').value.trim();
     const email = document.getElementById('edit-email').value.trim();
     const birthdate = document.getElementById('edit-birthdate').value.trim();
     const password = document.getElementById('edit-password').value.trim();
 
     try {
-      // Preparar datos para envío al servidor
       const payload = {
         id: this.currentEditingUser.id,
         nombreUsuario: username,
@@ -2392,12 +2475,11 @@ class AdminManager {
         nacimiento: birthdate
       };
 
-      // Incluir contraseña solo si el usuario escribió una nueva
+      // Solo incluir password si se proporcionó
       if (password) {
         payload.password = password;
       }
 
-      // Enviar datos de modificación al servidor
       const response = await fetch('http://127.0.0.1:8000/modificarUsuario', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -2406,38 +2488,30 @@ class AdminManager {
 
       const result = await response.json();
 
-      // Verificar que la modificación fue exitosa
       if (!response.ok || !result.success) {
         throw new Error(result.message || 'Error al modificar el usuario');
       }
 
-      // Actualizar lista de usuarios y mostrar confirmación
+      // Recargar usuarios desde el backend actualizado
       await this.fetchUsers();
       this.mostrarListadoUsuarios();
-      window.app?.showToast('Usuario modificado correctamente', 'success');
+      window.app?.showToast(window.app.languageManager.getMessage('admin.user.modified'), 'success');
 
     } catch (error) {
       console.error('Error al modificar usuario:', error);
-      window.app?.showToast('Error al modificar usuario', 'error');
+      window.app?.showToast(window.app.languageManager.getMessage('admin.user.modify.error'), 'error');
     }
   }
 
-  /**
-   * Maneja la creación de un nuevo usuario desde el panel de administración
-   * Valida datos, comunica con backend y actualiza la interfaz
-   * @param {Event} e - Evento submit del formulario
-   */
   async handleNuevoUsuario(e) {
     e.preventDefault();
     
-    // Extraer datos del formulario de manera segura
     const username = document.getElementById('new-username').value.trim();
     const email = document.getElementById('new-email').value.trim();
     const birthdate = document.getElementById('new-birthdate').value.trim();
     const password = document.getElementById('new-password').value.trim();
     
     try {
-      // Enviar datos al endpoint específico de registro admin
       const response = await fetch('http://127.0.0.1:8000/registroAdmin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -2451,34 +2525,25 @@ class AdminManager {
 
       const result = await response.json();
 
-      // Verificar respuesta del servidor
       if (!response.ok || !result.success) {
         throw new Error(result.message || 'Error al crear usuario');
       }
 
-      // Recargar lista completa desde backend para mantener sincronización
+      // Recargar usuarios desde el backend
       await this.fetchUsers();
       this.volverPerfilAdmin();
-      window.app?.showToast('Usuario creado correctamente', 'success');
+      window.app?.showToast(window.app.languageManager.getMessage('admin.user.created'), 'success');
 
     } catch (error) {
       console.error('Error al crear usuario:', error);
-      window.app?.showToast('Error al crear usuario', 'error');
+      window.app?.showToast(window.app.languageManager.getMessage('admin.user.create.error'), 'error');
     }
   }
 
-  /**
-   * Navega de vuelta al perfil principal de administración
-   * Oculta formularios y muestra pantalla principal del admin
-   */
   volverPerfilAdmin() {
     this.mostrarPantalla('pantalla-admin');
   }
 
-  /**
-   * Sale del modo administración y cierra sesión completamente
-   * Limpia estado del admin y redirige al login
-   */
   salirModoAdmin() {
     this.currentUser = null;
     if (window.app) {
@@ -2486,24 +2551,16 @@ class AdminManager {
     }
   }
 
-  /**
-   * Maneja la navegación entre pantallas del panel de administración
-   * Oculta todas las pantallas y muestra solo la solicitada
-   * @param {string} pantallaId - ID de la pantalla a mostrar
-   */
   mostrarPantalla(pantallaId) {
-    // Ocultar todas las pantallas
     document.querySelectorAll('.pantalla').forEach(pantalla => {
       pantalla.classList.add('hidden');
     });
 
-    // Mostrar solo la pantalla solicitada
     const pantalla = document.getElementById(pantallaId);
     if (pantalla) {
       pantalla.classList.remove('hidden');
     }
 
-    // Asegurar que popups no interfieran
     this.asegurarPopupOculto();
   }
 }

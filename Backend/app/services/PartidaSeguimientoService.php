@@ -1,8 +1,11 @@
 <?php
+// ============================================================================
+// Modo Seguimiento de partida
+// ============================================================================
 
-class PartidaService
+class PartidaSeguimientoService
 {   
-    private static ?PartidaService $instance = null; 
+    private static ?PartidaSeguimientoService $instance = null; 
 
     private ?PartidaRepository $partidaRepo;
 
@@ -16,12 +19,13 @@ class PartidaService
     private function __construct()
     {
         $this->partidaRepo = PartidaRepository::getInstance();
+
         $this->partida = Partida::getInstance();
         $this->reglas = Reglas::getInstance();
         $this->puntaje = Puntaje::getInstance();
     }
 
-    public static function getInstance(): ?PartidaService
+    public static function getInstance(): ?PartidaSeguimientoService
     {
         if (self::$instance === null) 
         {
@@ -30,41 +34,29 @@ class PartidaService
         return self::$instance;
     }
 
-// ============================================================================
-// Modo de juego digital completo
-// ============================================================================
-
-    //Crea partida y bolsas
-    public function crearPartidaService(CrearPartidaDTO $dto): CrearPartidaDTO
-    {
-
+    public function crearPartidaSeguimientoService(CrearPartidaSeguimientoDTO $dto): CrearPartidaSeguimientoDTO
+    {   
         // Valida que que las IDs de los jugadores existan
-        if ($dto->jugador1_id <= 0 || 
-            $dto->jugador2_id <= 0
-            ) {
-                $dto->fillResponse(
-                    false,                                  //  success
-                    "ID de jugador 1 y 2 son requeridos.",  //  message
-                    null,                                   //  partida_id
-                    null,                                   //  bolsaJugador1
-                    null,                                   //  bolsaJugador2
-                    400                                     //  httpCode
-                );
+        if ($dto->jugador1_id <= 0 || $dto->jugador2_id <= 0) {
+            $dto->fillResponse(
+                false,                                  //  success
+                "ID de jugador 1 y 2 son requeridos.",  //  message
+                null,                                   //  partida_id
+                400                                     //  httpCode
+            );
+
             return $dto;
         }
 
-         // Valida que las IDs no sean iguales
-         if ($dto->jugador1_id === 
-             $dto->jugador2_id
-             ) {
-                $dto->fillResponse(
-                    false,                                  //  success
-                    "Los jugadores deben ser distintos.",   //  message
-                    null,                                   //  partida_id
-                    null,                                   //  bolsaJugador1
-                    null,                                   //  bolsaJugador2
-                    400                                     //  httpCode
-             );
+        // Valida que las IDs no sean iguales
+        if ($dto->jugador1_id === $dto->jugador2_id) {
+            $dto->fillResponse(
+                false,                                  //  success
+                "Los jugadores deben ser distintos.",   //  message
+                null,                                   //  partida_id
+                400                                     //  httpCode
+            );
+
             return $dto;
         }
 
@@ -77,58 +69,21 @@ class PartidaService
             if ($partida_id === 0) {
                 // Caso duplicado
                 $dto->fillResponse(
-                    false,                                  //  success
-                    "Partida duplicada.",                   //  message
-                    null,                                   //  partida_id
-                    null,                                   //  bolsaJugador1
-                    null,                                   //  bolsaJugador2
-                    409                                     //  httpCode
+                    false,                              //  success
+                    "Partida duplicada.",               //  message
+                    null,                               //  partida_id
+                    409                                 //  httpCode
                 );
+
                 return $dto;
             }
 
-            //  Crea una bolsa general con 48 dinos, 8 de cada especie.
-            $bolsa_general = new BolsaGeneral;
-
-            //  Crea una bolsa con 6 dinos de forma aleatoria.
-            $bolsa1 = $this->partida->crearBolsa($bolsa_general->bolsa_general);
-
-            //  Remueve los dinos utilizados para crear la bolsa 1 de la bolsa general
-            $bolsa_general->removerDinos($bolsa1);
-
-            //  Crea una bolsa con 6 dinos de forma aleatoria.
-            $bolsa2 = $this->partida->crearBolsa($bolsa_general->bolsa_general);
-
-            //  Remueve los dinos utilizados para crear la bolsa 2 de la bolsa general
-            $bolsa_general->removerDinos($bolsa2);
-
-            // Antes de la línea 106, agrega:
-            error_log("DEBUG - Bolsa general antes de guardar: " . json_encode($bolsa_general->bolsa_general));
-            error_log("DEBUG - Cantidad de dinosaurios: " . count($bolsa_general->bolsa_general));
-
-            //  Crea la bolsa general en la base de datos para el resto de la partida.
-            $this->partidaRepo->crearBolsaGeneralRepo($partida_id, $bolsa_general->bolsa_general);
-
-            //  Guarda las bolsas creadas en la base de datos
-            $bolsaJugador1 = $this->partidaRepo->crearBolsaRepo(
-                $partida_id,
-                $dto->jugador1_id, 
-                $bolsa1
-            );
-            $bolsaJugador2 = $this->partidaRepo->crearBolsaRepo(
-                $partida_id, 
-                $dto->jugador2_id, 
-                $bolsa2
-            );
-
             // Caso éxito
             $dto->fillResponse(
-                true,                                       //  success
-                "Partida creada exitosamente.",             //  message
-                $partida_id,                                //  partida_id
-                $bolsaJugador1,                             //  bolsaJugador1
-                $bolsaJugador2,                             //  bolsaJugador2
-                201                                         //  httpCode
+                true,                                   //  success
+                "Partida creada exitosamente.",         //  message
+                $partida_id,                            //  partida_id
+                201                                     //  httpCode
             );
             
             return $dto;
@@ -136,37 +91,98 @@ class PartidaService
         } catch (Exception $e) {
             // Si es un error de la base distinto a duplicado
             $dto->fillResponse(
-                false,                                      //  success
-                "Error interno del servidor.",              //  message
-                null,                                       //  partida_id
-                null,                                       //  bolsaJugador1
-                null,                                       //  bolsaJugador2
-                500                                         //  httpCode
+                false,                                  //  success
+                "Error interno del servidor.",          //  message
+                null,                                   //  partida_id
+                500                                     //  httpCode
             );
-    
-        return $dto;
-
+            
+            return $dto;
         }
     }
 
 
-    
-    //Coloca y descarta dinosaurios, tira dado. Actualiza turnos y rondas
-    public function turnoService(TurnoDTO $dto): TurnoDTO
-    {
-       //  Valida que se haya ingresado el ID de la partida
-       if (!$dto->partida_id || 
-            $dto->partida_id <= 0
-           ) {
+
+    public function crearBolsaSeguimientoService(CrearBolsaSeguimientoDTO $dto): CrearBolsaSeguimientoDTO
+    {   
+        $tiposValidos = ["t-rex",
+                        "triceratops", 
+                        "diplodocus", 
+                        "stegosaurus", 
+                        "parasaurolophus", 
+                        "pterodactilo"
+                        ];
+
+        //  Valida que se hayan igresado la cantidad correcta de dinos
+        if (count($dto->dinos) !== 6) {
+            $dto->fillResponse(
+                false,                                  //  success
+                "La bolsa debe contener exactamente 
+                6 dinosaurios.",                        //  message
+                400                                     //  httpCode
+            );
+            return $dto;
+        }
+
+        // Validar tipos de dinosaurios
+        foreach ($dto->dinos as $dino) {
+            if (!in_array(strtolower($dino), $tiposValidos, true)) {
                 $dto->fillResponse(
-                    false,                                  //  success
-                    'ID de partida inválido.',              //  message
-                    null,                                   //  turno
-                    null,                                   //  ronda
-                    null,                                   //  caraDado
-                    404,                                    //  httpCode
-                    null,                                   //  puntaje_jugador1
-                    null                                    //  puntaje_jugador2
+                    false,                              //  success
+                    "Tipo de dinosaurio 
+                    inválido: $dino.",                  //  message
+                    400                                 //  httpCode
+                );
+                return $dto;
+            }
+        }
+
+        try {
+            $this->partidaRepo->crearBolsaRepo(
+                $dto->partida_id,
+                $dto->jugador_id,
+                $dto->dinos
+                );
+
+            // Caso éxito
+            $dto->fillResponse(
+                true,                                   //  success
+                "Bolsa creada correctamente.",          //  message
+                201                                     //  httpCode
+            );
+
+            return $dto;
+
+        } catch (Exception $e) {
+            // Si es un error de la base distinto a duplicado
+            $dto->fillResponse(
+                false,                                  //  success
+                "Error interno del servidor.",          //  message
+                500                                     //  httpCode
+            );
+
+            return $dto;
+        }
+        
+    }
+
+
+
+    public function turnoSeguimientoService(TurnoSeguimientoDTO $dto): TurnoSeguimientoDTO
+    {
+        try {
+        //  Valida que se haya ingresado el ID de la partida
+        if (!$dto->partida_id || 
+             $dto->partida_id <= 0
+            ) {
+                $dto->fillResponse(
+                    false,                              //  success
+                    'ID de partida inválido.',          //  message
+                    null,                               //  turno
+                    null,                               //  ronda
+                    null,                               //  puntaje_jugador1
+                    null,                               //  puntaje_jugador2
+                    404                                 //  httpCode
                 );
                 return $dto;
         }
@@ -176,14 +192,13 @@ class PartidaService
             $dto->jugador_id <= 0
             ){
                 $dto->fillResponse(
-                    false,                                  //  success
-                    'Jugador inválido.',                    //  message
-                    null,                                   //  turno
-                    null,                                   //  ronda
-                    null,                                   //  caraDado
-                    404,                                    //  httpCode
-                    null,                                   //  puntaje_jugador1
-                    null                                    //  puntaje_jugador2
+                    false,                              //  success
+                    'Jugador inválido.',                //  message
+                    null,                               //  turno
+                    null,                               //  ronda
+                    null,                               //  puntaje_jugador1
+                    null,                               //  puntaje_jugador2
+                    404                                 //  httpCOde
                 );
                 return $dto;
         }
@@ -191,57 +206,58 @@ class PartidaService
         //  Valida que existan los datos requeridos
         if ($dto->recinto === '' ||
             $dto->tipoDino === '' || 
-            $dto->tipoDinoDescarte === ''
+            $dto->tipoDinoDescarte === '' || 
+            $dto->caraDado === ''
             ) {
                 $dto->fillResponse(
-                    false,                                  //  success
-                    'Recinto, tipos de dinosaurios y 
-                    resltado del dado son requeridos.',                                      //  message
-                    null,                                   //  turno
-                    null,                                   //  ronda
-                    null,                                   //  caraDado
-                    400,                                    //  httpCode
-                    null,                                   //  puntaje_jugador1
-                    null                                    //  puntaje_jugador2
+                    false,                              //  success
+                    'Recinto, tipos de 
+                    dinosaurios y resltado
+                    del dado son requeridos.',          //  message
+                    null,                               //  turno
+                    null,                               //  ronda
+                    null,                               //  puntaje_jugador1
+                    null,                               //  puntaje_jugador2
+                    400                                 //  httpCode
                 );
                 return $dto;
         }
 
         //  Valida que la partida exista
-        if (!$this->partidaRepo->getPartidaRepo(
-            $dto->partida_id
-            )) {
+        if (!$this->partidaRepo->getPartidaRepo($dto->partida_id)) {
 
-                $dto->fillResponse(
-                    false,                                  //  success
-                    "La partida con ID $dto->partida_id no existe.",                            //  message
-                    null,                                   //  turno
-                    null,                                   //  ronda
-                    null,                                   //  caraDado
-                    404,                                    //  httpCode
-                    null,                                   //  puntaje_jugador1
-                    null                                    //  puntaje_jugador2
-                );
-                return $dto;
+            $dto->fillResponse(
+                false,                                  //  success
+                "La partida con ID 
+                $dto->partida_id no existe.",           //  message
+                null,                                   //  turno
+                null,                                   //  ronda
+                null,                                   //  puntaje_jugador1
+                null,                                   //  puntaje_jugador2
+                404                                     //  httpCode
+            );
+            return $dto;
         }
 
-        //  Trea el id de jugador que tiró el dado en el turno anterior
-        $tiradorActual  = $this->partidaRepo->getTiradorActualRepo ($dto->partida_id);
+        //  Tremos de la base datos para hacer comparaciones y asi asegurar que la logica del juego se cumpla
+        $tiradorActual  = $this->partidaRepo->getTiradorActualRepo($dto->partida_id);
+        $turnoActual    = $this->partidaRepo->getTurnoActualRepo  ($dto->partida_id);
+        $rondaActual    = $this->partidaRepo->getRondaActualRepo  ($dto->partida_id);
+        $jugador1_id    = $this->partidaRepo->getJugador1IdRepo   ($dto->partida_id);
+        $jugador2_id    = $this->partidaRepo->getJugador2IdRepo   ($dto->partida_id);
+        $caraDadoActual = null;
 
-        //  Trae el turno acrual
-        $turnoActual    = $this->partidaRepo->getTurnoActualRepo   ($dto->partida_id);
-
-        //  Trae la ronda actaul
-        $rondaActual    = $this->partidaRepo->getRondaActualRepo   ($dto->partida_id);
-
-        //  Trae el id del jugador 1
-        $jugador1_id    = $this->partidaRepo->getJugador1IdRepo    ($dto->partida_id);
-
-        //  Trae el id del jugador 2
-        $jugador2_id    = $this->partidaRepo->getJugador2IdRepo    ($dto->partida_id);
-
-        //  Trae el resultado del dado del turno anterior
-        $caraDadoActual = $this->partidaRepo->getCaraDadoActualRepo($dto->partida_id);
+        //  Si el turno no es el primero, treamos del repo el resultado del dado actual, es decir, lo que tiro el jugador anterior
+        //  Si es el turno 1, usamos el dado que viene del frontend
+        if($turnoActual > 1){
+            $caraDadoActual = $this->partidaRepo->getCaraDadoActualRepo(
+                $dto->partida_id
+            );
+        } else {
+            // Turno 1: usar el dado que viene del frontend
+            $caraDadoActual = $dto->caraDado;
+        }
+        
 
         //  Traemos las colocaciones anteriores del jugador
         $colocacionesJugador = $this->partidaRepo->getColocacionesRepo(
@@ -256,12 +272,21 @@ class PartidaService
         $restricciones = $this->reglas->restriccionDado(
             $caraDadoActual, 
             $porRecintoJugador
-        );   
+        );     
+        
+
+        // Debug logging
+        error_log("DEBUG - jugador_id recibido: " . $dto->jugador_id);
+        error_log("DEBUG - jugador1_id de BD: $jugador1_id");
+        error_log("DEBUG - jugador2_id de BD: $jugador2_id");
+        error_log("DEBUG - turnoActual: $turnoActual, rondaActual: $rondaActual");
 
         //  Valida que desde el frontend se continue la partida luego de tremrinada por erro, si es asi, la finaliza.
         if ($turnoActual === 7 && 
-            $rondaActual === 4
+            $rondaActual === 2
             ){
+
+            
             
             //  Crea un DTO de finalizarPartida y le pasa como parametro el dto de TurnoSeguimiento convertido en array.
             $finalizarDTO = new FinalizarPartidaDTO($dto->toArray());
@@ -273,39 +298,41 @@ class PartidaService
             return $response;
         }
 
-        //  Valida que el jugador 1 sea siempre quien comienza la partida y la ronda 3.
+        //  Valida que el jugador 1 sea siempre quien comienza la partida.
         if($turnoActual === 1 && 
-          ($rondaActual === 1 || $rondaActual === 3) && 
-            $dto->jugador_id !== $jugador1_id
+           $rondaActual === 1 && 
+           $dto->jugador_id !== $jugador1_id
         ){
-            $dto->fillResponse(
-                false,                                  //  success
-                "El jugador que comienza la partida y la ronda 3 debe ser el jugador 1.",                //  message
-                $turnoActual,                           //  turno
-                $rondaActual,                           //  ronda
-                $caraDadoActual,                        //  caraDado
-                404,                                    //  httpCode
-                null,                                   //  puntaje_jugador1
-                null                                    //  puntaje_jugador2
-            );
-            return $dto;
+                $dto->fillResponse(
+                    false,                              //  success
+                    "El jugador que comienza la 
+                    partida debe ser el jugador 1.",    //  message 
+                    $turnoActual,                       //  turno
+                    $rondaActual,                       //  ronda
+                    null,                               //  puntaje_jugador1
+                    null,                               //  puntaje_jugador2
+                    404                                 //  httpCode
+                );
+
+                return $dto;
         }
 
         //  Valida que el jugador 2 sea siempre quien comienza la segunda ronda.
         if($turnoActual === 1 && 
-          ($rondaActual === 2 || $rondaActual === 4) && 
-            $dto->jugador_id !== $jugador2_id
+           $rondaActual === 2 && 
+           $dto->jugador_id !== $jugador2_id
         ){
             $dto->fillResponse(
                 false,                                  //  success
-                "El jugador que comienza la ronda 2 y 4 debe ser el jugador 2.",        //  message
+                "El jugador que comienza la 
+                ronda 2 debe ser el jugador 2.",        //  message 
                 $turnoActual,                           //  turno
                 $rondaActual,                           //  ronda
-                $caraDadoActual,                        //  caraDado
-                404,                                    //  httpCode
                 null,                                   //  puntaje_jugador1
-                null                                    //  puntaje_jugador2
+                null,                                   //  puntaje_jugador2
+                404                                     //  httpCode
             );
+
             return $dto;
         }
 
@@ -319,15 +346,19 @@ class PartidaService
                 true
                 )) {
                     $dto->fillResponse(
-                        false,                           //  success
-                        "El jugador no puede colocar un dinosaurio en el $dto->recinto (restringido por el dado).",     //  message
-                        $turnoActual,                    //  turno
-                        $rondaActual,                    //  ronda
-                        $caraDadoActual,                 //  caraDado
-                        404,                             //  httpCode
-                        null,                            //  puntaje_jugador1
-                        null                             //  puntaje_jugador2
+                        false,                          //  success
+                        "El jugador no puede 
+                        colocar un dinosaurio 
+                        en el $dto->recinto 
+                        (restringido por el 
+                        dado).",                        //  message
+                        $turnoActual,                   //  turno
+                        $rondaActual,                   //  ronda
+                        null,                           //  puntaje_jugador1
+                        null,                           //  puntaje_jugador2
+                        404                             //  httpCode
                     );
+
                     return $dto;
             }
         }
@@ -338,6 +369,8 @@ class PartidaService
             $dto->jugador_id
         );
 
+        error_log("DEBUG - Bolsa obtenida para jugador $dto->jugador_id: " . json_encode($bolsa));
+
         //  Valida que realmente el jugador cuente con el dinosaurio que desea colocar en su bolsa.
         if(!in_array(
             $dto->tipoDino, 
@@ -345,15 +378,18 @@ class PartidaService
             true
             )){
                 $dto->fillResponse(
-                    false,                           //  success
-                    "El jugador no tiene en su bolsa el dinosaurio {$dto->tipoDino} para colocar en {$dto->recinto}.",                                      //  message
-                    $turnoActual,                    //  turno
-                    $rondaActual,                    //  ronda
-                    $caraDadoActual,                 //  caraDado
-                    404,                             //  httpCode
-                    null,                            //  puntaje_jugador1
-                    null                             //  puntaje_jugador2
+                    false,                              //  success
+                    "El jugador no tiene 
+                    en su bolsa el dinosaurio 
+                    {$dto->tipoDino} para colocar en 
+                    {$dto->recinto}.",                  //  message
+                    $turnoActual,                       //  turno
+                    $rondaActual,                       //  ronda
+                    null,                               //  puntaje_jugador1
+                    null,                               //  puntaje_jugador2
+                    404                                 //  httpCode
                 );
+
                 return $dto;
         }
             
@@ -385,15 +421,18 @@ class PartidaService
             true
             )){
                 $dto->fillResponse(
-                    false,                           //  success
-                    "El jugador no tiene en su bolsa el dinosaurio $dto->tipoDinoDescarte para descartar.",                //  message
-                    $turnoActual,                    //  turno
-                    $rondaActual,                    //  ronda
-                    $caraDadoActual,                 //  caraDado
-                    404,                             //  httpCode
-                    null,                            //  puntaje_jugador1
-                    null                             //  puntaje_jugador2
+                    false,                              //  success
+                    "El jugador no tiene 
+                    en su bolsa el dinosaurio 
+                    $dto->tipoDinoDescarte 
+                    para descartar.",                   //  message
+                    $turnoActual,                       //  turno
+                    $rondaActual,                       //  ronda
+                    null,                               //  puntaje_jugador1
+                    null,                               //  puntaje_jugador2
+                    404                                 //  httpCode
                 );
+
                 return $dto;
         }
 
@@ -404,20 +443,23 @@ class PartidaService
             $dto->tipoDinoDescarte
         );
 
-        //  Suma un turno.
-        $this->partidaRepo->sumarTurnoRepo($dto->partida_id);
+        // Suma un turno
+        $turnoActual++;
 
-        $turnoActual += 1;
-            
-        //  Tira dado en backend.
-         $caraDadoActual = $this->partida->tirarDado();
 
-        //  Guarda en la base de dato el resultado del dado.
-        $this->partidaRepo->tirarDadoRepo(
-            $dto->partida_id, 
-            $caraDadoActual, 
-            $dto->jugador_id
-        );
+        //  Si el turno es del 1 al 5.
+        if($turnoActual <= 6){
+
+            //  Suma un turno.
+            $this->partidaRepo->sumarTurnoRepo($dto->partida_id);     
+
+            //  Guarda en la base el resultado del dado que vino desde el frontend.
+            $this->partidaRepo->tirarDadoRepo(
+                $dto->partida_id, 
+                $dto->caraDado, 
+                $dto->jugador_id
+            );
+        }
 
         //  Crea una dto de calcular puntajes.
         $calcularPuntajesDTO = new CalcularPuntajesDTO($dto->partida_id);
@@ -426,8 +468,8 @@ class PartidaService
         $puntajes = $this->calcularPuntajesService($calcularPuntajesDTO);
 
         //  Separa los puntajes de cada jugador.
-        $puntajeJugador1 = $puntajes->puntaje_jugador1;
-        $puntajeJugador2 = $puntajes->puntaje_jugador2;
+        $puntajeJugador1 = $puntajes->puntaje_jugador1 ?? 0;
+        $puntajeJugador2 = $puntajes->puntaje_jugador2 ?? 0;
 
         //  Retorna turno procesado exitosamente.
         $dto->fillResponse(
@@ -435,17 +477,35 @@ class PartidaService
             "Jugada procesada exitosamente.",           //  message
             $turnoActual,                               //  turno
             $rondaActual,                               //  ronda
-            $caraDadoActual,                            //  caraDado
-            201,                                        //  httpCode
             $puntajeJugador1,                           //  puntaje_jugador1
-            $puntajeJugador2                            //  puntaje_jugador2
+            $puntajeJugador2,                           //  puntaje_jugador2
+            201                                         //  httpCode
         );
 
         return $dto;
+        
+        } catch (Exception $e) {
+            // Capturar cualquier error y devolverlo
+            error_log("ERROR en turnoSeguimientoService: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            
+            $dto->fillResponse(
+                false,                                  //  success
+                "Error interno: " . $e->getMessage(),   //  message
+                null,                                   //  turno
+                null,                                   //  ronda
+                null,                                   //  puntaje_jugador1
+                null,                                   //  puntaje_jugador2
+                500                                     //  httpCode
+            );
+            
+            return $dto;
+        }
     }
 
+
     //Coloca y descarta dinosaurios, tira dado. Actualiza turnos y rondas
-    public function finalizarRondaService(RondaDTO $dto): RondaDTO
+    public function finalizarRondaSeguimientoService(RondaSeguimientoDTO $dto): RondaSeguimientoDTO
     {
        //  Valida que se haya ingresado el ID de la partida
        if (!$dto->partida_id || 
@@ -459,9 +519,7 @@ class PartidaService
                     null,                                   //  caraDado
                     404,                                    //  httpCode
                     null,                                   //  puntaje_jugador1
-                    null,                                   //  puntaje_jugador2
-                    null,                                   //  bolsa_jugador1
-                    null                                    //  bolsa_jugador2
+                    null                                    //  puntaje_jugador2
                 );
                 return $dto;
         }
@@ -479,31 +537,30 @@ class PartidaService
                     404,                                    //  httpCode
                     null,                                   //  puntaje_jugador1
                     null,                                   //  puntaje_jugador2
-                    null,                                   //  bolsa_jugador1
-                    null                                    //  bolsa_jugador2
+                    
                 );
                 return $dto;
         }
 
         //  Valida que existan los datos requeridos
         if ($dto->recinto === '' ||
-            $dto->tipoDino === '' ||
+            $dto->tipoDino === '' || 
             $dto->tipoDinoDescarte === ''
-            ) {
-                $dto->fillResponse(
-                    false,                                  //  success
-                    'Recinto, tipos de dinosaurios y 
-                    resltado del dado son requeridos.',                                      //  message
-                    null,                                   //  turno
-                    null,                                   //  ronda
-                    null,                                   //  caraDado
-                    400,                                    //  httpCode
-                    null,                                   //  puntaje_jugador1
-                    null,                                   //  puntaje_jugador2
-                    null,                                   //  bolsa_jugador1
-                    null                                    //  bolsa_jugador2
-                );
-                return $dto;
+        ) {
+            $dto->fillResponse(
+                false,                              //  success
+                'Recinto, tipos de 
+                dinosaurios y resltado
+                del dado son requeridos.',          //  message
+                null,                               //  turno
+                null,                               //  ronda
+                null,                               //  caraDado
+                400,                                //  httpCode
+                null,                               //  puntaje_jugador1
+                null                                //  puntaje_jugador2
+                
+            );
+            return $dto;
         }
 
         //  Valida que la partida exista
@@ -519,9 +576,7 @@ class PartidaService
                     null,                                   //  caraDado
                     404,                                    //  httpCode
                     null,                                   //  puntaje_jugador1
-                    null,                                   //  puntaje_jugador2
-                    null,                                   //  bolsa_jugador1
-                    null                                    //  bolsa_jugador2
+                    null                                    //  puntaje_jugador2
                 );
                 return $dto;
         }
@@ -570,12 +625,10 @@ class PartidaService
                     "El jugador no puede colocar un dinosaurio en el $dto->recinto (restringido por el dado).",     //  message
                     $turnoActual,                    //  turno
                     $rondaActual,                    //  ronda
-                    $caraDadoActual,                 //  caraDado
+                    null,                            //  caraDado
                     404,                             //  httpCode
                     null,                            //  puntaje_jugador1
-                    null,                            //  puntaje_jugador2
-                    null,                            //  bolsa_jugador1
-                    null                             //  bolsa_jugador2
+                    null                             //  puntaje_jugador2
                 );
                 return $dto;
         }
@@ -597,12 +650,10 @@ class PartidaService
                     "El jugador no tiene en su bolsa el dinosaurio {$dto->tipoDino} para colocar en {$dto->recinto}.",                                      //  message
                     $turnoActual,                    //  turno
                     $rondaActual,                    //  ronda
-                    $caraDadoActual,                 //  caraDado
+                    null,                            //  caraDado
                     404,                             //  httpCode
                     null,                            //  puntaje_jugador1
-                    null,                            //  puntaje_jugador2
-                    null,                            //  bolsa_jugador1
-                    null                             //  bolsa_jugador2
+                    null                             //  puntaje_jugador2
                 );
                 return $dto;
         }
@@ -639,12 +690,10 @@ class PartidaService
                     "El jugador no tiene en su bolsa el dinosaurio $dto->tipoDinoDescarte para descartar.",                //  message
                     $turnoActual,                    //  turno
                     $rondaActual,                    //  ronda
-                    $caraDadoActual,                 //  caraDado
+                    null,                            //  caraDado
                     404,                             //  httpCode
                     null,                            //  puntaje_jugador1
-                    null,                             //  puntaje_jugador2
-                    null,                            //  bolsa_jugador1
-                    null                             //  bolsa_jugador2
+                    null                             //  puntaje_jugador2
                 );
                 return $dto;
         }
@@ -667,41 +716,6 @@ class PartidaService
         //  No se tira dado en turno 6.
         $caraDadoActual = null;
 
-        //  Trae la bolsa general de la base de datos
-        $bolsa_general = $this->partidaRepo->getBolsaGeneralRepo($dto->partida_id);
-
-        //  Crea una bolsa con 6 dinos de forma aleatoria.
-        $bolsa1 = $this->partida->crearBolsa($bolsa_general);
-
-        //  Remueve los dinos que fueron asignados a bolsa1 de la bolsa general en la base de datos.
-        $this->partidaRepo->removerDinosBolsaGeneralRepo($dto->partida_id, $bolsa1);
-
-        //  Crea una bolsa con 6 dinos de forma aleatoria.
-        $bolsa2 = $this->partida->crearBolsa($bolsa_general);
-
-        //  Remueve los dinos que fueron asignados a bolsa2 de la bolsa general en la base de datos.
-        $this->partidaRepo->removerDinosBolsaGeneralRepo($dto->partida_id, $bolsa2);
-
-        $bolsa_jugador1 = $this->partidaRepo->crearBolsaRepo(
-            $dto->partida_id,
-            $dto->jugador_id,
-            $bolsa1
-        );
-
-        if($dto->jugador_id !== $jugador2_id){
-            $bolsa_jugador2 = $this->partidaRepo->crearBolsaRepo(
-                $dto->partida_id, 
-                $jugador2_id, 
-                $bolsa2
-            );
-        }else{
-            $bolsa_jugador2 = $this->partidaRepo->crearBolsaRepo(
-                $dto->partida_id, 
-                $jugador1_id, 
-                $bolsa2
-            );
-        }
-
         //  Crea una dto de calcular puntajes.
         $calcularPuntajesDTO = new CalcularPuntajesDTO($dto->partida_id);
 
@@ -715,82 +729,70 @@ class PartidaService
         //  Retorna turno procesado exitosamente.
         $dto->fillResponse(
             true,                                       //  success
-            "Ronda procesada exitosamente.",           //  message
+            "Ronda procesada exitosamente.",            //  message
             $turnoActual,                               //  turno
             $rondaActual,                               //  ronda
             $caraDadoActual,                            //  caraDado
             201,                                        //  httpCode
             $puntaje_jugador1,                          //  puntaje_jugador1
-            $puntaje_jugador2,                          //  puntaje_jugador2
-            $bolsa_jugador1,                            //  bolsa_jugador1
-            $bolsa_jugador2                             //  bolsa_jugador2
+            $puntaje_jugador2                           //  puntaje_jugador2
         );
 
         return $dto;
     }
 
 
-    //  Service para finalizar la partida.
-    public function finalizarPartidaService(FinalizarPartidaDTO $dto): FinalizarPartidaDTO
+    //  Service para finalizar la partida en modo seguimiento.
+    public function finalizarPartidaSeguimientoService(FinalizarPartidaSeguimientoDTO $dto): FinalizarPartidaSeguimientoDTO
     {
         //  Valida que se haya ingresado el ID de la partida.
-        if (!$dto->partida_id || $dto->partida_id <= 0) {
-            $dto->fillResponse(
-                false,
-                'ID de partida inválido.',
-                null,   // ganador_id
-                null,   // empate
-                null,   // puntaje_jugador1
-                null,   // puntaje_jugador2
-                404
-            );
-            return $dto;
-        }
-
-        //  Valida que se haya ingresado el ID del jugador
-        if (!$dto->jugador_id ||
-             $dto->jugador_id <= 0
-            ){
-                $dto->fillResponse(
-                    false,                                  //  success
-                    'Jugador inválido.',                    //  message
-                    null,                                   //  ganador
-                    null,                                   //  empate
-                    null,                                   //  puntaje_jugador1
-                    null,                                   //  puntaje_jugador2
-                    404                                     //  httpCode
-                );
-                return $dto;
-        }
-
-        //  Valida que existan los datos requeridos
-        if ($dto->recinto === '' ||
-            $dto->tipoDino === '' ||
-            $dto->tipoDinoDescarte === ''
+        if (!$dto->partida_id || 
+            $dto->partida_id <= 0
             ) {
                 $dto->fillResponse(
-                    false,                                  //  success
-                    'Recinto, tipos de dinosaurios y 
-                    resltado del dado son requeridos.',                                      //  message
-                    null,                                   //  ganador
-                    null,                                   //  empate
-                    null,                                   //  puntaje_jugador1
-                    null,                                   //  puntaje_jugador2
-                    404                                     //  httpCode
+                    false,                              //  success
+                    'ID de partida inválido.',          //  message
+                    null,                               //  ganador_id
+                    null,                               //  empate
+                    null,                               //  puntaje_jugador1
+                    null,                               //  puntaje_jugador2
+                    404                                 //  httpCode
                 );
                 return $dto;
         }
     
         //  Valida que la partida exista.
-        if (!$this->partidaRepo->getPartidaRepo($dto->partida_id)) {
+        if (!$this->partidaRepo->getPartidaRepo(
+            $dto->partida_id
+            )) {
             $dto->fillResponse(
-                false,
-                "La partida con ID {$dto->partida_id} no existe.",
-                null,
-                null,
-                null,
-                null,
-                404
+                false,                                  //  success
+                "La partida con ID 
+                {$dto->partida_id} 
+                no existe.",                            //  message
+                null,                                   //  ganador_id
+                null,                                   //  empate
+                null,                                   //  puntaje_jugador1
+                null,                                   //  puntaje_jugador2
+                404                                     //  httpCode
+            );
+            return $dto;
+        }
+
+        //  Valida que la partida este activa.
+        if ($this->partidaRepo->getEstadoPartidaRepo(
+            $dto->partida_id) === "finalizada"
+            ) {
+            $dto->fillResponse(
+                false,                                  //  success
+                "La partida con ID 
+                {$dto->partida_id} 
+                ya ha sido finalizada.",                //  message
+                null,                                   //  ganador_id
+                null,                                   //  empate
+                null,                                   //  puntaje_jugador1
+                null,                                   //  puntaje_jugador2
+                404                                     //  httpCode
             );
             return $dto;
         }
@@ -945,8 +947,8 @@ class PartidaService
         $puntajes = $this->calcularPuntajesService($calcularPuntajesDTO);
     
         //  Separa los puntajes de cada jugador.
-        $puntajeJugador1 = $puntajes->puntaje_jugador1;
-        $puntajeJugador2 = $puntajes->puntaje_jugador2;
+        $puntajeJugador1 = $puntajes->puntajeJugador1;
+        $puntajeJugador2 = $puntajes->puntajeJugador2;
     
         //  Evalua los puntajes y determina el ganador de la partida.
         $ganador_id = $this->partida->determinarGanador(
@@ -974,20 +976,21 @@ class PartidaService
     
         //  Retorna los datos relevantes.
         $dto->fillResponse(
-            true,                                               //  success
-            'Partida finalizada exitosamente.',                 //  message
-            $ganador_id,                                        //  ganador
-            $empate,                                            //  empate
-            $puntajeJugador1,                                   //  puntaje_jugador1
-            $puntajeJugador2,                                   //  puntaje_jugador2
-            200                                                 //  httpCode
+            true,                                       //  success
+            'Partida finalizada exitosamente.',         //  message
+            $ganador_id,                                //  ganador_id
+            $empate,                                    //  empate
+            $puntajeJugador1,                           //  puntajeJugador1
+            $puntajeJugador2,                           //  puntajeJugador2
+            200                                         //  httpCode
         );
         
         //  Retorna el objeto con todos los datos
         return $dto;
     }
 
-// ============================================================================
+
+//============================================================================
 // Funciones transversales a ambos modos.
 // ============================================================================
 
@@ -1034,5 +1037,5 @@ class PartidaService
         //  Retorna los puntajes de los jugadores.
         return $dto;
     }
-
+    
 }

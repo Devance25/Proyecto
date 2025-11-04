@@ -7,13 +7,19 @@ require_once 'app/repositories/PartidaRepository.php';
 
 require_once 'app/services/AuthService.php';
 require_once 'app/services/PartidaService.php';
+require_once 'app/services/PartidaSeguimientoService.php';
 
 require_once 'app/controllers/AuthController.php';
 require_once 'app/controllers/PartidaController.php';
+require_once 'app/controllers/PartidaSeguimientoController.php';
 
 require_once 'app/domain/Partida.php';
 require_once 'app/domain/Puntaje.php';
 require_once 'app/domain/Reglas.php';
+
+require_once 'app/DTO/PartidaDTO.php';
+require_once 'app/DTO/PartidaSeguimientoDTO.php';
+
 
 $origin = 'http://127.0.0.1:5500';
 header('Content-Type: application/json');
@@ -37,11 +43,15 @@ try {
 
     $authController = new AuthController();
     $partidaController = new PartidaController();
+    $partidaSeguimientoController = new PartidaSeguimientoController();
 
 
     switch ($resource) { 
 
-        //AuthController
+// ============================================================================
+// Endpoints para manejo de registro, login de usuarios y funciones de administracion
+// ============================================================================
+
         case 'login':
             if ($method === 'POST') {
                 $authController->loginController();
@@ -116,9 +126,24 @@ try {
             ]);
             break;
 
+        case 'ranking':
+            if ($method === 'GET') {
+                $authController->getRankingController();
+                break;
+            }
+            http_response_code(405);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Método no permitido.'
+            ]);
+            break;
 
 
-        //PartidaController
+
+// ============================================================================
+// Endpoints de juego digital completo
+// ============================================================================
+        
         case 'crearPartida':
             if ($method === 'POST') {
                 $partidaController->crearPartidaController();
@@ -144,7 +169,19 @@ try {
                 ]);
             break;  
 
-        
+
+        case 'finalizarRonda':
+            if ($method === 'POST') {
+                $partidaController->finalizarRondaController();
+                break;
+            }
+            http_response_code(405);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
+            break;
+
         case 'finalizarPartida':
             if ($method === 'POST') {
                 $partidaController->finalizarPartidaController();
@@ -157,11 +194,78 @@ try {
             ]);
             break;
 
+        
+// ============================================================================
+// Endpoints de modo seguimiento
+// ============================================================================
+        
+        case 'crearPartidaSeguimiento':
+            if ($method === 'POST') {
+                $partidaSeguimientoController->crearPartidaSeguimientoController();
+                break;
+            }
+            http_response_code(405);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
+            break;
+
+        
+        case 'crearBolsaSeguimiento':
+            if ($method === 'POST') {
+                $partidaSeguimientoController->crearBolsaSeguimientoController();
+                break;
+            }
+            http_response_code(405);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
+            break;
+
+
+        case 'turnoSeguimiento':
+            if ($method === 'POST') {
+                $partidaSeguimientoController->turnoSeguimientoController();
+                break;
+            }
+            http_response_code(405);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
+            break;
+
+        case 'finalizarRondaSeguimiento':
+            if ($method === 'POST') {
+                $partidaSeguimientoController->finalizarRondaSeguimientoController();
+                break;
+            }
+            http_response_code(405);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
+            break;
+    
+        case 'finalizarPartidaSeguimiento':
+            if ($method === 'POST') {
+                $partidaSeguimientoController->finalizarPartidaSeguimientoController();
+                break;
+            }
+            http_response_code(405);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Método no permitido.'
+            ]);
+            break;
 
 
 
-
-
+// ============================================================================
+// Endpoints transversales a ambos
+// ============================================================================
 
 
         case 'health':
