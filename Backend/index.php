@@ -126,6 +126,18 @@ try {
             ]);
             break;
 
+        case 'ranking':
+            if ($method === 'GET') {
+                $authController->getRankingController();
+                break;
+            }
+            http_response_code(405);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Método no permitido.'
+            ]);
+            break;
+
 
 
 // ============================================================================

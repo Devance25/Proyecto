@@ -1918,3 +1918,134 @@ body .hidden {
     scroll-behavior: auto !important;
   }
 }
+/* ============================================================================
+   RANKING STYLES
+   ============================================================================ */
+
+.ranking-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ranking-item {
+  display: grid;
+  grid-template-columns: 50px 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.ranking-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.ranking-puesto {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #FFD700;
+  text-align: center;
+}
+
+.ranking-item:nth-child(1) .ranking-puesto {
+  color: #FFD700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.ranking-item:nth-child(2) .ranking-puesto {
+  color: #C0C0C0;
+}
+
+.ranking-item:nth-child(3) .ranking-puesto {
+  color: #CD7F32;
+}
+
+.ranking-nombre {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #4e3737;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ranking-victorias {
+  font-size: 0.95rem;
+  color: rgba(90, 67, 67, 0.8);
+  text-align: right;
+}
+
+.ranking-victorias strong {
+  font-size: 1.2rem;
+  color: #3f2f2f;
+  margin-right: 0.25rem;
+}
+
+.ranking-loading,
+.ranking-empty,
+.ranking-error {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: rgba(72, 56, 56, 0.7);
+  font-size: 1.1rem;
+}
+
+.ranking-error {
+  color: #ff6b6b;
+}
+
+.btn-link {
+  background: transparent;
+    border: none;
+    color: rgb(227 184 60 / 70%);
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 1.2em;
+    font-weight: 600;
+    margin-top: 1rem;
+    transition: color 0.3s 
+ease;
+    text-align: center;
+    width: 100%;
+}
+
+.btn-link:hover {
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .ranking-item {
+    grid-template-columns: 40px 1fr auto;
+    padding: 0.75rem 1rem;
+    gap: 0.75rem;
+  }
+
+  .ranking-puesto {
+    font-size: 1.2rem;
+  }
+
+  .ranking-nombre {
+    font-size: 1rem;
+  }
+
+  .ranking-victorias {
+    font-size: 0.85rem;
+  }
+
+  .ranking-victorias strong {
+    font-size: 1rem;
+  }
+}

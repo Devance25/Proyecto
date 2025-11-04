@@ -336,4 +336,41 @@ class UsuarioRepository
     }
 
 
+    // GETS - RANKING
+    public function getRankingRepo(): array
+    {
+        $query = "SELECT 
+                    usuario_nombre as nombre_usuario,
+                    partidas_ganadas as victorias,
+                    (partidas_jugadas - partidas_ganadas) as derrotas
+                  FROM ranking_usuarios
+                  WHERE partidas_ganadas > 0
+                  ORDER BY partidas_ganadas DESC, partidas_jugadas ASC
+                  LIMIT 15";
+
+        $stmt = $this->conn->prepare($query);
+
+        if (!$stmt) {
+            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+        }
+
+        if (!$stmt->execute()) {
+            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+        }
+
+        $result = $stmt->get_result();
+        $ranking = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $ranking[] = [
+                'nombreUsuario' => $row['nombre_usuario'],
+                'victorias' => (int)$row['victorias'],
+                'derrotas' => (int)$row['derrotas']
+            ];
+        }
+
+        $stmt->close();
+        return $ranking;
+    }
+
 }
