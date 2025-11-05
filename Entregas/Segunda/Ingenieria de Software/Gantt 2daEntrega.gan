@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2025-08-09" view-index="0" gantt-divider-location="488" resource-divider-location="300" version="3.3.3316" locale="en_UY">
+    <description/>
+    <view zooming-state="default:3" id="gantt-chart">
+        <field id="tpd3" name="Name" width="258" order="0"/>
+        <field id="tpd4" name="Begin date" width="114" order="1"/>
+        <field id="tpd5" name="End date" width="114" order="2"/>
+        <field id="tpd15" name="Notes" width="20" order="3"/>
+        <option id="filter.completedTasks" value="false"/>
+        <option id="filter.dueTodayTasks" value="false"/>
+        <option id="filter.overdueTasks" value="false"/>
+        <option id="filter.inProgressTodayTasks" value="false"/>
+        <option id="color.recent"><![CDATA[#00cccc #6600ff #999999 #0066ff #3366ff]]></option>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="Name" width="209" order="0"/>
+        <field id="1" name="Default role" width="85" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="0" mon="0" tue="0" wed="0" thu="0" fri="0" sat="0"/>
+            <only-show-weekends value="true"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="5" uid="6775276c326d43bea1f5ce1b49fc3b00" name="A - Calculo de Metricas del Proyecto" color="#999999" meeting="false" start="2025-08-10" duration="1" complete="0" expand="true">
+            <depend id="1" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="1" uid="9b17b4a65d6a43e6a389d5ea8112b95d" name="B - Diagrama de Gantt" color="#3366ff" meeting="false" start="2025-08-11" duration="2" complete="0" priority="4" expand="true">
+            <depend id="2" type="2" difference="0" hardness="Strong"/>
+            <depend id="3" type="2" difference="0" hardness="Strong"/>
+            <depend id="4" type="2" difference="0" hardness="Strong"/>
+            <depend id="6" type="2" difference="0" hardness="Strong"/>
+            <depend id="9" type="2" difference="0" hardness="Strong"/>
+            <depend id="10" type="2" difference="0" hardness="Strong"/>
+            <depend id="15" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="2" uid="30b06b43f66640c0952d9114d1e78ceb" name="C - Diagrama UML (Casos de uso)" color="#0066ff" meeting="false" start="2025-08-13" duration="3" complete="0" priority="4" expand="true">
+            <depend id="7" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="3" uid="3071ad3779c842ebb235c45671f23cb2" name="D - Analisis Costo-Beneficio" color="#3366ff" meeting="false" start="2025-08-13" duration="1" complete="0" expand="true"/>
+        <task id="4" uid="31ce57872b03435c849118f5acf50f6b" name="E - Gestion de Riesgos" color="#0066ff" meeting="false" start="2025-08-13" duration="1" complete="0" expand="true"/>
+        <task id="6" uid="69db733a92784821b5107521cce380ed" name="F - Restricciones no estructurales" color="#00cccc" meeting="false" start="2025-08-13" duration="1" complete="0" expand="true"/>
+        <task id="7" uid="46929be5fee04d258b591a6f377685d2" name="G - Modelo Entidad-Relacion" color="#00cccc" meeting="false" start="2025-08-16" duration="4" complete="0" expand="true">
+            <depend id="8" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="8" uid="999b36fa1c1f4f90a1a5e368857fe508" name="H - Esquema Relacional Normalizado" color="#00cccc" meeting="false" start="2025-08-20" duration="5" complete="0" expand="true">
+            <depend id="14" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="9" uid="89caef1458ea421db63915f03b2c51b9" name="I - Matriz FODA y Analisis de Entorno" color="#6600ff" meeting="false" start="2025-08-13" duration="3" complete="0" expand="true">
+            <depend id="11" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="10" uid="0f023595259a4145a29976d191034443" name="J - Clasificacion del Emprendimiento" color="#6600ff" meeting="false" start="2025-08-13" duration="1" complete="0" expand="true"/>
+        <task id="11" uid="15441244e775471a8c3a1dd4fb9bd67f" name="K - Plan de Marketing" color="#6600ff" meeting="false" start="2025-08-16" duration="1" complete="0" expand="true">
+            <depend id="12" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="12" uid="cef002fb9e9e429b8924e8ab134b0fe9" name="L - Inscripcion de Empresa" color="#6600ff" meeting="false" start="2025-08-17" duration="1" complete="0" expand="true">
+            <depend id="13" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="13" uid="920ae84ae16d48d0acd2288e9f12844c" name="M - Habilidades Emprendedoras" color="#6600ff" meeting="false" start="2025-08-18" duration="1" complete="0" expand="true"/>
+        <task id="14" uid="f39f994db88a4c3f8dd61ed315015659" name="N - Implementacion de BBDD" color="#00cccc" meeting="false" start="2025-08-25" duration="7" complete="0" expand="true"/>
+        <task id="15" uid="5e9709e7613942efb8e590948aa21974" name="O - Diseño Responsivo" color="#00cccc" meeting="false" start="2025-08-13" duration="7" complete="0" expand="true"/>
+    </tasks>
+    <resources/>
+    <allocations/>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+</project>

@@ -1350,7 +1350,10 @@ const ModoSeguimiento = {
     const titulo = popup.querySelector('h2');
     if (titulo) {
       const nombre = estadoJuego.getJugadorActual().nombre || `Jugador ${estadoJuego.jugadorActual}`;
-      titulo.textContent = `${nombre.toUpperCase()} - Seleccionar dinosaurios para RONDA ${estadoJuego.rondaActual}`;
+      const lang = window.app?.languageManager?.currentLang || 'es';
+      const seleccionarText = lang === 'en' ? 'Select dinosaurs' : 'Seleccionar dinosaurios';
+      const rondaText = lang === 'en' ? 'ROUND' : 'RONDA';
+      titulo.textContent = `${nombre.toUpperCase()} - ${seleccionarText} ${rondaText} ${estadoJuego.rondaActual}`;
     }
 
     this._configurarSeleccionDinosaurios();
@@ -2952,9 +2955,12 @@ const JuegoManager = {
   },
 
   _actualizarResumenRonda() {
+    const lang = window.app?.languageManager?.currentLang || 'es';
+    const puntosText = window.app?.languageManager?.getMessage('game.total.points') || (lang === 'en' ? 'total points' : 'puntos totales');
+    
     const elementos = {
-      'puntos-resumen-j1': `${estadoJuego.jugador1.puntos} puntos totales`,
-      'puntos-resumen-j2': `${estadoJuego.jugador2.puntos} puntos totales`,
+      'puntos-resumen-j1': `${estadoJuego.jugador1.puntos} ${puntosText}`,
+      'puntos-resumen-j2': `${estadoJuego.jugador2.puntos} ${puntosText}`,
       'nombre-resumen-j1': estadoJuego.jugador1.nombre.toUpperCase(),
       'nombre-resumen-j2': estadoJuego.jugador2.nombre.toUpperCase(),
       'numero-ronda-resumen': `#${estadoJuego.rondaActual}`

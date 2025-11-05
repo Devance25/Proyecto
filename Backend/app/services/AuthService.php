@@ -23,6 +23,25 @@ class AuthService
 /*============================================================================================================*/
 
 /*============================================================================================================*/
+    public function getRankingService(): array
+    {
+        try {
+            $ranking = $this->usuarioRepo->getRankingRepo();
+            
+            return [
+                'success' => true,
+                'ranking' => $ranking
+            ];
+        } catch (Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Error al obtener el ranking: ' . $e->getMessage()
+            ];
+        }
+    }
+/*============================================================================================================*/
+
+/*============================================================================================================*/
     public function registrarUsuarioAdminService(RegistroAdminDTO $dto): array
     {
         $nombreUsuario = $dto->nombreUsuario;

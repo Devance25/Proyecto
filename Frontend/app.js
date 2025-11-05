@@ -3,6 +3,249 @@
 // ============================================================================
 
 /**
+ * GESTOR DE IDIOMAS - SISTEMA SIMPLE CON ATRIBUTOS HTML
+ */
+class LanguageManager {
+  constructor() {
+    this.currentLang = localStorage.getItem('draftosaurus_lang') || 'es';
+    
+    // Traducciones para mensajes dinámicos (toasts, validaciones, etc.)
+    this.messages = {
+      es: {
+        // Toast messages
+        'login.welcome': '¡Bienvenido de vuelta!',
+        'login.welcome.admin': '¡Bienvenido, Administrador!',
+        'login.invalid': 'Credenciales inválidas',
+        'login.error': 'Error al conectar con el servidor',
+        'register.success': '¡Cuenta creada exitosamente!',
+        'register.error': 'Error al registrarse',
+        'logout': 'Sesión cerrada',
+        'tracking.activated': 'Modo seguimiento activado',
+        'game.created': 'Partida creada exitosamente',
+        'player2.login.error': 'Credenciales inválidas para el jugador 2',
+        'player2.same.error': 'El jugador 2 debe ser diferente al jugador 1',
+        'player2.login.success': 'Jugador 2 logueado correctamente',
+        'player2.password.required': 'Ingresa la contraseña del jugador 2',
+        // Validaciones
+        'validation.name.max': 'Nombre máximo {max} caracteres',
+        'validation.name.letters': 'Solo se permiten letras y espacios',
+        'validation.username.max': 'Usuario máximo {max} caracteres',
+        'validation.username.format': 'Solo letras, números y guión bajo',
+        'validation.age.min': 'Debes tener al menos {min} años',
+        'error.unexpected': 'Ha ocurrido un error inesperado',
+        'error.async': 'Error en operación asíncrona',
+        // Admin
+        'admin.user.deleted': 'Usuario eliminado correctamente',
+        'admin.user.delete.error': 'Error al eliminar usuario',
+        'admin.user.modified': 'Usuario modificado correctamente',
+        'admin.user.modify.error': 'Error al modificar usuario',
+        'admin.user.created': 'Usuario creado correctamente',
+        'admin.user.create.error': 'Error al crear usuario',
+        // Game elements
+        'game.no.restriction': 'Sin restricción',
+        'game.all.enclosures': 'Todos los recintos disponibles',
+        'game.roll.dice': 'Tirar dado',
+        'game.drag.dinosaur': 'Arrastra un dinosaurio',
+        'game.discard.dinosaur': 'Descarta dinosaurio',
+        'game.send.turn': 'Enviar turno',
+        'game.finish.round': 'Finalizar ronda',
+        'game.finish.game': 'Finalizar partida',
+        'game.next.round': 'Siguiente ronda',
+        'game.no.dinosaurs': 'No hay dinosaurios disponibles',
+        'game.points': 'PUNTOS',
+        'game.dice.rolled': '¡Dado lanzado!',
+        'game.map.of': 'MAPA DE',
+        'game.opponent': 'OPONENTE',
+        'game.pts': 'pts',
+        'game.select.more': 'Selecciona {count} más',
+        'game.confirm.selection': 'Confirmar selección',
+        'game.restriction.current': 'Restricción Actual',
+        'game.restriction.trex': 'Bloquea recintos con T-Rex',
+        'game.restriction.empty': 'Solo recintos vacíos',
+        'game.restriction.blocked': 'Recintos bloqueados',
+        'game.total.points': 'puntos totales',
+        'game.dino.returned': 'Dinosaurio devuelto a disponibles',
+        'game.max.dinosaurs': 'Máximo {max} dinosaurios',
+        'game.dice.rolling': '¡Dado girando...!',
+        'game.select.exact': 'Debes seleccionar exactamente {max} dinosaurios',
+        'game.error.save.bag': 'Error al guardar bolsa en el servidor',
+        'game.error.connection': 'Error de conexión con el servidor',
+        'game.place.dino.first': 'Debes colocar un dinosaurio primero',
+        'game.discard.dino.first': 'Debes descartar un dinosaurio primero',
+        'game.error.round': 'Error al procesar fin de ronda. Intenta nuevamente.',
+        'game.error.finish': 'Error al procesar fin de partida. Intenta nuevamente.',
+        'game.error.turn': 'Error al procesar turno. Intenta nuevamente.',
+        'game.error.server.response': 'Error procesando respuesta del servidor',
+        'game.error.server.data': 'Error procesando datos del servidor',
+        'game.error.connection.check': 'Error de conexión - Verifica tu internet',
+        'game.error.server.retry': 'Error del servidor - Intenta nuevamente',
+        'game.error.support': 'Error inesperado - Contacta soporte',
+        'game.error.incomplete': 'Respuesta incompleta del servidor',
+        'game.cancelled': 'Partida cancelada',
+        'game.confirm.cancel': '¿Estás seguro de que quieres cancelar la partida actual?',
+        'ranking.loading': 'Cargando ranking...',
+        'ranking.error': 'Error al cargar el ranking',
+        'ranking.empty': 'No hay jugadores en el ranking aún'
+      },
+      en: {
+        // Toast messages
+        'login.welcome': 'Welcome back!',
+        'login.welcome.admin': 'Welcome, Administrator!',
+        'login.invalid': 'Invalid credentials',
+        'login.error': 'Error connecting to server',
+        'register.success': 'Account created successfully!',
+        'register.error': 'Registration error',
+        'logout': 'Session closed',
+        'tracking.activated': 'Tracking mode activated',
+        'game.created': 'Game created successfully',
+        'player2.login.error': 'Invalid credentials for player 2',
+        'player2.same.error': 'Player 2 must be different from player 1',
+        'player2.login.success': 'Player 2 logged in successfully',
+        'player2.password.required': 'Enter player 2 password',
+        // Validaciones
+        'validation.name.max': 'Maximum name {max} characters',
+        'validation.name.letters': 'Only letters and spaces allowed',
+        'validation.username.max': 'Maximum username {max} characters',
+        'validation.username.format': 'Only letters, numbers and underscore',
+        'validation.age.min': 'You must be at least {min} years old',
+        'error.unexpected': 'An unexpected error occurred',
+        'error.async': 'Error in asynchronous operation',
+        // Admin
+        'admin.user.deleted': 'User deleted successfully',
+        'admin.user.delete.error': 'Error deleting user',
+        'admin.user.modified': 'User modified successfully',
+        'admin.user.modify.error': 'Error modifying user',
+        'admin.user.created': 'User created successfully',
+        'admin.user.create.error': 'Error creating user',
+        // Game elements
+        'game.no.restriction': 'No restriction',
+        'game.all.enclosures': 'All enclosures available',
+        'game.roll.dice': 'Roll dice',
+        'game.drag.dinosaur': 'Drag a dinosaur',
+        'game.discard.dinosaur': 'Discard dinosaur',
+        'game.send.turn': 'Send turn',
+        'game.finish.round': 'Finish round',
+        'game.finish.game': 'Finish game',
+        'game.next.round': 'Next round',
+        'game.no.dinosaurs': 'No dinosaurs available',
+        'game.points': 'POINTS',
+        'game.dice.rolled': 'Dice rolled!',
+        'game.map.of': 'MAP OF',
+        'game.opponent': 'OPPONENT',
+        'game.pts': 'pts',
+        'game.select.more': 'Select {count} more',
+        'game.confirm.selection': 'Confirm selection',
+        'game.restriction.current': 'Current Restriction',
+        'game.restriction.trex': 'Blocks enclosures with T-Rex',
+        'game.restriction.empty': 'Only empty enclosures',
+        'game.restriction.blocked': 'Blocked enclosures',
+        'game.total.points': 'total points',
+        'game.dino.returned': 'Dinosaur returned to available',
+        'game.max.dinosaurs': 'Maximum {max} dinosaurs',
+        'game.dice.rolling': 'Rolling dice...!',
+        'game.select.exact': 'You must select exactly {max} dinosaurs',
+        'game.error.save.bag': 'Error saving bag on server',
+        'game.error.connection': 'Server connection error',
+        'game.place.dino.first': 'You must place a dinosaur first',
+        'game.discard.dino.first': 'You must discard a dinosaur first',
+        'game.error.round': 'Error processing round end. Try again.',
+        'game.error.finish': 'Error processing game end. Try again.',
+        'game.error.turn': 'Error processing turn. Try again.',
+        'game.error.server.response': 'Error processing server response',
+        'game.error.server.data': 'Error processing server data',
+        'game.error.connection.check': 'Connection error - Check your internet',
+        'game.error.server.retry': 'Server error - Try again',
+        'game.error.support': 'Unexpected error - Contact support',
+        'game.error.incomplete': 'Incomplete server response',
+        'game.cancelled': 'Game cancelled',
+        'game.confirm.cancel': 'Are you sure you want to cancel the current game?',
+        'ranking.loading': 'Loading ranking...',
+        'ranking.error': 'Error loading ranking',
+        'ranking.empty': 'No players in ranking yet'
+      }
+    };
+    
+    this.init();
+  }
+  
+  init() {
+    // Event listeners para botones de idioma existentes
+    document.addEventListener('click', (e) => {
+      const langBtn = e.target.closest('[data-lang]');
+      if (langBtn) {
+        e.preventDefault(); // Prevenir comportamiento por defecto
+        e.stopPropagation(); // Evitar propagación
+        const lang = langBtn.getAttribute('data-lang');
+        this.changeLanguage(lang);
+      }
+    });
+    
+    // Aplicar idioma inicial cuando el DOM esté listo
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        this.applyLanguage(this.currentLang);
+      });
+    } else {
+      this.applyLanguage(this.currentLang);
+    }
+  }
+  
+  changeLanguage(lang) {
+    // Actualizar idioma aunque sea el mismo (para forzar re-render)
+    this.currentLang = lang;
+    localStorage.setItem('draftosaurus_lang', lang);
+    
+    // Aplicar cambios inmediatamente
+    this.applyLanguage(lang);
+    
+    // Actualizar el atributo lang del documento
+    document.documentElement.setAttribute('lang', lang);
+    
+    console.log(`Idioma cambiado a: ${lang}`); // Debug
+  }
+  
+  applyLanguage(lang) {
+    // Buscar todos los elementos con atributos de idioma
+    const elements = document.querySelectorAll('[data-es], [data-en]');
+    console.log(`Aplicando idioma ${lang} a ${elements.length} elementos`); // Debug
+    
+    elements.forEach(element => {
+      const text = element.getAttribute('data-' + lang);
+      if (text) {
+        // Si es un input, actualizar el placeholder
+        if (element.tagName === 'INPUT' && element.hasAttribute('placeholder')) {
+          element.placeholder = text;
+        } else if (element.tagName === 'TEXTAREA' && element.hasAttribute('placeholder')) {
+          element.placeholder = text;
+        } else {
+          element.textContent = text;
+        }
+      }
+    });
+    
+    // Actualizar el atributo lang del documento
+    document.documentElement.setAttribute('lang', lang);
+  }
+  
+  // Método para obtener texto en el idioma actual
+  getText(esText, enText) {
+    return this.currentLang === 'en' ? enText : esText;
+  }
+  
+  // Método para obtener mensaje dinámico con parámetros
+  getMessage(key, params = {}) {
+    let message = this.messages[this.currentLang][key] || this.messages.es[key] || key;
+    
+    // Reemplazar parámetros {param} en el mensaje
+    Object.keys(params).forEach(param => {
+      message = message.replace(new RegExp(`\\{${param}\\}`, 'g'), params[param]);
+    });
+    
+    return message;
+  }
+}
+
+/**
  * CLASE PRINCIPAL DE LA APLICACIÓN - DRAFTOSAURUS DIGITAL
  * 
  * Esta clase maneja el estado global de la aplicación y coordina entre los dos modos:
@@ -29,6 +272,11 @@ class AppState {
     this.user = null;
     this.loading = false;
     this.players = [];
+    
+    // ============================================================================
+    // SISTEMA DE IDIOMAS
+    // ============================================================================
+    this.languageManager = new LanguageManager();
     
     // ============================================================================
     // INFORMACIÓN DE JUGADORES Y PARTIDA
@@ -254,7 +502,16 @@ class AppState {
       // EVENTOS ESPECÍFICOS DE MODO SEGUIMIENTO
       // ============================================================================
       'btn-modo-asistente': () => this.iniciarModoSeguimiento(),
-      'btn-empezar-turno': () => this.empezarTurnoSeguimiento()
+      'btn-empezar-turno': () => this.empezarTurnoSeguimiento(),
+      
+      // ============================================================================
+      // PANTALLA DE RANKING
+      // ============================================================================
+      'btn-ver-ranking': () => {
+        this.cargarRanking();
+        this.showScreen('ranking');
+      },
+      'btn-volver-ranking': () => this.showScreen('lobby')
     };
     
     if (actions[target.id]) {
@@ -309,7 +566,7 @@ class AppState {
     
     if (!/^[a-zA-ZÀ-ÿ\u00f1\u00d1\s]*$/.test(value)) {
       input.value = value.replace(/[^a-zA-ZÀ-ÿ\u00f1\u00d1\s]/g, '');
-      this.showToast('Solo se permiten letras y espacios', 'warning');
+      this.showToast(this.languageManager.getMessage('validation.name.letters'), 'warning');
     }
     
     if (/\s{2,}/.test(value)) {
@@ -337,7 +594,7 @@ class AppState {
     
     if (!/^[a-zA-Z0-9_]*$/.test(value)) {
       input.value = value.replace(/[^a-zA-Z0-9_]/g, '');
-      this.showToast('Solo letras, números y guión bajo', 'warning');
+      this.showToast(this.languageManager.getMessage('validation.username.format'), 'warning');
     }
   }
 
@@ -706,7 +963,47 @@ class AppState {
   iniciarModoSeguimiento() {
     this.setModo('SEGUIMIENTO');
     this.showScreen('jugadores');
-    this.showToast('Modo seguimiento activado', 'success');
+    this.showToast(this.languageManager.getMessage('tracking.activated'), 'success');
+  }
+
+  // ============================================================================
+  // RANKING
+  // ============================================================================
+  async cargarRanking() {
+    const rankingList = document.querySelector('.ranking-list');
+    if (!rankingList) return;
+
+    // Mostrar estado de carga
+    rankingList.innerHTML = `<div class="ranking-loading">${this.languageManager.getMessage('ranking.loading')}</div>`;
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/ranking');
+      const result = await response.json();
+
+      if (!result.success || !result.ranking || result.ranking.length === 0) {
+        rankingList.innerHTML = `<div class="ranking-empty">${this.languageManager.getMessage('ranking.empty')}</div>`;
+        return;
+      }
+
+      // Renderizar ranking
+      rankingList.innerHTML = result.ranking.map((jugador, index) => `
+        <div class="ranking-item">
+          <span class="ranking-puesto">${index + 1}</span>
+          <span class="ranking-nombre">${jugador.nombreUsuario.toUpperCase()}</span>
+          <span class="ranking-victorias">
+            <strong>${jugador.victorias}</strong> 
+            <span data-es="victorias" data-en="victories">victorias</span>
+          </span>
+        </div>
+      `).join('');
+
+      // Reaplicar traducciones
+      this.languageManager.applyLanguage(this.languageManager.currentLang);
+
+    } catch (error) {
+      console.error('Error cargando ranking:', error);
+      rankingList.innerHTML = `<div class="ranking-error">${this.languageManager.getMessage('ranking.error')}</div>`;
+    }
   }
 
   mostrarTurnoJugadorConSeleccion(nombreJugador, avatarSrc) {
@@ -774,7 +1071,7 @@ class AppState {
   // NUEVO: Método para logear al jugador 2
   async loginJugador2(username, password, nombres) {
     if (!password) {
-      this.showToast('Ingresa la contraseña del jugador 2', 'error');
+      this.showToast(this.languageManager.getMessage('player2.password.required'), 'error');
       return;
     }
 
@@ -790,7 +1087,7 @@ class AppState {
       const result = await response.json();
 
       if (!response.ok || !result.success) {
-        this.showToast('Credenciales inválidas para el jugador 2', 'error');
+        this.showToast(this.languageManager.getMessage('player2.login.error'), 'error');
         return;
       }
 
@@ -808,7 +1105,7 @@ class AppState {
 
       // NUEVO: Verificar que no sea el mismo usuario
       if (this.jugador1Info?.id === this.jugador2Info.id) {
-        this.showToast('El jugador 2 debe ser diferente al jugador 1', 'error');
+        this.showToast(this.languageManager.getMessage('player2.same.error'), 'error');
         this.jugador2Info = null;
         return;
       }
@@ -816,12 +1113,12 @@ class AppState {
       // NUEVO: Guardar ambos jugadores
       this.guardarDatosJuego();
 
-      this.showToast('Jugador 2 logueado correctamente', 'success');
+      this.showToast(this.languageManager.getMessage('player2.login.success'), 'success');
       this.mostrarSelectorQuienEmpieza(nombres, this.jugador2Info);
 
     } catch (error) {
       console.error('Error al logear jugador 2:', error);
-      this.showToast('Error al conectar con el servidor', 'error');
+      this.showToast(this.languageManager.getMessage('login.error'), 'error');
     } finally {
       this.setLoading(false);
     }
@@ -946,7 +1243,7 @@ class AppState {
           // NUEVO: Guardar todos los datos (jugadores + partida)
           this.guardarDatosJuego();
           
-          this.showToast('Partida creada exitosamente', 'success');
+          this.showToast(this.languageManager.getMessage('game.created'), 'success');
         } else {
           console.log('Error al crear partida, continuando en modo local:', result.message);
         }
@@ -1326,15 +1623,15 @@ class AppState {
 
       if (this.user.isAdmin) {
         window.adminManager?.mostrarPerfilAdmin(this.user);
-        this.showToast('¡Bienvenido, Administrador!', 'success');
+        this.showToast(this.languageManager.getMessage('login.welcome.admin'), 'success');
       } else {
         this.showScreen('lobby');
-        this.showToast('¡Bienvenido de vuelta!', 'success');
+        this.showToast(this.languageManager.getMessage('login.welcome'), 'success');
       }
 
     } catch (error) {
       console.error(error);
-      this.showToast('Error al conectar con el servidor', 'error');
+      this.showToast(this.languageManager.getMessage('login.error'), 'error');
     } finally {
       this.setLoading(false);
     }
@@ -1396,10 +1693,10 @@ class AppState {
       localStorage.setItem('usuario', JSON.stringify(this.user));
 
       this.showScreen('lobby');
-      this.showToast('¡Cuenta creada exitosamente!', 'success');
+      this.showToast(this.languageManager.getMessage('register.success'), 'success');
     } catch (error) {
       console.error(error);
-      this.showToast('Error al conectar con el servidor', 'error');
+      this.showToast(this.languageManager.getMessage('register.error'), 'error');
     } finally {
       this.setLoading(false);
     }
@@ -1748,7 +2045,7 @@ class AppState {
     document.querySelectorAll('form').forEach(form => form.reset());
 
     this.showScreen('login');
-    this.showToast('Sesión cerrada', 'info');
+    this.showToast(this.languageManager.getMessage('logout'), 'info');
   }
 
   resetAppState() {
@@ -1785,14 +2082,14 @@ if (!window.app) {
 window.addEventListener('error', e => {
   console.error('Error global capturado:', e.error);
   if (window.app) {
-    window.app.showToast('Ha ocurrido un error inesperado', 'error');
+    window.app.showToast(window.app.languageManager.getMessage('error.unexpected'), 'error');
   }
 });
 
 window.addEventListener('unhandledrejection', e => {
   console.error('Promesa rechazada sin manejar:', e.reason);
   if (window.app) {
-    window.app.showToast('Error en operación asíncrona', 'error');
+    window.app.showToast(window.app.languageManager.getMessage('error.async'), 'error');
   }
 });
 
@@ -2143,11 +2440,11 @@ class AdminManager {
 
       // Recargar usuarios desde el backend
       await this.fetchUsers();
-      window.app?.showToast('Usuario eliminado correctamente', 'success');
+      window.app?.showToast(window.app.languageManager.getMessage('admin.user.deleted'), 'success');
       
     } catch (error) {
       console.error('Error al eliminar usuario:', error);
-      window.app?.showToast('Error al eliminar usuario', 'error');
+      window.app?.showToast(window.app.languageManager.getMessage('admin.user.delete.error'), 'error');
     } finally {
       this.cerrarPopupEliminar();
     }
@@ -2198,11 +2495,11 @@ class AdminManager {
       // Recargar usuarios desde el backend actualizado
       await this.fetchUsers();
       this.mostrarListadoUsuarios();
-      window.app?.showToast('Usuario modificado correctamente', 'success');
+      window.app?.showToast(window.app.languageManager.getMessage('admin.user.modified'), 'success');
 
     } catch (error) {
       console.error('Error al modificar usuario:', error);
-      window.app?.showToast('Error al modificar usuario', 'error');
+      window.app?.showToast(window.app.languageManager.getMessage('admin.user.modify.error'), 'error');
     }
   }
 
@@ -2235,11 +2532,11 @@ class AdminManager {
       // Recargar usuarios desde el backend
       await this.fetchUsers();
       this.volverPerfilAdmin();
-      window.app?.showToast('Usuario creado correctamente', 'success');
+      window.app?.showToast(window.app.languageManager.getMessage('admin.user.created'), 'success');
 
     } catch (error) {
       console.error('Error al crear usuario:', error);
-      window.app?.showToast('Error al crear usuario', 'error');
+      window.app?.showToast(window.app.languageManager.getMessage('admin.user.create.error'), 'error');
     }
   }
 

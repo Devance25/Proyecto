@@ -13,6 +13,10 @@
     
     <title>Draftosaurus</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="apple-touch-icon" href="img/favicon.png">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -29,7 +33,7 @@
             <img src="img/Logo-draftosaurus.png" alt="Draftosaurus" class="logo fade-in">
         </div>
         <div class="loader-container">
-            <p class="texto texto--blanco texto--weight-semibold texto-carga">
+            <p class="texto texto--blanco texto--weight-semibold texto-carga" data-es="Cargando..." data-en="Loading...">
                 Cargando...
             </p>
             <div class="progress">
@@ -53,8 +57,8 @@
 
         <div class="contenedor-centrado fade-in-up">
             <div class="contenedor-titulo">
-                <h1 class="titulo titulo--sm titulo-contenedor">INGRESAR</h1>
-                <p class="texto texto--blanco subtitulo-contenedor">Ingresá tu email y contraseña</p>
+                <h1 class="titulo titulo--sm titulo-contenedor" data-es="INGRESAR" data-en="LOGIN">INGRESAR</h1>
+                <p class="texto texto--blanco subtitulo-contenedor" data-es="Ingresá tu email y contraseña" data-en="Enter your email and password">Ingresá tu email y contraseña</p>
             </div>
 
             <form id="login-form" novalidate>
@@ -62,8 +66,8 @@
                     <div class="form-icon"><img src="img/foto_usuario-1.png" alt="Usuario" loading="lazy"></div>
                     <div class="form-divider"></div>
                     <div class="form-campo">
-                        <label for="login-username" class="form-label">Usuario</label>
-                        <input type="text" id="login-username" class="form-input" placeholder="Ingresá tu correo..." required autocomplete="username">
+                        <label for="login-username" class="form-label" data-es="Usuario" data-en="Username">Usuario</label>
+                        <input type="text" id="login-username" class="form-input" placeholder="Ingresá tu correo..." data-es="Ingresá tu correo..." data-en="Enter your email..." required autocomplete="username">
                     </div>
                 </div>
 
@@ -71,16 +75,16 @@
                     <div class="form-icon"><img src="img/icono_contrasena.png" alt="Contraseña" loading="lazy"></div>
                     <div class="form-divider"></div>
                     <div class="form-campo">
-                        <label for="login-password" class="form-label">Contraseña</label>
-                        <input type="password" id="login-password" class="form-input" placeholder="Ingresa tu contraseña..." required autocomplete="current-password">
+                        <label for="login-password" class="form-label" data-es="Contraseña" data-en="Password">Contraseña</label>
+                        <input type="password" id="login-password" class="form-input" placeholder="Ingresa tu contraseña..." data-es="Ingresa tu contraseña..." data-en="Enter your password..." required autocomplete="current-password">
                     </div>
                 </div>
 
-                <button type="submit" id="btn-login" class="btn"><span class="btn-text">Iniciar sesión</span></button>
+                <button type="submit" id="btn-login" class="btn"><span class="btn-text" data-es="Iniciar sesión" data-en="Sign in">Iniciar sesión</span></button>
             </form>
 
             <div class="footer">
-                ¿Aún no tenés cuenta? <a href="#" id="link-registro">Registrate ahora</a>
+                <span data-es="¿Aún no tenés cuenta?" data-en="Don't have an account yet?">¿Aún no tenés cuenta?</span> <a href="#" id="link-registro" data-es="Registrate ahora" data-en="Register now">Registrate ahora</a>
             </div>
         </div>
     </div>
@@ -97,8 +101,8 @@
 
         <div class="contenedor-centrado fade-in-up">
             <div class="contenedor-titulo">
-                <h1 class="titulo titulo--sm titulo-contenedor">Registrate</h1>
-                <p class="texto texto--blanco subtitulo-contenedor">Unite al increíble mundo de Draftosaurus</p>
+                <h1 class="titulo titulo--sm titulo-contenedor" data-es="Registrate" data-en="Register">Registrate</h1>
+                <p class="texto texto--blanco subtitulo-contenedor" data-es="Unite al increíble mundo de Draftosaurus" data-en="Join the amazing world of Draftosaurus">Unite al increíble mundo de Draftosaurus</p>
             </div>
 
             <form id="register-form" novalidate>
@@ -106,8 +110,8 @@
                     <div class="form-icon"><img src="img/foto_usuario-1.png" alt="Usuario" loading="lazy"></div>
                     <div class="form-divider"></div>
                     <div class="form-campo">
-                        <label for="register-username" class="form-label">Nombre de usuario</label>
-                        <input type="text" id="register-username" class="form-input" placeholder="Ingresá tu nombre..." required autocomplete="username" minlength="3" maxlength="20">
+                        <label for="register-username" class="form-label" data-es="Nombre de usuario" data-en="Username">Nombre de usuario</label>
+                        <input type="text" id="register-username" class="form-input" placeholder="Ingresá tu nombre..." data-es="Ingresá tu nombre..." data-en="Enter your username..." required autocomplete="username" minlength="3" maxlength="20">
                     </div>
                 </div>
 
@@ -115,8 +119,8 @@
                     <div class="form-icon"><img src="img/icono_mail.png" alt="Email" loading="lazy"></div>
                     <div class="form-divider"></div>
                     <div class="form-campo">
-                        <label for="register-email" class="form-label">Email</label>
-                        <input type="email" id="register-email" class="form-input" placeholder="Ingresá tu correo..." required autocomplete="email">
+                        <label for="register-email" class="form-label" data-es="Email" data-en="Email">Email</label>
+                        <input type="email" id="register-email" class="form-input" placeholder="Ingresá tu correo..." data-es="Ingresá tu correo..." data-en="Enter your email..." required autocomplete="email">
                     </div>
                 </div>
 
@@ -124,7 +128,7 @@
                     <div class="form-icon"><img src="img/foto_usuario-1.png" alt="Fecha de nacimiento" loading="lazy"></div>
                     <div class="form-divider"></div>
                     <div class="form-campo">
-                        <label for="register-fecha" class="form-label">Fecha de nacimiento</label>
+                        <label for="register-fecha" class="form-label" data-es="Fecha de nacimiento" data-en="Birth date">Fecha de nacimiento</label>
                         <input type="date" id="register-fecha" class="form-input" required autocomplete="bday">
                     </div>
                 </div>
@@ -133,8 +137,8 @@
                     <div class="form-icon"><img src="img/icono_contrasena.png" alt="Contraseña" loading="lazy"></div>
                     <div class="form-divider"></div>
                     <div class="form-campo">
-                        <label for="register-password" class="form-label">Contraseña</label>
-                        <input type="password" id="register-password" class="form-input" placeholder="Ingresá tu contraseña..." required autocomplete="new-password" minlength="6">
+                        <label for="register-password" class="form-label" data-es="Contraseña" data-en="Password">Contraseña</label>
+                        <input type="password" id="register-password" class="form-input" placeholder="Ingresá tu contraseña..." data-es="Ingresá tu contraseña..." data-en="Enter your password..." required autocomplete="new-password" minlength="6">
                     </div>
                 </div>
 
@@ -142,16 +146,16 @@
                     <div class="form-icon"><img src="img/icono_contrasena.png" alt="Confirmar Contraseña" loading="lazy"></div>
                     <div class="form-divider"></div>
                     <div class="form-campo">
-                        <label for="register-password-confirm" class="form-label">Confirmar contraseña</label>
-                        <input type="password" id="register-password-confirm" class="form-input" placeholder="Confirmá tu contraseña..." required autocomplete="new-password" minlength="6">
+                        <label for="register-password-confirm" class="form-label" data-es="Confirmar contraseña" data-en="Confirm password">Confirmar contraseña</label>
+                        <input type="password" id="register-password-confirm" class="form-input" placeholder="Confirmá tu contraseña..." data-es="Confirmá tu contraseña..." data-en="Confirm your password..." required autocomplete="new-password" minlength="6">
                     </div>
                 </div>
 
-                <button type="submit" id="btn-registro" class="btn"><span class="btn-text">Crear cuenta</span></button>
+                <button type="submit" id="btn-registro" class="btn"><span class="btn-text" data-es="Crear cuenta" data-en="Create account">Crear cuenta</span></button>
             </form>
 
             <div class="footer">
-                ¿Ya tenés cuenta? <a href="#" id="link-login">Iniciá sesión</a>
+                <span data-es="¿Ya tenés cuenta?" data-en="Already have an account?">¿Ya tenés cuenta?</span> <a href="#" id="link-login" data-es="Iniciá sesión" data-en="Sign in">Iniciá sesión</a>
             </div>
         </div>
     </div>
@@ -164,13 +168,13 @@
                     <img src="img/foto_administrador.png" alt="Avatar del administrador" class="admin-avatar-image" loading="lazy">
                 </div>
                 <h2 class="admin-title-main" id="admin-username">ADMIN</h2>
-                <p class="admin-role-label">ADMINISTRADOR</p>
+                <p class="admin-role-label" data-es="ADMINISTRADOR" data-en="ADMINISTRATOR">ADMINISTRADOR</p>
             </div>
 
             <div class="admin-buttons">
-                <button type="button" id="btn-modificar-usuarios" class="btn btn--naranja">Modificar usuarios</button>
-                <button type="button" id="btn-nuevo-usuario" class="btn btn--verde">Nuevo usuario</button>
-                <button type="button" id="btn-salir-admin" class="btn btn--blanco admin-exit-button">Salir del modo administrador</button>
+                <button type="button" id="btn-modificar-usuarios" class="btn btn--naranja"><span data-es="Modificar usuarios" data-en="Modify users">Modificar usuarios</span></button>
+                <button type="button" id="btn-nuevo-usuario" class="btn btn--verde"><span data-es="Nuevo usuario" data-en="New user">Nuevo usuario</span></button>
+                <button type="button" id="btn-salir-admin" class="btn btn--blanco admin-exit-button"><span data-es="Salir del modo administrador" data-en="Exit admin mode">Salir del modo administrador</span></button>
             </div>
         </div>
     </div>
@@ -193,7 +197,7 @@
                         loading="lazy">
                     <div class="stat-content">
                         <h3 id="partidas-ganadas" class="stat-card__value">0</h3>
-                        <p class="stat-card__label">Partidas ganadas</p>
+                        <p class="stat-card__label" data-es="Partidas ganadas" data-en="Games won">Partidas ganadas</p>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -201,18 +205,41 @@
                         loading="lazy">
                     <div class="stat-content">
                         <h3 id="partidas-perdidas" class="stat-card__value">0</h3>
-                        <p class="stat-card__label">Partidas perdidas</p>
+                        <p class="stat-card__label" data-es="Partidas perdidas" data-en="Games lost">Partidas perdidas</p>
                     </div>
                 </div>
             </div>
 
             <div>
                 <button id="btn-jugar-app" class="btn">
-                    <span class="btn-text">Jugar en la app</span>
+                    <span class="btn-text" data-es="Jugar en la app" data-en="Play in app">Jugar en la app</span>
                 </button>
                 <button id="btn-modo-asistente" class="btn btn--naranja">
-                    <span class="btn-text">Modo seguimiento</span>
+                    <span class="btn-text" data-es="Modo seguimiento" data-en="Tracking mode">Modo seguimiento</span>
                 </button>
+                <button id="btn-ver-ranking" class="btn-link" data-es="Ver ranking global" data-en="View global ranking">
+                    Ver ranking global
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA DE RANKING GLOBAL -->
+    <div id="pantalla-ranking" class="pantalla fondo-interfaz fade-in hidden">
+        <button id="btn-volver-ranking" class="btn-icon" aria-label="Volver">
+            <img src="img/siguiente.svg" alt="Volver" loading="lazy">
+        </button>
+
+        <div class="contenedor-centrado">
+            <div class="contenedor-titulo">
+                <h1 class="titulo titulo--sm titulo-contenedor" data-es="Ranking global" data-en="Global Ranking">Ranking global</h1>
+                <p class="texto texto--blanco subtitulo-contenedor" data-es="Los mejores jugadores de Draftosaurus" data-en="The best Draftosaurus players">Los mejores jugadores de Draftosaurus</p>
+            </div>
+                
+            <div class="ranking-container">
+                <div class="ranking-list">
+                    <!-- Los datos se cargarán dinámicamente desde el backend -->
+                </div>
             </div>
         </div>
     </div>
@@ -225,22 +252,22 @@
             <div class="admin-info">
                 <img src="img/foto_administrador.png" alt="Avatar administrador" class="admin-avatar">
                 <span class="admin-name" id="admin-header-name">ADMIN</span>
-                <span class="admin-title">ADMINISTRADOR</span>
+                <span class="admin-title" data-es="ADMINISTRADOR" data-en="ADMINISTRATOR">ADMINISTRADOR</span>
             </div>
         </div>
 
         <div class="admin-content-container">
             <div class="admin-title-container">
-                <h1 class="titulo titulo--lg titulo--beige admin-page-title">GESTIÓN DE USUARIOS</h1>
+                <h1 class="titulo titulo--lg titulo--beige admin-page-title" data-es="GESTIÓN DE USUARIOS" data-en="USER MANAGEMENT">GESTIÓN DE USUARIOS</h1>
             </div>
 
             <div class="search-container">
-                <input type="text" id="buscar-usuario" class="admin-form-input" placeholder="Buscar usuario..." autocomplete="off">
+                <input type="text" id="buscar-usuario" class="admin-form-input" placeholder="Buscar usuario..." data-es="Buscar usuario..." data-en="Search user..." autocomplete="off">
                 <div class="btn-search"><img src="img/lupa.svg" alt="Buscar"></div>
             </div>
 
             <div class="usuarios-list admin-users-list-container" id="lista-usuarios-admin">
-                <div class="titulo-seccion">Usuarios registrados</div>
+                <div class="titulo-seccion" data-es="Usuarios registrados" data-en="Registered users">Usuarios registrados</div>
             </div>
         </div>
     </div>
@@ -253,13 +280,13 @@
             <div class="admin-info">
                 <img src="img/foto_administrador.png" alt="Avatar administrador" class="admin-avatar">
                 <span class="admin-name" id="admin-header-name-edit">ADMIN</span>
-                <span class="admin-title">ADMINISTRADOR</span>
+                <span class="admin-title" data-es="ADMINISTRADOR" data-en="ADMINISTRATOR">ADMINISTRADOR</span>
             </div>
         </div>
 
         <div class="admin-content-container">
             <div class="admin-title-container">
-                <h1 class="titulo titulo--lg titulo--beige admin-page-title">EDITAR USUARIO</h1>
+                <h1 class="titulo titulo--lg titulo--beige admin-page-title" data-es="EDITAR USUARIO" data-en="EDIT USER">EDITAR USUARIO</h1>
             </div>
 
             <form id="form-editar-usuario" class="admin-form-container" novalidate>
@@ -292,13 +319,13 @@
             <div class="admin-info">
                 <img src="img/foto_usuario-1.png" alt="Avatar administrador" class="admin-avatar">
                 <span class="admin-name" id="admin-header-name-nuevo">ADMIN</span>
-                <span class="admin-title">ADMINISTRADOR</span>
+                <span class="admin-title" data-es="ADMINISTRADOR" data-en="ADMINISTRATOR">ADMINISTRADOR</span>
             </div>
         </div>
 
         <div class="admin-content-container">
             <div class="admin-title-container">
-                <h1 class="titulo titulo--lg titulo--beige admin-page-title">NUEVO USUARIO</h1>
+                <h1 class="titulo titulo--lg titulo--beige admin-page-title" data-es="NUEVO USUARIO" data-en="NEW USER">NUEVO USUARIO</h1>
             </div>
 
             <form id="form-nuevo-usuario" class="admin-form-container" novalidate>
@@ -341,8 +368,8 @@
 
         <div class="contenedor-centrado">
             <div class="contenedor-titulo">
-                <h1 class="titulo titulo--sm titulo-contenedor">Listado jugadores</h1>
-                <p class="texto texto--blanco subtitulo-contenedor">2 jugadores</p>
+                <h1 class="titulo titulo--sm titulo-contenedor" data-es="Listado jugadores" data-en="Player list">Listado jugadores</h1>
+                <p class="texto texto--blanco subtitulo-contenedor" data-es="2 jugadores" data-en="2 players">2 jugadores</p>
             </div>
 
             <form id="form-jugadores" novalidate>
@@ -350,24 +377,24 @@
                     <div class="form-group form-group--jugador">
                         <img src="img/foto_usuario-1.png" alt="Avatar Jugador 1" class="jugador-avatar">
                         <div class="form-campo">
-                            <label for="jugador-1" class="form-label">Jugador #1 (tú)</label>
+                            <label for="jugador-1" class="form-label" data-es="Jugador #1 (tú)" data-en="Player #1 (you)">Jugador #1 (tú)</label>
                             <input type="text" id="jugador-1" class="form-input" value="" readonly aria-readonly="true">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <div class="tipo-jugador-selector">
-                            <label class="form-label">Tipo de Jugador #2</label>
+                            <label class="form-label" data-es="Tipo de Jugador #2" data-en="Player #2 Type">Tipo de Jugador #2</label>
                             <div class="radio-group">
                                 <label for="radio-invitado" class="radio-option">
                                     <input type="radio" id="radio-invitado" name="tipo-jugador-2" value="invitado" checked>
                                     <span class="radio-custom"></span>
-                                    Invitado
+                                    <span data-es="Invitado" data-en="Guest">Invitado</span>
                                 </label>
                                 <label for="radio-usuario" class="radio-option">
                                     <input type="radio" id="radio-usuario" name="tipo-jugador-2" value="usuario">
                                     <span class="radio-custom"></span>
-                                    Usuario existente
+                                    <span data-es="Usuario existente" data-en="Existing user">Usuario existente</span>
                                 </label>
                             </div>
                         </div>
@@ -376,22 +403,22 @@
                     <div class="form-group form-group--jugador">
                         <img src="img/invitado.png" id="avatar-jugador-2" alt="Avatar Jugador 2" class="jugador-avatar">
                         <div class="form-campo">
-                            <label for="jugador-2" class="form-label">Jugador #2</label>
-                            <input type="text" id="jugador-2" class="form-input" placeholder="Ingrese nombre de jugador #2" autocomplete="off">
+                            <label for="jugador-2" class="form-label" data-es="Jugador #2" data-en="Player #2">Jugador #2</label>
+                            <input type="text" id="jugador-2" class="form-input" placeholder="Ingrese nombre de jugador #2" data-es="Ingrese nombre de jugador #2" data-en="Enter player #2 name" autocomplete="off">
                         </div>
                     </div>
 
                     <div class="form-group form-group--jugador hidden" id="grupo-password-jugador2">
                         <img src="img/icono_contrasena.png" alt="Contraseña" class="jugador-avatar">
                         <div class="form-campo">
-                            <label for="password-jugador-2" class="form-label">Contraseña</label>
-                            <input type="password" id="password-jugador-2" class="form-input" placeholder="Ingrese la contraseña" autocomplete="current-password">
+                            <label for="password-jugador-2" class="form-label" data-es="Contraseña" data-en="Password">Contraseña</label>
+                            <input type="password" id="password-jugador-2" class="form-input" placeholder="Ingrese la contraseña" data-es="Ingrese la contraseña" data-en="Enter password" autocomplete="current-password">
                         </div>
                     </div>
                 </div>
 
                 <button type="submit" id="btn-comenzar-partida" class="btn" disabled>
-                    <span class="btn-text">Jugar en la app</span>
+                    <span class="btn-text" data-es="Jugar en la app" data-en="Play in app">Jugar en la app</span>
                 </button>
             </form>
         </div>
@@ -404,8 +431,8 @@
 
         <div class="contenedor-centrado fade-in-up">
             <div class="contenedor-titulo">
-                <h1 class="titulo titulo--sm titulo-contenedor">¿Quién empieza?</h1>
-                <p class="texto texto--blanco subtitulo-contenedor">Selecciona el primer jugador</p>
+                <h1 class="titulo titulo--sm titulo-contenedor" data-es="¿Quién empieza?" data-en="Who starts?">¿Quién empieza?</h1>
+                <p class="texto texto--blanco subtitulo-contenedor" data-es="Selecciona el primer jugador" data-en="Select the first player">Selecciona el primer jugador</p>
             </div>
 
             <div class="seleccion-jugadores">
@@ -413,23 +440,23 @@
                     <img src="img/foto_usuario-1.png" alt="Avatar Jugador 1" class="jugador-avatar">
                     <div class="jugador-info">
                         <h3 class="nombre-jugador nombre-jugador-1">JUGADOR 1</h3>
-                        <p class="texto texto--xs">Empieza primero</p>
+                        <p class="texto texto--xs" data-es="Empieza primero" data-en="Starts first">Empieza primero</p>
                     </div>
-                    <button id="btn-seleccionar-j1" class="btn btn--verde"><span class="btn-text">Seleccionar</span></button>
+                    <button id="btn-seleccionar-j1" class="btn btn--verde"><span class="btn-text" data-es="Seleccionar" data-en="Select">Seleccionar</span></button>
                 </div>
 
                 <div id="opcion-jugador-2" class="jugador-opcion">
                     <img src="img/invitado.png" id="avatar-seleccion-j2" alt="Avatar Jugador 2" class="jugador-avatar">
                     <div class="jugador-info">
                         <h3 class="nombre-jugador nombre-jugador-2">JUGADOR 2</h3>
-                        <p class="texto texto--xs">Empieza primero</p>
+                        <p class="texto texto--xs" data-es="Empieza primero" data-en="Starts first">Empieza primero</p>
                     </div>
-                    <button id="btn-seleccionar-j2" class="btn btn--verde"><span class="btn-text">Seleccionar</span></button>
+                    <button id="btn-seleccionar-j2" class="btn btn--verde"><span class="btn-text" data-es="Seleccionar" data-en="Select">Seleccionar</span></button>
                 </div>
             </div>
 
             <div class="seleccion-aleatoria">
-                <button id="btn-seleccion-aleatoria" class="btn btn--naranja"><span class="btn-text">Selección aleatoria</span></button>
+                <button id="btn-seleccion-aleatoria" class="btn btn--naranja"><span class="btn-text" data-es="Selección aleatoria" data-en="Random selection">Selección aleatoria</span></button>
             </div>
         </div>
     </div>
@@ -441,7 +468,7 @@
                 <h1 id="texto-turno" class="titulo titulo--xl titulo--blanco">Sigue</h1>
                 <h2 id="nombre-turno-jugador" class="titulo titulo--lg titulo--beige">ANA</h2>
             </div>
-            <button id="btn-empezar-turno" class="btn btn--verde btn-empezar-turno"><span class="btn-text">Empezar</span></button>
+            <button id="btn-empezar-turno" class="btn btn--verde btn-empezar-turno"><span class="btn-text" data-es="Empezar" data-en="Start">Empezar</span></button>
         </div>
     </div>
 
@@ -482,18 +509,18 @@
                 <div class="info-texto">
                     <div class="nombre-puntos"></div>
                     <div class="puntos-jugador"><span id="puntos-jugador2"></span></div>
-                    <div class="ver-mapa" onclick="mostrarMapa()">Ver mapa</div>
+                    <div class="ver-mapa" onclick="mostrarMapa()" data-es="Ver mapa" data-en="View map">Ver mapa</div>
                 </div>
             </div>
 
             <div class="botones-info">
                 <button class="btn-como-jugar" onclick="mostrarReglas()">
                     <img src="img/icono_informacion.png" alt="Info" class="icono-btn">
-                    <span>¿Cómo jugar?</span>
+                    <span data-es="¿Cómo jugar?" data-en="How to play?">¿Cómo jugar?</span>
                 </button>
                 <button class="btn-datos-fisicos" onclick="mostrarPesos()">
                     <img src="img/icono_datos_fisica.png" alt="Física" class="icono-btn">
-                    <span>Datos físicos</span>
+                    <span data-es="Datos físicos" data-en="Physical data">Datos físicos</span>
                 </button>
             </div>
         </div>
@@ -1050,11 +1077,11 @@
     <div id="popup-descarte" class="popup-overlay hidden">
         <div class="popup">
             <button class="popup-close" onclick="cerrarPopup('popup-descarte')" aria-label="Cerrar">×</button>
-            <h2 class="titulo titulo--md titulo--marron">Descartar un dinosaurio</h2>
-            <p class="texto texto--marron">Elegí un dinosaurio de tu mano para descartar.</p>
+            <h2 class="titulo titulo--md titulo--marron" data-es="Descartar un dinosaurio" data-en="Discard a dinosaur">Descartar un dinosaurio</h2>
+            <p class="texto texto--marron" data-es="Elegí un dinosaurio de tu mano para descartar." data-en="Choose a dinosaur from your hand to discard.">Elegí un dinosaurio de tu mano para descartar.</p>
             <div id="dinosaurios-descarte" class="lista-dinos"></div>
             <div class="contenedor-boton-centrado">
-                <button id="btn-confirmar-descarte" class="btn btn--verde" disabled>Descartar</button>
+                <button id="btn-confirmar-descarte" class="btn btn--verde" disabled><span data-es="Descartar" data-en="Discard">Descartar</span></button>
             </div>
         </div>
     </div>
@@ -1062,7 +1089,7 @@
     <div id="popup-seleccion-dinosaurios" class="popup-overlay hidden">
         <div class="popup">
             <h2 class="titulo titulo--md titulo--marron">Seleccionar dinosaurios</h2>
-            <p class="texto texto--marron">Selecciona los dinosaurios que tienes en tu mano</p>
+            <p class="texto texto--marron" data-es="Selecciona los dinosaurios que tienes en tu mano" data-en="Select the dinosaurs you have in your hand">Selecciona los dinosaurios que tienes en tu mano</p>
 
             <div class="seleccion-dinosaurios-grid">
                 <div class="dino-selector" data-tipo="t-rex">
@@ -1127,12 +1154,12 @@
             </div>
 
             <div class="contador-total">
-                Total seleccionados: <span id="total-dinosaurios">0</span>/6
+                <span data-es="Total seleccionados:" data-en="Total selected:">Total seleccionados:</span> <span id="total-dinosaurios">0</span>/6
             </div>
 
             <div class="contenedor-boton-seleccion">
                 <button id="btn-confirmar-seleccion" class="btn btn--verde" disabled>
-                    Selecciona 6 dinosaurios
+                    <span data-es="Selecciona 6 dinosaurios" data-en="Select 6 dinosaurs">Selecciona 6 dinosaurios</span>
                 </button>
             </div>
         </div>
@@ -1140,38 +1167,38 @@
 
     <div id="popup-seleccion-dado" class="popup-overlay hidden">
         <div class="popup">
-            <h2 class="titulo titulo--md titulo--marron">Seleccionar cara del dado</h2>
-            <p class="texto texto--marron">Selecciona la cara que salió al lanzar el dado</p>
+            <h2 class="titulo titulo--md titulo--marron" data-es="Seleccionar cara del dado" data-en="Select dice face">Seleccionar cara del dado</h2>
+            <p class="texto texto--marron" data-es="Selecciona la cara que salió al lanzar el dado" data-en="Select the face that came up when rolling the dice">Selecciona la cara que salió al lanzar el dado</p>
 
             <div class="caras-dado-grid">
                 <div class="cara-dado-opcion" data-cara="1">
                     <img src="img/dado-huella.png" alt="Lugar vacío" class="cara-dado-img">
-                    <div class="cara-dado-texto">Lugar vacío</div>
+                    <div class="cara-dado-texto" data-es="Lugar vacío" data-en="Empty space">Lugar vacío</div>
                 </div>
 
                 <div class="cara-dado-opcion" data-cara="2">
                     <img src="img/dado-no-trex.png" alt="Sin T-Rex" class="cara-dado-img">
-                    <div class="cara-dado-texto">Sin T-Rex</div>
+                    <div class="cara-dado-texto" data-es="Sin T-Rex" data-en="No T-Rex">Sin T-Rex</div>
                 </div>
 
                 <div class="cara-dado-opcion" data-cara="3">
                     <img src="img/dado-cafe.png" alt="Lado cafetería" class="cara-dado-img">
-                    <div class="cara-dado-texto">Lado cafetería</div>
+                    <div class="cara-dado-texto" data-es="Lado cafetería" data-en="Cafeteria side">Lado cafetería</div>
                 </div>
 
                 <div class="cara-dado-opcion" data-cara="4">
                     <img src="img/dado-banos.png" alt="Lado baños" class="cara-dado-img">
-                    <div class="cara-dado-texto">Lado baños</div>
+                    <div class="cara-dado-texto" data-es="Lado baños" data-en="Restroom side">Lado baños</div>
                 </div>
 
                 <div class="cara-dado-opcion" data-cara="5">
                     <img src="img/dado-bosque.png" alt="Bosque" class="cara-dado-img">
-                    <div class="cara-dado-texto">Bosque</div>
+                    <div class="cara-dado-texto" data-es="Bosque" data-en="Forest">Bosque</div>
                 </div>
 
                 <div class="cara-dado-opcion" data-cara="6">
                     <img src="img/dado-rocas.png" alt="Rocas" class="cara-dado-img">
-                    <div class="cara-dado-texto">Rocas</div>
+                    <div class="cara-dado-texto" data-es="Rocas" data-en="Rocks">Rocas</div>
                 </div>
             </div>
         </div>

@@ -1,21 +1,33 @@
 <?php
-
+/**
+ * Responsabilidad:
+ *  - Encapsular el acceso a la base de datos para la entidad "users".
+ *  - Proveer métodos de consulta e inserción usando consultas preparadas (prepared statements) para evitar SQL Injection.
+ *
+ * Diseño:
+ *  - Singleton: comparte la misma conexión (mysqli) provista por Database.
+ */
 
 class UsuarioRepository
 {
+    /** Instancia única del repositorio. */
+    private static ?UsuarioRepository $instance = null; // instancia única
 
-    private static ?UsuarioRepository $instance = null;
-
-
+    /** Conexión activa a MySQL (mysqli). */
     private mysqli $conn;
 
-
+    /**
+     * Constructor privado: obtiene la conexión desde Database (Singleton) para reutilizarla.
+     */
     private function __construct()
     {
-
+        // Obtenemos la conexión de la capa Database
         $this->conn = Database::getInstance()->getConnection();
     }
 
+    /**
+     * Acceso global a la instancia única del repositorio.
+     */
     public static function getInstance(): ?UsuarioRepository
     {
         if (self::$instance === null) {
@@ -28,7 +40,7 @@ class UsuarioRepository
 
 
     //INSERTS
-    public function registrarUsuarioRepo(string $nombreUsuario, string $email, string $nacimiento, string $hashedPassword)
+    public function registrarUsuarioRepo(string $nombreUsuario, string $email, string $nacimiento, string $hashedPassword): array | bool
     {
         $query = "INSERT INTO usuarios 
                             (nombre_usuario,
@@ -52,8 +64,9 @@ class UsuarioRepository
             return false;
         }
 
-        $insertId = $stmt->insert_id; // id autoincrement generado
+        $insertId = $stmt->insert_id;
 
+        // Cerrar la declaración
         $stmt->close();
 
         return [
@@ -111,7 +124,7 @@ class UsuarioRepository
 
 
     //GETS
-    public function buscarPorEmailRepo(string $email)
+    public function buscarPorEmailRepo(string $email): array | null
     {
         $query = "SELECT id,
                          nombre_usuario, 
@@ -156,7 +169,7 @@ class UsuarioRepository
     }
 
 
-    public function buscarPorNombreUsuarioRepo(string $nombreUsuario)
+    public function buscarPorNombreUsuarioRepo(string $nombreUsuario): array | null
     {
         $query = "SELECT id,
                          nombre_usuario, 
@@ -190,7 +203,7 @@ class UsuarioRepository
         if ($usuario) {
             return [
                 'id' => (int)$usuario['id'],
-                'nombreUsuario' => $usuario['nombre_usuario'], // 👈
+                'nombreUsuario' => $usuario['nombre_usuario'], 
                 'email' => $usuario['email'],
                 'nacimiento' => $usuario['nacimiento'],
                 'password' => $usuario['password'],
@@ -201,7 +214,7 @@ class UsuarioRepository
     }
 
 
-    public function buscarPorEmailONombreRepo(string $identificador)
+    public function buscarPorEmailONombreRepo(string $identificador): array | null
     {
         $query = "SELECT id, 
                          nombre_usuario, 
@@ -268,7 +281,7 @@ class UsuarioRepository
     }
 
 
-    public function getUsuariosRepo(): array
+    public function getUsuariosRepo(): array | null
     {
         $query = "SELECT id, nombre_usuario, email, nacimiento, admin FROM usuarios";
 
@@ -335,5 +348,42 @@ class UsuarioRepository
         
     }
 
+
+    // GETS - RANKING
+    public function getRankingRepo(): array
+    {
+        $query = "SELECT 
+                    usuario_nombre as nombre_usuario,
+                    partidas_ganadas as victorias,
+                    (partidas_jugadas - partidas_ganadas) as derrotas
+                  FROM ranking_usuarios
+                  WHERE partidas_ganadas > 0
+                  ORDER BY partidas_ganadas DESC, partidas_jugadas ASC
+                  LIMIT 15";
+
+        $stmt = $this->conn->prepare($query);
+
+        if (!$stmt) {
+            throw new Exception("Error preparando la consulta: " . $this->conn->error);
+        }
+
+        if (!$stmt->execute()) {
+            throw new Exception("Error ejecutando la consulta: " . $stmt->error);
+        }
+
+        $result = $stmt->get_result();
+        $ranking = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $ranking[] = [
+                'nombreUsuario' => $row['nombre_usuario'],
+                'victorias' => (int)$row['victorias'],
+                'derrotas' => (int)$row['derrotas']
+            ];
+        }
+
+        $stmt->close();
+        return $ranking;
+    }
 
 }

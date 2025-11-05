@@ -1,37 +1,43 @@
-/* ADMINISTRADOR (MOBILE FIRST) */
+/* ========================================
+   ADMINISTRADOR (MOBILE FIRST)
+   ======================================== */
+/* Estilos específicos para la interfaz de administración */
 .pantalla,
 .pantalla-inicio {
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: center;
+  flex-direction: column;     /* Layout vertical */
+  align-items: stretch;       /* Elementos ocupan todo el ancho */
+  justify-content: center;     /* Centrado vertical */
 }
 
-/* Asegurar que hidden funcione */
+/* Asegurar que la clase hidden funcione correctamente */
 .admin-screen.hidden {
-  visibility: hidden;
-  opacity: 0;
+  visibility: hidden;        /* Oculta el elemento */
+  opacity: 0;                 /* Transparencia completa */
 }
 
-/* PERFIL DE ADMINISTRADOR (MOBILE FIRST) */
+/* ========================================
+   PERFIL DE ADMINISTRADOR (MOBILE FIRST)
+   ======================================== */
+/* Tarjeta de perfil del administrador */
 .admin-profile-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 20px auto;
-  padding: 20px;
-  border-radius: 15px;
-  border: 2px solid var(--color-secundario);
-  width: calc(100% - 40px);
-  max-width: 400px;
+  display: flex;              /* Layout flexbox */
+  flex-direction: column;     /* Dirección vertical */
+  align-items: center;        /* Centrado horizontal */
+  margin: 20px auto;          /* Margen automático centrado */
+  padding: 20px;              /* Espaciado interno */
+  border-radius: 15px;        /* Bordes redondeados */
+  border: 2px solid var(--color-secundario); /* Borde verde */
+  width: calc(100% - 40px);   /* Ancho con margen */
+  max-width: 400px;           /* Ancho máximo */
 }
 
 /* Avatar del administrador (Mobile First) */
 .admin-avatar-container {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  margin-bottom: 15px;
-  display: block;
+  position: relative;         /* Posicionamiento relativo */
+  width: 80px;                /* Ancho del avatar */
+  height: 80px;               /* Altura del avatar */
+  margin-bottom: 15px;        /* Margen inferior */
+  display: block;             /* Display en bloque */
 }
 
 .admin-avatar-image {
@@ -91,7 +97,9 @@
   font-size: 14px;
 }
 
-/* HEADER ADMINISTRATIVO (MOBILE FIRST) */
+/* ========================================
+   HEADER ADMINISTRATIVO (MOBILE FIRST)
+   ======================================== */
 .admin-header {
   position: fixed;
   top: 0;
@@ -180,7 +188,9 @@
   letter-spacing: 1px;
 }
 
-/* CONTENIDO DE ADMINISTRADOR (MOBILE FIRST) */
+/* ========================================
+   CONTENIDO DE ADMINISTRADOR (MOBILE FIRST)
+   ======================================== */
 .admin-content-container {
   padding: var(--space-lg);
   display: flex;
@@ -192,7 +202,9 @@
   box-sizing: border-box;
 }
 
-/* Contenido de listados (Mobile First) */
+/* ========================================
+   CONTENIDO DE LISTADOS (MOBILE FIRST)
+   ======================================== */
 .search-container {
   display: flex;
   margin-bottom: 20px;
@@ -259,7 +271,9 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* Scrollbar personalizado para WebKit */
+/* ========================================
+   SCROLLBAR PERSONALIZADO PARA WEBKIT
+   ======================================== */
 .usuarios-list::-webkit-scrollbar {
   width: 8px;
 }
@@ -289,7 +303,9 @@
   text-shadow: 0 0 10px rgba(148, 204, 4, 0.3);
 }
 
-/* Items de usuario (Mobile First) */
+/* ========================================
+   ITEMS DE USUARIO (MOBILE FIRST)
+   ======================================== */
 .usuario-item {
   display: flex;
   align-items: flex-start;
@@ -325,7 +341,9 @@
   align-self: flex-end;
 }
 
-/* Botones de acción (Mobile First) */
+/* ========================================
+   BOTONES DE ACCIÓN (MOBILE FIRST)
+   ======================================== */
 .btn-accion {
   width: 35px;
   height: 35px;
@@ -370,7 +388,9 @@
   box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
 }
 
-/* FORMULARIOS DE ADMINISTRADOR (MOBILE FIRST) */
+/* ========================================
+   FORMULARIOS DE ADMINISTRADOR (MOBILE FIRST)
+   ======================================== */
 .admin-form-group {
   margin-bottom: 15px;
   background: transparent;
@@ -437,7 +457,9 @@
   box-sizing: border-box;
 }
 
-/* POPUP DE CONFIRMACIÓN (MOBILE FIRST) */
+/* ========================================
+   POPUP DE CONFIRMACIÓN (MOBILE FIRST)
+   ======================================== */
 .admin-popup-overlay {
   position: fixed;
   top: 0;
@@ -504,14 +526,18 @@
   margin-top: 20px;
 }
 
-/* Títulos de páginas de administrador (Mobile First) */
+/* ========================================
+   TÍTULOS DE PÁGINAS DE ADMINISTRADOR (MOBILE FIRST)
+   ======================================== */
 .admin-page-title {
   color: var(--color-blanco);
   margin-bottom: var(--space-2xl);
   font-size: 1.5rem;
 }
 
-/* Botones de navegación (Mobile First) */
+/* ========================================
+   BOTONES DE NAVEGACIÓN (MOBILE FIRST)
+   ======================================== */
 .btn-icon {
   width: 35px;
   height: 35px;
@@ -550,7 +576,9 @@
   filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(148, 204, 4, 0.5));
 }
 
-/* RESPONSIVE DESIGN - MOBILE FIRST */
+/* ========================================
+   RESPONSIVE DESIGN - MOBILE FIRST
+   ======================================== */
 
 /* Small devices (480px and up) */
 @media (min-width: 480px) {
