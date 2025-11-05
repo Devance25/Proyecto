@@ -977,7 +977,7 @@ class AppState {
     rankingList.innerHTML = `<div class="ranking-loading">${this.languageManager.getMessage('ranking.loading')}</div>`;
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/ranking');
+      const response = await fetch('http://192.168.2.235/user_devance/Backend/index.php/ranking');
       const result = await response.json();
 
       if (!result.success || !result.ranking || result.ranking.length === 0) {
