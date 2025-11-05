@@ -300,10 +300,10 @@ class AppState {
         modoSeguimiento: false,
         descripcion: 'El sistema maneja automáticamente las bolsas y el dado',
         endpoints: {
-          crearPartida: 'http://192.168.2.235/user_devance/Backend/index.php/crearPartida',
-          turno: 'http://192.168.2.235/user_devance/Backend/index.php/turno',
-          finalizarRonda: 'http://192.168.2.235/user_devance/Backend/index.php/finalizarRonda',
-          finalizarPartida: 'http://192.168.2.235/user_devance/Backend/index.php/finalizarPartida'
+          crearPartida: 'http://192.168.2.235/user_devance/Backend2/index.php/crearPartida',
+          turno: 'http://192.168.2.235/user_devance/Backend2/index.php/turno',
+          finalizarRonda: 'http://192.168.2.235/user_devance/Backend2/index.php/finalizarRonda',
+          finalizarPartida: 'http://192.168.2.235/user_devance/Backend2/index.php/finalizarPartida'
         }
       },
       SEGUIMIENTO: {
@@ -311,12 +311,12 @@ class AppState {
         modoSeguimiento: true,
         descripcion: 'Para seguir partidas físicas reales',
         endpoints: {
-          crearPartida: 'http://192.168.2.235/user_devance/Backend/index.php/crearPartidaSeguimiento',
-          crearBolsa: 'http://192.168.2.235/user_devance/Backend/index.php/crearBolsaSeguimiento',
-          turno: 'http://192.168.2.235/user_devance/Backend/index.php/turnoSeguimiento',
-          finalizarRonda: 'http://192.168.2.235/user_devance/Backend/index.php/finalizarRondaSeguimiento',
-          finalizarRondaSeguimiento: 'http://192.168.2.235/user_devance/Backend/index.php/finalizarRondaSeguimiento',
-          finalizarPartida: 'http://192.168.2.235/user_devance/Backend/index.php/finalizarPartida'
+          crearPartida: 'http://192.168.2.235/user_devance/Backend2/index.php/crearPartidaSeguimiento',
+          crearBolsa: 'http://192.168.2.235/user_devance/Backend2/index.php/crearBolsaSeguimiento',
+          turno: 'http://192.168.2.235/user_devance/Backend2/index.php/turnoSeguimiento',
+          finalizarRonda: 'http://192.168.2.235/user_devance/Backend2/index.php/finalizarRondaSeguimiento',
+          finalizarRondaSeguimiento: 'http://192.168.2.235/user_devance/Backend2/index.php/finalizarRondaSeguimiento',
+          finalizarPartida: 'http://192.168.2.235/user_devance/Backend2/index.php/finalizarPartida'
         }
       }
     };
@@ -977,7 +977,7 @@ class AppState {
     rankingList.innerHTML = `<div class="ranking-loading">${this.languageManager.getMessage('ranking.loading')}</div>`;
 
     try {
-      const response = await fetch('http://192.168.2.235/user_devance/Backend/index.php/ranking');
+      const response = await fetch('http://192.168.2.235/user_devance/Backend2/index.php/ranking');
       const result = await response.json();
 
       if (!result.success || !result.ranking || result.ranking.length === 0) {
@@ -1078,7 +1078,7 @@ class AppState {
     this.setLoading(true);
 
     try {
-      const response = await fetch('http://192.168.2.235/user_devance/Backend/index.php/login', {
+      const response = await fetch('http://192.168.2.235/user_devance/Backend2/index.php/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identificador: username, password })
@@ -1580,7 +1580,7 @@ class AppState {
     this.setLoading(true);
 
     try {
-      const response = await fetch('http://192.168.2.235/user_devance/Backend/index.php/login', {
+      const response = await fetch('http://192.168.2.235/user_devance/Backend2/index.php/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identificador, password })
@@ -1647,7 +1647,7 @@ class AppState {
     this.setLoading(true);
 
     try {
-      const response = await fetch('http://192.168.2.235/user_devance/Backend/index.php/registro', {
+      const response = await fetch('http://192.168.2.235/user_devance/Backend2/index.php/registro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -2199,7 +2199,7 @@ class AdminManager {
     console.log('Iniciando fetchUsers...');
     
     try {
-      const url = 'http://192.168.2.235/user_devance/Backend/index.php/getUsuarios';
+      const url = 'http://192.168.2.235/user_devance/Backend2/index.php/getUsuarios';
       console.log('Haciendo petición a:', url);
       
       const response = await fetch(url, {
@@ -2426,7 +2426,7 @@ class AdminManager {
     const userId = parseInt(popup.dataset.userId);
     
     try {
-      const response = await fetch('http://192.168.2.235/user_devance/Backend/index.php/eliminarUsuario', {
+      const response = await fetch('http://192.168.2.235/user_devance/Backend2/index.php/eliminarUsuario', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: userId })
@@ -2480,7 +2480,7 @@ class AdminManager {
         payload.password = password;
       }
 
-      const response = await fetch('http://192.168.2.235/user_devance/Backend/index.php/modificarUsuario', {
+      const response = await fetch('http://192.168.2.235/user_devance/Backend2/index.php/modificarUsuario', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -2512,7 +2512,7 @@ class AdminManager {
     const password = document.getElementById('new-password').value.trim();
     
     try {
-      const response = await fetch('http://192.168.2.235/user_devance/Backend/index.php/registroAdmin', {
+      const response = await fetch('http://192.168.2.235/user_devance/Backend2/index.php/registroAdmin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
