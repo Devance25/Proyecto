@@ -50,9 +50,6 @@ CREATE INDEX idx_partidas_creado ON partidas(creado_el);
 CREATE INDEX idx_partidas_j1 ON partidas(jugador1_id);
 CREATE INDEX idx_partidas_j2 ON partidas(jugador2_id);
 
-select * from bolsas
-where partida_id = 138
-and jugador_id = 1;
 
 -- =====================================================
 -- TABLA: RANKING DE USUARIOS
@@ -115,33 +112,4 @@ BEGIN
     VALUES (NEW.id, NEW.nombre_usuario, 0, 0);
 END$$
 DELIMITER ;
-
--- Verifica en tu base de datos:
-SELECT dino FROM bolsas where partida_id = 1 and jugador_id = 3;
-
-select * from usuarios;
-
-UPDATE usuarios
-SET admin = TRUE
-WHERE id = 5;
-
-select * from bolsas
-where id = 182
-and bolsa_general = 1;
-
-select * from bolsas
-where partida_id = 68
-and bolsa_general=true;
-
--- Verificar si hay registros de bolsa general para esa partida
-SELECT COUNT(*) FROM bolsas WHERE partida_id = 75 AND bolsa_general = true;
-
--- Ver todos los registros de esa partida
-SELECT * FROM bolsas WHERE partida_id = 68;
-
-select *
-from bolsas
-where jugador_id = 5 and partida_id = 83;
-
-
 
