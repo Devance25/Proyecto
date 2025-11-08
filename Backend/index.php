@@ -21,7 +21,8 @@ require_once 'app/DTO/PartidaDTO.php';
 require_once 'app/DTO/PartidaSeguimientoDTO.php';
 
 
-$origin = 'https://devance25.github.io/Proyecto/Frontend/index.html';
+// Este es el origen de tu frontend en GitHub Pages
+$origin = 'https://devance25.github.io'; 
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: $origin");
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
