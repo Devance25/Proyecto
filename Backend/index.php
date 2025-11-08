@@ -21,7 +21,7 @@ require_once 'app/DTO/PartidaDTO.php';
 require_once 'app/DTO/PartidaSeguimientoDTO.php';
 
 
-$origin = 'http://127.0.0.1:5500';
+$origin = 'https://devance25.github.io/Proyecto/Frontend/index.html';
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: $origin");
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
