@@ -977,7 +977,7 @@ class AppState {
     rankingList.innerHTML = `<div class="ranking-loading">${this.languageManager.getMessage('ranking.loading')}</div>`;
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/ranking');
+      const response = await fetch('/Proyecto/Backend/index.php/ranking');
       const result = await response.json();
 
       if (!result.success || !result.ranking || result.ranking.length === 0) {
@@ -1078,7 +1078,7 @@ class AppState {
     this.setLoading(true);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/login', {
+      const response = await fetch('/Proyecto/Backend/index.php/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identificador: username, password })
@@ -1580,7 +1580,7 @@ class AppState {
     this.setLoading(true);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/login', {
+      const response = await fetch('/Proyecto/Backend/index.php/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identificador, password })
@@ -2426,7 +2426,7 @@ class AdminManager {
     const userId = parseInt(popup.dataset.userId);
     
     try {
-      const response = await fetch('http://127.0.0.1:8000/eliminarUsuario', {
+      const response = await fetch('/Proyecto/Backend/index.php/eliminarUsuario', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: userId })
@@ -2480,7 +2480,7 @@ class AdminManager {
         payload.password = password;
       }
 
-      const response = await fetch('http://127.0.0.1:8000/modificarUsuario', {
+      const response = await fetch('/Proyecto/Backend/index.php/modificarUsuario', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -2512,7 +2512,7 @@ class AdminManager {
     const password = document.getElementById('new-password').value.trim();
     
     try {
-      const response = await fetch('http://127.0.0.1:8000/registroAdmin', {
+      const response = await fetch('/Proyecto/Backend/index.php/registroAdmin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
