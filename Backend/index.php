@@ -35,12 +35,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 try {
 
-    $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); 
-    $uri = explode('/', trim((string)$uri, '/')); // 
+    / ===========================
+    // PARSEO DE LA URL
+    // ===========================
+    $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    $uri = explode('/', trim((string)$uri, '/'));
+
+    // Buscamos la posición de 'index.php' en la URL
+    $indexPos = array_search('index.php', $uri);
+
+    // Si existe, tomamos todo lo que venga después de 'index.php'
+    if ($indexPos !== false) {
+        $segments = array_slice($uri, $indexPos + 1);
+    } else {
+        // Si no está, tomamos todo lo que venga después de 'user_devance/Backend'
+        $basePos = array_search('Backend', $uri);
+        $segments = $basePos !== false ? array_slice($uri, $basePos + 1) : $uri;
+    }
+
+    // Filtramos vacíos (por si hay barra final '/')
+    $segments = array_filter($segments, fn($s) => $s !== '');
+
+    // Unimos todo en un solo string (ej: getUsuarios)
+    $resource = implode('/', $segments);
     $method = strtoupper($_SERVER['REQUEST_METHOD']);
 
-    $resource = $uri[0] ?? '';
-    $param = $uri[1] ?? '';
+    error_log("DEBUG - recurso = " . $resource);
 
     $authController = new AuthController();
     $partidaController = new PartidaController();
