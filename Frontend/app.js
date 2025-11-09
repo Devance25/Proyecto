@@ -1647,7 +1647,7 @@ class AppState {
     this.setLoading(true);
 
     try {
-      const response = await fetch('/Proyecto/registro', {
+      const response = await fetch('/Proyecto/Backend/registro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
