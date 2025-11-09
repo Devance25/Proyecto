@@ -22,7 +22,7 @@ require_once 'app/DTO/PartidaSeguimientoDTO.php';
 
 
 // Este es el origen de tu frontend en GitHub Pages
-$origin = 'https://devance25.github.io'; 
+$origin = '*'; 
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: $origin");
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 try {
 
-    / ===========================
+    // ===========================
     // PARSEO DE LA URL
     // ===========================
     $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
