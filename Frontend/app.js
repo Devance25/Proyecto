@@ -300,10 +300,10 @@ class AppState {
         modoSeguimiento: false,
         descripcion: 'El sistema maneja automáticamente las bolsas y el dado',
         endpoints: {
-          crearPartida: 'http://127.0.0.1:8000/crearPartida',
-          turno: 'http://127.0.0.1:8000/turno',
-          finalizarRonda: 'http://127.0.0.1:8000/finalizarRonda',
-          finalizarPartida: 'http://127.0.0.1:8000/finalizarPartida'
+          crearPartida: '/Proyecto/Backend/index.php/crearPartida',
+          turno: '/Proyecto/Backend/index.php/turno',
+          finalizarRonda: '/Proyecto/Backend/index.php/finalizarRonda',
+          finalizarPartida: '/Proyecto/Backend/index.php/finalizarPartida'
         }
       },
       SEGUIMIENTO: {
@@ -311,12 +311,12 @@ class AppState {
         modoSeguimiento: true,
         descripcion: 'Para seguir partidas físicas reales',
         endpoints: {
-          crearPartida: 'http://127.0.0.1:8000/crearPartidaSeguimiento',
-          crearBolsa: 'http://127.0.0.1:8000/crearBolsaSeguimiento',
-          turno: 'http://127.0.0.1:8000/turnoSeguimiento',
-          finalizarRonda: 'http://127.0.0.1:8000/finalizarRondaSeguimiento',
-          finalizarRondaSeguimiento: 'http://127.0.0.1:8000/finalizarRondaSeguimiento',
-          finalizarPartida: 'http://127.0.0.1:8000/finalizarPartida'
+          crearPartida: '/Proyecto/Backend/index.php/crearPartidaSeguimiento',
+          crearBolsa: '/Proyecto/Backend/index.php/crearBolsaSeguimiento',
+          turno: '/Proyecto/Backend/index.php/turnoSeguimiento',
+          finalizarRonda: '/Proyecto/Backend/index.php/finalizarRondaSeguimiento',
+          finalizarRondaSeguimiento: '/Proyecto/Backend/index.php/finalizarRondaSeguimiento',
+          finalizarPartida: '/Proyecto/Backend/index.php/finalizarPartida'
         }
       }
     };
@@ -2199,7 +2199,7 @@ class AdminManager {
     console.log('Iniciando fetchUsers...');
     
     try {
-      const url = 'http://127.0.0.1:8000/getUsuarios';
+      const url = '/Proyecto/Backend/index.php/getUsuarios';
       console.log('Haciendo petición a:', url);
       
       const response = await fetch(url, {
