@@ -1499,7 +1499,7 @@ const ModoSeguimiento = {
           (window.app?.jugador1Info?.id) : 
           (window.app?.jugador2Info?.id);
 
-        const endpoint = window.app?.getEndpoint('crearBolsa') || 'http://127.0.0.1:8000/crearBolsaSeguimiento';
+        const endpoint = window.app?.getEndpoint('crearBolsa') || '/Proyecto/Backend/index.php/crearBolsaSeguimiento';
         
         console.log('Enviando bolsa al backend:', {
           turnoEnRonda: estadoJuego.turnoEnRonda,
@@ -2032,7 +2032,7 @@ const JuegoManager = {
         tipoDinoDescarte: estadoJuego.dinosaurioDescartadoEnTurno || 'stegosaurus'
       };
 
-      const endpoint = window.app?.getEndpoint('finalizarRonda') || 'http://127.0.0.1:8000/finalizarRonda';
+      const endpoint = window.app?.getEndpoint('finalizarRonda') || '/Proyecto/Backend/index.php/finalizarRonda';
       
       try {
         const response = await fetch(endpoint, {
@@ -2127,7 +2127,7 @@ const JuegoManager = {
 
       console.log('Enviando finalizar ronda seguimiento al backend:', requestData);
 
-      const endpoint = window.app?.getEndpoint('finalizarRondaSeguimiento') || 'http://127.0.0.1:8000/finalizarRondaSeguimiento';
+      const endpoint = window.app?.getEndpoint('finalizarRondaSeguimiento') || '/Proyecto/Backend/index.php/finalizarRondaSeguimiento';
       
       try {
         const response = await fetch(endpoint, {
@@ -2212,7 +2212,7 @@ const JuegoManager = {
         tipoDinoDescarte: estadoJuego.dinosaurioDescartadoEnTurno || 'stegosaurus'
       };
 
-      const endpoint = window.app?.getEndpoint('finalizarPartida') || 'http://127.0.0.1:8000/finalizarPartida';
+      const endpoint = window.app?.getEndpoint('finalizarPartida') || '/Proyecto/Backend/index.php/finalizarPartida';
       
       console.log('Enviando finalizar partida al backend:', requestData);
       
@@ -3489,8 +3489,8 @@ document.addEventListener('DOMContentLoaded', () => {
       // DISCRIMINACIÓN DE ENDPOINTS SEGÚN EL MODO DE JUEGO
       // ============================================================================
       const endpoint = estadoJuego.modoSeguimiento ? 
-        'http://127.0.0.1:8000/turnoSeguimiento' : 
-        'http://127.0.0.1:8000/turno';
+        '/Proyecto/Backend/index.php/turnoSeguimiento' : 
+        '/Proyecto/Backend/index.php/turno';
       
       const response = await fetch(endpoint, {
         method: 'POST',
